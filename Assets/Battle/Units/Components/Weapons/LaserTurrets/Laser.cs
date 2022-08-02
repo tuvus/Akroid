@@ -1,0 +1,151 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Laser : MonoBehaviour {
+
+    private SpriteRenderer spriteRenderer;
+    LaserTurret laserTurret;
+    bool fireing;
+
+    float fireTime;
+    float fadeTime;
+
+    float translateAmount;
+
+    RaycastHit2D? hitPoint;
+    RaycastHit2D[] contacts = new RaycastHit2D[20];
+    float extraDamage;
+
+    public void SetLaser(LaserTurret laserTurret, float offset, float laserRange, float laserSize) {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        transform.localScale = new Vector2(laserSize, 1);
+        this.translateAmount = offset;
+        this.laserTurret = laserTurret;
+
+        fireing = false;
+        fireTime = 0;
+        fadeTime = 0;
+
+        spriteRenderer.enabled = false;
+        extraDamage = 0;
+    }
+
+    public void FireLaser() {
+        fireing = true;
+        fireTime = laserTurret.fireDuration;
+        fadeTime = laserTurret.fadeDuration;
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, 1);
+    }
+
+    void ExpireLaser() {
+        spriteRenderer.enabled = false;
+        fireing = false;
+    }
+
+
+    public void UpdateLaser() {
+        if (fireing) {
+            spriteRenderer.enabled = true;
+            transform.localPosition = new Vector2(0, 0);
+            transform.rotation = transform.parent.rotation;
+
+            UpdateDamageAndCollision();
+
+            SetDistance();
+
+            if (fireTime > 0) {
+                UpdateFireTime();
+            } else {
+                UpdateFadeTime();
+            }
+        }
+    }
+
+    void UpdateFireTime() {
+        fireTime = Mathf.Max(0, fireTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+    }
+
+    void UpdateFadeTime() {
+        fadeTime = Mathf.Max(0, fadeTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+        if (fadeTime <= 0) {
+            ExpireLaser();
+        } else {
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, fadeTime / laserTurret.fadeDuration);
+        }
+    }
+
+    void UpdateDamageAndCollision() {
+        hitPoint = null;
+        Physics2D.RaycastNonAlloc(transform.position, transform.up, contacts, GetLaserRange() + translateAmount);
+        Shield hitShield = null;
+        Unit hitUnit = null;
+
+        int contactLength = -1;
+        for (int i = 0; i < contacts.Length; i++) {
+            if (contacts[i].collider == null) {
+                contactLength = i + 1;
+                break;
+            }
+            Unit unit = contacts[i].collider.GetComponent<Unit>();
+            if (unit != null && unit.faction != laserTurret.GetUnit().faction) {
+                if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
+                    hitUnit = unit;
+                    hitShield = null;
+                    hitPoint = contacts[i];
+                }
+                continue;
+            }
+            Shield shield = contacts[i].collider.GetComponent<Shield>();
+            if (shield != null && shield.GetUnit().faction != laserTurret.GetUnit().faction) {
+                if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
+                    hitUnit = null;
+                    hitShield = shield;
+                    hitPoint = contacts[i];
+                }
+                continue;
+            }
+        }
+        for (int i = 0; i < contactLength; i++) {
+            contacts[i] = new RaycastHit2D();
+        }
+        if (hitUnit != null) {
+            hitUnit.TakeDamage(GetDamage(false));
+            return;
+        }
+        if (hitShield != null) {
+            hitShield.TakeDamage(GetDamage(true));
+            return;
+        }
+    }
+
+    int GetDamage(bool hitShield) {
+        float damage = laserTurret.damagePerSeccond * Time.fixedDeltaTime * BattleManager.Instance.timeScale * laserTurret.GetUnit().faction.LaserDamageModifier;
+        float damageToShield = 0.5f;
+        if (hitShield)
+            damage *= damageToShield;
+        if (fireTime <= 0)
+            damage *= fadeTime / laserTurret.fadeDuration;
+        damage += extraDamage;
+        extraDamage = damage - (int)damage;
+        return (int)damage;
+    }
+
+    void SetDistance() {
+        transform.Translate(Vector2.up * translateAmount * laserTurret.transform.localScale.y);
+        if (hitPoint.HasValue) {
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, ((hitPoint.Value.distance) / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+        } else {
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+        }
+        transform.Translate(Vector2.up * (spriteRenderer.size) / 2 * laserTurret.transform.localScale.y * laserTurret.GetUnitScale());
+    }
+
+    public bool IsFireing() {
+        return fireing;
+    }
+
+    public float GetLaserRange() {
+        return laserTurret.laserRange * laserTurret.GetUnit().faction.LaserRangeModifier;
+    }
+}

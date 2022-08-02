@@ -1,0 +1,182 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Calculator {
+    /// <summary>
+    /// Returns 180 to -180 deg rotation where 0 is upwards and 90 is to the left.
+    /// </summary>
+    public static float GetAngleOutOfPosition(Vector2 pos) {
+        float angleRad = Mathf.Atan2(pos.x, pos.y);
+        float angleDeg = (180 / Mathf.PI) * angleRad;
+        return -angleDeg;
+    }
+
+    /// <summary>
+    /// Returns 180 to -180 deg rotation where 0 is upwards. and 90 is to the left.
+    /// </summary>
+    /// <param name="from">The from position</param>
+    /// <param name="to">The to position</param>
+    /// <returns></returns>
+    public static float GetAngleOutOfTwoPositions(Vector2 from, Vector2 to) {
+        return GetAngleOutOfPosition(to - from);
+    } 
+
+    /// <summary>
+    /// Returns distance from an angle in degrees and a distance.
+    /// </summary>
+    /// <param name="angle">Angle in degrees</param>
+    /// <param name="distance">Distance to point</param>
+    /// <returns></returns>
+    public static Vector2 GetPositionOutOfAngleAndDistance(float angle, float distance) {
+        return new Vector2(-Mathf.Sin(angle * Mathf.Deg2Rad) * distance, Mathf.Cos(angle * Mathf.Deg2Rad) * distance);
+    }
+
+    /// <summary>
+    /// Takes in 0 to 360 deg rotation and converts to -180 to 180 deg rotation.
+    /// </summary>
+    public static float ConvertTo180DegRotation(float rotation) {
+        SimplifyRotation360(rotation);
+        if (rotation > 180) {
+            rotation = -180 + (rotation - 180);
+        }
+        if (rotation < -180) {
+            rotation = 180 + (rotation + 180);
+        }
+        return rotation;
+    }
+
+    /// <summary>
+    /// Takes in any deg rotation and converts to 0 to 360 deg rotation.
+    /// </summary>
+    public static float ConvertTo360DegRotation(float rotation) {
+        rotation = SimplifyRotation360(rotation);
+        if (rotation < 0)
+            rotation = 180 + (rotation + 180);
+        return rotation;
+    }
+
+    /// <summary>
+    /// Gets the distance to the relative position.
+    /// </summary>
+    public static float GetDistanceToPosition(Vector2 pos) {
+        return Vector2.Distance(Vector2.zero, pos);
+    }
+
+    /// <summary>
+    /// Simplifies the rotation so that it is not higher or lower than 360,-360.
+    /// </summary>
+    public static float SimplifyRotation360(float roation) {
+        if (roation > 360) {
+            roation = roation % 360;
+        } else if (roation < 360) {
+            roation = -(-roation % 360);
+        }
+        return roation;
+    }
+
+    /// <summary>
+    /// Returns the target rotaiton relative to the current rotation. Input both as 360, -360 degrees.
+    /// </summary>
+    public static float GetLocalTargetRotation(float currentRotaiton, float targetRotation) {
+        if (currentRotaiton > 180) {
+            currentRotaiton = -180 + (currentRotaiton - 180);
+        }
+        if (targetRotation > 180) {
+            targetRotation = -180 + (targetRotation - 180);
+        }
+        if (targetRotation < -180) {
+            targetRotation = 180 + (targetRotation + 180);
+        }
+        targetRotation -= currentRotaiton;
+        if (targetRotation > 180) {
+            targetRotation = -180 + (targetRotation - 180);
+        }
+        if (targetRotation < -180) {
+            targetRotation = 180 + (targetRotation + 180);
+        }
+        return targetRotation;
+    }
+
+    /// <summary>
+    /// Returns true if the relativePosition is in the field of view of the turret.
+    /// </summary>
+    public static bool IsTargetInSight(float currentShipRotation, Vector2 relativeTargetPos, float minRotate, float maxRotate) {
+        float realDeg = GetAngleOutOfPosition(relativeTargetPos);
+        realDeg -= currentShipRotation;
+        realDeg = SimplifyRotation360(realDeg);
+        if (minRotate < maxRotate) {
+            if (realDeg <= maxRotate && realDeg >= minRotate) {
+                return true;
+            }
+            return false;
+        }
+        if (minRotate > maxRotate) {
+            if (realDeg <= maxRotate || realDeg >= minRotate) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the local target position when the target is in range of a direct line to it
+    /// </summary>
+    public static Vector2 GetTargetPostionIntersect(Vector2 relativeTargetPos, Vector2 localVelocity, float projectileVelocity) {
+        return -relativeTargetPos;
+        //float incramentValue = 1f;
+        //float calculatedTime = 0;
+        //while (true) {
+        //    Vector2 localTargetPosition = FindLocalPositionAfterTime(relativeTargetPos, localVelocity, calculatedTime);
+        //    if (GetDistanceToPosition(localTargetPosition) <= projectileVelocity * calculatedTime) {
+        //        calculatedTime -= incramentValue;
+        //        incramentValue /= 10;
+        //    }
+        //    if (incramentValue <= 0.0001f) {
+        //        return -localTargetPosition;
+        //    }
+        //    calculatedTime += incramentValue;
+        //}
+    }
+
+    /// <summary>
+    /// Returns the localTargetPosition over time from the velocity
+    /// </summary>
+    public static Vector2 FindLocalPositionAfterTime(Vector2 localTargetPosition, Vector2 localVelocity, float time) {
+        return localTargetPosition + (localVelocity * time);
+    }
+
+    /// <summary>
+    /// Gets the closest way to rotate to an angle with a deadzone.
+    /// </summary>
+    public static float GetRotationWithDeadzone(float localRotation, float localTargetRotation, float minRotate, float maxRotate) {
+        if (localRotation != localTargetRotation) {
+            float localMin = SimplifyRotation360(minRotate - localRotation);
+            if (localMin > 180) {
+                localMin = -360 + localMin;
+            }
+            float localMax = SimplifyRotation360(maxRotate - localRotation);
+            if (localMax > 180) {
+                localMax = -360 + localMax;
+            }
+            if (minRotate < maxRotate) {
+                if (localMax > 0 && localMin > 0 && localMax < localTargetRotation && localTargetRotation > 0) {
+                    return -360 + localTargetRotation;
+                }
+                if (localMax < 0 && localMin < 0 && localMin > localTargetRotation && localTargetRotation > 0) {
+                    return 360 + localTargetRotation;
+                }
+            }
+            if (minRotate > maxRotate) {
+                if (localMax > 0 && localMin > 0 && localMin < localTargetRotation && localTargetRotation > 0) {
+                    return -360 + localTargetRotation;
+                }
+                if (localMax < 0 && localMin < 0 && localMax > localTargetRotation && localTargetRotation < 0) {
+                    return 360 + localTargetRotation;
+                }
+            }
+        }
+        return localTargetRotation;
+    }
+}

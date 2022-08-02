@@ -1,0 +1,194 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Station : Unit, IPositionConfirmer {
+    #region variables
+    public enum StationType {
+        None = 0,
+        FleetCommmand = 1,
+        DefenceStation = 2,
+        MiningStation = 3,
+    }
+
+    public StationType stationType;
+
+    public struct StationData {
+        public int faction;
+        public StationType stationType;
+        public string stationName;
+        public Vector2 wantedPosition;
+        public float rotation;
+        public bool built;
+
+        public StationData(int faction, StationType stationType, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
+            this.faction = faction;
+            this.stationType = stationType;
+            this.stationName = stationName;
+            this.wantedPosition = wantedPosition;
+            this.rotation = rotation;
+            this.built = built;
+        }
+    }
+
+    protected StationAI stationAI;
+    private Hanger hanger;
+    private CargoBay cargoBay;
+    public int repairAmmount;
+    public float repairSpeed;
+    public float repairTime;
+    protected bool built;
+
+    #endregion
+
+    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
+        faction.AddStation(this);
+        base.SetupUnit(name, faction, positionGiver, rotation);
+        this.stationType = stationType;
+        stationAI = GetComponent<StationAI>();
+        hanger = GetComponentInChildren<Hanger>();
+        cargoBay = GetComponentInChildren<CargoBay>();
+        stationAI.SetupStationAI(this);
+        hanger.SetupHanger(this);
+        this.built = built;
+        if (!built) {
+            health = 0;
+            ActivateColliders(false);
+            spriteRenderer.color = new Color(.3f, 1f, .3f, .5f);
+            for (int i = 0; i < turrets.Count; i++) {
+                turrets[i].ShowTurret(false);
+            }
+        } else {
+            Spawn();
+        }
+    }
+
+    protected override float SetupSize() {
+        return base.SetupSize() / 2;
+    }
+
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+        if (positionGiver.isExactPosition)
+            return positionGiver.position;
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        if (targetPosition.HasValue)
+            return targetPosition.Value;
+        return positionGiver.position;
+    }
+
+    bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        foreach (var star in BattleManager.Instance.stars) {
+            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + star.GetSize() + size) {
+                return false;
+            }
+        }
+        foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.size + size) {
+                return false;
+            }
+        }
+
+        foreach (var station in BattleManager.Instance.stations) {
+            float enemyBonus = 0;
+            if (faction.IsAtWarWithFaction(station.faction))
+                enemyBonus = GetMaxTurretRange() * 2;
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.size + size) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public override void UpdateUnit() {
+        if (built && IsSpawned()) {
+            base.UpdateUnit();
+            stationAI.UpdateAI();
+            repairTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+        }
+    }
+
+    #region StationControlls
+    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
+        if (faction.UseCredits(cost)) {
+            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(faction.factionIndex, shipClass, shipClass.ToString(), transform.position, Random.Range(0, 360)));
+            if (undock) {
+                newShip.DockShip(this);
+                newShip.UndockShip();
+            } else {
+                newShip.DockShip(this);
+            }
+            return newShip;
+        }
+        return null;
+    }
+
+    public override void Explode() {
+        hanger.UndockAll();
+        base.Explode();
+    }
+
+    public override void DestroyUnit() {
+        BattleManager.Instance.DestroyStation(this);
+    }
+
+    public bool DockShip(Ship ship) {
+        if (IsSpawned() && IsBuilt() && hanger.DockShip(ship)) {
+            ship.transform.position = transform.position;
+            ship.transform.eulerAngles = new Vector3(0, 0, 0);
+            return true;
+        }
+        return false;
+    }
+
+    public void UndockShip(Ship ship, float rotation) {
+        hanger.RemoveShip(ship);
+        Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, followDist + ship.GetFollowDistance());
+        ship.transform.position = new Vector2(transform.position.x + undockPos.x, transform.position.y + undockPos.y);
+        ship.transform.eulerAngles = new Vector3(0, 0, rotation);
+    }
+
+    public int RepairUnit(Unit unit, int amount) {
+        int leftOver = unit.Repair(amount);
+        repairTime += repairSpeed * (amount - leftOver) / repairAmmount;
+        return leftOver;
+    }
+
+    public bool BuildStation() {
+        if (!built) {
+            built = true;
+            health = GetMaxHealth();
+            for (int i = 0; i < turrets.Count; i++) {
+                turrets[i].ShowTurret(true);
+            }
+            ActivateColliders(true);
+            spriteRenderer.color = new Color(1, 1, 1, 1);
+            Spawn();
+            return true;
+        }
+        return false;
+    }
+    #endregion
+
+    #region GetMethods
+    public override bool Destroyed() {
+        if (GetHealth() > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public CargoBay GetCargoBay() {
+        return cargoBay;
+    }
+
+    public Hanger GetHanger() {
+        return hanger;
+    }
+
+    public bool IsBuilt() {
+        return built;
+    }
+    #endregion
+
+}

@@ -1,0 +1,171 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using static Faction;
+
+public class SimulationSetup : MonoBehaviour {
+    [SerializeField] private GameObject editSimulationPanel;
+    [SerializeField] private InputField editSimulationStars;
+    [SerializeField] private InputField editSimulationAsteroids;
+    [SerializeField] private InputField editSimulationAsteroidCount;
+    [SerializeField] private InputField editSimulationResearchModifier;
+    [SerializeField] private GameObject factionPrefab;
+    [SerializeField] private Transform factionList;
+    [SerializeField] private GameObject editFactionPanel;
+    [SerializeField] private InputField editFactionName;
+    [SerializeField] private InputField editFactionCredits;
+    [SerializeField] private InputField editFactionScience;
+    [SerializeField] private InputField editFactionShips;
+    [SerializeField] private InputField editFactionStations;
+
+    public List<FactionData> factions;
+    private int selectedFaction;
+    private int starCount;
+    private int asteroidFieldCount;
+    private float asteroidCountModifier;
+    private float researchModifier;
+
+    public void Awake() {
+        gameObject.SetActive(false);
+    }
+
+    public void OnEnable() {
+        StartMenu.Instance.HideAllMenues();
+        factions = new List<FactionData>();
+        starCount = 3;
+        asteroidFieldCount = 40;
+        asteroidCountModifier = 1;
+        researchModifier = 1.2f;
+
+        for (int i = 0; i < factionList.childCount; i++) {
+            Destroy(factionList.GetChild(i).gameObject);
+        }
+        editSimulationPanel.SetActive(false);
+        SelectFaction(-1);
+    }
+
+    public void SetupDefaultSimulation() {
+        asteroidFieldCount = 40;
+        starCount = 3;
+        asteroidCountModifier = 1.2f;
+        researchModifier = 1.2f;
+        factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
+        StartSimulation();
+    }
+
+    public void ToggleSimulationSettings() {
+        editSimulationPanel.SetActive(!editSimulationPanel.activeSelf);
+        if (editSimulationPanel.activeSelf) {
+            editFactionPanel.SetActive(false);
+            editSimulationStars.SetTextWithoutNotify(starCount.ToString());
+            editSimulationAsteroids.SetTextWithoutNotify(asteroidFieldCount.ToString());
+            editSimulationAsteroidCount.SetTextWithoutNotify((asteroidCountModifier).ToString());
+            editSimulationResearchModifier.SetTextWithoutNotify((researchModifier).ToString());
+        }
+    }
+
+    public void UpdateSimulation() {
+        try {
+            starCount = int.Parse(editSimulationStars.text);
+            asteroidFieldCount = int.Parse(editSimulationAsteroids.text);
+            asteroidCountModifier = float.Parse(editSimulationAsteroidCount.text);
+            researchModifier = float.Parse(editSimulationResearchModifier.text);
+        } catch {
+            Debug.LogWarning("Error parsing simulation inputs");
+            starCount = 3;
+            asteroidFieldCount = 20;
+            researchModifier = 1.3f;
+        }
+    }
+
+    public void AddFaction() {
+        factions.Add(new FactionData("New Faction", 1000000, 0, 1, 1));
+        GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
+        newFactionPrefab.name = factions[factions.Count - 1].name;
+        newFactionPrefab.transform.GetChild(0).GetComponent<Text>().text = newFactionPrefab.name;
+        newFactionPrefab.GetComponent<Button>().onClick.AddListener(() => SelectFaction(newFactionPrefab.transform.GetSiblingIndex()));
+        SelectFaction(factions.Count - 1);
+    }
+
+    public void SelectFaction(int factionIndex) {
+        if (factionIndex == -1 || factionIndex == selectedFaction) {
+            selectedFaction = -1;
+            editFactionPanel.SetActive(false);
+        } else {
+            editSimulationPanel.SetActive(false);
+            selectedFaction = factionIndex;
+            editFactionPanel.SetActive(true);
+            editFactionName.SetTextWithoutNotify(factions[factionIndex].name);
+            editFactionCredits.SetTextWithoutNotify(factions[factionIndex].credits.ToString());
+            editFactionScience.SetTextWithoutNotify(factions[factionIndex].science.ToString());
+            editFactionShips.SetTextWithoutNotify(factions[factionIndex].ships.ToString());
+            editFactionStations.SetTextWithoutNotify(factions[factionIndex].stations.ToString());
+        }
+    }
+
+    public void UpdateSelectedFaction() {
+        try {
+            factions[selectedFaction] = new FactionData(editFactionName.text, long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
+        } catch {
+            factions[selectedFaction] = new FactionData(editFactionName.text, factions[selectedFaction].credits, factions[selectedFaction].science, factions[selectedFaction].ships, factions[selectedFaction].stations);
+            Debug.Log("Parsing Text failed");
+            editFactionShips.SetTextWithoutNotify(factions[selectedFaction].ToString());
+        }
+        factionList.GetChild(selectedFaction).gameObject.name = factions[selectedFaction].name;
+        factionList.GetChild(selectedFaction).GetChild(0).GetComponent<Text>().text = factions[selectedFaction].name;
+    }
+
+    public void RemoveSelectedFaction() {
+        factions.RemoveAt(selectedFaction);
+        Destroy(factionList.GetChild(selectedFaction).gameObject);
+        SelectFaction(-1);
+    }
+
+    public void StartSimulation() {
+        StartCoroutine(ChangeScenes());
+    }
+
+    public IEnumerator ChangeScenes() {
+        yield return null;
+        BattleManager.quickStart = false;
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
+        asyncLoad.allowSceneActivation = false;
+        while (asyncLoad.progress < 0.9f) {
+            yield return null;
+        }
+        DestroyImmediate(Camera.main.gameObject);
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone) {
+            yield return null;
+        }
+        transform.DetachChildren();
+        transform.SetParent(null);
+        SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Loading"));
+        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        DestroyImmediate(GameObject.Find("Main Camera").GetComponent<AudioListener>());
+        asyncLoad = SceneManager.LoadSceneAsync("Battle", LoadSceneMode.Additive);
+        asyncLoad.allowSceneActivation = false;
+        while (asyncLoad.progress < 0.9f) {
+            yield return null;
+        }
+        DestroyImmediate(Camera.main.gameObject);
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone) {
+            yield return null;
+        }
+        SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
+        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount,asteroidCountModifier, researchModifier, factions);
+        Destroy(gameObject);
+    }
+
+    public void Back() {
+        StartMenu.Instance.SetSimulationMenu();
+        gameObject.SetActive(false);
+    }
+}
