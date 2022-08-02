@@ -254,7 +254,7 @@ public class BattleManager : MonoBehaviour {
         Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
         newProjectile.PrespawnProjectile(projectiles.Count);
         projectiles.Add(newProjectile);
-        unusedProjectiles.Add(newProjectile.projectileIndex);
+        //unusedProjectiles.Add(newProjectile.projectileIndex);
     }
 
     public virtual void FixedUpdate() {

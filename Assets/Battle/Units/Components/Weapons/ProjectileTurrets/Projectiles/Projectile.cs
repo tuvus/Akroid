@@ -4,42 +4,49 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour {
 	public int projectileIndex { get; private set; }
+	private new ParticleSystem particleSystem;
+	private SpriteRenderer spriteRenderer;
+	private BoxCollider2D boxCollider2D;
 	private Faction faction;
-	private ProjectileCollision projectileCollision;
 	private float speed;
 	private int damage;
 	private float projectileRange;
 	private float distance;
 	private Vector2 shipVelocity;
-	private Vector2 scale;
+	private Vector2 startingScale;
+	private bool hit;
 
 	public void PrespawnProjectile(int projectileIndex) {
-		projectileCollision = GetComponent<ProjectileCollision>();
+		particleSystem = GetComponent<ParticleSystem>();
+		boxCollider2D = GetComponent<BoxCollider2D>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
 		this.projectileIndex = projectileIndex;
-		projectileCollision.PrespawnProjectile(this);
-		scale = transform.localScale;
+		startingScale = transform.localScale;
 		Activate(false);
 	}
 
 	public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage, float projectileRange, float offset, float scale) {
-		Activate(true);
+		this.faction = faction;
 		transform.position = position;
 		transform.eulerAngles = new Vector3(0, 0, rotation);
 		this.speed = speed;
 		transform.Translate(Vector2.up * offset);
 		this.shipVelocity = shipVelocity;
-		this.faction = faction;
 		this.damage = damage;
 		this.projectileRange = projectileRange;
 		transform.position = new Vector3(transform.position.x, transform.position.y, -5);
+		transform.localScale = this.startingScale;
 		transform.localScale *= scale;
-		projectileCollision.SetProjectile();
 		distance = 0;
+		hit = false;
+		Activate(true);
 	}
 
 	public void UpdateProjectile() {
-		if (projectileCollision.HasHit()) {
-			projectileCollision.UpdateProjectile();
+		if (hit) {
+			if (particleSystem.isPlaying == false) {
+				RemoveProjectile();
+			}
 		} else {
 			transform.position += new Vector3(shipVelocity.x * Time.fixedDeltaTime * BattleManager.Instance.timeScale, shipVelocity.y * Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
 			transform.Translate(Vector2.up * speed * Time.fixedDeltaTime * BattleManager.Instance.timeScale);
@@ -51,6 +58,9 @@ public class Projectile : MonoBehaviour {
 	}
 
 	private void OnTriggerEnter2D(Collider2D coll) {
+		if (hit) {
+			return;
+		}
 		Unit unit = coll.GetComponent<Unit>();
 		if (unit != null && unit.faction != faction) {
 			if (unit.GetShieldGenerator() != null) {
@@ -71,19 +81,31 @@ public class Projectile : MonoBehaviour {
 		}
 	}
 
-	void Explode() {
-		projectileCollision.enabled = true;
-		projectileCollision.Hit(this);
+	public void Explode() {
+		hit = true;
+		transform.position = new Vector3(transform.position.x, transform.position.y, 10);
+		transform.localScale = new Vector2(.5f, .5f);
+		transform.rotation.eulerAngles.Set(0, 0, 0);
+		spriteRenderer.enabled = false;
+		boxCollider2D.enabled = false;
+		particleSystem.Play();
 	}
 
 	void Activate(bool activate = true) {
-		projectileCollision.Activate(activate);
+		if (activate) {
+			BattleManager.Instance.AddProjectile(this);
+		} else {
+			BattleManager.Instance.RemoveProjectile(this);
+		}
+		spriteRenderer.enabled = activate;
+		boxCollider2D.enabled = activate;
 	}
 
 	public void RemoveProjectile() {
-		projectileCollision.RemoveProjectile();
-		BattleManager.Instance.RemoveProjectile(this);
-		transform.localScale = scale;
+		transform.localScale = startingScale;
+		particleSystem.Stop();
+		particleSystem.Clear();
+		hit = false;
 		Activate(false);
 	}
 }
