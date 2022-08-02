@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(ReloadController))]
 public class Turret : MonoBehaviour {
     public enum TargetingBehaviors {
         closest = 1,
@@ -11,7 +12,6 @@ public class Turret : MonoBehaviour {
         smallest = 5,
         biggest = 6,
     }
-    private bool aimed;
     //the time between checks
     public float targetRotation;
     public float startRotation;
@@ -27,29 +27,39 @@ public class Turret : MonoBehaviour {
     public float maxRotate;
 
     private SpriteRenderer spriteRenderer;
-    public Unit targetUnit;
-    public Vector2 targetVector;
     protected Unit unit;
+    protected ReloadController reloadController;
 
-    protected bool hibernation;
+    public Vector2 targetVector;
+    public Unit targetUnit;
+    private bool aimed;
 
     public virtual void SetupTurret(Unit unit) {
         this.unit = unit;
         spriteRenderer = GetComponent<SpriteRenderer>();
         targetRotation = startRotation;
+        reloadController = GetComponent<ReloadController>();
+        reloadController.SetupReloadController();
     }
 
     public virtual void UpdateTurret() {
-        //Check if hibernating
-        if (hibernation && unit.enemyUnitsInRange.Count == 0) {
+        if (TurretHibernationStatus())
             return;
-        }
-        hibernation = false;
+        UpdateTurretReload();
+        UpdateTurretAim();
+        UpdateTurretWeapon();
+    }
 
-        //Check if target is stil viable to shoot at.
-        Vector2 targetLocation;
-        float localShipAngle;
-        if (IsTargetViable(targetUnit) && IsTargetRotationViable(targetUnit, out targetLocation, out localShipAngle)) {
+    protected virtual bool TurretHibernationStatus() {
+        return targetUnit == null && aimed && unit.enemyUnitsInRange.Count == 0 && reloadController.ReadyToHibernate();
+    }
+
+    protected virtual void UpdateTurretReload() {
+        reloadController.UpdateReloadController(Time.fixedDeltaTime * BattleManager.Instance.timeScale, GetReloadTimeModifier());
+    }
+
+    protected void UpdateTurretAim() {
+        if (IsTargetViable(targetUnit) && IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
             SetTargetRotation(localShipAngle);
         } else {
             ChangeTargetUnit(null);
@@ -57,14 +67,14 @@ public class Turret : MonoBehaviour {
             FindNewTarget(range, unit.faction);
         }
 
-        //Aim towards targetRotation
         if (!aimed)
             RotateTowards();
-        if (aimed && targetUnit != null) {
-            Shoot();
+    }
+
+    protected virtual void UpdateTurretWeapon() {
+        if (aimed && targetUnit != null && ReadyToFire()) {
+            Fire();
             ChangeTargetUnit(null);
-        } else if (targetUnit == null && aimed && unit.enemyUnitsInRange.Count == 0) {
-            hibernation = true;
         }
     }
 
@@ -263,9 +273,13 @@ public class Turret : MonoBehaviour {
         }
     }
 
-    public virtual bool ReadyToFire() { return false; }
+    public virtual bool ReadyToFire() {
+        return reloadController.ReadyToFire();
+    }
 
-    public virtual void Shoot() { }
+    public virtual void Fire() {
+        reloadController.Fire();
+    }
 
     public virtual float GetRange() {
         return range;
@@ -301,5 +315,9 @@ public class Turret : MonoBehaviour {
 
     public float GetTurretOffSet() {
         return turretOffset * GetUnitScale();
+    }
+
+    public virtual float GetReloadTimeModifier() {
+        return 1f;
     }
 }

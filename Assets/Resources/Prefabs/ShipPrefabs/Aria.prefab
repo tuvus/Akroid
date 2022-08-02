@@ -19746,6 +19746,7 @@ GameObject:
   - component: {fileID: 7698980876869959056}
   - component: {fileID: 7698980876869959059}
   - component: {fileID: 2984911188535759246}
+  - component: {fileID: 7580618889741165021}
   m_Layer: 7
   m_Name: TopTurret
   m_TagString: Untagged
@@ -19832,7 +19833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetRotation: 0
+  targetRotation: 2
   startRotation: 0
   turretOffset: 1.5
   range: 270
@@ -19840,18 +19841,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 0
   maxRotate: 0
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
+  targetUnit: {fileID: 0}
   fireVelocity: 64
   fireAccuracy: 1.2
-  minDamage: 2
-  maxDamage: 5
+  minDamage: 5
+  maxDamage: 9
   projectileRange: 320
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
-  fireTimeBettwenShots: 0.1
-  magazineReloadTime: 5.2
-  magazineAmmo: 7
+--- !u!114 &7580618889741165021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7698980876869959063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0.2
+  reloadSpeed: 5.2
+  maxAmmo: 6
 --- !u!1 &7698980877277829551
 GameObject:
   m_ObjectHideFlags: 0
@@ -19914,6 +19927,7 @@ GameObject:
   - component: {fileID: 7698980878411005993}
   - component: {fileID: 7698980878411006036}
   - component: {fileID: 3857449358571980927}
+  - component: {fileID: 8206376582098929255}
   m_Layer: 7
   m_Name: BottomTurret
   m_TagString: Untagged
@@ -20008,15 +20022,27 @@ MonoBehaviour:
   targeting: 1
   minRotate: 0
   maxRotate: 0
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
+  targetUnit: {fileID: 0}
   fireVelocity: 92
   fireAccuracy: 0.4
-  minDamage: 7
-  maxDamage: 12
+  minDamage: 14
+  maxDamage: 18
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
-  fireTimeBettwenShots: 0.2
-  magazineReloadTime: 3.6
-  magazineAmmo: 2
+--- !u!114 &8206376582098929255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7698980878411005992}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0.3
+  reloadSpeed: 3.2
+  maxAmmo: 2

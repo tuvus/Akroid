@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserTurret : Turret {
-    public float chargeDuration;
     public float fireDuration;
     public float fadeDuration;
-    public float damagePerSeccond;
+    public float laserDamagePerSecond;
     public float laserRange;
     public float laserSize;
-
-    float chargeTime;
 
     Laser laser;
     public GameObject laserPrefab;
@@ -18,35 +15,53 @@ public class LaserTurret : Turret {
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
         laser = Instantiate(laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
-        laser.SetLaser(this, GetTurretOffSet(), laserRange, laserSize);
+        laser.SetLaser(this, GetTurretOffSet(), laserSize);
         turretOffset *= transform.localScale.y;
     }
 
-    public override void UpdateTurret() {
-        base.UpdateTurret();
-        if (hibernation && ReadyToFire())
-            return;
-        if (!laser.IsFireing() && chargeTime > 0)
-            chargeTime = Mathf.Max(0, chargeTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale * unit.faction.LaserChargeModifier);
+    protected override void UpdateTurretReload() {
+        if (!laser.IsFireing())
+            base.UpdateTurretReload();
+    }
+
+    protected override bool TurretHibernationStatus() {
+        return base.TurretHibernationStatus() && !laser.IsFireing();
+    }
+
+    protected override void UpdateTurretWeapon() {
+        base.UpdateTurretWeapon();
         laser.UpdateLaser();
     }
 
-    public override void Shoot() {
-        if (ReadyToFire()) {
-            laser.FireLaser();
-            chargeTime = chargeDuration;
-        }
+    public override void Fire() {
+        base.Fire();
+        laser.FireLaser();
     }
 
     public override bool ReadyToFire() {
-        return chargeTime <= 0 && !laser.IsFireing();
-    }
-
-    public void ExpireLaser() {
-        chargeTime = chargeDuration;
+        return base.ReadyToFire() && !laser.IsFireing();
     }
 
     public override float GetRange() {
         return base.GetRange() * unit.faction.LaserRangeModifier;
+    }
+
+    public override float GetReloadTimeModifier() {
+        return unit.faction.LaserChargeModifier;
+    }
+
+    public float GetDamagePerSecond() {
+        reloadController = GetComponent<ReloadController>();
+        float time = reloadController.reloadSpeed;
+        if (reloadController.maxAmmo > 1) {
+            time += reloadController.maxAmmo * reloadController.fireSpeed;
+        }
+        float damage = laserDamagePerSecond * (fireDuration + fadeDuration / 2) * reloadController.maxAmmo;
+        return damage / time;
+    }
+
+    [ContextMenu("GetDamagePerSecond")]
+    public void PrintDamagePerSecond() {
+        print(GetDamagePerSecond());
     }
 }

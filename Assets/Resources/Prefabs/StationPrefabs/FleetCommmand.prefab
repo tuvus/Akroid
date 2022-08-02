@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 7619781295478743158}
   - component: {fileID: 3922546645200327447}
   - component: {fileID: 3784435171525508042}
+  - component: {fileID: 8200878265534496063}
   m_Layer: 6
   m_Name: LowerRightTurret
   m_TagString: Untagged
@@ -152,16 +153,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 220
   maxRotate: 20
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
-  chargeDuration: 11.4
+  targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  damagePerSeccond: 58
+  laserDamagePerSecond: 300
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
     type: 3}
+--- !u!114 &8200878265534496063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889378031077826983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0
+  reloadSpeed: 13
+  maxAmmo: 1
 --- !u!1 &991186955055033451
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,6 +284,7 @@ GameObject:
   - component: {fileID: 8232875406042977039}
   - component: {fileID: 1644494651273417261}
   - component: {fileID: 6841468471894856233}
+  - component: {fileID: 1261523361591397968}
   m_Layer: 6
   m_Name: UpperLeftTurret
   m_TagString: Untagged
@@ -285,7 +301,7 @@ Transform:
   m_GameObject: {fileID: 3637146194794599806}
   m_LocalRotation: {x: 0, y: 0, z: 0.86602545, w: 0.49999994}
   m_LocalPosition: {x: -17.320507, y: -10, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8198535041992587763}
@@ -363,18 +379,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 40
   maxRotate: 200
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
+  targetUnit: {fileID: 0}
   fireVelocity: 120
   fireAccuracy: 0.05
-  minDamage: 16
-  maxDamage: 24
+  minDamage: 50
+  maxDamage: 60
   projectileRange: 460
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
-  fireTimeBettwenShots: 0.16
-  magazineReloadTime: 3.2
-  magazineAmmo: 5
+--- !u!114 &1261523361591397968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3637146194794599806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0.3
+  reloadSpeed: 5
+  maxAmmo: 6
 --- !u!1 &4233973456378615869
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,6 +414,7 @@ GameObject:
   - component: {fileID: 6464644650282189641}
   - component: {fileID: 4690621275737810844}
   - component: {fileID: 2714386817480722138}
+  - component: {fileID: 743631449761544603}
   m_Layer: 6
   m_Name: LowerBottomTurret
   m_TagString: Untagged
@@ -480,16 +509,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 100
   maxRotate: 260
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
-  chargeDuration: 11.4
+  targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  damagePerSeccond: 58
+  laserDamagePerSecond: 300
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
     type: 3}
+--- !u!114 &743631449761544603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4233973456378615869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0
+  reloadSpeed: 13
+  maxAmmo: 1
 --- !u!1 &5446182531503321870
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,6 +544,7 @@ GameObject:
   - component: {fileID: 4147403281796048175}
   - component: {fileID: 8725029432692256037}
   - component: {fileID: 8897439772554545992}
+  - component: {fileID: 9207986929355661425}
   m_Layer: 6
   m_Name: LowerLeftTurret
   m_TagString: Untagged
@@ -595,16 +639,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 140
   maxRotate: 340
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
-  chargeDuration: 11.4
+  targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  damagePerSeccond: 58
+  laserDamagePerSecond: 300
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
     type: 3}
+--- !u!114 &9207986929355661425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446182531503321870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0
+  reloadSpeed: 13
+  maxAmmo: 1
 --- !u!1 &6855959179986768083
 GameObject:
   m_ObjectHideFlags: 0
@@ -5829,6 +5887,7 @@ GameObject:
   - component: {fileID: 9069692768185031107}
   - component: {fileID: 8420186116901324789}
   - component: {fileID: 5002260339065210665}
+  - component: {fileID: 9010037295489988641}
   m_Layer: 6
   m_Name: UpperTopTurret
   m_TagString: Untagged
@@ -5845,7 +5904,7 @@ Transform:
   m_GameObject: {fileID: 8394348648828848510}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 20, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8198535041992587763}
@@ -5923,18 +5982,30 @@ MonoBehaviour:
   targeting: 1
   minRotate: 280
   maxRotate: 80
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
+  targetUnit: {fileID: 0}
   fireVelocity: 120
   fireAccuracy: 0.05
-  minDamage: 16
-  maxDamage: 24
+  minDamage: 50
+  maxDamage: 60
   projectileRange: 460
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
-  fireTimeBettwenShots: 0.16
-  magazineReloadTime: 3.2
-  magazineAmmo: 5
+--- !u!114 &9010037295489988641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8394348648828848510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0.3
+  reloadSpeed: 5
+  maxAmmo: 6
 --- !u!1 &9206975562605868859
 GameObject:
   m_ObjectHideFlags: 0
@@ -5946,6 +6017,7 @@ GameObject:
   - component: {fileID: 1202795557585089293}
   - component: {fileID: 696537681793981877}
   - component: {fileID: 5884090157725528945}
+  - component: {fileID: 6910128942356751995}
   m_Layer: 6
   m_Name: UpperRightTurret
   m_TagString: Untagged
@@ -5962,7 +6034,7 @@ Transform:
   m_GameObject: {fileID: 9206975562605868859}
   m_LocalRotation: {x: 0, y: -0, z: 0.8660254, w: -0.5}
   m_LocalPosition: {x: 17.32051, y: -10, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8198535041992587763}
@@ -6040,15 +6112,27 @@ MonoBehaviour:
   targeting: 1
   minRotate: 160
   maxRotate: 320
-  targetUnit: {fileID: 0}
   targetVector: {x: 0, y: 0}
+  targetUnit: {fileID: 0}
   fireVelocity: 120
   fireAccuracy: 0.05
-  minDamage: 16
-  maxDamage: 24
+  minDamage: 50
+  maxDamage: 60
   projectileRange: 460
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
-  fireTimeBettwenShots: 0.16
-  magazineReloadTime: 3.2
-  magazineAmmo: 5
+--- !u!114 &6910128942356751995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9206975562605868859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireSpeed: 0.3
+  reloadSpeed: 5
+  maxAmmo: 6

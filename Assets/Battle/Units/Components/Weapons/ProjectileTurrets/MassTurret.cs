@@ -15,41 +15,16 @@ public class MassTurret : Turret {
 
     public GameObject projectilePrefab;
 
-    public float fireTimeBettwenShots;
-    public float magazineReloadTime;
-    public int magazineAmmo;
-    float firetime;
-    int ammo;
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
-        ammo = magazineAmmo;
     }
 
-    public override void UpdateTurret() {
-        base.UpdateTurret();
-        if (hibernation && ReadyToFire())
-            return;
-        if (firetime <= 0f) {
-            if (ammo == 0)
-                ammo = magazineAmmo;
-            firetime = 0f;
-        } else if (firetime != 0f) {
-            firetime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale * unit.faction.ProjectileReloadModifier;
-        }
-    }
+    public override void Fire() {
+        base.Fire();
+        Projectile projectile = BattleManager.Instance.GetNewProjectile();
+        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z, unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.ProjectileDamageModifier), projectileRange * unit.faction.ProjectileRangeModifier, GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+        projectile.transform.Rotate(new Vector3(0, 0, Random.Range(-fireAccuracy, fireAccuracy)));
 
-    public override void Shoot() {
-        if (firetime <= 0 && ammo > 0) {
-            Projectile projectile = BattleManager.Instance.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z, unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.ProjectileDamageModifier), projectileRange * unit.faction.ProjectileRangeModifier, GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
-            projectile.transform.Rotate(new Vector3(0, 0, Random.Range(-fireAccuracy, fireAccuracy)));
-            ammo--;
-            if (ammo == 0) {
-                firetime = magazineReloadTime;
-            } else {
-                firetime += fireTimeBettwenShots;
-            }
-        }
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
@@ -72,11 +47,26 @@ public class MassTurret : Turret {
         return (Vector2)transform.position - localTargetPos;
     }
 
-    public override bool ReadyToFire() {
-        return firetime <= 0 && ammo != 0;
-    }
-
     public override float GetRange() {
         return base.GetRange() * unit.faction.ProjectileRangeModifier;
+    }
+
+    public override float GetReloadTimeModifier() {
+        return unit.faction.ProjectileReloadModifier;
+    }
+
+    public float GetDamagePerSecond() {
+        reloadController = GetComponent<ReloadController>();
+        float time = reloadController.reloadSpeed;
+        if (reloadController.maxAmmo > 1) {
+            time += reloadController.maxAmmo * reloadController.fireSpeed;
+        }
+        float damage = (minDamage + maxDamage) / 2f * reloadController.maxAmmo;
+        return damage / time;
+    }
+
+    [ContextMenu("GetDamagePerSecond")]
+    public void PrintDamagePerSecond() {
+        print(GetDamagePerSecond());
     }
 }

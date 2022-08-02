@@ -17,7 +17,7 @@ public class Laser : MonoBehaviour {
     RaycastHit2D[] contacts = new RaycastHit2D[20];
     float extraDamage;
 
-    public void SetLaser(LaserTurret laserTurret, float offset, float laserRange, float laserSize) {
+    public void SetLaser(LaserTurret laserTurret, float offset, float laserSize) {
         spriteRenderer = GetComponent<SpriteRenderer>();
         transform.localScale = new Vector2(laserSize, 1);
         this.translateAmount = offset;
@@ -120,7 +120,7 @@ public class Laser : MonoBehaviour {
     }
 
     int GetDamage(bool hitShield) {
-        float damage = laserTurret.damagePerSeccond * Time.fixedDeltaTime * BattleManager.Instance.timeScale * laserTurret.GetUnit().faction.LaserDamageModifier;
+        float damage = laserTurret.laserDamagePerSecond * Time.fixedDeltaTime * BattleManager.Instance.timeScale * laserTurret.GetUnit().faction.LaserDamageModifier;
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;

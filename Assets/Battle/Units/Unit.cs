@@ -383,6 +383,18 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
         return this is Station;
 
     }
+
+    [ContextMenu("GetUnitDamagePerSecond")]
+    public void GetUnitDamagePerSecond() {
+        float dps = 0;
+        foreach (var massTurret in GetComponentsInChildren<MassTurret>()) {
+            dps += massTurret.GetDamagePerSecond();
+        }
+        foreach (var laserTurret in GetComponentsInChildren<LaserTurret>()) {
+            dps += laserTurret.GetDamagePerSecond();
+        }
+        print(unitName + "Dps:" + dps);
+    }
     #endregion
 
 }
