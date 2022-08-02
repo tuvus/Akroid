@@ -157,7 +157,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  laserDamagePerSecond: 300
+  laserDamagePerSecond: 150
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0
-  reloadSpeed: 13
+  reloadSpeed: 8
   maxAmmo: 1
 --- !u!1 &991186955055033451
 GameObject:
@@ -513,7 +513,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  laserDamagePerSecond: 300
+  laserDamagePerSecond: 150
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0
-  reloadSpeed: 13
+  reloadSpeed: 8
   maxAmmo: 1
 --- !u!1 &5446182531503321870
 GameObject:
@@ -643,7 +643,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 3.6
   fadeDuration: 1.4
-  laserDamagePerSecond: 300
+  laserDamagePerSecond: 150
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -661,7 +661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0
-  reloadSpeed: 13
+  reloadSpeed: 8
   maxAmmo: 1
 --- !u!1 &6855959179986768083
 GameObject:

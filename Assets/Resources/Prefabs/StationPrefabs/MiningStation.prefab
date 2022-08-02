@@ -110,8 +110,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 30
-  maxDamage: 50
+  minDamage: 20
+  maxDamage: 30
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -128,8 +128,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0.5
-  reloadSpeed: 20
-  maxAmmo: 16
+  reloadSpeed: 6
+  maxAmmo: 8
 --- !u!1 &831600063430332692
 GameObject:
   m_ObjectHideFlags: 0
@@ -5453,8 +5453,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 30
-  maxDamage: 50
+  minDamage: 20
+  maxDamage: 30
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5471,8 +5471,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0.5
-  reloadSpeed: 20
-  maxAmmo: 16
+  reloadSpeed: 6
+  maxAmmo: 8
 --- !u!1 &6430685081454762431
 GameObject:
   m_ObjectHideFlags: 0
@@ -5680,8 +5680,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 30
-  maxDamage: 50
+  minDamage: 20
+  maxDamage: 30
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5698,5 +5698,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireSpeed: 0.5
-  reloadSpeed: 20
-  maxAmmo: 16
+  reloadSpeed: 6
+  maxAmmo: 8
