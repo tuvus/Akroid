@@ -25141,8 +25141,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b93ef50b4839f84ea86025a23b8e343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shieldRegenRate: 7.4
-  shieldRecreateRate: 40
+  shieldRegenRate: 9.4
+  shieldRecreateSpeed: 30
   shieldRegenHealth: 12
   shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}

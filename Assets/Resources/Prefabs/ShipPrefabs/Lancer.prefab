@@ -25272,7 +25272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shieldRegenRate: 2.4
-  shieldRecreateRate: 21
+  shieldRecreateSpeed: 6
   shieldRegenHealth: 5
   shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}

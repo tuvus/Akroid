@@ -6,7 +6,7 @@ public class ShieldGenerator : MonoBehaviour {
 	private Unit unit;
 	//ShieldGenStats
 	public float shieldRegenRate;
-	public float shieldRecreateRate;
+	public float shieldRecreateSpeed;
 	public int shieldRegenHealth;
 	//ShieldStats
 	public Shield shieldPrefab;
@@ -55,7 +55,7 @@ public class ShieldGenerator : MonoBehaviour {
 
 	public void DestroyShield() {
 		ShowShield(false);
-		timeTillShieldCount = shieldRecreateRate;
+		timeTillShieldCount = shieldRecreateSpeed;
 	}
 
 	public int GetShieldStrength() {
