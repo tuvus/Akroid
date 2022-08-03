@@ -45,6 +45,7 @@ public class Missile : MonoBehaviour {
         this.velocity = shipVelocity;
         this.fuelRange = fuelRange;
         hit = false;
+        expired = false;
         thrustParticleSystem.Play();
         distance = 0;
         Activate(true);
