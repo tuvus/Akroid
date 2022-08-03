@@ -68,7 +68,7 @@ public class BattleManager : MonoBehaviour {
             tempFactions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
             tempFactions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
 
-            SetupBattle(3, 40, 1, 1.2f, tempFactions);
+            SetupBattle(3, 40, 1, 1.1f, tempFactions);
         }
     }
 

@@ -37,7 +37,7 @@ public class SimulationSetup : MonoBehaviour {
         starCount = 3;
         asteroidFieldCount = 40;
         asteroidCountModifier = 1;
-        researchModifier = 1.2f;
+        researchModifier = 1.1f;
 
         for (int i = 0; i < factionList.childCount; i++) {
             Destroy(factionList.GetChild(i).gameObject);
@@ -50,7 +50,7 @@ public class SimulationSetup : MonoBehaviour {
         asteroidFieldCount = 40;
         starCount = 3;
         asteroidCountModifier = 1.2f;
-        researchModifier = 1.2f;
+        researchModifier = 1.1f;
         factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
@@ -79,7 +79,8 @@ public class SimulationSetup : MonoBehaviour {
             Debug.LogWarning("Error parsing simulation inputs");
             starCount = 3;
             asteroidFieldCount = 20;
-            researchModifier = 1.2f;
+            asteroidCountModifier = 1.2f;
+            researchModifier = 1.1f;
         }
     }
 
