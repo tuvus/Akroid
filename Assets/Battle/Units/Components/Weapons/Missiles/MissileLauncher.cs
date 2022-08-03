@@ -108,6 +108,10 @@ public class MissileLauncher : MonoBehaviour {
         missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), missileDamage, missileThrust, missileTurnSpeed, missileFuelRange);
     }
 
+    public float GetRange() {
+        return missileFuelRange;
+    }
+
     public float GetDamagePerSecond() {
         reloadController = GetComponent<ReloadController>();
         float time = reloadController.reloadSpeed;

@@ -125,7 +125,7 @@ public class Turret : MonoBehaviour {
     //}
 
     public bool IsTargetViable(Unit targetUnit) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > GetRange())
             return false;
         return true;
     }

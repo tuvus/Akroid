@@ -210,7 +210,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     void UpdateUnitTurretRanges() {
         for (int i = 0; i < units.Count; i++) {
-            units[i].SetupTurretRanges();
+            units[i].SetupWeaponRanges();
         }
     }
 

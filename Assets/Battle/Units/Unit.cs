@@ -21,8 +21,8 @@ public abstract class Unit : MonoBehaviour {
     protected List<CargoBay> cargoBays;
     protected List<Turret> turrets;
     protected List<MissileLauncher> missileLaunchers;
-    private float maxTurretRange;
-    private float minTurretRange;
+    private float maxWeaponRange;
+    private float minWeaponRange;
     protected Vector2 velocity;
 
     public List<Unit> enemyUnitsInRange { get; protected set; }
@@ -43,26 +43,28 @@ public abstract class Unit : MonoBehaviour {
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
         size = SetupSize();
         transform.position = GetSetupPosition(positionGiver);
-        minTurretRange = -1;
+        minWeaponRange = float.MaxValue;
+        maxWeaponRange = float.MinValue;
         foreach (var turret in turrets) {
             turret.SetupTurret(this);
         }
         foreach (var missileLauncher in missileLaunchers) {
             missileLauncher.SetupMissileLauncher(this);
         }
-        SetupTurretRanges();
+        SetupWeaponRanges();
         if (shieldGenerator != null)
             shieldGenerator.SetupShieldGenerator(this);
         unitSelection.SetupSelection(this);
     }
 
-    public void SetupTurretRanges() {
+    public void SetupWeaponRanges() {
         foreach (var turret in turrets) {
-            maxTurretRange = Mathf.Max(maxTurretRange, turret.GetRange());
-            if (minTurretRange <= 0)
-                minTurretRange = turret.GetRange();
-            else
-                minTurretRange = Mathf.Min(minTurretRange, turret.GetRange());
+            maxWeaponRange = Mathf.Max(maxWeaponRange, turret.GetRange());
+            minWeaponRange = Mathf.Min(minWeaponRange, turret.GetRange());
+        }
+        foreach (var missileLuancher in missileLaunchers) {
+            maxWeaponRange = Mathf.Max(maxWeaponRange, missileLuancher.GetRange() / 2);
+            minWeaponRange = Mathf.Min(minWeaponRange, missileLuancher.GetRange() / 2);
         }
     }
 
@@ -81,11 +83,11 @@ public abstract class Unit : MonoBehaviour {
                 Profiler.BeginSample("FindingEnemies");
                 enemyUnitsInRange.Clear();
                 foreach (var enemyFaction in faction.enemyFactions) {
-                    if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxTurretRange * 2 + enemyFaction.factionUnitsSize)
+                    if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                         continue;
                     for (int i = 0; i < enemyFaction.units.Count; i++) {
                         Unit targetUnit = enemyFaction.units[i];
-                        if (targetUnit != null && targetUnit.IsTargetable() && targetUnit.faction != faction && Vector2.Distance(transform.position, targetUnit.GetPosition()) <= maxTurretRange * 2) {
+                        if (targetUnit != null && targetUnit.IsTargetable() && targetUnit.faction != faction && Vector2.Distance(transform.position, targetUnit.GetPosition()) <= maxWeaponRange * 2) {
                             enemyUnitsInRange.Add(targetUnit);
                         }
                     }
@@ -213,11 +215,11 @@ public abstract class Unit : MonoBehaviour {
 
     #region GetMethods
     public float GetMaxTurretRange() {
-        return maxTurretRange;
+        return maxWeaponRange;
     }
 
     public float GetMinTurretRange() {
-        return minTurretRange;
+        return minWeaponRange;
     }
 
     public float UseCargo(float amount, CargoBay.CargoTypes cargoType) {

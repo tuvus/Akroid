@@ -98,7 +98,7 @@ public class Missile : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D coll) {
-        if (hit)
+        if (hit || expired)
             return;
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.faction != faction) {
@@ -135,6 +135,7 @@ public class Missile : MonoBehaviour {
         thrustParticleSystem.Stop();
         spriteRenderer.enabled = false;
         expired = true;
+        boxCollider2D.enabled = false;
     }
 
     public void RemoveMissile() {
