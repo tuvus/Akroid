@@ -64,7 +64,7 @@ public class Turret : MonoBehaviour {
         } else {
             ChangeTargetUnit(null);
             SetTargetRotation(startRotation);
-            FindNewTarget(range, unit.faction);
+            FindNewTarget(GetRange(), unit.faction);
         }
 
         if (!aimed)

@@ -5656,7 +5656,7 @@ MonoBehaviour:
   targetRotation: 0
   startRotation: 0
   turretOffset: 3.4
-  range: 760
+  range: 640
   rotateSpeed: 14
   targeting: 1
   minRotate: 340
@@ -5666,7 +5666,7 @@ MonoBehaviour:
   fireDuration: 2.1
   fadeDuration: 1.3
   laserDamagePerSecond: 70
-  laserRange: 620
+  laserRange: 760
   laserSize: 1
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
     type: 3}
