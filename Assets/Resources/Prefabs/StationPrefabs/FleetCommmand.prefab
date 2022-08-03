@@ -637,8 +637,8 @@ MonoBehaviour:
   range: 550
   rotateSpeed: 16
   targeting: 1
-  minRotate: 140
-  maxRotate: 340
+  minRotate: 340
+  maxRotate: 140
   targetVector: {x: 0, y: 0}
   targetUnit: {fileID: 0}
   fireDuration: 3.6
