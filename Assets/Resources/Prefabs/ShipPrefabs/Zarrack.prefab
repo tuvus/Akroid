@@ -110,8 +110,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 94
   fireAccuracy: 0.3
-  minDamage: 50
-  maxDamage: 60
+  minDamage: 25
+  maxDamage: 30
   projectileRange: 340
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5078,8 +5078,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 94
   fireAccuracy: 0.3
-  minDamage: 50
-  maxDamage: 60
+  minDamage: 25
+  maxDamage: 30
   projectileRange: 340
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5208,8 +5208,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 94
   fireAccuracy: 0.3
-  minDamage: 50
-  maxDamage: 60
+  minDamage: 25
+  maxDamage: 30
   projectileRange: 340
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -25077,8 +25077,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 94
   fireAccuracy: 0.3
-  minDamage: 50
-  maxDamage: 60
+  minDamage: 25
+  maxDamage: 30
   projectileRange: 340
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -25147,7 +25147,7 @@ MonoBehaviour:
   shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}
   shieldSize: {x: 12, y: 22}
-  maxShieldHealth: 350
+  maxShieldHealth: 450
 --- !u!1 &8526519442397411118
 GameObject:
   m_ObjectHideFlags: 0
