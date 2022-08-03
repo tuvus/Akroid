@@ -79,7 +79,7 @@ public class SimulationSetup : MonoBehaviour {
             Debug.LogWarning("Error parsing simulation inputs");
             starCount = 3;
             asteroidFieldCount = 20;
-            researchModifier = 1.3f;
+            researchModifier = 1.2f;
         }
     }
 

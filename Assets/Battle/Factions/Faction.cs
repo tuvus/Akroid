@@ -18,6 +18,9 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public float LaserDamageModifier { get; private set; }
     public float LaserChargeModifier { get; private set; }
     public float LaserRangeModifier { get; private set; }
+    public float MissileDamageModifier { get; private set; }
+    public float MissileReloadModifier { get; private set; }
+    public float MissileRangeModifier { get; private set; }
     public float ThrusterPowerModifier { get; private set; }
 
     public int factionIndex { get; private set; }
@@ -76,6 +79,9 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         LaserDamageModifier = 1;
         LaserChargeModifier = 1;
         LaserRangeModifier = 1;
+        MissileDamageModifier = 1;
+        MissileReloadModifier = 1;
+        MissileRangeModifier = 1;
         ThrusterPowerModifier = 1;
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
@@ -170,7 +176,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             Discoveries++;
             science -= researchCost;
             researchCost = Mathf.RoundToInt(researchCost * BattleManager.Instance.researchModifier);
-            int improveArea = Random.Range(0, 10);
+            int improveArea = Random.Range(0, 13);
             if (improveArea == 0) {
                 HealthModifier += .2f;
             } else if (improveArea == 1) {
@@ -185,13 +191,20 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                 ProjectileRangeModifier += .2f;
                 UpdateUnitTurretRanges();
             } else if (improveArea == 6) {
-                LaserDamageModifier += .1f;
+                LaserDamageModifier += .15f;
             } else if (improveArea == 7) {
                 LaserChargeModifier += .12f;
             } else if (improveArea == 8) {
-                LaserRangeModifier += .2f;
+                LaserRangeModifier += .15f;
                 UpdateUnitTurretRanges();
             } else if (improveArea == 9) {
+                MissileDamageModifier += .2f;
+            } else if (improveArea == 10) {
+                MissileReloadModifier += .2f;
+            } else if (improveArea == 11) {
+                MissileRangeModifier += .15f;
+                UpdateUnitTurretRanges();
+            } else if (improveArea == 12) {
                 ThrusterPowerModifier += .15f;
                 UpdateShipThrustPower();
             }

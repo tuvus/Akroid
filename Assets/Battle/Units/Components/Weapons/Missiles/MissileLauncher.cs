@@ -33,7 +33,7 @@ public class MissileLauncher : MonoBehaviour {
     public void UpdateMissileLauncher() {
         if (MissileLauncherHibernationStatus())
             return;
-        reloadController.UpdateReloadController(Time.fixedDeltaTime * BattleManager.Instance.timeScale, 1);
+        reloadController.UpdateReloadController(Time.fixedDeltaTime * BattleManager.Instance.timeScale * unit.faction.MissileReloadModifier, 1);
         if (!reloadController.ReadyToFire())
             return;
         if (!IsTargetViable(targetUnit)) {
@@ -50,7 +50,7 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     private bool IsTargetViable(Unit targetUnit) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > GetRange())
             return false;
         return true;
     }
@@ -60,8 +60,6 @@ public class MissileLauncher : MonoBehaviour {
             Unit newTarget = unit.enemyUnitsInRange[i];
             if (!IsTargetViable(newTarget))
                 continue;
-            Vector2 targetLocation;
-            float localShipAngle;
             if (IsTargetBetter(newTarget, targetUnit)) {
                 targetUnit = newTarget;
             }
@@ -105,11 +103,15 @@ public class MissileLauncher : MonoBehaviour {
     public void Fire() {
         reloadController.Fire();
         Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), missileDamage, missileThrust, missileTurnSpeed, missileFuelRange);
+        missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetRange());
+    }
+
+    public int GetDamage() {
+        return Mathf.RoundToInt(missileDamage * unit.faction.MissileDamageModifier);
     }
 
     public float GetRange() {
-        return missileFuelRange;
+        return missileFuelRange * unit.faction.MissileRangeModifier;
     }
 
     public float GetDamagePerSecond() {
