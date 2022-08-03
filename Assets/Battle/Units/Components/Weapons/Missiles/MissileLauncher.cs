@@ -76,23 +76,23 @@ public class MissileLauncher : MonoBehaviour {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.strongest) {
-                if (newTarget.GetTotalHealth() >= oldTarget.GetTotalHealth()) {
+                if (newTarget.GetTotalHealth() > oldTarget.GetTotalHealth()) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.weakest) {
-                if (newTarget.GetTotalHealth() <= oldTarget.GetTotalHealth()) {
+                if (newTarget.GetTotalHealth() < oldTarget.GetTotalHealth()) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.slowest) {
-                if (newTarget.GetVelocity().magnitude <= oldTarget.GetVelocity().magnitude) {
+                if (newTarget.GetVelocity().magnitude < oldTarget.GetVelocity().magnitude) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.biggest) {
-                if (newTarget.GetSize() >= oldTarget.GetSize()) {
+                if (newTarget.GetSize() > oldTarget.GetSize()) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.smallest) {
-                if (newTarget.GetSize() <= oldTarget.GetSize()) {
+                if (newTarget.GetSize() < oldTarget.GetSize()) {
                     return true;
                 }
             }
@@ -103,7 +103,7 @@ public class MissileLauncher : MonoBehaviour {
     public void Fire() {
         reloadController.Fire();
         Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetRange());
+        missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange());
     }
 
     public int GetDamage() {
@@ -111,6 +111,10 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     public float GetRange() {
+        return range * unit.faction.MissileRangeModifier;
+    }
+
+    public float GetFuelRange() {
         return missileFuelRange * unit.faction.MissileRangeModifier;
     }
 
