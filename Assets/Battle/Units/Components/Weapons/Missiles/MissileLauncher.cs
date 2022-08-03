@@ -88,11 +88,11 @@ public class MissileLauncher : MonoBehaviour {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.biggest) {
-                if (newTarget.GetCost() >= oldTarget.GetCost()) {
+                if (newTarget.GetSize() >= oldTarget.GetSize()) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.smallest) {
-                if (newTarget.GetCost() <= oldTarget.GetCost()) {
+                if (newTarget.GetSize() <= oldTarget.GetSize()) {
                     return true;
                 }
             }

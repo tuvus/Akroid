@@ -78,52 +78,6 @@ public class Turret : MonoBehaviour {
         }
     }
 
-    //public virtual void UpdateTurret() {
-    //    //Check if target is stil viable to shoot at.
-    //    if (!IsTargetViable()) {
-    //        ChangeTargetUnit(null);
-    //        aimed = false;
-    //    }
-    //    RotateTowards();
-
-    //    waitTime = Mathf.Max(0, waitTime - Time.fixedDeltaTime);
-    //    if (waitTime == 0f) {
-    //        if (targetUnit == null) {
-    //            if (FindNewTarget(range, unit.faction)) {
-    //                waitTime = (Random.Range(0.1f, 0.3f));
-    //            }
-    //        } else {
-    //            Vector2 targetLocation = GetTargetPosition(targetUnit);
-    //            float realAngle = Calculator.GetAngleOutOfTwoPositions(transform.position, targetLocation);
-    //            float localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.transform.localRotation.eulerAngles.z);
-    //            if (minRotate < maxRotate) {
-    //                if (localShipAngle <= maxRotate && localShipAngle >= minRotate) {
-    //                    targetRotation = localShipAngle;
-    //                } else {
-    //                    ChangeTargetUnit(null);
-    //                    targetRotation = startRotation;
-    //                }
-    //            } else if (minRotate > maxRotate) {
-    //                if (localShipAngle <= maxRotate || localShipAngle >= minRotate) {
-    //                    targetRotation = localShipAngle;
-    //                } else {
-    //                    ChangeTargetUnit(null);
-    //                    targetRotation = startRotation;
-    //                }
-    //            } else {
-    //                targetRotation = localShipAngle;
-    //            }
-
-    //        }
-    //        if (aimed && targetUnit != null) {
-    //            Shoot();
-    //        } else if (targetUnit == null) {
-    //            targetRotation = startRotation;
-    //        }
-    //        waitTime = .02f;
-    //    }
-    //}
-
     public bool IsTargetViable(Unit targetUnit) {
         if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > GetRange())
             return false;
@@ -192,11 +146,11 @@ public class Turret : MonoBehaviour {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.biggest) {
-                if (newTarget.GetCost() >= oldTarget.GetCost()) {
+                if (newTarget.GetSize() >= oldTarget.GetSize()) {
                     return true;
                 }
             } else if (targeting == TargetingBehaviors.smallest) {
-                if (newTarget.GetCost() <= oldTarget.GetCost()) {
+                if (newTarget.GetSize() <= oldTarget.GetSize()) {
                     return true;
                 }
             }
