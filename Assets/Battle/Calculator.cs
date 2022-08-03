@@ -179,4 +179,28 @@ public class Calculator {
         }
         return localTargetRotation;
     }
+
+    public static Vector2 GetTargetPositionAfterTimeAndVelocity(Vector2 position, Vector2 targetPosition, Vector2 velocity, Vector2 targetVelocity, float fireVelocity) {
+        Vector2 targetLocalPosition = position - targetPosition;
+        Vector2 localVelocity = velocity - targetVelocity;
+        if (localVelocity.magnitude < 1)
+            return targetPosition;
+
+        float calculatedTime = targetLocalPosition.magnitude / fireVelocity;
+        Vector2 localTargetPos = targetLocalPosition;
+        for (int i = 0; i < 6; i++) {
+            localTargetPos = FindLocalPosAfterTime(targetLocalPosition, localVelocity, calculatedTime);
+            float targetDist = localTargetPos.magnitude;
+            float bulletDist = fireVelocity * calculatedTime;
+            if (Mathf.Abs(targetDist - bulletDist) <= .01) {
+                return position - localTargetPos;
+            }
+            calculatedTime = localTargetPos.magnitude / fireVelocity;
+        }
+        return position - localTargetPos;
+    }
+
+    public static Vector2 FindLocalPosAfterTime(Vector2 targetPosition, Vector2 localVelocity, float time) {
+        return targetPosition + (localVelocity * time);
+    }
 }

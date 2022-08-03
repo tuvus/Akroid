@@ -7,6 +7,9 @@ public class TestBattleManager : BattleManager {
     protected override void Start() {
         Instance = this;
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        foreach (var faction in GetComponentsInChildren<Faction>()) {
+            faction.SetUpFaction(0, new Faction.FactionData(), 0);
+        }
     }
 
     public override void FixedUpdate() {
@@ -15,6 +18,10 @@ public class TestBattleManager : BattleManager {
         }
         for (int i = 0; i < usedProjectiles.Count; i++) {
             projectiles[usedProjectiles[i]].UpdateProjectile();
+        }
+
+        for (int i = 0; i < usedMissiles.Count; i++) {
+            missiles[usedMissiles[i]].UpdateMissile();
         }
     }
 }

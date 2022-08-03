@@ -17,12 +17,15 @@ public class BattleManager : MonoBehaviour {
     public List<Ship> ships;
     public List<Station> stations;
     public List<Projectile> projectiles;
+    public List<Missile> missiles;
     public List<Star> stars;
     public List<AsteroidField> asteroidFields;
 
     public List<Unit> destroyedUnits;
     public List<int> usedProjectiles;
     public List<int> unusedProjectiles;
+    public List<int> usedMissiles;
+    public List<int> unusedMissiles;
     public float timeScale;
     public static bool quickStart = true;
 
@@ -65,7 +68,7 @@ public class BattleManager : MonoBehaviour {
             tempFactions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
             tempFactions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
 
-            SetupBattle(3, 40,1, 1.2f, tempFactions);
+            SetupBattle(3, 40, 1, 1.2f, tempFactions);
         }
     }
 
@@ -88,11 +91,14 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
         }
+        for (int i = 0; i < 20; i++) {
+            PrespawnNewMissile();
+        }
         for (int i = 0; i < starCount; i++) {
             CreateNewStar();
         }
         for (int i = 0; i < asteroidFieldCount; i++) {
-            CreateNewAteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier ));
+            CreateNewAteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
         }
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
@@ -167,7 +173,7 @@ public class BattleManager : MonoBehaviour {
     public Faction CreateNewFaction(FactionData factionData, int startingResearchCost) {
         Faction newFaction = Instantiate(Resources.Load<GameObject>("Prefabs/Faction"), GetFactionsTransform()).GetComponent<Faction>();
         factions.Add(newFaction);
-        newFaction.SetUpFaction(factions.Count - 1,factionData,startingResearchCost);
+        newFaction.SetUpFaction(factions.Count - 1, factionData, startingResearchCost);
         return newFaction;
     }
 
@@ -203,7 +209,7 @@ public class BattleManager : MonoBehaviour {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(2f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(newAsteroidField.GetPosition(), 0, 1000, 50, Random.Range(0,20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size), CargoBay.CargoTypes.Metal));
+            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(newAsteroidField.GetPosition(), 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size), CargoBay.CargoTypes.Metal));
             newAsteroidField.asteroids.Add(newAsteroid);
         }
         asteroidFields.Add(newAsteroidField);
@@ -244,9 +250,7 @@ public class BattleManager : MonoBehaviour {
         if (unusedProjectiles.Count == 0) {
             PreSpawnNewProjectile();
         }
-        Projectile projectile = projectiles[unusedProjectiles[0]];
-        AddProjectile(projectile);
-        return projectile;
+        return projectiles[unusedProjectiles[0]];
     }
 
     public void PreSpawnNewProjectile() {
@@ -254,7 +258,30 @@ public class BattleManager : MonoBehaviour {
         Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
         newProjectile.PrespawnProjectile(projectiles.Count);
         projectiles.Add(newProjectile);
-        //unusedProjectiles.Add(newProjectile.projectileIndex);
+    }
+
+    public void AddMissile(Missile missile) {
+        usedMissiles.Add(missile.missileIndex);
+        unusedMissiles.Remove(missile.missileIndex);
+    }
+
+    public void RemoveMissile(Missile missile) {
+        usedMissiles.Remove(missile.missileIndex);
+        unusedMissiles.Add(missile.missileIndex);
+    }
+
+    public Missile GetNewMissile() {
+        if (unusedMissiles.Count == 0) {
+            PrespawnNewMissile();
+        }
+        return missiles[unusedMissiles[0]];
+    }
+
+    public void PrespawnNewMissile() {
+        GameObject missilePrefabe = (GameObject)Resources.Load("Prefabs/HermesMissile");
+        Missile newMissile = Instantiate(missilePrefabe, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
+        newMissile.PrespawnMissile(missiles.Count);
+        missiles.Add(newMissile);
     }
 
     public virtual void FixedUpdate() {
@@ -268,16 +295,21 @@ public class BattleManager : MonoBehaviour {
             units[i].UpdateUnit();
             Profiler.EndSample();
         }
+        Profiler.BeginSample("ProjectilesUpdate");
         for (int i = 0; i < usedProjectiles.Count; i++) {
-            Profiler.BeginSample("ProjectilesUpdate" + i);
             projectiles[usedProjectiles[i]].UpdateProjectile();
-            Profiler.EndSample();
         }
+        Profiler.EndSample();
+        Profiler.BeginSample("MissilesUpdate");
+        for (int i = 0; i < usedMissiles.Count; i++) {
+            missiles[usedMissiles[i]].UpdateMissile();
+        }
+        Profiler.EndSample();
+        Profiler.BeginSample("DestroyedUnitsUpdate");
         for (int i = 0; i < destroyedUnits.Count; i++) {
-            Profiler.BeginSample("DestroyedUnitsUpdate" + i);
             destroyedUnits[i].UpdateDestroyedUnit();
-            Profiler.EndSample();
         }
+        Profiler.EndSample();
     }
 
     public void LateUpdate() {
@@ -323,5 +355,9 @@ public class BattleManager : MonoBehaviour {
 
     public Transform GetProjectileTransform() {
         return transform.GetChild(3);
+    }
+
+    public Transform GetMissileTransform() {
+        return transform.GetChild(4);
     }
 }

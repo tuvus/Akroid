@@ -20,6 +20,7 @@ public abstract class Unit : MonoBehaviour {
     private ShieldGenerator shieldGenerator;
     protected List<CargoBay> cargoBays;
     protected List<Turret> turrets;
+    protected List<MissileLauncher> missileLaunchers;
     private float maxTurretRange;
     private float minTurretRange;
     protected Vector2 velocity;
@@ -34,6 +35,7 @@ public abstract class Unit : MonoBehaviour {
         enemyUnitsInRange = new List<Unit>(20);
         cargoBays = new List<CargoBay>(GetComponentsInChildren<CargoBay>());
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
+        missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
         unitSelection = GetComponentInChildren<UnitSelection>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         destroyParticle = GetComponent<ParticleSystem>();
@@ -44,6 +46,9 @@ public abstract class Unit : MonoBehaviour {
         minTurretRange = -1;
         foreach (var turret in turrets) {
             turret.SetupTurret(this);
+        }
+        foreach (var missileLauncher in missileLaunchers) {
+            missileLauncher.SetupMissileLauncher(this);
         }
         SetupTurretRanges();
         if (shieldGenerator != null)
@@ -89,6 +94,11 @@ public abstract class Unit : MonoBehaviour {
                 for (int i = 0; i < turrets.Count; i++) {
                     Profiler.BeginSample("Turret" + i);
                     turrets[i].UpdateTurret();
+                    Profiler.EndSample();
+                }
+                for (int i = 0; i < missileLaunchers.Count; i++) {
+                    Profiler.BeginSample("MissileLauncher" + i);
+                    missileLaunchers[i].UpdateMissileLauncher();
                     Profiler.EndSample();
                 }
             }
@@ -392,6 +402,9 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
         }
         foreach (var laserTurret in GetComponentsInChildren<LaserTurret>()) {
             dps += laserTurret.GetDamagePerSecond();
+        }
+        foreach (var missileLauncher in GetComponentsInChildren<MissileLauncher>()) {
+            dps += missileLauncher.GetDamagePerSecond();
         }
         print(unitName + "Dps:" + dps);
     }

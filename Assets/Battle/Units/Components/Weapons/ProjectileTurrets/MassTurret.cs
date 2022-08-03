@@ -22,29 +22,11 @@ public class MassTurret : Turret {
     public override void Fire() {
         base.Fire();
         Projectile projectile = BattleManager.Instance.GetNewProjectile();
-        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z, unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.ProjectileDamageModifier), projectileRange * unit.faction.ProjectileRangeModifier, GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
-        projectile.transform.Rotate(new Vector3(0, 0, Random.Range(-fireAccuracy, fireAccuracy)));
-
+        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-fireAccuracy, fireAccuracy), unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.ProjectileDamageModifier), projectileRange * unit.faction.ProjectileRangeModifier, GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
-        Vector2 targetLocalPosition = (Vector2)transform.position - target.GetPosition();
-        Vector2 localVelocity = unit.GetVelocity() - target.GetVelocity();
-        if (localVelocity.magnitude < 1)
-            return target.GetPosition();
-
-        float calculatedTime = targetLocalPosition.magnitude / fireVelocity;
-        Vector2 localTargetPos = targetLocalPosition;
-        for (int i = 0; i < 6; i++) {
-            localTargetPos = FindLocalPosAfterTime(targetLocalPosition, localVelocity, calculatedTime);
-            float targetDist = localTargetPos.magnitude;
-            float bulletDist = fireVelocity * calculatedTime;
-            if (Mathf.Abs(targetDist - bulletDist) <= .01) {
-                return (Vector2)transform.position - localTargetPos;
-            }
-            calculatedTime = localTargetPos.magnitude / fireVelocity;
-        }
-        return (Vector2)transform.position - localTargetPos;
+        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(),target.GetPosition(),unit.GetVelocity(),target.GetVelocity(),fireVelocity);
     }
 
     public override float GetRange() {

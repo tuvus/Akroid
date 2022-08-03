@@ -5,16 +5,38 @@ using UnityEngine;
 public class DecoyUnit : Unit {
     public Unit target;
     public Faction tempFaction;
-    public Vector2 velocity;
+    public Vector2 inputVelocity;
 
     private void Start() {
         faction = tempFaction;
         enemyUnitsInRange = new List<Unit>() { target };
         Spawn();
+        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0);
     }
 
     public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
+        turrets = new List<Turret>(GetComponentsInChildren<Turret>());
+        foreach (var turret in turrets) {
+            turret.SetupTurret(this);
+        }
+        missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
+        foreach (var missileLauncher in missileLaunchers) {
+            missileLauncher.SetupMissileLauncher(this); ;
+        }
+        enemyUnitsInRange = new List<Unit>() { target };
     }
+
+    public void FixedUpdate() {
+        velocity = inputVelocity;
+        foreach (var turret in turrets) {
+            turret.UpdateTurret();
+        }
+        foreach (var missileLauncher in missileLaunchers) {
+            missileLauncher.UpdateMissileLauncher(); ;
+        }
+    }
+
+
     public override bool Destroyed() {
         return faction;
     }

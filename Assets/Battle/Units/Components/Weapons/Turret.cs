@@ -293,10 +293,6 @@ public class Turret : MonoBehaviour {
         return target.GetPosition();
     }
 
-    public Vector2 FindLocalPosAfterTime(Vector2 targetPosition, Vector2 localVelocity, float time) {
-        return targetPosition + (localVelocity * time);
-    }
-
     public void ChangeTargetUnit(Unit targetUnit) {
         this.targetUnit = targetUnit;
     }

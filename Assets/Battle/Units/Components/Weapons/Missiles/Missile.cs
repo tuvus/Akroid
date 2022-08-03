@@ -6,6 +6,7 @@ public class Missile : MonoBehaviour {
     public enum MissileType {
         Hermes,
     }
+    public int missileIndex { get; private set; }
     private Faction faction;
     private new ParticleSystem explodeParticleSystem;
     private ParticleSystem thrustParticleSystem;
@@ -14,60 +15,143 @@ public class Missile : MonoBehaviour {
     public MissileType missileType;
     private Unit target;
     public int damage;
-    public float speed;
+    public float thrustSpeed;
     public float maxTurnSpeed;
+    private Vector2 velocity;
     float turnSpeed;
-    public float lifetime;
+    public float fuelRange;
+    float distance;
     bool hit;
+    bool expired;
 
-    public void PrespawnMissile() {
+    public void PrespawnMissile(int missileIndex) {
         explodeParticleSystem = GetComponent<ParticleSystem>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
         thrustParticleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();
+        this.missileIndex = missileIndex;
+        Activate(false);
     }
 
-    public void SetupMissile(Faction faction, Unit target, Vector2 shipVelocity, int damage, float speed, float maxTurnSpeed, float lifetime) {
+    public void SetMissile(Faction faction, Vector2 position, float rotation, Unit target, Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange) {
+        transform.position = position;
+        transform.eulerAngles = new Vector3(0, 0, rotation);
         this.faction = faction;
         this.target = target;
         this.damage = damage;
-        this.speed = speed;
+        this.thrustSpeed = thrustSpeed;
         this.maxTurnSpeed = maxTurnSpeed;
-        this.lifetime = lifetime;
-        hit = faction;
-        boxCollider2D.enabled = true;
-        spriteRenderer.enabled = true;
-        explodeParticleSystem.Play();
+        turnSpeed = 0;
+        this.velocity = shipVelocity;
+        this.fuelRange = fuelRange;
+        hit = false;
         thrustParticleSystem.Play();
+        distance = 0;
+        Activate(true);
     }
 
     public void UpdateMissile() {
+        if (hit) {
+            if (explodeParticleSystem.isPlaying == false && thrustParticleSystem.isPlaying == false) {
+                RemoveMissile();
+            } else {
+                float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+                transform.Translate(velocity * time);
+            }
+        } else if (expired) {
+            if (thrustParticleSystem.isPlaying == false) { 
+                RemoveMissile();
+            } else {
+                float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+                transform.Translate(velocity * time);
+            }
+        } else {
+            turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + Time.fixedDeltaTime * BattleManager.Instance.timeScale * 50);
+            if (target != null)
+                RotateMissile();
+            MoveMissile();
+        }
+    }
 
+    void RotateMissile() {
+        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed);
+        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position,targetPosition));
+        float angle = Calculator.ConvertTo180DegRotation(targetAngle - transform.eulerAngles.z);
+        float turnAmmont = turnSpeed * Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+        if (Mathf.Abs(angle) < turnAmmont) {
+            transform.eulerAngles = new Vector3(0, 0, targetAngle);
+        } else if (angle > turnAmmont) {
+            transform.Rotate(Vector3.forward * turnAmmont);
+        } else if (angle < turnAmmont) {
+            transform.Rotate(Vector3.forward * -turnAmmont);
+        }
+    }
+
+    void MoveMissile() {
+        float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+        transform.Translate(velocity * time);
+        transform.Translate(Vector2.up * thrustSpeed * time);
+        distance += thrustSpeed * time;
+        if (distance >= fuelRange) {
+            Expire();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D coll) {
+        if (hit)
+            return;
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.faction != faction) {
-            if (unit.GetShieldGenerator() != null) {
+            if (unit.GetShieldGenerator() != null && unit.GetShieldGenerator().GetShield().health > 0) {
                 damage = unit.GetShieldGenerator().GetShield().TakeDamage(damage);
+                Explode();
+                velocity = unit.GetVelocity();
                 return;
             }
             damage = unit.TakeDamage(damage);
             Explode();
+            velocity = unit.GetVelocity();
             return;
         }
         Shield shield = coll.GetComponent<Shield>();
         if (shield != null && shield.GetUnit().faction != faction) {
-            damage = shield.TakeDamage(damage);
-            if (damage == 0)
-                Explode();
+            damage = shield.TakeDamage((int)(damage * 0.5f));
+            Explode();
+            velocity = shield.GetUnit().GetVelocity();
             return;
         }
     }
 
     public void Explode() {
+        hit = true;
+        transform.eulerAngles = Vector3.zero;
+        spriteRenderer.enabled = false;
         thrustParticleSystem.Stop(false);
         explodeParticleSystem.Play(false);
+    }
+    
 
+    public void Expire() {
+        thrustParticleSystem.Stop();
+        spriteRenderer.enabled = false;
+        expired = true;
+    }
+
+    public void RemoveMissile() {
+        thrustParticleSystem.Stop(false);
+        thrustParticleSystem.Clear();
+        explodeParticleSystem.Stop(false);
+        explodeParticleSystem.Clear();
+        Activate(false);
+    }
+
+    void Activate(bool activate = true) {
+        if (activate) {
+            BattleManager.Instance.AddMissile(this);
+        } else {
+            BattleManager.Instance.RemoveMissile(this);
+        }
+        spriteRenderer.enabled = activate;
+        boxCollider2D.enabled = activate;
     }
 }
