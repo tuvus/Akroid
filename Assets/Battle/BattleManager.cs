@@ -16,6 +16,7 @@ public class BattleManager : MonoBehaviour {
     public List<Unit> units;
     public List<Ship> ships;
     public List<Station> stations;
+    public List<Station> stationBlueprints;
     public List<Projectile> projectiles;
     public List<Missile> missiles;
     public List<Star> stars;
@@ -190,8 +191,12 @@ public class BattleManager : MonoBehaviour {
         GameObject stationPrefab = (GameObject)Resources.Load("Prefabs/StationPrefabs/" + stationData.stationType.ToString());
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
         newStation.SetupUnit(stationData.stationName, factions[stationData.faction], new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2), stationData.rotation, stationData.stationType, stationData.built);
-        units.Add(newStation);
-        stations.Add(newStation);
+        if (stationData.built) {
+            units.Add(newStation);
+            stations.Add(newStation);
+        } else {
+            stationBlueprints.Add(newStation);
+        }
         return newStation;
     }
 
@@ -224,11 +229,24 @@ public class BattleManager : MonoBehaviour {
         destroyedUnits.Add(ship);
     }
 
+    public void BuildStationBlueprint(Station station) {
+        stationBlueprints.Remove(station);
+        units.Add(station);
+        stations.Add(station);
+    }
+
     public void DestroyStation(Station station) {
-        units.Remove(station);
-        stations.Remove(station);
-        if (station.faction != null)
-            station.faction.RemoveStation(station);
+        if (station.IsBuilt()) {
+            units.Remove(station);
+            stations.Remove(station);
+            if (station.faction != null)
+                station.faction.RemoveStation(station);
+        } else {
+            stationBlueprints.Remove(station);
+            if (station.faction != null)
+                station.faction.RemoveStationBlueprint(station);
+
+        }
         destroyedUnits.Add(station);
     }
 

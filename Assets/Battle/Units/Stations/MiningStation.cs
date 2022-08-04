@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class MiningStation : Station {
 
+    public bool activelyMinning { get; private set; }
     public List<Asteroid> nearbyAsteroids;
     [SerializeField] private int miningAmmount;
-    [SerializeField] private int miningTime;
+    [SerializeField] private float miningSpeed;
+    private float minningTime;
     [SerializeField] private int miningRange;
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
-        base.SetupUnit(name, faction, positionGiver, rotation);
+    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
+        base.SetupUnit(name, faction, positionGiver, rotation, stationType, built);
         nearbyAsteroids = new List<Asteroid>(10);
+        UpdateMinningStationAsteroids();
+        activelyMinning = true;
+        faction.AddMinningStation(this);
     }
 
     public override Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
@@ -38,12 +43,66 @@ public class MiningStation : Station {
         return positionGiver.position;
     }
 
+    public override void UpdateUnit() {
+        base.UpdateUnit();
+        if (activelyMinning) {
+            minningTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+            if (minningTime <= 0) {
+                ManageStationMinning();
+                minningTime += GetMiningSpeed();
+            }
+            if (nearbyAsteroids.Count == 0 && GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
+                activelyMinning = false;
+                faction.RemoveMinningStation(this);
+            }
+        }
+    }
+
+    public void ManageStationMinning() {
+        if (nearbyAsteroids.Count == 0) {
+            UpdateMinningStationAsteroids();
+        }
+        if (nearbyAsteroids.Count > 0) {
+            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(GetMiningAmmount()), CargoBay.CargoTypes.Metal);
+            if (!nearbyAsteroids[0].HasResources()) {
+                nearbyAsteroids.RemoveAt(0);
+            }
+        }
+    }
+
+    public void UpdateMinningStationAsteroids() {
+        List<Asteroid> tempAsteroids = new List<Asteroid>(10);
+        foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
+            if (asteroidField.totalResources <= 0)
+                continue;
+            float tempDistance = Vector2.Distance(transform.position, asteroidField.position);
+            if (tempDistance <= GetMiningRange() + asteroidField.size) {
+                foreach (var asteroid in asteroidField.asteroids) {
+                    tempAsteroids.Add(asteroid);
+                }
+            }
+        }
+        while (tempAsteroids.Count > 0) {
+            Asteroid closest = null;
+            float closestDist = 0;
+            for (int i = 0; i < tempAsteroids.Count; i++) {
+                float tempDist = Vector2.Distance(transform.position, tempAsteroids[i].GetPosition());
+                if (closest == null || tempDist < closestDist) {
+                    closest = tempAsteroids[i];
+                    closestDist = tempDist;
+                }
+            }
+            nearbyAsteroids.Add(closest);
+            tempAsteroids.Remove(closest);
+        }
+    }
+
     public int GetMiningAmmount() {
         return miningAmmount;
     }
 
-    public int GetMiningTime() {
-        return miningTime;
+    public float GetMiningSpeed() {
+        return miningSpeed;
     }
 
     public int GetMiningRange() {

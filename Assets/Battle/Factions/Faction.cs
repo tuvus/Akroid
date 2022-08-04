@@ -28,8 +28,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public List<Unit> units { get; private set; }
     public List<Ship> ships { get; private set; }
     public List<Station> stations { get; private set; }
+    public List<Station> stationBlueprints { get; private set; }
 
     private FleetCommand fleetCommand;
+    public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
 
@@ -59,6 +61,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         units = new List<Unit>();
         ships = new List<Ship>();
         stations = new List<Station>();
+        stationBlueprints = new List<Station>();
+        activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
         this.factionIndex = factionIndex;
         GenerateFaction(factionData, startingResearchCost);
@@ -131,6 +135,22 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void RemoveStation(Station station) {
         units.Remove(station);
         stations.Remove(station);
+    }
+
+    public void AddStationBlueprint(Station station) {
+        stationBlueprints.Add(station);
+    }
+
+    public void RemoveStationBlueprint(Station station) {
+        stationBlueprints.Remove(station);
+    }
+
+    public void AddMinningStation(MiningStation miningStation) {
+        activeMiningStations.Add(miningStation);
+    }
+
+    public void RemoveMinningStation(MiningStation miningStation) {
+        activeMiningStations.Remove(miningStation);
     }
 
     public bool UseCredits(long credits) {
@@ -274,6 +294,12 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                     hasFeindlyStation = true;
                 }
             }
+
+            foreach (Station freindlyStation in stationBlueprints) {
+                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.size) {
+                    hasFeindlyStation = true;
+                }
+            }
             if (!hasFeindlyStation) {
                 float distance = Vector2.Distance(position, targetAsteroidField.GetPosition());
                 for (int f = 0; f < eligibleAsteroidFields.Count + 1; f++) {
@@ -325,6 +351,46 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             }
         }
         return station;
+    }
+
+    public MiningStation GetClosestMinningStationWantingTransport(Vector2 position) {
+        MiningStation minningStation = null;
+        float distance = 0;
+        int wantedTransportShips = 0;
+        for (int i = 0; i < activeMiningStations.Count; i++) {
+            MiningStation targetMinningStation = activeMiningStations[i];
+            if (targetMinningStation == null || !targetMinningStation.IsSpawned() || !targetMinningStation.activelyMinning)
+                continue;
+            float targetDistance = Vector2.Distance(position, targetMinningStation.GetPosition());
+            if (minningStation == null || targetMinningStation.GetMiningStationAI().GetWantedTransportShips() > wantedTransportShips || targetDistance < distance) {
+                minningStation = targetMinningStation;
+                distance = targetDistance;
+                wantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            }
+        }
+        return minningStation;
+    }
+
+    public int GetTotalWantedTransports() {
+        int count = 0;
+        for (int i = 0; i < activeMiningStations.Count; i++) {
+            MiningStation targetMinningStation = activeMiningStations[i];
+            if (targetMinningStation == null || !targetMinningStation.IsSpawned()) {
+                count += targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            }
+
+        }
+        return count;
+    }
+
+    public int GetShipsOfType(Ship.ShipType shipType) {
+        int count = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            if (ships[i].GetShipType() == shipType) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public Star GetClosestStar(Vector2 position) {

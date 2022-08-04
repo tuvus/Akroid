@@ -5,7 +5,6 @@ using UnityEngine;
 public class MiningStationAI : StationAI {
 
     public List<Ship> transportShips;
-    int transportShipsScheduled;
 
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
@@ -18,51 +17,25 @@ public class MiningStationAI : StationAI {
     }
 
     private void UpdateMinningStation() {
-        if (waitTime <= 0) {
-            MannageAsteroidMinning();
-            waitTime = GetMiningStation().GetMiningTime();
-            ManageMinningStationTransports();
-        }
-        if (cargoTime <= 0) {
-            ManageMinningStationCargo();
-        }
-    }
-
-    void MannageAsteroidMinning() {
-        if (GetMiningStation().nearbyAsteroids.Count == 0) {
-            List<Asteroid> tempAsteroids = new List<Asteroid>(10);
-            foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
-                if (asteroidField.totalResources <= 0)
-                    continue;
-                float tempDistance = Vector2.Distance(transform.position, asteroidField.position);
-                if (tempDistance <= GetMiningStation().GetMiningRange() + asteroidField.size) {
-                    foreach (var asteroid in asteroidField.asteroids) {
-                        tempAsteroids.Add(asteroid);
-                    }
+        if (GetMiningStation().activelyMinning) {
+            if (waitTime <= 0) {
+                ManageMinningStationTransports();
+                waitTime += 4;
+            }
+            if (cargoTime <= 0) {
+                ManageMinningStationCargo();
+            }
+        } else if (!GetMiningStation().activelyMinning && transportShips.Count > 0) {
+            MiningStation closestMinningStation = GetMiningStation().faction.GetClosestMinningStationWantingTransport(GetMiningStation().GetPosition());
+            if (closestMinningStation != null) {
+                for (int i = transportShips.Count - 1; i >= 0; i--) {
+                    transportShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, closestMinningStation), ShipAI.CommandAction.AddToEnd);
+                    closestMinningStation.GetMiningStationAI().AddTransportShip(transportShips[i]);
+                    transportShips.RemoveAt(i);
                 }
             }
-            while (tempAsteroids.Count > 0) {
-                Asteroid closest = null;
-                float closestDist = 0;
-                for (int i = 0; i < tempAsteroids.Count; i++) {
-                    float tempDist = Vector2.Distance(transform.position, tempAsteroids[i].GetPosition());
-                    if (closest == null || tempDist < closestDist) {
-                        closest = tempAsteroids[i];
-                        closestDist = tempDist;
-                    }
-                }
-                GetMiningStation().nearbyAsteroids.Add(closest);
-                tempAsteroids.Remove(closest);
-            }
-        }
-        while (GetMiningStation().nearbyAsteroids.Count >= 1 && (GetMiningStation().nearbyAsteroids[0] == null || !GetMiningStation().nearbyAsteroids[0].HasResources())) {
-            GetMiningStation().nearbyAsteroids.RemoveAt(0);
-        }
-        if (GetMiningStation().nearbyAsteroids.Count > 0) {
-            station.GetCargoBay().LoadCargo(GetMiningStation().nearbyAsteroids[0].MineAsteroid((int)(GetMiningStation().GetMiningAmmount())), CargoBay.CargoTypes.Metal);
         }
     }
-
     void ManageMinningStationCargo() {
         for (int i = 0; i < transportShips.Count; i++) {
             if (transportShips[i] == null) {
@@ -90,14 +63,13 @@ public class MiningStationAI : StationAI {
     }
 
     void ManageMinningStationTransports() {
-        if (transportShips.Count + transportShipsScheduled < GetWantedTransportShips()) {
-            AddTransportShipToBuildQueue();
-        }
+        //if (transportShips.Count < GetWantedTransportShips()) {
+        //    AddTransportShipToBuildQueue();
+        //}
     }
 
     public void AddTransportShip(Ship ship) {
         transportShips.Add(ship);
-        transportShipsScheduled = Mathf.Max(0, transportShipsScheduled - 1);
     }
 
     public int GetWantedTransportShips() {
@@ -112,6 +84,5 @@ public class MiningStationAI : StationAI {
 
     public void AddTransportShipToBuildQueue() {
         station.faction.GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(station.faction.GetTransportBlueprint());
-        transportShipsScheduled++;
     }
 }

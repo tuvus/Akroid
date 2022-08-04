@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ConstructionShip : Ship {
+    public Station targetStationBlueprint;
 
     public override void UpdateUnit() {
         base.UpdateUnit();
-        Station targetStation = GetClosestUnbuiltStationInRange(GetSize() * 2);
-        if (targetStation != null && targetStation.BuildStation()) {
+        if (Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {
+            targetStationBlueprint = null;
             Explode();
         }
     }
@@ -26,5 +27,12 @@ public class ConstructionShip : Ship {
             }
         }
         return station;
+    }
+
+    public override void Explode() {
+        if (targetStationBlueprint != null) {
+            targetStationBlueprint.Explode();
+        }
+        base.Explode();
     }
 }

@@ -42,7 +42,6 @@ public class Station : Unit, IPositionConfirmer {
     #endregion
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
-        faction.AddStation(this);
         base.SetupUnit(name, faction, positionGiver, rotation);
         this.stationType = stationType;
         stationAI = GetComponent<StationAI>();
@@ -52,6 +51,7 @@ public class Station : Unit, IPositionConfirmer {
         hanger.SetupHanger(this);
         this.built = built;
         if (!built) {
+            faction.AddStationBlueprint(this);
             health = 0;
             ActivateColliders(false);
             spriteRenderer.color = new Color(.3f, 1f, .3f, .5f);
@@ -59,6 +59,7 @@ public class Station : Unit, IPositionConfirmer {
                 turrets[i].ShowTurret(false);
             }
         } else {
+            faction.AddStation(this);
             Spawn();
         }
     }
@@ -96,6 +97,15 @@ public class Station : Unit, IPositionConfirmer {
                 return false;
             }
         }
+
+        foreach (var stationBlueprint in BattleManager.Instance.stationBlueprints) {
+            float enemyBonus = 0;
+            if (faction.IsAtWarWithFaction(stationBlueprint.faction))
+                enemyBonus = GetMaxTurretRange() * 2;
+            if (Vector2.Distance(position, stationBlueprint.GetPosition()) <= minDistanceFromObject + enemyBonus + stationBlueprint.size + size) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -124,6 +134,8 @@ public class Station : Unit, IPositionConfirmer {
 
     public override void Explode() {
         hanger.UndockAll();
+        if (!built)
+            Spawn();
         base.Explode();
     }
 
@@ -155,14 +167,18 @@ public class Station : Unit, IPositionConfirmer {
 
     public bool BuildStation() {
         if (!built) {
+            BattleManager.Instance.BuildStationBlueprint(this);
+            faction.RemoveStationBlueprint(this);
+            faction.AddStation(this);
             built = true;
             health = GetMaxHealth();
             for (int i = 0; i < turrets.Count; i++) {
                 turrets[i].ShowTurret(true);
             }
-            ActivateColliders(true);
+            ShowUnit(true);
             spriteRenderer.color = new Color(1, 1, 1, 1);
             Spawn();
+            GetUnitSelection().UpdateFactionColor();
             return true;
         }
         return false;

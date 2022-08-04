@@ -395,7 +395,7 @@ MonoBehaviour:
   repairTime: 0
   nearbyAsteroids: []
   miningAmmount: 500
-  miningTime: 10
+  miningSpeed: 5
   miningRange: 500
 --- !u!114 &2119983916170409296
 MonoBehaviour:

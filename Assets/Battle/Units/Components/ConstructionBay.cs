@@ -83,4 +83,8 @@ public class ConstructionBay : MonoBehaviour {
         }
         return count;
     }
+
+    public bool HasOpenBays() {
+        return constructionBays > buildQueue.Count;
+    }
 }
