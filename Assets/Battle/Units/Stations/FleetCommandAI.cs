@@ -16,18 +16,30 @@ public class FleetCommandAI : StationAI {
             ManageStationBuilding();
             ManageShipBuilding();
             if (station.faction.HasEnemy()) {
-                List<Ship> combatShips = station.GetHanger().GetAllUndamagedCombatShips();
-                if (combatShips.Count > 0) {
-                    int totalHealth = 0;
+                if (station.enemyUnitsInRange.Count > 0) {
+                    List<Ship> combatShips = station.GetHanger().GetAllCombatShips();
+                    Vector2 position = station.enemyUnitsInRange[0].GetPosition();
                     for (int i = 0; i < combatShips.Count; i++) {
-                        totalHealth += combatShips[i].GetTotalHealth();
+                        combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, position), ShipAI.CommandAction.AddToEnd);
+                        combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
+                        waitTime += 1;
                     }
-                    if (totalHealth > 3000 && combatShips.Count > 4) {
-                        Station enemyStation = station.faction.GetClosestEnemyStation(station.GetPosition());
-                        if (enemyStation != null) {
-                            for (int i = 0; i < combatShips.Count; i++) {
-                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
-                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
+                } else {
+                    List<Ship> combatShips = station.GetHanger().GetAllUndamagedCombatShips();
+                    if (combatShips.Count > 0) {
+
+                        int totalHealth = 0;
+                        for (int i = 0; i < combatShips.Count; i++) {
+                            totalHealth += combatShips[i].GetTotalHealth();
+                        }
+                        if (totalHealth > 3000 && combatShips.Count > 4) {
+                            Station enemyStation = station.faction.GetClosestEnemyStation(station.GetPosition());
+                            if (enemyStation != null) {
+                                for (int i = 0; i < combatShips.Count; i++) {
+                                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
+                                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
+                                    waitTime += 1;
+                                }
                             }
                         }
                     }
@@ -85,8 +97,8 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
         int stationBuilderQueueCount = GetFleetCommand().GetConstructionBay().GetNumberOfShipsOfClass(Ship.ShipClass.StationBuilder);
         bool wantTransport = station.faction.GetTotalWantedTransports() > station.faction.GetShipsOfType(Ship.ShipType.Transport) + transportQueueCount;
         bool wantNewStationBuilder = station.faction.GetAvailableAsteroidFieldsCount() > station.faction.GetShipsOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        
-        if ((GetFleetCommand().GetConstructionBay().HasOpenBays() && !station.faction.HasEnemy()) ||  
+
+        if ((GetFleetCommand().GetConstructionBay().HasOpenBays() && !station.faction.HasEnemy()) ||
             transportQueueCount == 0 && stationBuilderQueueCount == 0) {
             if (wantTransport) {
                 GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(
