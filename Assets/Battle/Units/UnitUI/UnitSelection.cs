@@ -109,4 +109,8 @@ public class UnitSelection : MonoBehaviour {
             return 0;
         return transform.localScale.y;
     }
+
+    public Color GetColor() {
+        return spriteRenderer.color;
+    }
 }

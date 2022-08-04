@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour {
     private LocalPlayerInput localPlayerInput;
 
-    [SerializeField] private PlayerShipStatusUI shipStatusUI;
+    [SerializeField] private PlayerUnitStatusUI shipStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
@@ -48,14 +48,14 @@ public class PlayerUI : MonoBehaviour {
             factionName.text = GetLocalPlayer().faction.name;
             factionCredits.text = "Credits: " + GetLocalPlayer().faction.credits.ToString();
             factionScience.text = "Science: " + GetLocalPlayer().faction.science.ToString() + " (" + GetLocalPlayer().faction.Discoveries + ")";
-            int unitCount = 0;
-            if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
-                unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
-            }
-            UpdateDisplayedUnitUI(GetLocalPlayer().GetLocalPlayerInput().GetDisplayedUnit(), unitCount);
         } else {
             factionUI.SetActive(false);
         }
+        int unitCount = 0;
+        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
+            unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
+        }
+        UpdateDisplayedUnitUI(GetLocalPlayer().GetLocalPlayerInput().GetDisplayedUnit(), unitCount);
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
@@ -67,10 +67,10 @@ public class PlayerUI : MonoBehaviour {
 
     public void UpdateDisplayedUnitUI(Unit unit, int unitCount) {
         if (unit == null || !unit.IsSpawned()) {
-            shipStatusUI.DeselectPlayerShipStatusUI();
+            shipStatusUI.DeselectPlayerUnitStatusUI();
             //shipFuelCellsUI.DeleteFuelCellUI();
         } else {
-            shipStatusUI.RefreshPlayerShipStatusUI(unit, unitCount);
+            shipStatusUI.RefreshPlayerUnitStatusUI(unit, unitCount);
         }
     }
 

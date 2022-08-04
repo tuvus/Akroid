@@ -9079,6 +9079,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83ace466e60adca44bdedf12ea2935bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitImage: {fileID: 8714345816086684205}
+  healthText: {fileID: 8714345816571315561}
+  shieldText: {fileID: 8714345815983972866}
+  nameText: {fileID: 8714345816469046141}
 --- !u!1 &8714345816428262395
 GameObject:
   m_ObjectHideFlags: 0
