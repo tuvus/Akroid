@@ -189,11 +189,13 @@ public class LocalPlayerInput : MonoBehaviour {
         timeStepIndex = Mathf.Max(0, timeStepIndex - 1);
         Time.timeScale = timeSteps[timeStepIndex];
     }
+
     void SpeedupSimulationButtonPressed() {
         timeStepIndex = Mathf.Min(timeSteps.Length - 1, timeStepIndex + 1);
         Time.timeScale = timeSteps[timeStepIndex];
     }
-    void StopSimulationButtonPressed() {
+
+    public void StopSimulationButtonPressed() {
         timeStepIndex = 0;
         Time.timeScale = timeSteps[timeStepIndex];
     }
@@ -207,8 +209,8 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     void EscapeButtonPressed() {
-        if (LocalPlayer.Instance.GetPlayerUI().IsControlsListShown()) {
-            LocalPlayer.Instance.GetPlayerUI().ToggleControlsList();
+        if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+            LocalPlayer.Instance.GetPlayerUI().CloseAllMenues();
             return;
         }
         LocalPlayer.Instance.GetPlayerUI().ToggleMenueUI();

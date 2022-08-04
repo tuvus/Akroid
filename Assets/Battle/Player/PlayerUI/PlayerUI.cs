@@ -17,6 +17,9 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject menuUI;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
+    [SerializeField] private GameObject victoryUI;
+    [SerializeField] private Text victoryTitle;
+    [SerializeField] private Text victoryElapsedTime;
     [SerializeField] private Dropdown menueUIFactionSelect;
     [SerializeField] private Text factionName;
     [SerializeField] private Text factionCredits;
@@ -30,8 +33,7 @@ public class PlayerUI : MonoBehaviour {
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         this.localPlayerInput = localPlayerInput;
-        controlsListUI.SetActive(false);
-        menuUI.SetActive(false);
+        CloseAllMenues();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
@@ -73,7 +75,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ToggleControlsList() {
-        controlsListUI.SetActive(!controlsListUI.activeSelf);
+        ShowControlList(!controlsListUI.activeSelf);
     }
 
     public void ToggleMenueUI() {
@@ -93,6 +95,12 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void FactionWon(string factionName, float time) {
+        victoryTitle.text = "Victory \n " + factionName;
+        victoryElapsedTime.text = "Time elapsed: " + (int)(time % 60) + " minutes";
+        ShowVictoryUI(true);
+    }
+
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
             LocalPlayer.Instance.SetupFaction(null);
@@ -101,8 +109,25 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void ShowControlList(bool shown) {
+        CloseAllMenues();
+        controlsListUI.SetActive(shown);
+    }
+
     public void ShowMenueUI(bool shown) {
+        CloseAllMenues();
         menuUI.SetActive(shown);
+    }
+
+    public void ShowVictoryUI(bool shown) {
+        CloseAllMenues();
+        victoryUI.SetActive(shown);
+    }
+
+    public void CloseAllMenues() {
+        menuUI.SetActive(false);
+        controlsListUI.SetActive(false);
+        victoryUI.SetActive(false);
     }
 
     public LocalPlayer GetLocalPlayer() {
@@ -152,7 +177,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf;
     }
 
     public void QuitSimulation() {

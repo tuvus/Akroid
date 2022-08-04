@@ -30,6 +30,8 @@ public class BattleManager : MonoBehaviour {
     public float timeScale;
     public static bool quickStart = true;
 
+    float startOfSimulation;
+    bool simulationEnded;
     public struct PositionGiver {
         public Vector2 position;
         public bool isExactPosition;
@@ -120,6 +122,10 @@ public class BattleManager : MonoBehaviour {
         else
             LocalPlayer.Instance.SetupFaction(null);
         LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
+        startOfSimulation = Time.time;
+        simulationEnded = false;
+        if (CheckVictory())
+            simulationEnded = true;
     }
 
 
@@ -328,11 +334,28 @@ public class BattleManager : MonoBehaviour {
             destroyedUnits[i].UpdateDestroyedUnit();
         }
         Profiler.EndSample();
+        Faction factionWon = CheckVictory();
+        if (factionWon != null) {
+            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, Time.time - startOfSimulation);
+            simulationEnded = true;
+            LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
+        }
     }
 
     public void LateUpdate() {
         LocalPlayer.Instance.GetLocalPlayerInput().UpdatePlayer();
         LocalPlayer.Instance.UpdatePlayer();
+    }
+
+    public Faction CheckVictory() {
+        if (simulationEnded)
+            return null;
+        for (int i = 0; i < factions.Count; i++) {
+            if (!factions[i].HasEnemy()) {
+                return factions[i];
+            }
+        }
+        return null;
     }
 
     public List<Ship> GetAllShips() {
