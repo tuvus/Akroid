@@ -155,8 +155,15 @@ public class ShipAI : MonoBehaviour {
         //Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished.
         if (command.commandType == UnitAICommand.CommandType.AttackMoveUnit) {
             if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
-                return CommandResult.ContinueRemove;
+                if (command.useAlternateCommandOnceDone) {
+                    commands[index] = new UnitAICommand(UnitAICommand.CommandType.AttackMove, command.targetPosition);
+                    return CommandResult.Stop;
+                } else {
+                    return CommandResult.ContinueRemove;
+
+                }
             }
+            commands[index] = new UnitAICommand(UnitAICommand.CommandType.AttackMoveUnit, command.targetUnit, true);
             float distance = Vector2.Distance(ship.transform.position, command.targetUnit.transform.position) - (ship.GetSize() + command.targetUnit.GetSize());
             if (distance > ship.GetMinTurretRange() / 2) {
                 CommandResult result = ResolveCommand(new UnitAICommand(UnitAICommand.CommandType.Move, Vector3.MoveTowards(ship.transform.position, command.targetUnit.transform.position, distance)), deltaTime);

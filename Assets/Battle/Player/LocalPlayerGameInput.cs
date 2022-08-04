@@ -130,7 +130,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 }
             } else {
-                GiveCommandToAllSelectedUnits(new UnitAICommand(UnitAICommand.CommandType.AttackMoveUnit, mouseOverUnit), GetCommandAction());
+                GiveCommandToAllSelectedUnits(new UnitAICommand(UnitAICommand.CommandType.AttackMoveUnit, mouseOverUnit,true), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
             return;

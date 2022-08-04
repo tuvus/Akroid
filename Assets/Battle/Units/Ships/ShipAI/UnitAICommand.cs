@@ -27,6 +27,7 @@ public struct UnitAICommand {
     public Vector2 targetPosition;
     public Unit targetUnit;
     public Star targetStar;
+    public bool useAlternateCommandOnceDone;
     //public Station.StationData targetStation;
 
 
@@ -41,6 +42,7 @@ public struct UnitAICommand {
         targetUnit = null;
         cargoType = null;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
     }
 
     /// <param name="commandType">Type of command</param>
@@ -57,6 +59,7 @@ public struct UnitAICommand {
         if (commandType == CommandType.TurnToRotation)
             targetRotation = value;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
     }
 
     public UnitAICommand(CommandType research, Star star) {
@@ -69,6 +72,7 @@ public struct UnitAICommand {
         waitTime = 0;
         targetRotation = 0;
         targetStar = star;
+        useAlternateCommandOnceDone = false;
     }
 
     public UnitAICommand(CommandType moveOrRotateTowardsOrAttackMoveLocation, Vector2 value) {
@@ -79,6 +83,7 @@ public struct UnitAICommand {
         targetUnit = null;
         cargoType = null;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
     }
 
     public UnitAICommand(CommandType followOrAttackMoveUnitOrProtectOrDock, Unit unit) {
@@ -89,6 +94,18 @@ public struct UnitAICommand {
         targetUnit = unit;
         cargoType = null;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
+    }
+
+    public UnitAICommand(CommandType attackMoveUnit, Unit unit, bool useAlternateCommandOnceDone) {
+        this.commandType = attackMoveUnit;
+        waitTime = 0;
+        targetRotation = 0;
+        targetPosition = unit.GetPosition();
+        targetUnit = unit;
+        cargoType = null;
+        targetStar = null;
+        this.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
     }
 
     public UnitAICommand(CommandType formationOrAttackMovePosition, Unit unit, Vector2 offset) {
@@ -99,6 +116,7 @@ public struct UnitAICommand {
         targetUnit = unit;
         cargoType = null;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
     }
 
     public UnitAICommand(CommandType formationRotation, Unit unit, float rotation, Vector2 offset) {
@@ -109,6 +127,7 @@ public struct UnitAICommand {
         targetUnit = unit;
         cargoType = null;
         targetStar = null;
+        useAlternateCommandOnceDone = false;
     }
 
 }
