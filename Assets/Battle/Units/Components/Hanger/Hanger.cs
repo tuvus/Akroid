@@ -88,6 +88,16 @@ public class Hanger : MonoBehaviour {
         return combatShips;
     }
 
+    public List<Ship> GetAllUndamagedCombatShips() {
+        List<Ship> combatShips = new List<Ship>(ships.Count);
+        for (int i = 0; i < ships.Count; i++) {
+            if (ships[i].IsCombatShip() && !ships[i].IsDammaged()) {
+                combatShips.Add(ships[i]);
+            }
+        }
+        return combatShips;
+    }
+
 
     public List<Ship> GetShips() {
         return ships;

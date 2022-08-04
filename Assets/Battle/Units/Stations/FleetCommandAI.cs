@@ -15,18 +15,23 @@ public class FleetCommandAI : StationAI {
             waitTime = 1;
             ManageStationBuilding();
             ManageShipBuilding();
-            Ship combatShip = station.GetHanger().GetCombatShip();
-            int count = 1;
-            while (combatShip != null) {
-                if (!combatShip.IsDammaged()) {
-                    Station enemyStation = station.faction.GetClosestEnemyStation(station.GetPosition());
-                    if (enemyStation != null) {
-                        combatShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
-                        combatShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
+            if (station.faction.HasEnemy()) {
+                List<Ship> combatShips = station.GetHanger().GetAllUndamagedCombatShips();
+                if (combatShips.Count > 0) {
+                    int totalHealth = 0;
+                    for (int i = 0; i < combatShips.Count; i++) {
+                        totalHealth += combatShips[i].GetTotalHealth();
+                    }
+                    if (totalHealth > 3000 && combatShips.Count > 4) {
+                        Station enemyStation = station.faction.GetClosestEnemyStation(station.GetPosition());
+                        if (enemyStation != null) {
+                            for (int i = 0; i < combatShips.Count; i++) {
+                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
+                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
+                            }
+                        }
                     }
                 }
-                combatShip = station.GetHanger().GetCombatShip(count);
-                count++;
             }
             Ship scienceShip = station.GetHanger().GetResearchShip();
             if (scienceShip != null && !scienceShip.IsDammaged()) {
