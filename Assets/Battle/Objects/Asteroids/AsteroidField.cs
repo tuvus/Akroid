@@ -8,8 +8,6 @@ public class AsteroidField : MonoBehaviour, IPositionConfirmer {
     public Vector2 position;
     public float totalResources;
 
-    public List<MiningStation> miningStations;
-
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
         for (int i = 0; i < asteroids.Count; i++) {
             size = Mathf.Max(size, Vector2.Distance(position, asteroids[i].GetPosition()));

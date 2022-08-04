@@ -73,9 +73,9 @@ public class MiningStationAI : StationAI {
     }
 
     public int GetWantedTransportShips() {
-        if (!station.IsBuilt())
+        if (!station.IsBuilt() || !GetMiningStation().activelyMinning)
             return 0;
-        return 1 - transportShips.Count;
+        return 2 - transportShips.Count;
     }
 
     public MiningStation GetMiningStation() {

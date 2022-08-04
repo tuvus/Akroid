@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxCargoBays: 1
-  cargoBaySize: 100000
+  cargoBaySize: 10000
   cargoBayTypes: 01000000
   cargoBays:
   - 4800
