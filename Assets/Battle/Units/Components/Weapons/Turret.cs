@@ -115,6 +115,8 @@ public class Turret : MonoBehaviour {
                     targetVector = targetLocation;
                     SetTargetRotation(localShipAngle);
                     newTarget = targetUnit;
+                    if (targeting == TargetingBehaviors.closest)
+                        break;
                 }
             }
         }

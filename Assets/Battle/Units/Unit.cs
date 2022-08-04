@@ -26,6 +26,7 @@ public abstract class Unit : MonoBehaviour {
     protected Vector2 velocity;
 
     public List<Unit> enemyUnitsInRange { get; protected set; }
+    public List<float> enemyUnitsInRangedistance { get; protected set; }
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
         this.unitName = name;
@@ -33,6 +34,7 @@ public abstract class Unit : MonoBehaviour {
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
+        enemyUnitsInRangedistance = new List<float>(20);
         cargoBays = new List<CargoBay>(GetComponentsInChildren<CargoBay>());
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
@@ -77,18 +79,34 @@ public abstract class Unit : MonoBehaviour {
     }
 
     public virtual void UpdateUnit() {
-        if (IsSpawned()) {
+        if (IsTargetable()) {
             velocity = Vector2.zero;
             if (turrets.Count > 0) {
                 Profiler.BeginSample("FindingEnemies");
                 enemyUnitsInRange.Clear();
+                enemyUnitsInRangedistance.Clear();
                 foreach (var enemyFaction in faction.enemyFactions) {
                     if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                         continue;
                     for (int i = 0; i < enemyFaction.units.Count; i++) {
                         Unit targetUnit = enemyFaction.units[i];
-                        if (targetUnit != null && targetUnit.IsTargetable() && targetUnit.faction != faction && Vector2.Distance(transform.position, targetUnit.GetPosition()) <= maxWeaponRange * 2) {
-                            enemyUnitsInRange.Add(targetUnit);
+                        if (targetUnit == null || !targetUnit.IsTargetable())
+                            continue;
+                        float distance = Vector2.Distance(transform.position, targetUnit.GetPosition());
+                        if (distance <= maxWeaponRange * 2) {
+                            bool added = false;
+                            for (int f = 0; f < enemyUnitsInRangedistance.Count; f++) {
+                                if (enemyUnitsInRangedistance[f] >= distance) {
+                                    enemyUnitsInRangedistance.Insert(f, distance);
+                                    enemyUnitsInRange.Insert(f, targetUnit);
+                                    added = true;
+                                    break;
+                                }
+                            }
+                            if (!added) {
+                                enemyUnitsInRange.Add(targetUnit);
+                                enemyUnitsInRangedistance.Add(distance);    
+                            }
                         }
                     }
                 }
@@ -104,6 +122,8 @@ public abstract class Unit : MonoBehaviour {
                     Profiler.EndSample();
                 }
             }
+        }
+        if (IsSpawned()) {
             if (shieldGenerator != null) {
                 Profiler.BeginSample("ShieldGenerator");
                 shieldGenerator.UpdateShieldGenerator();
@@ -209,6 +229,14 @@ public abstract class Unit : MonoBehaviour {
     public abstract void DestroyUnit();
 
     public virtual bool IsSpawned() {
+        return spawned;
+    }
+
+    public virtual bool IsSelectable() {
+        return spawned;
+    }
+
+    public virtual bool IsTargetable() {
         return spawned;
     }
     #endregion
@@ -377,14 +405,6 @@ public abstract class Unit : MonoBehaviour {
         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2;
-    }
-
-    public virtual bool IsSelectable() {
-        return spawned;
-    }
-
-    public virtual bool IsTargetable() {
-        return spawned;
     }
 
     public bool IsShip() {

@@ -304,12 +304,12 @@ public class BattleManager : MonoBehaviour {
 
     public virtual void FixedUpdate() {
         for (int i = 0; i < factions.Count; i++) {
-            Profiler.BeginSample("FactionsUpdate" + i);
+            Profiler.BeginSample("FactionsUpdate:" + factions[i].name + i);
             factions[i].UpdateFaction();
             Profiler.EndSample();
         }
         for (int i = 0; i < units.Count; i++) {
-            Profiler.BeginSample("UnitsUpdate" + i);
+            Profiler.BeginSample("UnitsUpdate:" + units[i].GetUnitName() + i);
             units[i].UpdateUnit();
             Profiler.EndSample();
         }
