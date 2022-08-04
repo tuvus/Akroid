@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class MiningStationAI : StationAI {
 
@@ -9,11 +10,14 @@ public class MiningStationAI : StationAI {
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
         transportShips = new List<Ship>(10);
+        
     }
 
     public override void UpdateAI() {
         base.UpdateAI();
+        Profiler.BeginSample("MinningStationAI");
         UpdateMinningStation();
+        Profiler.EndSample();
     }
 
     private void UpdateMinningStation() {

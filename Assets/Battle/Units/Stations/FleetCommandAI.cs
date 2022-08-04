@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class FleetCommandAI : StationAI {
     public override void UpdateAI() {
@@ -9,6 +10,7 @@ public class FleetCommandAI : StationAI {
     }
 
     private void UpdateFleetCommand() {
+        Profiler.BeginSample("FleetCommandAI");
         if (waitTime <= 0) {
             waitTime = 1;
             ManageStationBuilding();
@@ -44,7 +46,7 @@ public class FleetCommandAI : StationAI {
                 }
             }
         }
-
+        Profiler.EndSample();
     }
 
     void ManageShipBuilding() {
