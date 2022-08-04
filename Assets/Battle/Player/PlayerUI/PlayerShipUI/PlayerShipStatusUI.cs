@@ -11,19 +11,20 @@ public class PlayerShipStatusUI : MonoBehaviour {
 		unitImage.SetNativeSize();
 		float sizeRatio = unitImage.rectTransform.sizeDelta.y / unitImage.rectTransform.sizeDelta.x;
 		unitImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
-		GetShipHealthTransform().GetComponent<Text>().text = unit.GetHealth() + "/" + unit.GetMaxHealth();
-		GetShipShieldsTransform().GetComponent<Text>().text = unit.GetShields() + "/" + unit.GetMaxShields();
+		GetShipHealthTransform().GetComponent<Text>().text = "Hull " + unit.GetHealth() + "/" + unit.GetMaxHealth();
+		GetShipShieldsTransform().GetComponent<Text>().text = "Shields " + unit.GetShields() + "/" + unit.GetMaxShields();
 		GetShipNameTransform().GetComponent<Text>().text = unit.GetUnitName() + " (" + unitCount + ")";
+		gameObject.SetActive(true);
 	}
 
 	public void DeselectPlayerShipStatusUI() {
 		Image unitImage = GetShipImageTransform().GetComponent<Image>();
-		GetShipHealthTransform().GetComponent<Text>().text = "0/0";
-		GetShipShieldsTransform().GetComponent<Text>().text = "0/0";
+		GetShipHealthTransform().GetComponent<Text>().text = "Hull 0/0";
+		GetShipShieldsTransform().GetComponent<Text>().text = "Shields 0/0";
 		GetShipNameTransform().GetComponent<Text>().text = "ShipName";
 		unitImage.sprite = null;
 		unitImage.enabled = false;
-
+		gameObject.SetActive(false);
 	}
 
 	public Transform GetShipImageTransform() {
