@@ -356,16 +356,17 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public MiningStation GetClosestMinningStationWantingTransport(Vector2 position) {
         MiningStation minningStation = null;
         float distance = 0;
-        int wantedTransportShips = 0;
+        int wantedTransportShips = int.MinValue;
         for (int i = 0; i < activeMiningStations.Count; i++) {
             MiningStation targetMinningStation = activeMiningStations[i];
             if (targetMinningStation == null || !targetMinningStation.IsSpawned() || !targetMinningStation.activelyMinning)
                 continue;
             float targetDistance = Vector2.Distance(position, targetMinningStation.GetPosition());
-            if (minningStation == null || targetMinningStation.GetMiningStationAI().GetWantedTransportShips() > wantedTransportShips || targetDistance < distance) {
+            int targetWantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            if (targetWantedTransportShips > wantedTransportShips || (targetWantedTransportShips == wantedTransportShips && targetDistance < distance)) {
                 minningStation = targetMinningStation;
                 distance = targetDistance;
-                wantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+                wantedTransportShips = targetWantedTransportShips;
             }
         }
         return minningStation;
