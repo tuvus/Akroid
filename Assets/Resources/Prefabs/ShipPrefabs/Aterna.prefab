@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc1835a29bd32f94b82f994fa4e12d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 700
+  range: 600
   targeting: 6
-  missileDamage: 90
-  missileThrust: 240
+  missileDamage: 35
+  missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800
   targetUnit: {fileID: 0}
@@ -177,8 +177,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 110
   fireAccuracy: 0.3
-  minDamage: 40
-  maxDamage: 50
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 430
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -307,8 +307,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 110
   fireAccuracy: 0.3
-  minDamage: 40
-  maxDamage: 50
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 430
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -437,8 +437,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 110
   fireAccuracy: 0.3
-  minDamage: 40
-  maxDamage: 50
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 430
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -567,8 +567,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 110
   fireAccuracy: 0.3
-  minDamage: 40
-  maxDamage: 50
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 430
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -697,8 +697,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 110
   fireAccuracy: 0.3
-  minDamage: 40
-  maxDamage: 50
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 430
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5663,9 +5663,9 @@ MonoBehaviour:
   maxRotate: 20
   targetVector: {x: 0, y: 0}
   targetUnit: {fileID: 0}
-  fireDuration: 2.1
-  fadeDuration: 1.3
-  laserDamagePerSecond: 70
+  fireDuration: 0.4
+  fadeDuration: 0.2
+  laserDamagePerSecond: 40
   laserRange: 760
   laserSize: 1
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -5682,7 +5682,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireSpeed: 0.4
+  fireSpeed: 0.2
   reloadSpeed: 7
   maxAmmo: 2
 --- !u!1 &6416865765870175032
@@ -5911,10 +5911,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc1835a29bd32f94b82f994fa4e12d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 700
+  range: 600
   targeting: 6
-  missileDamage: 90
-  missileThrust: 240
+  missileDamage: 35
+  missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800
   targetUnit: {fileID: 0}

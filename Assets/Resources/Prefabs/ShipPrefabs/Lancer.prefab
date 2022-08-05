@@ -25076,9 +25076,9 @@ MonoBehaviour:
   maxRotate: 70
   targetVector: {x: 0, y: 0}
   targetUnit: {fileID: 0}
-  fireDuration: 1.2
-  fadeDuration: 0.5
-  laserDamagePerSecond: 40
+  fireDuration: 0.1
+  fadeDuration: 0.05
+  laserDamagePerSecond: 100
   laserRange: 724
   laserSize: 1
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -25095,9 +25095,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireSpeed: 0.2
-  reloadSpeed: 9
-  maxAmmo: 3
+  fireSpeed: 0.05
+  reloadSpeed: 6
+  maxAmmo: 4
 --- !u!1 &7566911522862944783
 GameObject:
   m_ObjectHideFlags: 0
@@ -25324,12 +25324,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc1835a29bd32f94b82f994fa4e12d8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 700
+  range: 450
   targeting: 6
-  missileDamage: 30
-  missileThrust: 180
+  missileDamage: 15
+  missileThrust: 160
   missileTurnSpeed: 50
-  missileFuelRange: 1300
+  missileFuelRange: 900
   targetUnit: {fileID: 0}
 --- !u!114 &2917729183036271296
 MonoBehaviour:
@@ -25343,6 +25343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireSpeed: 1.2
+  fireSpeed: 2.6
   reloadSpeed: 16
   maxAmmo: 4

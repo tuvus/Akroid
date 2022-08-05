@@ -47,6 +47,7 @@ public class DecoyUnit : Unit {
     public override int TakeDamage(int damage) {
         //print(damage);
         health -= damage;
+        maxHealth -= damage;
         return 0;
     }
 
