@@ -113,9 +113,7 @@ public class SimulationSetup : MonoBehaviour {
         try {
             factions[selectedFaction] = new FactionData(editFactionName.text, long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
         } catch {
-            factions[selectedFaction] = new FactionData(editFactionName.text, factions[selectedFaction].credits, factions[selectedFaction].science, factions[selectedFaction].ships, factions[selectedFaction].stations);
-            Debug.Log("Parsing Text failed");
-            editFactionShips.SetTextWithoutNotify(factions[selectedFaction].ToString());
+
         }
         factionList.GetChild(selectedFaction).gameObject.name = factions[selectedFaction].name;
         factionList.GetChild(selectedFaction).GetChild(0).GetComponent<Text>().text = factions[selectedFaction].name;
