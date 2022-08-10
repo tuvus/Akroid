@@ -80,48 +80,8 @@ public abstract class Unit : MonoBehaviour {
 
     public virtual void UpdateUnit() {
         if (IsTargetable()) {
-            velocity = Vector2.zero;
-            if (turrets.Count > 0) {
-                Profiler.BeginSample("FindingEnemies");
-                enemyUnitsInRange.Clear();
-                enemyUnitsInRangedistance.Clear();
-                foreach (var enemyFaction in faction.enemyFactions) {
-                    if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
-                        continue;
-                    for (int i = 0; i < enemyFaction.units.Count; i++) {
-                        Unit targetUnit = enemyFaction.units[i];
-                        if (targetUnit == null || !targetUnit.IsTargetable())
-                            continue;
-                        float distance = Vector2.Distance(transform.position, targetUnit.GetPosition());
-                        if (distance <= maxWeaponRange * 2) {
-                            bool added = false;
-                            for (int f = 0; f < enemyUnitsInRangedistance.Count; f++) {
-                                if (enemyUnitsInRangedistance[f] >= distance) {
-                                    enemyUnitsInRangedistance.Insert(f, distance);
-                                    enemyUnitsInRange.Insert(f, targetUnit);
-                                    added = true;
-                                    break;
-                                }
-                            }
-                            if (!added) {
-                                enemyUnitsInRange.Add(targetUnit);
-                                enemyUnitsInRangedistance.Add(distance);    
-                            }
-                        }
-                    }
-                }
-                Profiler.EndSample();
-                for (int i = 0; i < turrets.Count; i++) {
-                    Profiler.BeginSample("Turret" + i);
-                    turrets[i].UpdateTurret();
-                    Profiler.EndSample();
-                }
-                for (int i = 0; i < missileLaunchers.Count; i++) {
-                    Profiler.BeginSample("MissileLauncher" + i);
-                    missileLaunchers[i].UpdateMissileLauncher();
-                    Profiler.EndSample();
-                }
-            }
+            FindEnemies();
+            UpdateWeapons();
         }
         if (IsSpawned()) {
             if (shieldGenerator != null) {
@@ -129,6 +89,51 @@ public abstract class Unit : MonoBehaviour {
                 shieldGenerator.UpdateShieldGenerator();
                 Profiler.EndSample();
             }
+        }
+    }
+
+    protected virtual void FindEnemies() {
+        Profiler.BeginSample("FindingEnemies");
+        enemyUnitsInRange.Clear();
+        enemyUnitsInRangedistance.Clear();
+        foreach (var enemyFaction in faction.enemyFactions) {
+            if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
+                continue;
+            for (int i = 0; i < enemyFaction.units.Count; i++) {
+                Unit targetUnit = enemyFaction.units[i];
+                if (targetUnit == null || !targetUnit.IsTargetable())
+                    continue;
+                float distance = Vector2.Distance(transform.position, targetUnit.GetPosition());
+                if (distance <= maxWeaponRange * 2) {
+                    bool added = false;
+                    for (int f = 0; f < enemyUnitsInRangedistance.Count; f++) {
+                        if (enemyUnitsInRangedistance[f] >= distance) {
+                            enemyUnitsInRangedistance.Insert(f, distance);
+                            enemyUnitsInRange.Insert(f, targetUnit);
+                            added = true;
+                            break;
+                        }
+                    }
+                    if (!added) {
+                        enemyUnitsInRange.Add(targetUnit);
+                        enemyUnitsInRangedistance.Add(distance);
+                    }
+                }
+            }
+        }
+        Profiler.EndSample();
+    }
+
+    protected virtual void UpdateWeapons() {
+        for (int i = 0; i < turrets.Count; i++) {
+            Profiler.BeginSample("Turret" + i);
+            turrets[i].UpdateTurret();
+            Profiler.EndSample();
+        }
+        for (int i = 0; i < missileLaunchers.Count; i++) {
+            Profiler.BeginSample("MissileLauncher" + i);
+            missileLaunchers[i].UpdateMissileLauncher();
+            Profiler.EndSample();
         }
     }
 

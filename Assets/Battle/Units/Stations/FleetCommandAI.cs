@@ -48,7 +48,7 @@ public class FleetCommandAI : StationAI {
             Ship scienceShip = station.GetHanger().GetResearchShip();
             if (scienceShip != null && !scienceShip.IsDammaged()) {
                 station.faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
-                scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Reserch, station.faction.GetClosestStar(station.GetPosition())), ShipAI.CommandAction.AddToEnd);
+                scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, station.faction.GetClosestStar(station.GetPosition())), ShipAI.CommandAction.AddToEnd);
                 scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
             }
         }
@@ -56,8 +56,6 @@ public class FleetCommandAI : StationAI {
             foreach (var ship in station.GetHanger().GetShips()) {
                 if (ship.GetShipClass() == Ship.ShipClass.Transport && !ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal)) {
                     station.GetCargoBay().LoadCargoFromBay(ship.GetCargoBay(), CargoBay.CargoTypes.Metal, 300);
-                    if (ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal) && !ship.IsDammaged())
-                        ship.shipAI.NextCommand();
                     cargoTime = 1;
                     break;
                 }

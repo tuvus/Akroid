@@ -65,7 +65,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return base.SetupSize() / 2;
+        return base.SetupSize() * 6 / 10;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

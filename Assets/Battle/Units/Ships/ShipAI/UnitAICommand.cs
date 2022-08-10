@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct UnitAICommand {
+public class UnitAICommand {
     public enum CommandType {
         Idle,
         Wait,
@@ -18,7 +18,7 @@ public struct UnitAICommand {
         FormationRotation,
         Dock,
         Transport,
-        Reserch,
+        Research,
     }
     public CommandType commandType;
 
@@ -28,11 +28,9 @@ public struct UnitAICommand {
     public Unit targetUnit;
     public Star targetStar;
     public bool useAlternateCommandOnceDone;
-    //public Station.StationData targetStation;
 
-
-    //public Station.StationData productionStation;
-    //public Station.StationData destinationStation;
+    public Station productionStation;
+    public Station destinationStation;
     public string cargoType;
     public UnitAICommand(CommandType idle) {
         this.commandType = idle;
@@ -130,4 +128,16 @@ public struct UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
+    public UnitAICommand(CommandType transport, Station producer, Station destination) {
+        this.commandType = transport;
+        waitTime = 0;
+        targetRotation = 0;
+        targetPosition = Vector2.zero;
+        targetUnit = null;
+        cargoType = null;
+        targetStar = null;
+        useAlternateCommandOnceDone = false;
+        this.productionStation = producer;
+        this.destinationStation = destination;
+    }
 }

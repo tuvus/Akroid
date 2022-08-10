@@ -22,15 +22,11 @@ public class Ship : Unit {
         Cruiser,
         Dreadnaught,
     }
-    public enum ThrustDirections {
-        forwards = 1,
-        backwards = 2,
-        left = 3,
-        right = 4,
-    }
-    public enum RotationDircetions {
-        left = 1,
-        right = 2,
+    public enum ShipAction {
+        Idle,
+        Rotate,
+        Move,
+        MoveRotate,
     }
 
     public ShipAI shipAI { get; private set; }
@@ -44,6 +40,10 @@ public class Ship : Unit {
     public Station dockedStation { get; private set; }
     private float mass;
     private float thrust;
+
+    public ShipAction shipAction { get; private set; }
+    private float targetRotation;
+    private Vector2 movePosition;
 
     public struct ShipData {
         public int faction;
@@ -112,21 +112,76 @@ public class Ship : Unit {
     public override void UpdateUnit() {
         base.UpdateUnit();
         if (IsSpawned()) {
-            if (thrusters[0].IsThrusting())
-                velocity = transform.up * GetThrust() / GetMass();
+            Profiler.BeginSample("Movement");
+            UpdateMovement();
+            Profiler.EndSample();
             shipAI.UpdateAI(Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+        }
+    }
 
-            if (dockedStation != null)
-                return;
-            for (int i = 0; i < thrusters.Count; i++) {
-                Profiler.BeginSample("Thruster" + i);
-                thrusters[i].UpdateThruster();
-                Profiler.EndSample();
+    void UpdateMovement() {
+        velocity = Vector2.zero;
+        if (dockedStation != null)
+            return;
+        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate) {
+            float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
+            if (Mathf.Abs(localRotation) <= GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale) {
+                SetRotation(targetRotation);
+                if (shipAction == ShipAction.Rotate) {
+                    shipAction = ShipAction.Idle;
+                } else if (shipAction == ShipAction.MoveRotate) {
+                    shipAction = ShipAction.Move;
+                }
+            } else if (localRotation > 0) {
+                SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale));
+            } else {
+                SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale));
             }
+        }
+        if (shipAction == ShipAction.Move) {
+            float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
+            float thrust = GetThrust() * Time.fixedDeltaTime * BattleManager.Instance.timeScale / GetMass();
+            if (distance <= thrust + 2) {
+                transform.position = movePosition;
+                SetThrusters(false);
+                shipAction = ShipAction.Idle;
+            } else {
+                transform.Translate(Vector2.up * thrust);
+                SetThrusters(true);
+                velocity = transform.up * thrust;
+            }
+
         }
     }
 
     #region ShipControlls
+    public void SetIdle() {
+        shipAction = ShipAction.Idle;
+    }
+
+    public void SetTargetRotate(float rotation) {
+        shipAction = ShipAction.Rotate;
+        this.targetRotation = rotation;
+    }
+
+    public void SetTargetRotate(Vector2 position) {
+        SetTargetRotate(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position));
+    }
+
+    public void SetTargetRotate(Vector2 position, float extraAngle) {
+        SetTargetRotate(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + extraAngle);
+    }
+
+    public void SetMovePosition(Vector2 position) {
+        this.movePosition = position;
+        SetTargetRotate(position);
+        shipAction = ShipAction.MoveRotate;
+    }
+
+    public void SetMovePosition(Vector2 position, float distanceFromPosition) {
+        SetMovePosition(Vector2.MoveTowards(GetPosition(), position, Vector2.Distance(GetPosition(), position) - distanceFromPosition));
+    }
+
     public float GetThrust() {
         return thrust;
     }
@@ -233,6 +288,12 @@ public class Ship : Unit {
 
     public ResearchEquiptment GetResearchEquiptment() {
         return researchEquiptment;
+    }
+
+    public void OnCollisionStay2D(Collision2D collision) {
+        if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveRotate) {
+            SetMovePosition(movePosition);
+        }
     }
 
     #endregion

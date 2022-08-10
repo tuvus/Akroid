@@ -34,4 +34,8 @@ public class ResearchEquiptment : MonoBehaviour {
         data = 0;
         return returnValue;
     }
+
+    public bool WantMoreData() {
+        return data != maxData;
+    }
 }

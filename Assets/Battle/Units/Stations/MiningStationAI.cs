@@ -10,7 +10,7 @@ public class MiningStationAI : StationAI {
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
         transportShips = new List<Ship>(10);
-        
+
     }
 
     public override void UpdateAI() {
@@ -51,15 +51,8 @@ public class MiningStationAI : StationAI {
             Ship ship = station.GetHanger().GetShips()[i];
             if (ship.GetShipType() == Ship.ShipType.Transport) {
                 ship.GetCargoBay().LoadCargoFromBay(station.GetCargoBay(), CargoBay.CargoTypes.Metal, 600);
-                if (ship.GetCargoBay().IsCargoFullOfType(CargoBay.CargoTypes.Metal) && station.faction.GetFleetCommand() != null) {
-                    //ship.UndockShip(station.faction.GetFleetCommand().GetPosition());
-                    ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station.faction.GetFleetCommand()), ShipAI.CommandAction.AddToEnd);
-                    ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Idle), ShipAI.CommandAction.AddToEnd);
-                    ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
-                    if (!transportShips.Contains(ship))
-                        transportShips.Add(ship);
-                    i--;
-                }
+                if (!transportShips.Contains(ship))
+                    transportShips.Add(ship);
                 cargoTime = 1;
                 break;
             }
@@ -73,7 +66,10 @@ public class MiningStationAI : StationAI {
     }
 
     public void AddTransportShip(Ship ship) {
-        transportShips.Add(ship);
+        if (!transportShips.Contains(ship)) {
+            transportShips.Add(ship);
+            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Transport, station, station.faction.GetFleetCommand()), ShipAI.CommandAction.Replace);
+        }
     }
 
     public int GetWantedTransportShips() {
