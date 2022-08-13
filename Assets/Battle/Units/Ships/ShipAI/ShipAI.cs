@@ -219,19 +219,16 @@ public class ShipAI : MonoBehaviour {
         }
         //Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished.
         if (command.commandType == UnitAICommand.CommandType.Follow) {
-            if (command.targetUnit == null) {
-                return CommandResult.ContinueRemove;
-            }
-            float distance = Vector2.Distance(ship.transform.position, command.targetUnit.transform.position) - (ship.GetSize() + command.targetUnit.GetSize());
-            if (distance > ship.GetSize()) {
-                CommandResult result = ResolveCommand(new UnitAICommand(UnitAICommand.CommandType.Move, Vector3.MoveTowards(ship.transform.position, command.targetUnit.transform.position, distance)), deltaTime);
-                if (result == CommandResult.ContinueRemove || result == CommandResult.StopRemove) {
-                    ship.SetThrusters(false);
-                    return CommandResult.Continue;
-                }
+            if (newCommand) {
+                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+                newCommand = false;
                 return CommandResult.Stop;
             }
-            ship.SetThrusters(false);
+            if (command.targetUnit == null) {
+                ship.SetIdle();
+                return CommandResult.ContinueRemove;
+            }
+            ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
             return CommandResult.Continue;
         }
         //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
