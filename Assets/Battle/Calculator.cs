@@ -180,22 +180,22 @@ public class Calculator {
         return localTargetRotation;
     }
 
-    public static Vector2 GetTargetPositionAfterTimeAndVelocity(Vector2 position, Vector2 targetPosition, Vector2 velocity, Vector2 targetVelocity, float fireVelocity) {
+    public static Vector2 GetTargetPositionAfterTimeAndVelocity(Vector2 position, Vector2 targetPosition, Vector2 velocity, Vector2 targetVelocity, float fireVelocity, float offSet) {
         Vector2 targetLocalPosition = position - targetPosition;
         Vector2 localVelocity = velocity - targetVelocity;
         if (localVelocity.magnitude < 1)
             return targetPosition;
 
-        float calculatedTime = targetLocalPosition.magnitude / fireVelocity;
+        float calculatedTime = (targetLocalPosition.magnitude - offSet) / fireVelocity;
         Vector2 localTargetPos = targetLocalPosition;
         for (int i = 0; i < 6; i++) {
             localTargetPos = FindLocalPosAfterTime(targetLocalPosition, localVelocity, calculatedTime);
-            float targetDist = localTargetPos.magnitude;
+            float targetDist = localTargetPos.magnitude - offSet;
             float bulletDist = fireVelocity * calculatedTime;
-            if (Mathf.Abs(targetDist - bulletDist) <= .01) {
+            if (Mathf.Abs(targetDist - bulletDist) <= .001) {
                 return position - localTargetPos;
             }
-            calculatedTime = localTargetPos.magnitude / fireVelocity;
+            calculatedTime = (localTargetPos.magnitude - offSet) / fireVelocity;
         }
         return position - localTargetPos;
     }

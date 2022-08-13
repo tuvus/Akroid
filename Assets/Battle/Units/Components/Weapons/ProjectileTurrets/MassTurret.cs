@@ -26,7 +26,7 @@ public class MassTurret : Turret {
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
-        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(),target.GetPosition(),unit.GetVelocity(),target.GetVelocity(),fireVelocity);
+        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(),target.GetPosition(),unit.GetVelocity(),target.GetVelocity(),fireVelocity, GetTurretOffSet());
     }
 
     public override float GetRange() {
