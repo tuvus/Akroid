@@ -92,7 +92,7 @@ public class Station : Unit, IPositionConfirmer {
         foreach (var station in BattleManager.Instance.stations) {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(station.faction))
-                enemyBonus = GetMaxTurretRange() * 2;
+                enemyBonus = GetMaxWeaponRange() * 2;
             if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.size + size) {
                 return false;
             }
@@ -101,7 +101,7 @@ public class Station : Unit, IPositionConfirmer {
         foreach (var stationBlueprint in BattleManager.Instance.stationBlueprints) {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(stationBlueprint.faction))
-                enemyBonus = GetMaxTurretRange() * 2;
+                enemyBonus = GetMaxWeaponRange() * 2;
             if (Vector2.Distance(position, stationBlueprint.GetPosition()) <= minDistanceFromObject + enemyBonus + stationBlueprint.size + size) {
                 return false;
             }

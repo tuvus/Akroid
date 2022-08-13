@@ -247,11 +247,11 @@ public abstract class Unit : MonoBehaviour {
     #endregion
 
     #region GetMethods
-    public float GetMaxTurretRange() {
+    public float GetMaxWeaponRange() {
         return maxWeaponRange;
     }
 
-    public float GetMinTurretRange() {
+    public float GetMinWeaponRange() {
         return minWeaponRange;
     }
 

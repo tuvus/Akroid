@@ -60,7 +60,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType research, Star star) {
+    public UnitAICommand(CommandType research, Star star, Station returnStation) {
         commandType = research;
         waitTime = 0;
         targetRotation = 0;
@@ -71,6 +71,7 @@ public class UnitAICommand {
         targetRotation = 0;
         targetStar = star;
         useAlternateCommandOnceDone = false;
+        destinationStation = returnStation;
     }
 
     public UnitAICommand(CommandType moveOrRotateTowardsOrAttackMoveLocation, Vector2 value) {

@@ -48,8 +48,6 @@ public class FleetCommandAI : StationAI {
             Ship scienceShip = station.GetHanger().GetResearchShip();
             if (scienceShip != null && !scienceShip.IsDammaged()) {
                 station.faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
-                scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, station.faction.GetClosestStar(station.GetPosition())), ShipAI.CommandAction.AddToEnd);
-                scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
             }
         }
         if (cargoTime <= 0) {
@@ -133,6 +131,9 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
             station.faction.GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(station.faction.GetTransportBlueprint());
             newMinningStation.GetMiningStationAI().AddTransportShipToBuildQueue();
             return;
+        }
+        if (ship.GetShipType() == Ship.ShipType.Research) {
+            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, station.faction.GetClosestStar(station.GetPosition()), station),ShipAI.CommandAction.Replace);
         }
     }
 

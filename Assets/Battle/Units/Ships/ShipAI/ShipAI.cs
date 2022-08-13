@@ -126,9 +126,6 @@ public class ShipAI : MonoBehaviour {
         if (command.commandType == UnitAICommand.CommandType.Move) {
             if (newCommand) {
                 currentCommandType = UnitAICommand.CommandType.Move;
-                if (ship.dockedStation != null) {
-                    ship.UndockShip(command.targetPosition);
-                }
                 ship.SetMovePosition(command.targetPosition);
                 newCommand = false;
             }
@@ -140,49 +137,49 @@ public class ShipAI : MonoBehaviour {
         }
         //Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished.
         if (command.commandType == UnitAICommand.CommandType.AttackMove) {
+            if (currentCommandType != UnitAICommand.CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMaxWeaponRange() * 2)) {
+                newCommand = true;
+                command.targetUnit = null;
+            }
             if (newCommand) {
-                currentCommandType = UnitAICommand.CommandType.Move;
-                if (ship.dockedStation != null) {
-                    ship.UndockShip(command.targetPosition);
-                }
                 ship.SetMovePosition(command.targetPosition);
+                currentCommandType = UnitAICommand.CommandType.Move;
                 newCommand = false;
             }
 
             if (currentCommandType == UnitAICommand.CommandType.Move) {
-                if (command.targetUnit == null || (command.targetUnit.IsShip() && !((Ship)command.targetUnit).IsCombatShip()) || !command.targetUnit.IsSpawned()) {
-                    command.targetUnit = GetClosestEnemyUnitInRadius(ship.GetMaxTurretRange() * 2);
-                    if (command.targetUnit != null) {
-                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinTurretRange() * .8f);
+                command.targetUnit = GetClosestEnemyUnitInRadius(ship.GetMaxWeaponRange() * 2);
+                if (command.targetUnit != null) {
+                    if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) < ship.GetMinWeaponRange()) {
+                        currentCommandType = UnitAICommand.CommandType.TurnToRotation;
+                    } else {
                         currentCommandType = UnitAICommand.CommandType.AttackMove;
-                        return CommandResult.Stop;
+                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     }
-                }
-                if (currentCommandType == UnitAICommand.CommandType.Move && ship.shipAction == Ship.ShipAction.Idle) {
+                } else if (ship.shipAction == Ship.ShipAction.Idle) {
                     return CommandResult.ContinueRemove;
+                } else {
+                    return CommandResult.Stop;
                 }
             }
-            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
-                newCommand = true;
-                return CommandResult.Stop;
-            }
+
             if (currentCommandType == UnitAICommand.CommandType.AttackMove) {
-                if (ship.shipAction == Ship.ShipAction.Idle) {
+                if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
                     currentCommandType = UnitAICommand.CommandType.TurnToRotation;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinTurretRange() * .8f);
+                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    return CommandResult.Stop;
                 }
-                return CommandResult.Stop;
             }
 
             if (currentCommandType == UnitAICommand.CommandType.TurnToRotation) {
-                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinTurretRange() * .8f) {
+                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
                     currentCommandType = UnitAICommand.CommandType.AttackMove;
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
                 }
             }
-
+            return CommandResult.Stop;
         }
         //Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished.
         if (command.commandType == UnitAICommand.CommandType.AttackMoveUnit) {
@@ -195,25 +192,25 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             }
             if (newCommand) {
-                if (ship.dockedStation != null) {
-                    ship.UndockShip(command.targetUnit.GetPosition());
-                }
                 currentCommandType = UnitAICommand.CommandType.Move;
-                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinTurretRange() * .8f);
+                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                command.targetPosition = command.targetUnit.GetPosition();
                 newCommand = false;
             }
+
             if (currentCommandType == UnitAICommand.CommandType.Move) {
-                if (ship.shipAction == Ship.ShipAction.Idle) {
+                if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
                     currentCommandType = UnitAICommand.CommandType.TurnToRotation;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinTurretRange() * .8f);
+                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
 
             if (currentCommandType == UnitAICommand.CommandType.TurnToRotation) {
-                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinTurretRange() * .8f) {
-                    currentCommandType = UnitAICommand.CommandType.AttackMove;
+                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
+                    currentCommandType = UnitAICommand.CommandType.Move;
+                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
                 }
@@ -292,6 +289,8 @@ public class ShipAI : MonoBehaviour {
         }
         //Goes to then docks at the station.
         if (command.commandType == UnitAICommand.CommandType.Dock) {
+            if (command.targetUnit == null || (ship.GetShipType() != Ship.ShipType.Construction && !command.targetUnit.IsSpawned()) || !command.targetUnit.IsStation())
+                return CommandResult.StopRemove;
             if (newCommand) {
                 if (ship.dockedStation != null && ship.dockedStation != command.targetUnit) {
                     ship.UndockShip(command.targetUnit.GetPosition());
@@ -308,7 +307,7 @@ public class ShipAI : MonoBehaviour {
         }
         //AttackMove to the star, do reasearch, then remove command.
         if (command.commandType == UnitAICommand.CommandType.Research) {
-            if (command.targetStar == null) {
+            if (command.targetStar == null || command.destinationStation == null) {
                 return CommandResult.StopRemove;
             }
             if (newCommand) {
@@ -316,64 +315,73 @@ public class ShipAI : MonoBehaviour {
                     ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
                     currentCommandType = UnitAICommand.CommandType.Move;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+                    ship.SetDockTarget(command.destinationStation);
                     currentCommandType = UnitAICommand.CommandType.Dock;
                 }
                 newCommand = false;
             }
             if (ship.shipAction == Ship.ShipAction.Idle) {
                 if (currentCommandType == UnitAICommand.CommandType.Move) {
+                    currentCommandType = UnitAICommand.CommandType.Research;
+                    return CommandResult.Stop;
+                } else if (currentCommandType == UnitAICommand.CommandType.Research) {
                     ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
-                    currentCommandType = UnitAICommand.CommandType.Dock;
+                    if (!ship.GetResearchEquiptment().WantMoreData()) {
+                        ship.SetDockTarget(command.destinationStation);
+                        currentCommandType = UnitAICommand.CommandType.Dock;
+                    }
                     return CommandResult.Stop;
                 } else if (currentCommandType == UnitAICommand.CommandType.Dock) {
-                    ship.DockShip((Station)command.targetUnit);
+                    currentCommandType = UnitAICommand.CommandType.Wait;
+                    return CommandResult.Stop;
+                } else if (currentCommandType == UnitAICommand.CommandType.Wait) {
+                    if (ship.GetResearchEquiptment().WantMoreData()) {
+                        ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+                        currentCommandType = UnitAICommand.CommandType.Move;
+                    }
                     return CommandResult.Stop;
                 }
             }
             return CommandResult.Stop;
         }
         if (command.commandType == UnitAICommand.CommandType.Transport) {
-            if (newCommand) {
-                newCommand = false;
+            if (command.destinationStation == null) {
+                return CommandResult.StopRemove;
+            }
+            if (command.productionStation == null) {
+                command.productionStation = ship.faction.GetClosestMinningStationWantingTransport(ship.GetPosition());
+                if (command.productionStation == null) {
+                    return CommandResult.Stop;
+                }
             }
             if (ship.dockedStation == null) {
                 if (newCommand) {
                     newCommand = false;
                     if (ship.dockedStation == null) {
                         if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
-                            ship.UndockShip(command.destinationStation.GetPosition());
-                            ship.SetMovePosition(command.destinationStation.GetPosition(), ship.GetSize() + command.destinationStation.GetSize());
+                            ship.SetDockTarget(command.destinationStation);
                             currentCommandType = UnitAICommand.CommandType.Dock;
                         } else {
-                            ship.UndockShip(command.productionStation.GetPosition());
-                            ship.SetMovePosition(command.productionStation.GetPosition(), ship.GetSize() + command.productionStation.GetSize());
+                            ship.SetDockTarget(command.productionStation);
                             currentCommandType = UnitAICommand.CommandType.Dock;
                         }
                         return CommandResult.Stop;
                     }
                 }
                 if (ship.shipAction == Ship.ShipAction.Idle) {
-                    if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {
-                        ship.DockShip(command.destinationStation);
-                    } else {
-                        ship.DockShip(command.productionStation);
-                    }
                     currentCommandType = UnitAICommand.CommandType.Wait;
                 }
                 return CommandResult.Stop;
             } else {
+                newCommand = false;
                 if (ship.dockedStation == command.productionStation) {
                     if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
-                        ship.UndockShip(command.destinationStation.GetPosition());
-                        ship.SetMovePosition(command.destinationStation.GetPosition(), ship.GetSize() + command.destinationStation.GetSize());
+                        ship.SetDockTarget(command.destinationStation);
                         currentCommandType = UnitAICommand.CommandType.Dock;
                     }
                 } else if (ship.dockedStation == command.destinationStation) {
                     if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
-                        ship.UndockShip(command.productionStation.GetPosition());
-                        ship.SetMovePosition(command.productionStation.GetPosition(), ship.GetSize() + command.productionStation.GetSize());
+                        ship.SetDockTarget(command.productionStation);
                         currentCommandType = UnitAICommand.CommandType.Dock;
                     }
                 }
