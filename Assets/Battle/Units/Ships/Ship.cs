@@ -171,7 +171,7 @@ public class Ship : Unit {
             } else {
                 transform.Translate(Vector2.up * thrust);
                 SetThrusters(true);
-                velocity = transform.up * thrust;
+                velocity = transform.up * GetThrust() / GetMass();
             }
         }
         if (shipAction == ShipAction.Dock) {
