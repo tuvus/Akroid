@@ -75,7 +75,7 @@ public class Missile : MonoBehaviour {
     }
 
     void RotateMissile() {
-        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed);
+        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
         float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position,targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - transform.eulerAngles.z);
         float turnAmmont = turnSpeed * Time.fixedDeltaTime * BattleManager.Instance.timeScale;
