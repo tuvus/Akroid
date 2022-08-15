@@ -203,6 +203,10 @@ public class Station : Unit, IPositionConfirmer {
     public bool IsBuilt() {
         return built;
     }
+
+    public int GetRepairAmmount() {
+        return (int)(repairAmmount * faction.HealthModifier);
+    }
     #endregion
 
 }

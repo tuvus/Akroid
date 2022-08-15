@@ -138,7 +138,7 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
     }
 
     protected override void ManageStationRepair() {
-        int repairAmmount = GetShipyard().repairAmmount;
+        int repairAmmount = GetShipyard().GetRepairAmmount();
         if (station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
         for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
