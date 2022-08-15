@@ -92,7 +92,7 @@ public class LocalPlayerInput : MonoBehaviour {
     void UpdateZoom(float scroll) {
         if (LocalPlayer.Instance.GetPlayerUI().FreezeZoom())
             return;
-        float targetSize = Mathf.Min(10000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor));
+        float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor));
         if (!altButtonPressed) {
             float diference = mainCamera.orthographicSize - targetSize;
             MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * diference / mainCamera.orthographicSize);
