@@ -2,19 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CampaingController : MonoBehaviour {
+public abstract class CampaingController : MonoBehaviour {
 
-    public SetupController setupController;
 
-    public void SetupBattle() {
-        setupController.Setup(this);
+    public virtual void SetupBattle() {
     }
 
-    public void UpdateControler() {
+    public virtual void UpdateControler() {
 
     }
 
-    public string GetPathToChapterFolder() {
-        return "Campaign/Chapter1";
-    }
+    public abstract string GetPathToChapterFolder();
 }
