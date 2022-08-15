@@ -255,7 +255,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     #region GetMethods
     public bool IsAtWarWithFaction(Faction faction) {
-        return faction != this;
+        return enemyFactions.Contains(faction);
     }
 
     public List<Station> GetAllFactionStations() {
