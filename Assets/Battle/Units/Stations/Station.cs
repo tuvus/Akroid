@@ -15,7 +15,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public struct StationData {
         public int faction;
-        public StationType stationType;
+        public string path;
         public string stationName;
         public Vector2 wantedPosition;
         public float rotation;
@@ -23,7 +23,16 @@ public class Station : Unit, IPositionConfirmer {
 
         public StationData(int faction, StationType stationType, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
             this.faction = faction;
-            this.stationType = stationType;
+            this.path = "Prefabs/StationPrefabs/" + stationType.ToString();
+            this.stationName = stationName;
+            this.wantedPosition = wantedPosition;
+            this.rotation = rotation;
+            this.built = built;
+        }
+
+        public StationData(int faction, string path, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
+            this.faction = faction;
+            this.path = path;
             this.stationName = stationName;
             this.wantedPosition = wantedPosition;
             this.rotation = rotation;
@@ -39,9 +48,8 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime;
     protected bool built;
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
+    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built) {
         base.SetupUnit(name, faction, positionGiver, rotation);
-        this.stationType = stationType;
         stationAI = GetComponent<StationAI>();
         hanger = GetComponentInChildren<Hanger>();
         cargoBay = GetComponentInChildren<CargoBay>();

@@ -5,7 +5,7 @@ using static BattleManager;
 
 [System.Serializable]
 public class SetupController {
-    public void Setup() {
+    public void Setup(CampaingController campaingController) {
         BattleManager battleManager = BattleManager.Instance;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
@@ -15,13 +15,13 @@ public class SetupController {
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10));
         }
-        MiningStation playerMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, Station.StationType.MiningStation, "MiningStation", playerFaction.factionPosition, Random.Range(0, 360), true));
+        MiningStation playerMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, campaingController.GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.factionPosition, Random.Range(0, 360), true));
 
         Faction otherMinningFaction = battleManager.CreateNewFaction(new Faction.FactionData("OtherMinningFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAteroidField(new PositionGiver(otherMinningFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10));
         }
-        MiningStation otherMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMinningFaction.factionIndex, Station.StationType.MiningStation, "MiningStation", otherMinningFaction.factionPosition, Random.Range(0, 360), true));
+        MiningStation otherMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMinningFaction.factionIndex, campaingController.GetPathToChapterFolder() + "/MiningStation", "MiningStation", otherMinningFaction.factionPosition, Random.Range(0, 360), true));
 
         Faction planetFaction = battleManager.CreateNewFaction(new Faction.FactionData("PlanetFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         Planet planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition));

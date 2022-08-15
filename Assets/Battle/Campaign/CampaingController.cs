@@ -7,10 +7,14 @@ public class CampaingController : MonoBehaviour {
     public SetupController setupController;
 
     public void SetupBattle() {
-        setupController.Setup();
+        setupController.Setup(this);
     }
 
     public void UpdateControler() {
 
+    }
+
+    public string GetPathToChapterFolder() {
+        return "Campaign/Chapter1";
     }
 }

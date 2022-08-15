@@ -48,7 +48,7 @@ public class CampaingSetup : MonoBehaviour {
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        CampaingController campaingController = Instantiate(Resources.Load<GameObject>("Campaign/Chapter" + chapter), GameObject.Find("Game").transform).GetComponent<CampaingController>();
+        CampaingController campaingController = Instantiate(Resources.Load<GameObject>("Campaign/Chapter" + chapter + "/Chapter" + chapter), GameObject.Find("Game").transform).GetComponent<CampaingController>();
         GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(campaingController);
         Destroy(gameObject);
     }

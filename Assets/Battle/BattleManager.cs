@@ -154,6 +154,7 @@ public class BattleManager : MonoBehaviour {
         simulationEnded = true;
     }
 
+    #region Spawning
     /// <summary>
     /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
     /// If the center location is an asteroid or station isCenterObject should be true.
@@ -219,9 +220,9 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Station CreateNewStation(StationData stationData) {
-        GameObject stationPrefab = (GameObject)Resources.Load("Prefabs/StationPrefabs/" + stationData.stationType.ToString());
+        GameObject stationPrefab = (GameObject)Resources.Load(stationData.path);
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2), stationData.rotation, stationData.stationType, stationData.built);
+        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2), stationData.rotation, stationData.built);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -240,7 +241,7 @@ public class BattleManager : MonoBehaviour {
 
     public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
-        Planet newPlanet = Instantiate(planetPrefab, GetStarTransform()).GetComponent<Planet>();
+        Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
         newPlanet.SetupPlanet(name, faction, positionGiver, Random.Range(0, 360));
         planets.Add(newPlanet);
         return newPlanet;
@@ -264,6 +265,12 @@ public class BattleManager : MonoBehaviour {
         //newAsteroidField.SetupAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2));
         newAsteroidField.SetupAsteroidField(positionGiver);
     }
+    #endregion
+    public void BuildStationBlueprint(Station station) {
+        stationBlueprints.Remove(station);
+        units.Add(station);
+        stations.Add(station);
+    }
 
     public void DestroyShip(Ship ship) {
         units.Remove(ship);
@@ -273,11 +280,6 @@ public class BattleManager : MonoBehaviour {
         destroyedUnits.Add(ship);
     }
 
-    public void BuildStationBlueprint(Station station) {
-        stationBlueprints.Remove(station);
-        units.Add(station);
-        stations.Add(station);
-    }
 
     public void DestroyStation(Station station) {
         if (station.IsBuilt()) {
@@ -298,6 +300,7 @@ public class BattleManager : MonoBehaviour {
         destroyedUnits.Remove(unit);
     }
 
+    #region Projectiles and Missiles
     public void AddProjectile(Projectile projectile) {
         usedProjectiles.Add(projectile.projectileIndex);
         unusedProjectiles.Remove(projectile.projectileIndex);
@@ -345,6 +348,7 @@ public class BattleManager : MonoBehaviour {
         newMissile.PrespawnMissile(missiles.Count);
         missiles.Add(newMissile);
     }
+    #endregion
 
     public virtual void FixedUpdate() {
         for (int i = 0; i < factions.Count; i++) {
