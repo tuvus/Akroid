@@ -10,7 +10,6 @@ public class MiningStationAI : StationAI {
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
         transportShips = new List<Ship>(10);
-
     }
 
     public override void UpdateAI() {
@@ -40,6 +39,7 @@ public class MiningStationAI : StationAI {
             }
         }
     }
+    
     void ManageMinningStationCargo() {
         for (int i = 0; i < transportShips.Count; i++) {
             if (transportShips[i] == null) {
@@ -63,6 +63,11 @@ public class MiningStationAI : StationAI {
         //if (transportShips.Count < GetWantedTransportShips()) {
         //    AddTransportShipToBuildQueue();
         //}
+    }
+
+    public override void OnShipBuilt(Ship ship) {
+        base.OnShipBuilt(ship);
+        transportShips.Add(ship);
     }
 
     public void AddTransportShip(Ship ship) {

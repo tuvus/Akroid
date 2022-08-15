@@ -24,8 +24,11 @@ public class StationAI : MonoBehaviour {
 
     protected virtual void ManageStationRepair() {
         if (station.IsDammaged())
-            station.RepairUnit(station,station.repairAmmount);
+            station.RepairUnit(station, station.repairAmmount);
         station.repairTime += station.repairSpeed;
     }
 
+    public virtual void OnShipBuilt(Ship ship) {
+
+    }
 }

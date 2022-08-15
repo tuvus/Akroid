@@ -30,7 +30,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public List<Station> stations { get; private set; }
     public List<Station> stationBlueprints { get; private set; }
 
-    private FleetCommand fleetCommand;
+    private Shipyard fleetCommand;
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
@@ -89,7 +89,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         ThrusterPowerModifier = 1;
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommmand, "FleetCommand", factionPosition, Random.Range(0, 360)));
+            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", factionPosition, Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", factionPosition, Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
@@ -127,8 +127,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void AddStation(Station station) {
         stations.Add(station);
         units.Add(station);
-        if (station.stationType == Station.StationType.FleetCommmand) {
-            fleetCommand = (FleetCommand)station;
+        if (station.stationType == Station.StationType.FleetCommand) {
+            fleetCommand = (Shipyard)station;
         }
     }
 
@@ -431,7 +431,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return transform.GetChild(1);
     }
 
-    public FleetCommand GetFleetCommand() {
+    public Shipyard GetFleetCommand() {
         return fleetCommand;
     }
     #endregion

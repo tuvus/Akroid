@@ -133,7 +133,7 @@ public abstract class Unit : BattleObject {
 
     public void UpdateDestroyedUnit() {
         if (destroyParticle.isPlaying == false && GetHealth() <= 0) {
-            if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommmand)
+            if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
                 return;
             BattleManager.Instance.RemoveDestroyedUnit(this);
             Destroy(gameObject);

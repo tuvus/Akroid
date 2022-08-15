@@ -21,7 +21,6 @@ public class MiningStation : Station {
 
     public override Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
         Ship ship = base.BuildShip(shipClass, cost, undock);
-        GetMiningStationAI().AddTransportShip(ship);
         return ship;
     }
 

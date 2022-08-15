@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FleetCommand : Station {
+public class Shipyard : Station {
     private ConstructionBay constructionBay;
 
     public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
@@ -19,9 +19,5 @@ public class FleetCommand : Station {
 
     public ConstructionBay GetConstructionBay() {
         return constructionBay;
-    }
-
-    public FleetCommandAI GetFleetCommandAI() {
-        return (FleetCommandAI)stationAI;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ConstructionBay : MonoBehaviour {
-    private FleetCommand fleetCommand;
+    private Shipyard shipyard;
 
     public float constructionSpeed;
     public float constructionAmmount;
@@ -14,8 +14,8 @@ public class ConstructionBay : MonoBehaviour {
     [SerializeField]
     public List<Ship.ShipBlueprint> buildQueue;
 
-    public void SetupConstructionBay(FleetCommand fleetCommand) {
-        this.fleetCommand = fleetCommand;
+    public void SetupConstructionBay(Shipyard fleetCommand) {
+        this.shipyard = fleetCommand;
         buildQueue = new List<Ship.ShipBlueprint>(10);
     }
 
@@ -48,9 +48,9 @@ public class ConstructionBay : MonoBehaviour {
                 for (int f = 0; f < shipBlueprint.resources.Count; f++) {
                     if (buildAmmount <= 0)
                         break;
-                    float ammountToUse = Mathf.Min(fleetCommand.GetAllCargo(shipBlueprint.resourcesTypes[f]), Mathf.Min(buildAmmount, shipBlueprint.resources[f]));
+                    float ammountToUse = Mathf.Min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Mathf.Min(buildAmmount, shipBlueprint.resources[f]));
                     shipBlueprint.resources[f] -= ammountToUse;
-                    fleetCommand.UseCargo(ammountToUse, shipBlueprint.resourcesTypes[f]);
+                    shipyard.UseCargo(ammountToUse, shipBlueprint.resourcesTypes[f]);
                     if (shipBlueprint.resources[f] <= 0) {
                         shipBlueprint.resources.RemoveAt(f);
                         shipBlueprint.resourcesTypes.RemoveAt(f);
@@ -67,10 +67,10 @@ public class ConstructionBay : MonoBehaviour {
     }
 
     bool BuildBlueprint(Ship.ShipBlueprint shipBlueprint) {
-        Ship ship = fleetCommand.BuildShip(shipBlueprint.shipClass, shipBlueprint.shipCost);
+        Ship ship = shipyard.BuildShip(shipBlueprint.shipClass, shipBlueprint.shipCost);
         if (ship == null)
             return false;
-        fleetCommand.GetFleetCommandAI().OnShipBuilt(ship);
+        shipyard.stationAI.OnShipBuilt(ship);
         return true;
     }
 

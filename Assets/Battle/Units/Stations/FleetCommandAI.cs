@@ -63,25 +63,25 @@ public class FleetCommandAI : StationAI {
     }
 
     void ManageShipBuilding() {
-        if (GetFleetCommand().GetConstructionBay().HasOpenBays()) {
+        if (GetShipyard().GetConstructionBay().HasOpenBays()) {
             float randomNumber = 0;
             if (station.faction.HasEnemy()) {
                 randomNumber = Random.Range(0, 100);
             }
             if (randomNumber < 20) {
-                GetFleetCommand().GetConstructionBay().AddConstructionToQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToQueue(
 new Ship.ShipBlueprint(Ship.ShipClass.Zarrack, "Science Ship", 21000,
 new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 5000 }));
             } else if (randomNumber < 50) {
-                GetFleetCommand().GetConstructionBay().AddConstructionToQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToQueue(
     new Ship.ShipBlueprint(Ship.ShipClass.Aria, "Aria", 2300,
     new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 800 }));
             } else if (randomNumber < 80) {
-                GetFleetCommand().GetConstructionBay().AddConstructionToQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToQueue(
     new Ship.ShipBlueprint(Ship.ShipClass.Lancer, "Lancer", 5000,
     new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 1800 }));
             } else {
-                GetFleetCommand().GetConstructionBay().AddConstructionToQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToQueue(
 new Ship.ShipBlueprint(Ship.ShipClass.Aterna, "Aterna", 30000,
 new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 9000 }));
             }
@@ -89,26 +89,26 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
     }
 
     void ManageStationBuilding() {
-        int transportQueueCount = GetFleetCommand().GetConstructionBay().GetNumberOfShipsOfClass(Ship.ShipClass.Transport);
-        int stationBuilderQueueCount = GetFleetCommand().GetConstructionBay().GetNumberOfShipsOfClass(Ship.ShipClass.StationBuilder);
+        int transportQueueCount = GetShipyard().GetConstructionBay().GetNumberOfShipsOfClass(Ship.ShipClass.Transport);
+        int stationBuilderQueueCount = GetShipyard().GetConstructionBay().GetNumberOfShipsOfClass(Ship.ShipClass.StationBuilder);
         bool wantTransport = station.faction.GetTotalWantedTransports() > station.faction.GetShipsOfType(Ship.ShipType.Transport) + transportQueueCount;
         bool wantNewStationBuilder = station.faction.GetAvailableAsteroidFieldsCount() > station.faction.GetShipsOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
 
-        if ((GetFleetCommand().GetConstructionBay().HasOpenBays() && !station.faction.HasEnemy()) ||
+        if ((GetShipyard().GetConstructionBay().HasOpenBays() && !station.faction.HasEnemy()) ||
             transportQueueCount == 0 && stationBuilderQueueCount == 0) {
             if (wantTransport) {
-                GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToBeginningQueue(
 new Ship.ShipBlueprint(Ship.ShipClass.Transport, "Transport", 1000,
 new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 1400 }));
             } else if (wantNewStationBuilder) {
-                GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(
+                GetShipyard().GetConstructionBay().AddConstructionToBeginningQueue(
 new Ship.ShipBlueprint(Ship.ShipClass.StationBuilder, "StationBuilder", 3000,
 new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 4000 }));
             }
         }
     }
 
-    public void OnShipBuilt(Ship ship) {
+    public override void OnShipBuilt(Ship ship) {
         if (!ship.IsSpawned())
             return;
         if (ship.GetShipType() == Ship.ShipType.Transport) {
@@ -138,7 +138,7 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
     }
 
     protected override void ManageStationRepair() {
-        int repairAmmount = GetFleetCommand().repairAmmount;
+        int repairAmmount = GetShipyard().repairAmmount;
         if (station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
         for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
@@ -152,7 +152,7 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
         station.repairTime += station.repairSpeed;
     }
 
-    public FleetCommand GetFleetCommand() {
-        return (FleetCommand)station;
+    public Shipyard GetShipyard() {
+        return (Shipyard)station;
     }
 }

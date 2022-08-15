@@ -27,7 +27,7 @@ public class SetupController {
         Planet planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition));
 
         Faction shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData("ShipyardFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        FleetCommand fleetCommand = (FleetCommand)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Station.StationType.FleetCommmand, "Shipyard", shipyardFaction.factionPosition, Random.Range(0, 360)));
+        Shipyard fleetCommand = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Station.StationType.Shipyard, "Shipyard", shipyardFaction.factionPosition, Random.Range(0, 360)));
 
         int asteroidFieldCount = Random.Range(50, 80);
         for (int i = 0; i < asteroidFieldCount; i++) {

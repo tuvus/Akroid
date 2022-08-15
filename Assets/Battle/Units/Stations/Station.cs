@@ -5,9 +5,10 @@ using UnityEngine;
 public class Station : Unit, IPositionConfirmer {
     public enum StationType {
         None = 0,
-        FleetCommmand = 1,
+        FleetCommand = 1,
         DefenceStation = 2,
         MiningStation = 3,
+        Shipyard = 4,
     }
 
     public StationType stationType;
@@ -30,7 +31,7 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-    protected StationAI stationAI;
+    public StationAI stationAI { get; protected set; }
     private Hanger hanger;
     private CargoBay cargoBay;
     public int repairAmmount;
