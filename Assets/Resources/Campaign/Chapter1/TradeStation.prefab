@@ -221,9 +221,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6c3c6f7b603314a8fdd7261e41a641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  constructionSpeed: 5
+  constructionSpeed: 20
   constructionAmmount: 200
-  constructionBays: 3
+  constructionBays: 1
   buildQueue: []
 --- !u!1 &2758705053638396394
 GameObject:
@@ -868,14 +868,14 @@ GameObject:
   m_Component:
   - component: {fileID: 8198535041992587763}
   - component: {fileID: 8198535041992587760}
-  - component: {fileID: 8325539151718107570}
-  - component: {fileID: 2497834230236504820}
+  - component: {fileID: 5144928601939407847}
+  - component: {fileID: 891628441915010327}
   - component: {fileID: 8198535041992587773}
   - component: {fileID: 8198535041992587772}
   - component: {fileID: 2433509441528522819}
   - component: {fileID: -313724104179287376}
   m_Layer: 6
-  m_Name: Shipyard
+  m_Name: TradeStation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -890,7 +890,7 @@ Transform:
   m_GameObject: {fileID: 8198535041992587762}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8198535041201488726}
@@ -958,7 +958,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8325539151718107570
+--- !u!114 &5144928601939407847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -967,18 +967,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 8198535041992587762}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 818ce4a0b9f5c9a4e92ead40d377062b, type: 3}
+  m_Script: {fileID: 11500000, guid: c3288064bce0faf4680d45bb8f76c916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   size: 0
   maxHealth: 9046
-  unitName: Shipyard
+  unitName: TradeStation
   followDist: 90
-  stationType: 4
-  repairAmmount: 50
-  repairSpeed: 10
+  stationType: 5
+  repairAmmount: 10
+  repairSpeed: 5
   repairTime: 0
---- !u!114 &2497834230236504820
+--- !u!114 &891628441915010327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

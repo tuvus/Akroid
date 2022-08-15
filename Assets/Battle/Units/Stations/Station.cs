@@ -9,6 +9,8 @@ public class Station : Unit, IPositionConfirmer {
         DefenceStation = 2,
         MiningStation = 3,
         Shipyard = 4,
+        TradeStation = 5,
+        ReserchStation = 6,
     }
 
     public StationType stationType;
@@ -91,6 +93,11 @@ public class Station : Unit, IPositionConfirmer {
         }
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + size) {
+                return false;
+            }
+        }
+        foreach (var planet in BattleManager.Instance.planets) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
                 return false;
             }
         }

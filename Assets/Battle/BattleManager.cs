@@ -220,9 +220,13 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Station CreateNewStation(StationData stationData) {
+        return CreateNewStation(stationData, new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2));
+    }
+
+    public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationData.path);
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2), stationData.rotation, stationData.built);
+        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);

@@ -43,6 +43,11 @@ public class AsteroidField : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+        foreach (var planet in BattleManager.Instance.planets) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
+                return false;
+            }
+        }
         return true;
     }
 }

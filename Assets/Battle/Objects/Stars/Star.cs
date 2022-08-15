@@ -34,6 +34,16 @@ public class Star : MonoBehaviour, IPositionConfirmer {
                 return false;
             }
         }
+        foreach (var planet in BattleManager.Instance.planets) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
+                return false;
+            }
+        }
+        foreach (var station in BattleManager.Instance.stations) {
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + size) {
+                return false;
+            }
+        }
         return true;
     }
 

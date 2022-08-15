@@ -25,9 +25,15 @@ public class SetupController {
 
         Faction planetFaction = battleManager.CreateNewFaction(new Faction.FactionData("PlanetFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         Planet planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition));
+        Station tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, campaingController.GetPathToChapterFolder() + "/TradeStation", "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 300), 0, 1000, 30, 300, 3));
+
 
         Faction shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData("ShipyardFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         Shipyard fleetCommand = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Station.StationType.Shipyard, "Shipyard", shipyardFaction.factionPosition, Random.Range(0, 360)));
+
+        Faction reserchFaction = battleManager.CreateNewFaction(new Faction.FactionData("ResearchFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
+        Station researchStation = battleManager.CreateNewStation(new Station.StationData(reserchFaction.factionIndex, campaingController.GetPathToChapterFolder() + "/ResearchStation", "ResearchStation", reserchFaction.factionPosition, Random.Range(0, 360)));
+
 
         int asteroidFieldCount = Random.Range(50, 80);
         for (int i = 0; i < asteroidFieldCount; i++) {

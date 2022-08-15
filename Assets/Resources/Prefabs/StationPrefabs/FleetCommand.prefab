@@ -972,7 +972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 0
   maxHealth: 9046
-  unitName: Station
+  unitName: FleetCommand
   followDist: 90
   stationType: 1
   repairAmmount: 50
