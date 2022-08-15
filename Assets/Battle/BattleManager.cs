@@ -20,6 +20,7 @@ public class BattleManager : MonoBehaviour {
     public List<Projectile> projectiles;
     public List<Missile> missiles;
     public List<Star> stars;
+    public List<Planet> planets;
     public List<AsteroidField> asteroidFields;
 
     public List<Unit> destroyedUnits;
@@ -87,7 +88,8 @@ public class BattleManager : MonoBehaviour {
         ships = new List<Ship>(150);
         stations = new List<Station>(50);
         stars = new List<Star>();
-        asteroidFields = new List<AsteroidField>(100);
+        planets = new List<Planet>();
+        asteroidFields = new List<AsteroidField>(asteroidFieldCount);
         projectiles = new List<Projectile>(500);
         destroyedUnits = new List<Unit>(200);
 
@@ -106,7 +108,7 @@ public class BattleManager : MonoBehaviour {
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
-            CreateNewFaction(factionDatas[i], 100);
+            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 6), 100);
         }
 
         for (int i = 0; i < factions.Count; i++) {
@@ -128,6 +130,29 @@ public class BattleManager : MonoBehaviour {
             simulationEnded = true;
     }
 
+    public void SetupBattle(CampaingController campaingControler) {
+        if (Instance == null) {
+            Instance = this;
+        } else {
+            Destroy(gameObject);
+        }
+        this.researchModifier = researchModifier;
+        factions = new List<Faction>(0);
+        units = new List<Unit>(100);
+        ships = new List<Ship>(50);
+        stations = new List<Station>(50);
+        stars = new List<Star>();
+        planets = new List<Planet>();
+        asteroidFields = new List<AsteroidField>(20);
+        projectiles = new List<Projectile>(500);
+        destroyedUnits = new List<Unit>(50);
+        startOfSimulation = Time.time;
+        simulationEnded = false;
+        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        LocalPlayer.Instance.SetupFaction(null);
+        campaingControler.SetupBattle();
+        simulationEnded = true;
+    }
 
     /// <summary>
     /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
@@ -177,10 +202,10 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
-    public Faction CreateNewFaction(FactionData factionData, int startingResearchCost) {
+    public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
         Faction newFaction = Instantiate(Resources.Load<GameObject>("Prefabs/Faction"), GetFactionsTransform()).GetComponent<Faction>();
         factions.Add(newFaction);
-        newFaction.SetUpFaction(factions.Count - 1, factionData, startingResearchCost);
+        newFaction.SetUpFaction(factions.Count - 1, factionData, positionGiver, startingResearchCost);
         return newFaction;
     }
 
@@ -213,18 +238,31 @@ public class BattleManager : MonoBehaviour {
         stars.Add(newStar);
     }
 
+    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver) {
+        GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
+        Planet newPlanet = Instantiate(planetPrefab, GetStarTransform()).GetComponent<Planet>();
+        newPlanet.SetupPlanet(name, faction, positionGiver, Random.Range(0, 360));
+        planets.Add(newPlanet);
+        return newPlanet;
+    }
+
     public void CreateNewAteroidField(Vector2 center, int count) {
+        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2),count);
+    }
+
+    public void CreateNewAteroidField(PositionGiver positionGiver, int count) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
-        AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, center, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
+        AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(2f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(newAsteroidField.GetPosition(), 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size), CargoBay.CargoTypes.Metal));
+            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size), CargoBay.CargoTypes.Metal));
             newAsteroidField.asteroids.Add(newAsteroid);
         }
         asteroidFields.Add(newAsteroidField);
-        newAsteroidField.SetupAsteroidField(new PositionGiver(newAsteroidField.GetPosition(), 0, 100000, 500, 1000, 2));
+        //newAsteroidField.SetupAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2));
+        newAsteroidField.SetupAsteroidField(positionGiver);
     }
 
     public void DestroyShip(Ship ship) {
@@ -394,11 +432,15 @@ public class BattleManager : MonoBehaviour {
         return transform.GetChild(2);
     }
 
-    public Transform GetProjectileTransform() {
+    public Transform GetPlanetsTransform() {
         return transform.GetChild(3);
     }
 
-    public Transform GetMissileTransform() {
+    public Transform GetProjectileTransform() {
         return transform.GetChild(4);
+    }
+
+    public Transform GetMissileTransform() {
+        return transform.GetChild(5);
     }
 }

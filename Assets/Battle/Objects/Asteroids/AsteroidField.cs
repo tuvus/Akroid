@@ -2,21 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AsteroidField : MonoBehaviour, IPositionConfirmer {
+public class AsteroidField : BattleObject, IPositionConfirmer {
     public List<Asteroid> asteroids;
-    public float size;
-    public Vector2 position;
     public float totalResources;
 
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
+        base.SetupBattleObject(positionGiver, 0);
+    }
+
+    protected override float SetupSize() {
+        float size = 0;
         for (int i = 0; i < asteroids.Count; i++) {
             size = Mathf.Max(size, Vector2.Distance(position, asteroids[i].GetPosition()));
         }
-        position = SetupPosition(positionGiver);
-        transform.position = position;
+        return size;
     }
 
-    Vector2 SetupPosition(BattleManager.PositionGiver positionGiver) {
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
@@ -42,9 +44,5 @@ public class AsteroidField : MonoBehaviour, IPositionConfirmer {
             }
         }
         return true;
-    }
-
-    public Vector2 GetPosition() {
-        return position;
     }
 }

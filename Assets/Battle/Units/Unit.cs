@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-public abstract class Unit : MonoBehaviour {
+public abstract class Unit : BattleObject {
     private bool spawned;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected string unitName;
-    [SerializeField] protected float size;
 
     protected int health;
     [SerializeField] protected int followDist;
 
     public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
-    protected SpriteRenderer spriteRenderer;
     protected ParticleSystem destroyParticle;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
@@ -29,8 +27,9 @@ public abstract class Unit : MonoBehaviour {
     public List<float> enemyUnitsInRangedistance { get; protected set; }
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
-        this.unitName = name;
         this.faction = faction;
+        base.SetupBattleObject(positionGiver, rotation);
+        this.unitName = name;
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
@@ -39,12 +38,9 @@ public abstract class Unit : MonoBehaviour {
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
         unitSelection = GetComponentInChildren<UnitSelection>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         destroyParticle = GetComponent<ParticleSystem>();
         shieldGenerator = GetComponentInChildren<ShieldGenerator>();
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
-        size = SetupSize();
-        transform.position = GetSetupPosition(positionGiver);
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
         foreach (var turret in turrets) {
@@ -68,14 +64,6 @@ public abstract class Unit : MonoBehaviour {
             maxWeaponRange = Mathf.Max(maxWeaponRange, missileLuancher.GetRange() / 2);
             minWeaponRange = Mathf.Min(minWeaponRange, missileLuancher.GetRange() / 2);
         }
-    }
-
-    protected virtual float SetupSize() {
-        return GetSpriteSize();
-    }
-
-    protected virtual Vector2 GetSetupPosition(BattleManager.PositionGiver position) {
-        return position.position;
     }
 
     public virtual void UpdateUnit() {
@@ -377,39 +365,15 @@ public abstract class Unit : MonoBehaviour {
         return GetFollowDistance() + unit.GetFollowDistance();
     }
 
-    public Vector2 GetPosition() {
-        return transform.position;
-    }
-
     public virtual Vector2 GetVelocity() {
         return velocity;
-    }
-
-    public float GetRotation() {
-        return transform.eulerAngles.z;
-    }
-
-    public float GetSize() {
-        return size;
     }
 
     public float GetZoomIndicatorSize() {
         return unitSelection.GetSize();
     }
-
-    public SpriteRenderer GetSpriteRenderer() {
-        return spriteRenderer;
-    }
-
     public UnitSelection GetUnitSelection() {
         return unitSelection;
-    }
-
-
-    public float GetSpriteSize() {
-        return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2;
     }
 
     public bool IsShip() {

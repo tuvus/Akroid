@@ -47,6 +47,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SetupDefaultSimulation() {
+        gameObject.SetActive(true);
         asteroidFieldCount = 40;
         starCount = 3;
         asteroidCountModifier = 1.2f;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Faction : MonoBehaviour, IPositionConfirmer {
-    public Vector2 factionPosition { get; private set; }
+    public Vector2 factionPosition;
     [SerializeField] public new string name { get; private set; }
     [SerializeField] public long credits { get; private set; }
     [SerializeField] public long science { get; private set; }
@@ -52,8 +52,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         }
     }
 
-    public void SetUpFaction(int factionIndex, FactionData factionData, int startingResearchCost) {
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(new BattleManager.PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 6), this);
+    public void SetUpFaction(int factionIndex, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
         if (targetPosition.HasValue)
             factionPosition = targetPosition.Value;
         else
@@ -172,7 +172,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             }
         }
         foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
-            if (Vector2.Distance(position, asteroidField.position) <= minDistanceFromObject + asteroidField.size) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize()) {
                 return false;
             }
         }
@@ -270,7 +270,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                 continue;
             bool hasFeindlyStation = false;
             foreach (Station freindlyStation in GetAllFactionStations()) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.size) {
+                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
                     hasFeindlyStation = true;
                 }
             }
@@ -290,13 +290,13 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                 continue;
             bool hasFeindlyStation = false;
             foreach (Station freindlyStation in GetAllFactionStations()) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.size) {
+                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
                     hasFeindlyStation = true;
                 }
             }
 
             foreach (Station freindlyStation in stationBlueprints) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.size) {
+                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
                     hasFeindlyStation = true;
                 }
             }

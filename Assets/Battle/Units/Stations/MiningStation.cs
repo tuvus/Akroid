@@ -31,7 +31,7 @@ public class MiningStation : Station {
         List<AsteroidField> eligibleAsteroidFields = faction.GetClosestAvailableAsteroidFields(positionGiver.position);
 
         for (int i = 0; i < eligibleAsteroidFields.Count; i++) {
-            Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position, eligibleAsteroidFields[i].size + GetSize() + 10);
+            Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position, eligibleAsteroidFields[i].GetSize() + GetSize() + 10);
             Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrament(new BattleManager.PositionGiver(targetCenterPosition, positionGiver.minDistance, positionGiver.maxDistance, positionGiver.incrementDistance, positionGiver.distanceFromObject, positionGiver.numberOfTries), this);
             if (targetLocationAsteroidField.HasValue)
                 return targetLocationAsteroidField.Value;
@@ -75,8 +75,8 @@ public class MiningStation : Station {
         foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
             if (asteroidField.totalResources <= 0)
                 continue;
-            float tempDistance = Vector2.Distance(transform.position, asteroidField.position);
-            if (tempDistance <= GetMiningRange() + asteroidField.size) {
+            float tempDistance = Vector2.Distance(transform.position, asteroidField.GetPosition());
+            if (tempDistance <= GetMiningRange() + asteroidField.GetSize()) {
                 foreach (var asteroid in asteroidField.asteroids) {
                     tempAsteroids.Add(asteroid);
                 }

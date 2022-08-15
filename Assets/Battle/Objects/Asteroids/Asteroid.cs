@@ -2,13 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Asteroid : MonoBehaviour, IPositionConfirmer {
+public class Asteroid : BattleObject, IPositionConfirmer {
     private AsteroidField asteroidField;
-    private SpriteRenderer spriteRenderer;
-    private Vector2 position;
     public int resources;
     public CargoBay.CargoTypes asteroidType;
-    private float size;
 
     public struct AsteroidData {
         public Vector2 position;
@@ -27,21 +24,24 @@ public class Asteroid : MonoBehaviour, IPositionConfirmer {
     }
 
     public void SetupAsteroid(AsteroidField asteroidField,BattleManager.PositionGiver positionGiver, AsteroidData asteroidData) {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
         this.asteroidField = asteroidField;
+        base.SetupBattleObject(positionGiver, asteroidData.rotation);
         this.position = asteroidData.position;
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;
-        transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
-        transform.eulerAngles = new Vector3(0, 0, asteroidData.rotation);
         size = GetSpriteSize() * transform.localScale.x;
+
+        this.position = transform.position;
+    }
+
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
         if (targetPosition.HasValue)
-            transform.position = targetPosition.Value;
+            return targetPosition.Value;
         else
-            transform.position = positionGiver.position;
-        this.position = transform.position;
+            return positionGiver.position;
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
@@ -74,20 +74,5 @@ public class Asteroid : MonoBehaviour, IPositionConfirmer {
 
     public bool HasResources() {
         return resources > 0;
-    }
-
-    public Vector2 GetPosition() {
-        return position;
-    }
-
-    public float GetSpriteSize() {
-        return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2;
-
-    }
-
-    public float GetSize() {
-        return size;
     }
 }

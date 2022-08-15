@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Station : Unit, IPositionConfirmer {
-    #region variables
     public enum StationType {
         None = 0,
         FleetCommmand = 1,
@@ -38,8 +37,6 @@ public class Station : Unit, IPositionConfirmer {
     public float repairSpeed;
     public float repairTime;
     protected bool built;
-
-    #endregion
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, StationType stationType, bool built) {
         base.SetupUnit(name, faction, positionGiver, rotation);
@@ -84,7 +81,7 @@ public class Station : Unit, IPositionConfirmer {
             }
         }
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.size + size) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + size) {
                 return false;
             }
         }
