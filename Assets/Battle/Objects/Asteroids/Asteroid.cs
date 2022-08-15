@@ -31,7 +31,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;
-        size = GetSpriteSize() * transform.localScale.x;
+        size = GetSpriteSize();
 
         this.position = transform.position;
     }
