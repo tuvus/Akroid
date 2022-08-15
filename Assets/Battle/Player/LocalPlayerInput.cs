@@ -137,8 +137,8 @@ public class LocalPlayerInput : MonoBehaviour {
             transform.position = followUnit.GetPosition();
         } else if (displayedUnit != null) {
             SetCameraPosition(displayedUnit.GetPosition());
-        } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().GetFleetCommand() != null) {
-            SetCameraPosition(LocalPlayer.Instance.GetFaction().GetFleetCommand().transform.position);
+        } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
+            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations[0].transform.position);
         }
     }
 
