@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Faction : MonoBehaviour, IPositionConfirmer {
     public Vector2 factionPosition;
+    [SerializeField] FactionAI factionAI;
     [SerializeField] public new string name { get; private set; }
     [SerializeField] public long credits { get; private set; }
     [SerializeField] public long science { get; private set; }
@@ -38,12 +41,24 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public float factionUnitsSize;
 
     public struct FactionData {
+        public Type factionAI;
         public string name;
         public long credits;
         public long science;
         public int ships;
         public int stations;
+
+        public FactionData(Type factionAI, string name, long credits, long science, int ships, int stations) {
+            this.factionAI = factionAI;
+            this.name = name;
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
+        }
+
         public FactionData(string name, long credits, long science, int ships, int stations) {
+            this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
             this.credits = credits;
             this.science = science;
@@ -65,6 +80,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
         this.factionIndex = factionIndex;
+        factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
+        factionAI.SetupFactionAI(this);
         GenerateFaction(factionData, startingResearchCost);
     }
 
@@ -187,7 +204,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public void UpdateFaction() {
-        UpdateFactionResearch();
+        factionAI.UpdateFactionAI();
         UpdateFactionTotalUnitSize();
     }
 
@@ -433,6 +450,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public Shipyard GetFleetCommand() {
         return fleetCommand;
+    }
+
+    public FactionAI GetFactionAI() {
+        return factionAI;
     }
     #endregion
 }
