@@ -33,7 +33,6 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public List<Station> stations { get; private set; }
     public List<Station> stationBlueprints { get; private set; }
 
-    private Shipyard fleetCommand;
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
@@ -81,8 +80,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         enemyFactions = new List<Faction>();
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
-        factionAI.SetupFactionAI(this);
         GenerateFaction(factionData, startingResearchCost);
+        factionAI.SetupFactionAI(this);
     }
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
@@ -116,8 +115,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             }
         }
         for (int i = 0; i < shipCount; i++) {
-            if (fleetCommand != null)
-                fleetCommand.BuildShip(Ship.ShipClass.Lancer, 0);
+            if (GetFleetCommand() != null)
+                GetFleetCommand().BuildShip(Ship.ShipClass.Lancer, 0);
             else
                 BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
@@ -134,24 +133,25 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void AddShip(Ship ship) {
         ships.Add(ship);
         units.Add(ship);
+        factionAI.OnShipAdded(ship);
     }
 
     public void RemoveShip(Ship ship) {
         units.Remove(ship);
         ships.Remove(ship);
+        factionAI.OnShipRemoved(ship);
     }
 
     public void AddStation(Station station) {
         stations.Add(station);
         units.Add(station);
-        if (station.stationType == Station.StationType.FleetCommand) {
-            fleetCommand = (Shipyard)station;
-        }
+        factionAI.OnStationAdded(station);
     }
 
     public void RemoveStation(Station station) {
         units.Remove(station);
         stations.Remove(station);
+        factionAI.OnStationRemoved(station);
     }
 
     public void AddStationBlueprint(Station station) {
@@ -449,8 +449,12 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public Shipyard GetFleetCommand() {
-        return fleetCommand;
+        if (factionAI != null && factionAI is SimulationFactionAI) {
+            return ((SimulationFactionAI)factionAI).fleetCommand;
+        }
+        return null;
     }
+
 
     public FactionAI GetFactionAI() {
         return factionAI;

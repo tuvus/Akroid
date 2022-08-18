@@ -12,4 +12,18 @@ public class FactionAI : MonoBehaviour {
     public virtual void UpdateFactionAI() {
         faction.UpdateFactionResearch();
     }
+
+    public virtual void OnStationAdded(Station station) {
+
+    }
+
+    public virtual void OnStationRemoved(Station station) { 
+    
+    }
+
+    public virtual void OnShipAdded(Ship ship) { 
+    }
+
+    public virtual void OnShipRemoved(Ship ship) { 
+    }
 }
