@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class SimulationFactionAI : FactionAI {
     public Shipyard fleetCommand { get; private set; }
@@ -12,7 +13,7 @@ public class SimulationFactionAI : FactionAI {
 
     void SetFleetCommand() {
         for (int i = 0; i < faction.stations.Count; i++) {
-            if (faction.stations[i].stationType == Station.StationType.Shipyard) {
+            if (faction.stations[i].stationType == Station.StationType.FleetCommand) {
                 fleetCommand = (Shipyard)faction.stations[i];
                 return;
             }
@@ -20,10 +21,50 @@ public class SimulationFactionAI : FactionAI {
     }
 
     public override void UpdateFactionAI() {
+        Profiler.BeginSample("FactionAI");
         base.UpdateFactionAI();
         if (fleetCommand != null) {
-            ManageShipBuilding();
+            ManageDockedShips();
             ManageStationBuilding();
+            ManageShipBuilding();
+        }
+        Profiler.EndSample();
+    }
+
+    void ManageDockedShips() {
+        if (faction.HasEnemy()) {
+            if (fleetCommand.enemyUnitsInRange.Count > 0) {
+                List<Ship> combatShips = fleetCommand.GetHanger().GetAllCombatShips();
+                Vector2 position = fleetCommand.enemyUnitsInRange[0].GetPosition();
+                for (int i = 0; i < combatShips.Count; i++) {
+                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, position), ShipAI.CommandAction.AddToEnd);
+                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
+                }
+            } else {
+                List<Ship> combatShips = fleetCommand.GetHanger().GetAllUndamagedCombatShips();
+                if (combatShips.Count > 0) {
+
+                    int totalHealth = 0;
+                    for (int i = 0; i < combatShips.Count; i++) {
+                        totalHealth += combatShips[i].GetTotalHealth();
+                    }
+                    if (totalHealth > 3000 && combatShips.Count > 4) {
+                        Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
+                        if (enemyStation != null) {
+                            for (int i = 0; i < combatShips.Count; i++) {
+                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
+                                combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Ship scienceShip = fleetCommand.GetHanger().GetResearchShip();
+        if (scienceShip != null && !scienceShip.IsDammaged()) {
+            faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
+            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Reserch, faction.GetClosestStar(fleetCommand.GetPosition())), ShipAI.CommandAction.AddToEnd);
+            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
         }
     }
 

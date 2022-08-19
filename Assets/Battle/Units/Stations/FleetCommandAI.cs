@@ -11,43 +11,6 @@ public class FleetCommandAI : StationAI {
 
     private void UpdateFleetCommand() {
         Profiler.BeginSample("FleetCommandAI");
-        if (waitTime <= 0) {
-            waitTime = 1;
-            if (station.faction.HasEnemy()) {
-                if (station.enemyUnitsInRange.Count > 0) {
-                    List<Ship> combatShips = station.GetHanger().GetAllCombatShips();
-                    Vector2 position = station.enemyUnitsInRange[0].GetPosition();
-                    for (int i = 0; i < combatShips.Count; i++) {
-                        combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, position), ShipAI.CommandAction.AddToEnd);
-                        combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
-                        waitTime += 1;
-                    }
-                } else {
-                    List<Ship> combatShips = station.GetHanger().GetAllUndamagedCombatShips();
-                    if (combatShips.Count > 0) {
-
-                        int totalHealth = 0;
-                        for (int i = 0; i < combatShips.Count; i++) {
-                            totalHealth += combatShips[i].GetTotalHealth();
-                        }
-                        if (totalHealth > 3000 && combatShips.Count > 4) {
-                            Station enemyStation = station.faction.GetClosestEnemyStation(station.GetPosition());
-                            if (enemyStation != null) {
-                                for (int i = 0; i < combatShips.Count; i++) {
-                                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
-                                    combatShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
-                                    waitTime += 1;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Ship scienceShip = station.GetHanger().GetResearchShip();
-            if (scienceShip != null && !scienceShip.IsDammaged()) {
-                station.faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
-            }
-        }
         if (cargoTime <= 0) {
             foreach (var ship in station.GetHanger().GetShips()) {
                 if (ship.GetShipClass() == Ship.ShipClass.Transport && !ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal)) {
