@@ -63,7 +63,7 @@ public class SimulationFactionAI : FactionAI {
         Ship scienceShip = fleetCommand.GetHanger().GetResearchShip();
         if (scienceShip != null && !scienceShip.IsDammaged()) {
             faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
-            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Reserch, faction.GetClosestStar(fleetCommand.GetPosition())), ShipAI.CommandAction.AddToEnd);
+            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, faction.GetClosestStar(fleetCommand.GetPosition()),fleetCommand), ShipAI.CommandAction.AddToEnd);
             scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
         }
     }
