@@ -967,16 +967,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8198535041992587762}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 818ce4a0b9f5c9a4e92ead40d377062b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b4e27cddd28eac4e8f01505017c2ac2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   size: 0
-  maxHealth: 9046
+  maxHealth: 9000
   unitName: Shipyard
-  followDist: 90
-  stationType: 4
-  repairAmmount: 50
-  repairSpeed: 10
+  followDist: 0
+  stationType: 0
+  repairAmmount: 300
+  repairSpeed: 5
   repairTime: 0
 --- !u!114 &2497834230236504820
 MonoBehaviour:
