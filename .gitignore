@@ -154,6 +154,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
+!/Assets
 *.obj
 *.iobj
 *.pch
