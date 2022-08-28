@@ -21,73 +21,56 @@ public class MiningStationAI : StationAI {
 
     private void UpdateMinningStation() {
         if (GetMiningStation().activelyMinning) {
-            if (waitTime <= 0) {
-                ManageMinningStationTransports();
-                waitTime += 4;
-            }
             if (cargoTime <= 0) {
                 ManageMinningStationCargo();
             }
         } else if (!GetMiningStation().activelyMinning && transportShips.Count > 0) {
-            MiningStation closestMinningStation = GetMiningStation().faction.GetClosestMinningStationWantingTransport(GetMiningStation().GetPosition());
-            if (closestMinningStation != null) {
-                for (int i = transportShips.Count - 1; i >= 0; i--) {
-                    transportShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, closestMinningStation), ShipAI.CommandAction.AddToEnd);
-                    closestMinningStation.GetMiningStationAI().AddTransportShip(transportShips[i]);
-                    transportShips.RemoveAt(i);
-                }
+            for (int i = transportShips.Count - 1; i >= 0; i--) {
+                transportShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Idle), ShipAI.CommandAction.Replace);
+                transportShips.RemoveAt(i);
             }
         }
     }
-    
+
     void ManageMinningStationCargo() {
-        for (int i = 0; i < transportShips.Count; i++) {
-            if (transportShips[i] == null) {
-                transportShips.RemoveAt(i);
-                i--;
-            }
-        }
         for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
             Ship ship = station.GetHanger().GetShips()[i];
             if (ship.GetShipType() == Ship.ShipType.Transport) {
                 ship.GetCargoBay().LoadCargoFromBay(station.GetCargoBay(), CargoBay.CargoTypes.Metal, 600);
-                if (!transportShips.Contains(ship))
-                    transportShips.Add(ship);
                 cargoTime = 1;
                 break;
             }
         }
     }
 
-    void ManageMinningStationTransports() {
-        //if (transportShips.Count < GetWantedTransportShips()) {
-        //    AddTransportShipToBuildQueue();
-        //}
-    }
-
-    public override void OnShipBuilt(Ship ship) {
-        base.OnShipBuilt(ship);
-        transportShips.Add(ship);
-    }
-
     public void AddTransportShip(Ship ship) {
+        if (!GetMiningStation().activelyMinning)
+            Debug.LogError("Trying to add to an inactive station");
+        for (int i = 0; i < transportShips.Count; i++) {
+            if (transportShips[i] == null) {
+                transportShips.RemoveAt(i);
+                i--;
+            }
+        }
         if (!transportShips.Contains(ship)) {
             transportShips.Add(ship);
             ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Transport, station, station.faction.GetFleetCommand()), ShipAI.CommandAction.Replace);
         }
     }
 
-    public int GetWantedTransportShips() {
+    public int? GetWantedTransportShips() {
+        for (int i = 0; i < transportShips.Count; i++) {
+            if (transportShips[i] == null) {
+                transportShips.RemoveAt(i);
+                i--;
+            }
+        }
         if (!station.IsBuilt() || !GetMiningStation().activelyMinning)
-            return 0;
+            return null;
         return 2 - transportShips.Count;
     }
 
     public MiningStation GetMiningStation() {
         return (MiningStation)station;
-    }
-
-    public void AddTransportShipToBuildQueue() {
-        station.faction.GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(station.faction.GetTransportBlueprint());
     }
 }

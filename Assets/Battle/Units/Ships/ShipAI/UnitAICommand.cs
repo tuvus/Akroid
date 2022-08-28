@@ -85,8 +85,8 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType followOrAttackMoveUnitOrProtectOrDock, Unit unit) {
-        this.commandType = followOrAttackMoveUnitOrProtectOrDock;
+    public UnitAICommand(CommandType followOrAttackMoveUnitOrProtect, Unit unit) {
+        this.commandType = followOrAttackMoveUnitOrProtect;
         waitTime = 0;
         targetRotation = 0;
         targetPosition = Vector2.zero;
@@ -127,6 +127,18 @@ public class UnitAICommand {
         cargoType = null;
         targetStar = null;
         useAlternateCommandOnceDone = false;
+    }
+
+    public UnitAICommand(CommandType dock, Station destination) {
+        this.commandType = dock;
+        waitTime = 0;
+        targetRotation = 0;
+        targetPosition = Vector2.zero;
+        targetUnit = null;
+        cargoType = null;
+        targetStar = null;
+        useAlternateCommandOnceDone = false;
+        this.destinationStation = destination;
     }
 
     public UnitAICommand(CommandType transport, Station producer, Station destination) {

@@ -40,14 +40,14 @@ public class Ship : Unit {
     private List<Thruster> thrusters;
     [SerializeField] private float turnSpeed;
     [SerializeField] private float combatRotation;
-    public Station dockedStation { get; private set; }
+    public Station dockedStation;
     private float mass;
     private float thrust;
 
-    public ShipAction shipAction { get; private set; }
-    private float targetRotation;
-    private Vector2 movePosition;
-    private Station targetStation;
+    public ShipAction shipAction;
+    [SerializeField] private float targetRotation;
+    [SerializeField] private Vector2 movePosition;
+    [SerializeField] private Station targetStation;
 
     public struct ShipData {
         public int faction;
@@ -104,6 +104,7 @@ public class Ship : Unit {
 
         mass = size * 100;
         Spawn();
+        SetIdle();
     }
 
     public void SetupThrusters() {
@@ -162,10 +163,11 @@ public class Ship : Unit {
             float thrust = GetThrust() * Time.fixedDeltaTime * BattleManager.Instance.timeScale / GetMass();
             if (distance <= thrust + 2) {
                 transform.position = movePosition;
-                SetThrusters(false);
                 if (shipAction == ShipAction.Move) {
                     shipAction = ShipAction.Idle;
+                    SetThrusters(false);
                 } else if (shipAction == ShipAction.DockMove) {
+                    SetThrusters(false);
                     shipAction = ShipAction.Dock;
                 }
             } else {
@@ -173,6 +175,7 @@ public class Ship : Unit {
                 SetThrusters(true);
                 velocity = transform.up * GetThrust() / GetMass();
             }
+            position = transform.position;
         }
         if (shipAction == ShipAction.Dock) {
             DockShip(targetStation);
@@ -184,9 +187,13 @@ public class Ship : Unit {
     public void SetIdle() {
         shipAction = ShipAction.Idle;
         SetThrusters(false);
+        faction.GetFactionAI().AddIdleShip(this);
     }
 
     public void SetTargetRotate(float rotation) {
+        if (shipAction == ShipAction.Idle) {
+            faction.GetFactionAI().RemoveIdleShip(this);
+        }
         SetThrusters(false);
         shipAction = ShipAction.Rotate;
         this.targetRotation = rotation;
@@ -197,11 +204,13 @@ public class Ship : Unit {
     }
 
     public void SetTargetRotate(Vector2 position, float extraAngle) {
-        //print(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + " " + (float)(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + extraAngle));
         SetTargetRotate(Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + extraAngle));
     }
 
     public void SetMovePosition(Vector2 position) {
+        if (shipAction == ShipAction.Idle) {
+            faction.GetFactionAI().RemoveIdleShip(this);
+        }
         this.movePosition = position;
         SetTargetRotate(position);
         shipAction = ShipAction.MoveRotate;
@@ -212,6 +221,9 @@ public class Ship : Unit {
     }
 
     public void SetDockTarget(Station targetStation) {
+        if (shipAction == ShipAction.Idle) {
+            faction.GetFactionAI().RemoveIdleShip(this);
+        }
         this.targetStation = targetStation;
         SetMovePosition(targetStation.GetPosition(), GetSize() + targetStation.GetSize());
         shipAction = ShipAction.DockRotate;
@@ -243,6 +255,8 @@ public class Ship : Unit {
     }
 
     public override void DestroyUnit() {
+        if (shipAction == ShipAction.Idle)
+            faction.GetFactionAI().RemoveIdleShip(this);
         BattleManager.Instance.DestroyShip(this);
     }
 
@@ -329,6 +343,10 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveRotate) {
             SetMovePosition(movePosition);
         }
+    }
+
+    public bool IsIdle() {
+        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.currentCommandType == UnitAICommand.CommandType.Idle);
     }
 
     #endregion

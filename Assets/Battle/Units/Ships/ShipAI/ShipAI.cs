@@ -286,18 +286,17 @@ public class ShipAI : MonoBehaviour {
         }
         //Goes to then docks at the station.
         if (command.commandType == UnitAICommand.CommandType.Dock) {
-            if (command.targetUnit == null || (ship.GetShipType() != Ship.ShipType.Construction && !command.targetUnit.IsSpawned()) || !command.targetUnit.IsStation())
-                return CommandResult.StopRemove;
             if (newCommand) {
-                if (ship.dockedStation != null && ship.dockedStation != command.targetUnit) {
-                    ship.UndockShip(command.targetUnit.GetPosition());
+                if (command.destinationStation != null) {
+                    ship.SetDockTarget(command.destinationStation);
+                } else {
+                    ship.SetIdle();
+                    return CommandResult.ContinueRemove;
                 }
-                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
-                currentCommandType = UnitAICommand.CommandType.Dock;
                 newCommand = false;
             }
-            if (ship.shipAction == Ship.ShipAction.Idle) {
-                ship.DockShip((Station)command.targetUnit);
+            if (command.destinationStation == null || (ship.shipAction == Ship.ShipAction.Idle && ship.dockedStation == command.destinationStation)) {
+                ship.SetIdle();
                 return CommandResult.StopRemove;
             }
             return CommandResult.Stop;
@@ -342,42 +341,33 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.Stop;
         }
         if (command.commandType == UnitAICommand.CommandType.Transport) {
-            if (command.destinationStation == null) {
+            if (command.destinationStation == null || !command.destinationStation.IsSpawned()) {
                 return CommandResult.StopRemove;
             }
-            if (command.productionStation == null) {
-                command.productionStation = ship.faction.GetClosestMinningStationWantingTransport(ship.GetPosition());
-                if (command.productionStation == null) {
-                    return CommandResult.Stop;
-                }
+            if (command.productionStation == null || !command.destinationStation.IsSpawned()) {
+                return CommandResult.StopRemove;
             }
-            if (ship.dockedStation == null) {
-                if (newCommand) {
-                    newCommand = false;
-                    if (ship.dockedStation == null) {
-                        if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
-                            ship.SetDockTarget(command.destinationStation);
-                            currentCommandType = UnitAICommand.CommandType.Dock;
-                        } else {
-                            ship.SetDockTarget(command.productionStation);
-                            currentCommandType = UnitAICommand.CommandType.Dock;
-                        }
-                        return CommandResult.Stop;
-                    }
-                }
-                if (ship.shipAction == Ship.ShipAction.Idle) {
-                    currentCommandType = UnitAICommand.CommandType.Wait;
-                }
-                return CommandResult.Stop;
-            } else {
+            if (ship.dockedStation != null || newCommand) {
                 newCommand = false;
                 if (ship.dockedStation == command.productionStation) {
                     if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
                         ship.SetDockTarget(command.destinationStation);
                         currentCommandType = UnitAICommand.CommandType.Dock;
+                    } else {
+                        currentCommandType = UnitAICommand.CommandType.Wait;
                     }
                 } else if (ship.dockedStation == command.destinationStation) {
                     if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
+                        ship.SetDockTarget(command.productionStation);
+                        currentCommandType = UnitAICommand.CommandType.Dock;
+                    } else {
+                        currentCommandType = UnitAICommand.CommandType.Wait;
+                    }
+                } else {
+                    if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
+                        ship.SetDockTarget(command.destinationStation);
+                        currentCommandType = UnitAICommand.CommandType.Dock;
+                    } else {
                         ship.SetDockTarget(command.productionStation);
                         currentCommandType = UnitAICommand.CommandType.Dock;
                     }

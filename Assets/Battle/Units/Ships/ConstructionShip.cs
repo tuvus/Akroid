@@ -7,7 +7,7 @@ public class ConstructionShip : Ship {
 
     public override void UpdateUnit() {
         base.UpdateUnit();
-        if (Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {
+        if (targetStationBlueprint != null && Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {
             targetStationBlueprint = null;
             Explode();
         }

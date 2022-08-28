@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MiningStation : Station {
 
-    public bool activelyMinning { get; private set; }
+    public bool activelyMinning;
     public List<Asteroid> nearbyAsteroids;
     [SerializeField] private int miningAmmount;
     [SerializeField] private float miningSpeed;

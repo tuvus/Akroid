@@ -80,8 +80,9 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         enemyFactions = new List<Faction>();
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
-        GenerateFaction(factionData, startingResearchCost);
         factionAI.SetupFactionAI(this);
+        GenerateFaction(factionData, startingResearchCost);
+        factionAI.GenerateFactionAI();
     }
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
@@ -133,25 +134,21 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void AddShip(Ship ship) {
         ships.Add(ship);
         units.Add(ship);
-        factionAI.OnShipAdded(ship);
     }
 
     public void RemoveShip(Ship ship) {
         units.Remove(ship);
         ships.Remove(ship);
-        factionAI.OnShipRemoved(ship);
     }
 
     public void AddStation(Station station) {
         stations.Add(station);
         units.Add(station);
-        factionAI.OnStationAdded(station);
     }
 
     public void RemoveStation(Station station) {
         units.Remove(station);
         stations.Remove(station);
-        factionAI.OnStationRemoved(station);
     }
 
     public void AddStationBlueprint(Station station) {
@@ -379,11 +376,13 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             if (targetMinningStation == null || !targetMinningStation.IsSpawned() || !targetMinningStation.activelyMinning)
                 continue;
             float targetDistance = Vector2.Distance(position, targetMinningStation.GetPosition());
-            int targetWantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            int? targetWantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            if (!targetWantedTransportShips.HasValue)
+                continue;
             if (targetWantedTransportShips > wantedTransportShips || (targetWantedTransportShips == wantedTransportShips && targetDistance < distance)) {
                 minningStation = targetMinningStation;
                 distance = targetDistance;
-                wantedTransportShips = targetWantedTransportShips;
+                wantedTransportShips = targetWantedTransportShips.Value;
             }
         }
         return minningStation;
@@ -394,7 +393,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         for (int i = 0; i < activeMiningStations.Count; i++) {
             MiningStation targetMinningStation = activeMiningStations[i];
             if (targetMinningStation == null || !targetMinningStation.IsSpawned()) {
-                count += targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+                int? wantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+                if (wantedTransportShips.HasValue) {
+                    count += wantedTransportShips.Value;
+                }
             }
 
         }

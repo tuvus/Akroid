@@ -8,6 +8,9 @@ public class SimulationFactionAI : FactionAI {
 
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
+    }
+
+    public override void GenerateFactionAI() {
         SetFleetCommand();
     }
 
@@ -24,11 +27,38 @@ public class SimulationFactionAI : FactionAI {
         Profiler.BeginSample("FactionAI");
         base.UpdateFactionAI();
         if (fleetCommand != null) {
+            ManageIdleShips();
             ManageDockedShips();
             ManageStationBuilding();
             ManageShipBuilding();
         }
         Profiler.EndSample();
+    }
+
+    void ManageIdleShips() {
+        for (int i = 0; i < idleShips.Count; i++) {
+            if (idleShips[i].IsIdle()) {
+                if (idleShips[i].IsCombatShip()) {
+                    if (idleShips[i].dockedStation == null) {
+                        idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.Replace);
+                    }
+                } else if (idleShips[i].IsTransportShip()) {
+                    Station minningStation = faction.GetClosestMinningStationWantingTransport(idleShips[i].GetPosition());
+                    if (minningStation != null) {
+                        ((MiningStationAI)minningStation.stationAI).AddTransportShip(idleShips[i]);
+                    } else if (idleShips[i].dockedStation != fleetCommand) {
+                        idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand),ShipAI.CommandAction.Replace);
+                    }
+                } else if (idleShips[i].IsScienceShip()) {
+                    idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, faction.GetClosestStar(idleShips[i].GetPosition()), fleetCommand), ShipAI.CommandAction.Replace);
+                } else if (idleShips[i].IsConstructionShip()) {
+                    MiningStation newMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, Station.StationType.MiningStation, "MiningStation", faction.factionPosition, Random.Range(0, 360), false));
+                    ((ConstructionShip)idleShips[i]).targetStationBlueprint = newMinningStation;
+                    idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Move, newMinningStation.GetPosition()), ShipAI.CommandAction.AddToEnd);
+                    return;
+                }
+            }
+        }
     }
 
     void ManageDockedShips() {
@@ -59,12 +89,6 @@ public class SimulationFactionAI : FactionAI {
                     }
                 }
             }
-        }
-        Ship scienceShip = fleetCommand.GetHanger().GetResearchShip();
-        if (scienceShip != null && !scienceShip.IsDammaged()) {
-            faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
-            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, faction.GetClosestStar(fleetCommand.GetPosition()),fleetCommand), ShipAI.CommandAction.AddToEnd);
-            scienceShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
         }
     }
 

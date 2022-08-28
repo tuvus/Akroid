@@ -5,25 +5,26 @@ using UnityEngine;
 public class FactionAI : MonoBehaviour {
     protected Faction faction;
 
+    [SerializeField] protected List<Ship> idleShips;
+
     public virtual void SetupFactionAI(Faction faction) {
         this.faction = faction;
+        idleShips = new List<Ship>(10);
+    }
+
+    public virtual void GenerateFactionAI() {
+
     }
 
     public virtual void UpdateFactionAI() {
         faction.UpdateFactionResearch();
     }
 
-    public virtual void OnStationAdded(Station station) {
-
+    public virtual void AddIdleShip(Ship ship) {
+        idleShips.Add(ship);
     }
 
-    public virtual void OnStationRemoved(Station station) { 
-    
-    }
-
-    public virtual void OnShipAdded(Ship ship) { 
-    }
-
-    public virtual void OnShipRemoved(Ship ship) { 
+    public virtual void RemoveIdleShip(Ship ship) {
+        idleShips.Remove(ship);
     }
 }

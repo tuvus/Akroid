@@ -24,32 +24,7 @@ public class FleetCommandAI : StationAI {
     }
 
     public override void OnShipBuilt(Ship ship) {
-        if (!ship.IsSpawned())
-            return;
-        if (ship.GetShipType() == Ship.ShipType.Transport) {
-            foreach (var station in station.faction.GetAllFactionStations()) {
-                if (station != null && station != this && station.IsSpawned() && station.stationType == Station.StationType.MiningStation) {
-                    if (((MiningStation)station).GetMiningStationAI().transportShips.Count < 1) {
-                        ((MiningStation)station).GetMiningStationAI().AddTransportShip(ship);
-                        ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
-                        return;
-                    }
-                }
-            }
-            return;
-        }
-        if (ship.GetShipType() == Ship.ShipType.Construction) {
-            MiningStation newMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(station.faction.factionIndex, Station.StationType.MiningStation, "MiningStation", station.GetPosition(), Random.Range(0, 360), false));
-            ((ConstructionShip)ship).targetStationBlueprint = newMinningStation;
-            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, newMinningStation), ShipAI.CommandAction.AddToEnd);
-            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, station), ShipAI.CommandAction.AddToEnd);
-            station.faction.GetFleetCommand().GetConstructionBay().AddConstructionToBeginningQueue(station.faction.GetTransportBlueprint());
-            newMinningStation.GetMiningStationAI().AddTransportShipToBuildQueue();
-            return;
-        }
-        if (ship.GetShipType() == Ship.ShipType.Research) {
-            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, station.faction.GetClosestStar(station.GetPosition()), station),ShipAI.CommandAction.Replace);
-        }
+
     }
 
     protected override void ManageStationRepair() {
