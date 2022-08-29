@@ -5,6 +5,7 @@ using UnityEngine.Profiling;
 
 public class SimulationFactionAI : FactionAI {
     public Shipyard fleetCommand { get; private set; }
+    float updateTime;
 
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
@@ -23,10 +24,14 @@ public class SimulationFactionAI : FactionAI {
         Profiler.BeginSample("FactionAI");
         base.UpdateFactionAI();
         if (fleetCommand != null) {
-            ManageIdleShips();
-            ManageDockedShips();
-            ManageStationBuilding();
-            ManageShipBuilding();
+            updateTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+            if (updateTime <= 0) {
+                ManageIdleShips();
+                ManageDockedShips();
+                ManageStationBuilding();
+                ManageShipBuilding();
+                updateTime += .2f;
+            }
         }
         Profiler.EndSample();
     }
@@ -68,13 +73,12 @@ public class SimulationFactionAI : FactionAI {
                 }
             } else {
                 List<Ship> combatShips = fleetCommand.GetHanger().GetAllUndamagedCombatShips();
-                if (combatShips.Count > 0) {
-
+                if (combatShips.Count > 4) {
                     int totalHealth = 0;
                     for (int i = 0; i < combatShips.Count; i++) {
                         totalHealth += combatShips[i].GetTotalHealth();
                     }
-                    if (totalHealth > 3000 && combatShips.Count > 4) {
+                    if (totalHealth > 3000) {
                         Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
                         if (enemyStation != null) {
                             for (int i = 0; i < combatShips.Count; i++) {

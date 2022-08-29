@@ -5,7 +5,7 @@ using UnityEngine.Profiling;
 
 public class StationAI : MonoBehaviour {
     protected Station station;
-    protected float waitTime;
+    public float waitTime;
     protected float cargoTime;
 
     public virtual void SetupStationAI(Station station) {
