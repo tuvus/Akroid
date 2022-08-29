@@ -73,9 +73,7 @@ public abstract class Unit : BattleObject {
         }
         if (IsSpawned()) {
             if (shieldGenerator != null) {
-                Profiler.BeginSample("ShieldGenerator");
                 shieldGenerator.UpdateShieldGenerator();
-                Profiler.EndSample();
             }
         }
     }
@@ -114,14 +112,14 @@ public abstract class Unit : BattleObject {
 
     protected virtual void UpdateWeapons() {
         for (int i = 0; i < turrets.Count; i++) {
-            Profiler.BeginSample("Turret" + i);
+            //Profiler.BeginSample("Turret" + i);
             turrets[i].UpdateTurret();
-            Profiler.EndSample();
+            //Profiler.EndSample();
         }
         for (int i = 0; i < missileLaunchers.Count; i++) {
-            Profiler.BeginSample("MissileLauncher" + i);
+            //Profiler.BeginSample("MissileLauncher" + i);
             missileLaunchers[i].UpdateMissileLauncher();
-            Profiler.EndSample();
+            //Profiler.EndSample();
         }
     }
 

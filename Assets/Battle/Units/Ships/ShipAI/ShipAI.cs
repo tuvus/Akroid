@@ -58,21 +58,17 @@ public class ShipAI : MonoBehaviour {
     }
 
     public void UpdateAI(float deltaTime) {
-        Profiler.BeginSample("ShipAI");
-        for (int i = 0; i < commands.Count; i++) {
-            Profiler.BeginSample("ResolveCommand " + commands[i].commandType);
-            CommandResult result = ResolveCommand(commands[i], deltaTime, i);
-            Profiler.EndSample();
+        if (commands.Count > 0) {
+            Profiler.BeginSample("ShipAI ResolveCommand " + commands[0].commandType);
+            CommandResult result = ResolveCommand(commands[0], deltaTime, 0);
             if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
-                commands.RemoveAt(i);
-                i--;
+                commands.RemoveAt(0);
                 newCommand = true;
             }
-            if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
-                break;
-            }
+            if (result == CommandResult.ContinueRemove || result == CommandResult.Continue)
+                UpdateAI(deltaTime);
+            Profiler.EndSample();
         }
-        Profiler.EndSample();
     }
 
     CommandResult ResolveCommand(UnitAICommand command, float deltaTime, int index = -1) {

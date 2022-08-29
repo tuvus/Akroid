@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
 public class MissileLauncher : MonoBehaviour {
@@ -33,9 +34,12 @@ public class MissileLauncher : MonoBehaviour {
     public void UpdateMissileLauncher() {
         if (MissileLauncherHibernationStatus())
             return;
+        Profiler.BeginSample(name);
         reloadController.UpdateReloadController(Time.fixedDeltaTime * BattleManager.Instance.timeScale * unit.faction.MissileReloadModifier, 1);
-        if (!reloadController.ReadyToFire())
+        if (!reloadController.ReadyToFire()) {
+            Profiler.EndSample();
             return;
+        }
         if (!IsTargetViable(targetUnit)) {
             FindNewTarget();
         }
@@ -43,6 +47,7 @@ public class MissileLauncher : MonoBehaviour {
             Fire();
             targetUnit = null;
         }
+        Profiler.EndSample();
     }
 
     public bool MissileLauncherHibernationStatus() {

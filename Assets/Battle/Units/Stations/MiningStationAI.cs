@@ -20,9 +20,7 @@ public class MiningStationAI : StationAI {
 
     public override void UpdateAI() {
         base.UpdateAI();
-        Profiler.BeginSample("MinningStationAI");
         UpdateMinningStation();
-        Profiler.EndSample();
     }
 
     private void UpdateMinningStation() {

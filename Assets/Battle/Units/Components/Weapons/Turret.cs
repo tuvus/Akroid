@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
 public class Turret : MonoBehaviour {
@@ -45,9 +46,11 @@ public class Turret : MonoBehaviour {
     public virtual void UpdateTurret() {
         if (TurretHibernationStatus())
             return;
+        Profiler.BeginSample(name);
         UpdateTurretReload();
         UpdateTurretAim();
         UpdateTurretWeapon();
+        Profiler.EndSample();
     }
 
     protected virtual bool TurretHibernationStatus() {

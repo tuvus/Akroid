@@ -13,13 +13,11 @@ public class StationAI : MonoBehaviour {
     }
 
     public virtual void UpdateAI() {
-        Profiler.BeginSample("StationAI");
         waitTime = Mathf.Max(waitTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
         cargoTime = Mathf.Max(cargoTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
         if (station.repairTime <= 0) {
             ManageStationRepair();
         }
-        Profiler.EndSample();
     }
 
     protected virtual void ManageStationRepair() {
