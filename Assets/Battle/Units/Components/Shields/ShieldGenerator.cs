@@ -26,8 +26,8 @@ public class ShieldGenerator : MonoBehaviour {
 		CreateShield(true);
 	}
 
-	public void UpdateShieldGenerator() {
-		timeTillShieldCount -= Time.fixedDeltaTime * BattleManager.Instance.timeScale * unit.faction.ShieldRegenModifier;
+	public void UpdateShieldGenerator(float deltaTime) {
+		timeTillShieldCount -= deltaTime * unit.faction.ShieldRegenModifier;
 		if (shield.health == 0) {
 			if (timeTillShieldCount <= 0) {
 				CreateShield(false);

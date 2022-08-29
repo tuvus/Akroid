@@ -18,8 +18,8 @@ public class MiningStationAI : StationAI {
         wantedTransports = Mathf.RoundToInt(Vector2.Distance(station.GetPosition(), station.faction.GetFleetCommand().GetPosition()) / 1000);
     }
 
-    public override void UpdateAI() {
-        base.UpdateAI();
+    public override void UpdateAI(float deltaTime) {
+        base.UpdateAI(deltaTime);
         UpdateMinningStation();
     }
 

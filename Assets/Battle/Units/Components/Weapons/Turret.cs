@@ -43,13 +43,13 @@ public class Turret : MonoBehaviour {
         reloadController.SetupReloadController();
     }
 
-    public virtual void UpdateTurret() {
+    public virtual void UpdateTurret(float deltaTime) {
         if (TurretHibernationStatus())
             return;
         Profiler.BeginSample(name);
-        UpdateTurretReload();
-        UpdateTurretAim();
-        UpdateTurretWeapon();
+        UpdateTurretReload(deltaTime);
+        UpdateTurretAim(deltaTime);
+        UpdateTurretWeapon(deltaTime);
         Profiler.EndSample();
     }
 
@@ -57,11 +57,11 @@ public class Turret : MonoBehaviour {
         return targetUnit == null && aimed && unit.enemyUnitsInRange.Count == 0 && reloadController.ReadyToHibernate();
     }
 
-    protected virtual void UpdateTurretReload() {
-        reloadController.UpdateReloadController(Time.fixedDeltaTime * BattleManager.Instance.timeScale, GetReloadTimeModifier());
+    protected virtual void UpdateTurretReload(float deltaTime) {
+        reloadController.UpdateReloadController(deltaTime, GetReloadTimeModifier());
     }
 
-    protected void UpdateTurretAim() {
+    protected void UpdateTurretAim(float deltaTime) {
         if (IsTargetViable(targetUnit) && IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
             SetTargetRotation(localShipAngle);
         } else {
@@ -71,10 +71,10 @@ public class Turret : MonoBehaviour {
         }
 
         if (!aimed)
-            RotateTowards();
+            RotateTowards(deltaTime);
     }
 
-    protected virtual void UpdateTurretWeapon() {
+    protected virtual void UpdateTurretWeapon(float deltaTime) {
         if (aimed && targetUnit != null && ReadyToFire()) {
             Fire();
             ChangeTargetUnit(null);
@@ -175,8 +175,8 @@ public class Turret : MonoBehaviour {
         }
     }
 
-    void RotateTowards() {
-        float localRotateSpeed = GetRotateSpeed();
+    void RotateTowards(float deltaTime) {
+        float localRotateSpeed = rotateSpeed * deltaTime;
 
         float rotation = transform.localRotation.eulerAngles.z;
         float target = Calculator.ConvertTo180DegRotation(targetRotation - rotation);
@@ -242,10 +242,6 @@ public class Turret : MonoBehaviour {
 
     public virtual float GetRange() {
         return range;
-    }
-
-    public float GetRotateSpeed() {
-        return rotateSpeed * Time.fixedDeltaTime * BattleManager.Instance.timeScale;
     }
 
     public virtual Vector2 GetTargetPosition(Unit target) {

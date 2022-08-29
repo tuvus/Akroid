@@ -11,10 +11,10 @@ public class Shipyard : Station {
         constructionBay.SetupConstructionBay(this);
     }
 
-    public override void UpdateUnit() {
-        base.UpdateUnit();
+    public override void UpdateUnit(float deltaTime) {
+        base.UpdateUnit(deltaTime);
         if (constructionBay != null && built)
-            constructionBay.UpdateConstructionBay(Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+            constructionBay.UpdateConstructionBay(deltaTime);
     }
 
     public ConstructionBay GetConstructionBay() {

@@ -355,24 +355,25 @@ public class BattleManager : MonoBehaviour {
     #endregion
 
     public virtual void FixedUpdate() {
+        float deltaTime = Time.fixedDeltaTime * timeScale;
         for (int i = 0; i < factions.Count; i++) {
             Profiler.BeginSample("FactionsUpdate:" + factions[i].name + i);
-            factions[i].UpdateFaction();
+            factions[i].UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
         for (int i = 0; i < units.Count; i++) {
             Profiler.BeginSample("UnitsUpdate:" + units[i].GetUnitName() + i);
-            units[i].UpdateUnit();
+            units[i].UpdateUnit(deltaTime);
             Profiler.EndSample();
         }
         Profiler.BeginSample("ProjectilesUpdate");
         for (int i = 0; i < usedProjectiles.Count; i++) {
-            projectiles[usedProjectiles[i]].UpdateProjectile();
+            projectiles[usedProjectiles[i]].UpdateProjectile(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("MissilesUpdate");
         for (int i = 0; i < usedMissiles.Count; i++) {
-            missiles[usedMissiles[i]].UpdateMissile();
+            missiles[usedMissiles[i]].UpdateMissile(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("DestroyedUnitsUpdate");

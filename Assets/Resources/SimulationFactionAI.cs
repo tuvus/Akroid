@@ -20,11 +20,11 @@ public class SimulationFactionAI : FactionAI {
         }
     }
 
-    public override void UpdateFactionAI() {
+    public override void UpdateFactionAI(float deltaTime) {
         Profiler.BeginSample("FactionAI");
-        base.UpdateFactionAI();
+        base.UpdateFactionAI(deltaTime);
         if (fleetCommand != null) {
-            updateTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+            updateTime -= deltaTime;
             if (updateTime <= 0) {
                 ManageIdleShips();
                 ManageDockedShips();

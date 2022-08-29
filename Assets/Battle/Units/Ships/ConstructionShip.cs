@@ -5,8 +5,8 @@ using UnityEngine;
 public class ConstructionShip : Ship {
     public Station targetStationBlueprint;
 
-    public override void UpdateUnit() {
-        base.UpdateUnit();
+    public override void UpdateUnit(float deltaTime) {
+        base.UpdateUnit(deltaTime);
         if (targetStationBlueprint != null && Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {
             targetStationBlueprint = null;
             Explode();

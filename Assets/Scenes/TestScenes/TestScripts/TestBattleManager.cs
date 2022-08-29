@@ -17,11 +17,11 @@ public class TestBattleManager : BattleManager {
             target.transform.position = LocalPlayer.Instance.GetLocalPlayerInput().GetMouseWorldPosition();
         }
         for (int i = 0; i < usedProjectiles.Count; i++) {
-            projectiles[usedProjectiles[i]].UpdateProjectile();
+            projectiles[usedProjectiles[i]].UpdateProjectile(Time.fixedDeltaTime);
         }
 
         for (int i = 0; i < usedMissiles.Count; i++) {
-            missiles[usedMissiles[i]].UpdateMissile();
+            missiles[usedMissiles[i]].UpdateMissile(Time.fixedDeltaTime);
         }
     }
 }

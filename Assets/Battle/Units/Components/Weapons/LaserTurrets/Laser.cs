@@ -44,30 +44,30 @@ public class Laser : MonoBehaviour {
     }
 
 
-    public void UpdateLaser() {
+    public void UpdateLaser(float deltaTime) {
         if (fireing) {
             spriteRenderer.enabled = true;
             transform.localPosition = new Vector2(0, 0);
             transform.rotation = transform.parent.rotation;
 
-            UpdateDamageAndCollision();
+            UpdateDamageAndCollision(deltaTime);
 
             SetDistance();
 
             if (fireTime > 0) {
-                UpdateFireTime();
+                UpdateFireTime(deltaTime);
             } else {
-                UpdateFadeTime();
+                UpdateFadeTime(deltaTime);
             }
         }
     }
 
-    void UpdateFireTime() {
-        fireTime = Mathf.Max(0, fireTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+    void UpdateFireTime(float deltaTime) {
+        fireTime = Mathf.Max(0, fireTime - deltaTime);
     }
 
-    void UpdateFadeTime() {
-        fadeTime = Mathf.Max(0, fadeTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+    void UpdateFadeTime(float deltaTime) {
+        fadeTime = Mathf.Max(0, fadeTime - deltaTime);
         if (fadeTime <= 0) {
             ExpireLaser();
         } else {
@@ -75,7 +75,7 @@ public class Laser : MonoBehaviour {
         }
     }
 
-    void UpdateDamageAndCollision() {
+    void UpdateDamageAndCollision(float deltaTime) {
         hitPoint = null;
         Physics2D.RaycastNonAlloc(transform.position, transform.up, contacts, GetLaserRange() + translateAmount);
         Shield hitShield = null;
@@ -110,17 +110,17 @@ public class Laser : MonoBehaviour {
             contacts[i] = new RaycastHit2D();
         }
         if (hitUnit != null) {
-            hitUnit.TakeDamage(GetDamage(false));
+            hitUnit.TakeDamage(GetDamage(deltaTime,false));
             return;
         }
         if (hitShield != null) {
-            hitShield.TakeDamage(GetDamage(true));
+            hitShield.TakeDamage(GetDamage(deltaTime, true));
             return;
         }
     }
 
-    int GetDamage(bool hitShield) {
-        float damage = laserTurret.laserDamagePerSecond * Time.fixedDeltaTime * BattleManager.Instance.timeScale * laserTurret.GetUnit().faction.LaserDamageModifier;
+    int GetDamage(float deltaTime, bool hitShield) {
+        float damage = laserTurret.laserDamagePerSecond * deltaTime * laserTurret.GetUnit().faction.LaserDamageModifier;
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;

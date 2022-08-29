@@ -19,18 +19,18 @@ public class LaserTurret : Turret {
         turretOffset *= transform.localScale.y;
     }
 
-    protected override void UpdateTurretReload() {
+    protected override void UpdateTurretReload(float deltaTime) {
         if (!laser.IsFireing())
-            base.UpdateTurretReload();
+            base.UpdateTurretReload(deltaTime);
     }
 
     protected override bool TurretHibernationStatus() {
         return base.TurretHibernationStatus() && !laser.IsFireing();
     }
 
-    protected override void UpdateTurretWeapon() {
-        base.UpdateTurretWeapon();
-        laser.UpdateLaser();
+    protected override void UpdateTurretWeapon(float deltaTime) {
+        base.UpdateTurretWeapon(deltaTime);
+        laser.UpdateLaser(deltaTime);
     }
 
     public override void Fire() {

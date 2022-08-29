@@ -66,14 +66,14 @@ public abstract class Unit : BattleObject {
         }
     }
 
-    public virtual void UpdateUnit() {
+    public virtual void UpdateUnit(float deltaTime) {
         if (IsTargetable()) {
             FindEnemies();
-            UpdateWeapons();
+            UpdateWeapons(deltaTime);
         }
         if (IsSpawned()) {
             if (shieldGenerator != null) {
-                shieldGenerator.UpdateShieldGenerator();
+                shieldGenerator.UpdateShieldGenerator(deltaTime);
             }
         }
     }
@@ -110,15 +110,15 @@ public abstract class Unit : BattleObject {
         Profiler.EndSample();
     }
 
-    protected virtual void UpdateWeapons() {
+    protected virtual void UpdateWeapons(float deltaTime) {
         for (int i = 0; i < turrets.Count; i++) {
             //Profiler.BeginSample("Turret" + i);
-            turrets[i].UpdateTurret();
+            turrets[i].UpdateTurret(deltaTime);
             //Profiler.EndSample();
         }
         for (int i = 0; i < missileLaunchers.Count; i++) {
             //Profiler.BeginSample("MissileLauncher" + i);
-            missileLaunchers[i].UpdateMissileLauncher();
+            missileLaunchers[i].UpdateMissileLauncher(deltaTime);
             //Profiler.EndSample();
         }
     }

@@ -16,7 +16,7 @@ public class FactionAI : MonoBehaviour {
 
     }
 
-    public virtual void UpdateFactionAI() {
+    public virtual void UpdateFactionAI(float deltaTime) {
         faction.UpdateFactionResearch();
     }
 

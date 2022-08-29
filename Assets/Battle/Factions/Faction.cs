@@ -200,8 +200,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return true;
     }
 
-    public void UpdateFaction() {
-        factionAI.UpdateFactionAI();
+    public void UpdateFaction(float deltaTime) {
+        factionAI.UpdateFactionAI(deltaTime);
         UpdateFactionTotalUnitSize();
     }
 

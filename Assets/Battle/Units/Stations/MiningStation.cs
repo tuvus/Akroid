@@ -42,10 +42,10 @@ public class MiningStation : Station {
         return positionGiver.position;
     }
 
-    public override void UpdateUnit() {
-        base.UpdateUnit();
+    public override void UpdateUnit(float deltaTime) {
+        base.UpdateUnit(deltaTime);
         if (activelyMinning) {
-            minningTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+            minningTime -= deltaTime;
             if (minningTime <= 0) {
                 ManageStationMinning();
                 minningTime += GetMiningSpeed();

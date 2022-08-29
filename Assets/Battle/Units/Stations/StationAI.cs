@@ -12,9 +12,9 @@ public class StationAI : MonoBehaviour {
         this.station = station;
     }
 
-    public virtual void UpdateAI() {
-        waitTime = Mathf.Max(waitTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
-        cargoTime = Mathf.Max(cargoTime - Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
+    public virtual void UpdateAI(float deltaTime) {
+        waitTime = Mathf.Max(waitTime - deltaTime, 0);
+        cargoTime = Mathf.Max(cargoTime - deltaTime, 0);
         if (station.repairTime <= 0) {
             ManageStationRepair();
         }

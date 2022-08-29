@@ -115,17 +115,17 @@ public class Ship : Unit {
         }
     }
 
-    public override void UpdateUnit() {
-        base.UpdateUnit();
+    public override void UpdateUnit(float deltaTime) {
+        base.UpdateUnit(deltaTime);
         if (IsSpawned()) {
             Profiler.BeginSample("Movement");
-            UpdateMovement();
+            UpdateMovement(deltaTime);
             Profiler.EndSample();
-            shipAI.UpdateAI(Time.fixedDeltaTime * BattleManager.Instance.timeScale);
+            shipAI.UpdateAI(deltaTime);
         }
     }
 
-    void UpdateMovement() {
+    void UpdateMovement(float deltaTime) {
         if (shipAction == ShipAction.Idle) {
             return;
         }
@@ -144,7 +144,7 @@ public class Ship : Unit {
         }
         if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
-            if (Mathf.Abs(localRotation) <= GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale) {
+            if (Mathf.Abs(localRotation) <= GetTurnSpeed() * deltaTime) {
                 SetRotation(targetRotation);
                 if (shipAction == ShipAction.Rotate) {
                     shipAction = ShipAction.Idle;
@@ -154,16 +154,16 @@ public class Ship : Unit {
                     shipAction = ShipAction.DockMove;
                 }
             } else if (localRotation > 0) {
-                SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale));
+                SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
                 return;
             } else {
-                SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * Time.fixedDeltaTime * BattleManager.Instance.timeScale));
+                SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * deltaTime));
                 return;
             }
         }
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
-            float thrust = GetThrust() * Time.fixedDeltaTime * BattleManager.Instance.timeScale / GetMass();
+            float thrust = GetThrust() * deltaTime / GetMass();
             if (distance <= thrust + 2) {
                 transform.position = movePosition;
                 position = movePosition;

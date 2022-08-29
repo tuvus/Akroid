@@ -42,15 +42,15 @@ public class Projectile : MonoBehaviour {
 		Activate(true);
 	}
 
-	public void UpdateProjectile() {
+	public void UpdateProjectile(float deltaTime) {
 		if (hit) {
 			if (particleSystem.isPlaying == false) {
 				RemoveProjectile();
 			}
 		} else {
-			transform.position += new Vector3(shipVelocity.x * Time.fixedDeltaTime * BattleManager.Instance.timeScale, shipVelocity.y * Time.fixedDeltaTime * BattleManager.Instance.timeScale, 0);
-			transform.Translate(Vector2.up * speed * Time.fixedDeltaTime * BattleManager.Instance.timeScale);
-			distance += speed * Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+			transform.position += new Vector3(shipVelocity.x * deltaTime, shipVelocity.y * deltaTime, 0);
+			transform.Translate(Vector2.up * speed * deltaTime);
+			distance += speed * deltaTime;
 			if (distance >= projectileRange) {
 				RemoveProjectile();
 			}

@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class FleetCommandAI : StationAI {
-    public override void UpdateAI() {
-        base.UpdateAI();
+    public override void UpdateAI(float deltaTime) {
+        base.UpdateAI(deltaTime);
         UpdateFleetCommand();
     }
 

@@ -51,26 +51,24 @@ public class Missile : MonoBehaviour {
         Activate(true);
     }
 
-    public void UpdateMissile() {
+    public void UpdateMissile(float deltaTime) {
         if (hit) {
             if (explodeParticleSystem.isPlaying == false && thrustParticleSystem.isPlaying == false) {
                 RemoveMissile();
             } else {
-                float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
-                transform.Translate(velocity * time);
+                transform.Translate(velocity * deltaTime);
             }
         } else if (expired) {
             if (thrustParticleSystem.isPlaying == false) { 
                 RemoveMissile();
             } else {
-                float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
-                transform.Translate(velocity * time);
+                transform.Translate(velocity * deltaTime);
             }
         } else {
-            turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + Time.fixedDeltaTime * BattleManager.Instance.timeScale * 50);
+            turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
             if (target != null)
                 RotateMissile();
-            MoveMissile();
+            MoveMissile(deltaTime);
         }
     }
 
@@ -88,11 +86,10 @@ public class Missile : MonoBehaviour {
         }
     }
 
-    void MoveMissile() {
-        float time = Time.fixedDeltaTime * BattleManager.Instance.timeScale;
-        transform.Translate(velocity * time);
-        transform.Translate(Vector2.up * thrustSpeed * time);
-        distance += thrustSpeed * time;
+    void MoveMissile(float deltaTime) {
+        transform.Translate(velocity * deltaTime);
+        transform.Translate(Vector2.up * thrustSpeed * deltaTime);
+        distance += thrustSpeed * deltaTime;
         if (distance >= fuelRange) {
             Expire();
         }

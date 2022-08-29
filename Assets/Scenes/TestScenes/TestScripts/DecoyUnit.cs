@@ -29,10 +29,10 @@ public class DecoyUnit : Unit {
     public void FixedUpdate() {
         velocity = inputVelocity;
         foreach (var turret in turrets) {
-            turret.UpdateTurret();
+            turret.UpdateTurret(Time.fixedDeltaTime);
         }
         foreach (var missileLauncher in missileLaunchers) {
-            missileLauncher.UpdateMissileLauncher(); ;
+            missileLauncher.UpdateMissileLauncher(Time.fixedDeltaTime);
         }
     }
 

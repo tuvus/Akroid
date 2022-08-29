@@ -123,11 +123,11 @@ public class Station : Unit, IPositionConfirmer {
         return true;
     }
 
-    public override void UpdateUnit() {
+    public override void UpdateUnit(float deltaTime) {
         if (built && IsSpawned()) {
-            base.UpdateUnit();
-            stationAI.UpdateAI();
-            repairTime -= Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+            base.UpdateUnit(deltaTime);
+            stationAI.UpdateAI(deltaTime);
+            repairTime -= deltaTime;
         }
     }
 
