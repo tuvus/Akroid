@@ -180,6 +180,7 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Dock) {
             DockShip(targetStation);
             shipAction = ShipAction.Idle;
+            velocity = Vector2.zero;
         }
     }
 
@@ -269,6 +270,7 @@ public class Ship : Unit {
 
     public void UndockShip() {
         UndockShip(Random.Range(0f, 360f));
+        velocity = Vector2.zero;
     }
 
     public void UndockShip(Vector2 position) {
