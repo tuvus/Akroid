@@ -110,8 +110,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 20
-  maxDamage: 30
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -385,14 +385,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 986ff4cee0246a8408ae7fdec4666670, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 2300
   unitName: MiningStation
-  size: 0
   followDist: 50
   stationType: 3
   repairAmmount: 10
   repairSpeed: 5
   repairTime: 0
+  activelyMinning: 0
   nearbyAsteroids: []
   miningAmmount: 500
   miningSpeed: 5
@@ -5453,8 +5454,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 20
-  maxDamage: 30
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
@@ -5680,8 +5681,8 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireVelocity: 90
   fireAccuracy: 0.2
-  minDamage: 20
-  maxDamage: 30
+  minDamage: 30
+  maxDamage: 40
   projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}

@@ -19,6 +19,14 @@ public class FleetCommandAI : StationAI {
                     break;
                 }
             }
+
+        }
+        if (waitTime <= 0) {
+            Ship scienceShip = station.GetHanger().GetResearchShip();
+            if (scienceShip != null && !scienceShip.IsDammaged()) {
+                station.faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
+            }
+            waitTime += 3;
         }
         Profiler.EndSample();
     }

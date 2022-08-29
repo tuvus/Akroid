@@ -69,6 +69,7 @@ public class Station : Unit, IPositionConfirmer {
         } else {
             faction.AddStation(this);
             Spawn();
+            faction.GetFactionAI().OnStationBuilt(this);
         }
     }
 
@@ -192,6 +193,7 @@ public class Station : Unit, IPositionConfirmer {
             spriteRenderer.color = new Color(1, 1, 1, 1);
             Spawn();
             GetUnitSelection().UpdateFactionColor();
+            faction.GetFactionAI().OnStationBuilt(this);
             return true;
         }
         return false;

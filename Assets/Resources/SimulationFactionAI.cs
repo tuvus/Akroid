@@ -11,15 +11,11 @@ public class SimulationFactionAI : FactionAI {
     }
 
     public override void GenerateFactionAI() {
-        SetFleetCommand();
     }
 
-    void SetFleetCommand() {
-        for (int i = 0; i < faction.stations.Count; i++) {
-            if (faction.stations[i].stationType == Station.StationType.FleetCommand) {
-                fleetCommand = (Shipyard)faction.stations[i];
-                return;
-            }
+    public override void OnStationBuilt(Station station) {
+        if (station.stationType == Station.StationType.FleetCommand) {
+            fleetCommand = (Shipyard)station;
         }
     }
 
@@ -47,7 +43,7 @@ public class SimulationFactionAI : FactionAI {
                     if (minningStation != null) {
                         ((MiningStationAI)minningStation.stationAI).AddTransportShip(idleShips[i]);
                     } else if (idleShips[i].dockedStation != fleetCommand) {
-                        idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand),ShipAI.CommandAction.Replace);
+                        idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, fleetCommand), ShipAI.CommandAction.Replace);
                     }
                 } else if (idleShips[i].IsScienceShip()) {
                     idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Research, faction.GetClosestStar(idleShips[i].GetPosition()), fleetCommand), ShipAI.CommandAction.Replace);

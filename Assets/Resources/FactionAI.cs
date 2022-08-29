@@ -20,6 +20,10 @@ public class FactionAI : MonoBehaviour {
         faction.UpdateFactionResearch();
     }
 
+    public virtual void OnStationBuilt(Station station) { 
+    
+    }
+
     public virtual void AddIdleShip(Ship ship) {
         idleShips.Add(ship);
     }

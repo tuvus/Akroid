@@ -379,7 +379,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             int? targetWantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
             if (!targetWantedTransportShips.HasValue)
                 continue;
-            if (targetWantedTransportShips > wantedTransportShips || (targetWantedTransportShips == wantedTransportShips && targetDistance < distance)) {
+            if ((targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0)) || (targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips)) {
                 minningStation = targetMinningStation;
                 distance = targetDistance;
                 wantedTransportShips = targetWantedTransportShips.Value;
@@ -392,7 +392,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         int count = 0;
         for (int i = 0; i < activeMiningStations.Count; i++) {
             MiningStation targetMinningStation = activeMiningStations[i];
-            if (targetMinningStation == null || !targetMinningStation.IsSpawned()) {
+            if (targetMinningStation != null && targetMinningStation.IsSpawned()) {
                 int? wantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
                 if (wantedTransportShips.HasValue) {
                     count += wantedTransportShips.Value;

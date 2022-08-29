@@ -6,10 +6,16 @@ using UnityEngine.Profiling;
 public class MiningStationAI : StationAI {
 
     public List<Ship> transportShips;
+    int wantedTransports;
 
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
         transportShips = new List<Ship>(10);
+        SetupWantedTrasports();
+    }
+
+    void SetupWantedTrasports() {
+        wantedTransports = Mathf.RoundToInt(Vector2.Distance(station.GetPosition(), station.faction.GetFleetCommand().GetPosition()) / 1000);
     }
 
     public override void UpdateAI() {
@@ -67,7 +73,7 @@ public class MiningStationAI : StationAI {
         }
         if (!station.IsBuilt() || !GetMiningStation().activelyMinning)
             return null;
-        return 2 - transportShips.Count;
+        return wantedTransports - transportShips.Count;
     }
 
     public MiningStation GetMiningStation() {
