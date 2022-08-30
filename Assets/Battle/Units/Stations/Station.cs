@@ -168,7 +168,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public void UndockShip(Ship ship, float rotation) {
         hanger.RemoveShip(ship);
-        Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, followDist + ship.GetFollowDistance());
+        Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, GetSize() + ship.GetSize());
         ship.transform.position = new Vector2(transform.position.x + undockPos.x, transform.position.y + undockPos.y);
         ship.transform.eulerAngles = new Vector3(0, 0, rotation);
     }

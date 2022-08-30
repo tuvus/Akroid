@@ -133,14 +133,15 @@ public class Ship : Unit {
         if ((shipAction == ShipAction.Dock || shipAction == ShipAction.DockMove || shipAction == ShipAction.DockRotate) && (targetStation == null || !targetStation.IsSpawned())) {
             SetIdle();
         }
-        if ((shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) && Mathf.Abs(targetRotation - transform.rotation.z) < 0.0001f) {
-            SetThrusters(false);
-            if (shipAction == ShipAction.Move) {
-                SetMovePosition(movePosition);
-            } else if (shipAction == ShipAction.DockMove) {
-                SetDockTarget(targetStation);
+        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
+            targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
+            if (transform.eulerAngles.z - targetRotation > 0.00001) {
+                if (shipAction == ShipAction.Move) {
+                    shipAction = ShipAction.MoveRotate;
+                } else if (shipAction == ShipAction.DockMove) {
+                    shipAction = ShipAction.DockRotate;
+                }
             }
-            position = transform.position;
         }
         if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
@@ -161,9 +162,14 @@ public class Ship : Unit {
                 return;
             }
         }
+
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float thrust = GetThrust() * deltaTime / GetMass();
+            if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
+                DockShip(targetStation);
+                return;
+            }
             if (distance <= thrust + 2) {
                 transform.position = movePosition;
                 position = movePosition;
@@ -360,12 +366,6 @@ public class Ship : Unit {
 
     public ResearchEquiptment GetResearchEquiptment() {
         return researchEquiptment;
-    }
-
-    public void OnCollisionStay2D(Collision2D collision) {
-        if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveRotate) {
-            SetMovePosition(movePosition);
-        }
     }
 
     public bool IsIdle() {

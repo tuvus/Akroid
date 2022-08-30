@@ -99,7 +99,7 @@ public class Missile : MonoBehaviour {
         if (hit || expired)
             return;
         Unit unit = coll.GetComponent<Unit>();
-        if (unit != null && unit.faction != faction) {
+        if (unit != null && unit.IsSpawned() && unit.faction != faction) {
             if (unit.GetShieldGenerator() != null && unit.GetShieldGenerator().GetShield().health > 0) {
                 damage = unit.GetShieldGenerator().GetShield().TakeDamage(damage);
                 Explode();

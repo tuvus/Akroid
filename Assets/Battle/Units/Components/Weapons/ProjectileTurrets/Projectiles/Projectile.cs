@@ -62,7 +62,7 @@ public class Projectile : MonoBehaviour {
 			return;
 		}
 		Unit unit = coll.GetComponent<Unit>();
-		if (unit != null && unit.faction != faction) {
+		if (unit != null && unit.IsSpawned() && unit.faction != faction) {
 			if (unit.GetShieldGenerator() != null) {
 				damage = unit.GetShieldGenerator().GetShield().TakeDamage(damage);
 				if (damage < 0)
