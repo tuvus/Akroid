@@ -167,6 +167,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         activeMiningStations.Remove(miningStation);
     }
 
+    public void AddCredits(long credits) {
+        this.credits += credits;
+    }
+
     public bool UseCredits(long credits) {
         if (this.credits > credits) {
             this.credits -= credits;
@@ -413,6 +417,18 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return count;
     }
 
+    public Ship GetTransportShip(int index) {
+        for (int i = 0; i < ships.Count; i++) {
+            if (ships[i].IsTransportShip()) {
+                if (index == 0) {
+                    return ships[i];
+                }
+                index--;
+            }
+        }
+        return null;
+    }
+
     public Star GetClosestStar(Vector2 position) {
         Star star = null;
         float distance = 0;
@@ -438,7 +454,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public Ship.ShipBlueprint GetTransportBlueprint() {
-        return new Ship.ShipBlueprint(Ship.ShipClass.Transport, "Transport", 3000,
+        return new Ship.ShipBlueprint(factionIndex,Ship.ShipClass.Transport, "Transport", 3000,
             new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 2400 });
     }
 

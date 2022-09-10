@@ -8,7 +8,7 @@ public class Missile : MonoBehaviour {
     }
     public int missileIndex { get; private set; }
     private Faction faction;
-    private new ParticleSystem explodeParticleSystem;
+    private ParticleSystem explodeParticleSystem;
     private ParticleSystem thrustParticleSystem;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;

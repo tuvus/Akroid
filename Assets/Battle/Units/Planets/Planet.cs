@@ -6,10 +6,13 @@ public class Planet : BattleObject, IPositionConfirmer {
     public string planetName { get; protected set; }
     public Faction faction { get; protected set; }
 
-    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
+    long population;
+
+    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, float rotation) {
         this.faction = faction;
         base.SetupBattleObject(positionGiver, rotation);
         this.planetName = name;
+        this.population = population;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -42,5 +45,9 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     public override float GetSpriteSize() {
         return spriteRenderer.sprite.bounds.size.x / 2;
+    }
+
+    public long GetPopulation() {
+        return population;
     }
 }

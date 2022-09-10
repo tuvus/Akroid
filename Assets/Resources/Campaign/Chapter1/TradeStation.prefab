@@ -977,7 +977,6 @@ MonoBehaviour:
   stationType: 5
   repairAmmount: 10
   repairSpeed: 5
-  repairTime: 0
 --- !u!114 &891628441915010327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,6 +989,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5771902d9bf74864a8e4368c0ffda0a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitSpeed: 0
+  cargoSpeed: 1
+  cargoAmmount: 600
 --- !u!199 &8198535041992587773
 ParticleSystemRenderer:
   serializedVersion: 6

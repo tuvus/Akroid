@@ -18,6 +18,7 @@ public class UnitAICommand {
         FormationRotation,
         Dock,
         Transport,
+        TransportDelay,
         Research,
     }
     public CommandType commandType;
@@ -52,7 +53,7 @@ public class UnitAICommand {
         targetPosition = Vector3.zero;
         targetUnit = null;
         cargoType = null;
-        if (commandType == CommandType.Idle)
+        if (commandType == CommandType.Wait)
             waitTime = value;
         if (commandType == CommandType.TurnToRotation)
             targetRotation = value;
@@ -145,6 +146,19 @@ public class UnitAICommand {
         this.commandType = transport;
         waitTime = 0;
         targetRotation = 0;
+        targetPosition = Vector2.zero;
+        targetUnit = null;
+        cargoType = null;
+        targetStar = null;
+        useAlternateCommandOnceDone = false;
+        this.productionStation = producer;
+        this.destinationStation = destination;
+    }
+
+    public UnitAICommand(CommandType transportDelay, Station producer, Station destination, float delay) {
+        this.commandType = transportDelay;
+        waitTime = delay;
+        targetRotation = delay;
         targetPosition = Vector2.zero;
         targetUnit = null;
         cargoType = null;

@@ -5,7 +5,10 @@ using UnityEngine.Profiling;
 
 public class StationAI : MonoBehaviour {
     protected Station station;
-    public float waitTime;
+    [SerializeField] protected float waitSpeed;
+    [SerializeField] protected float cargoSpeed;
+    [SerializeField] protected float cargoAmmount;
+    protected float waitTime;
     protected float cargoTime;
 
     public virtual void SetupStationAI(Station station) {
@@ -23,7 +26,6 @@ public class StationAI : MonoBehaviour {
     protected virtual void ManageStationRepair() {
         if (station.IsDammaged())
             station.RepairUnit(station, station.GetRepairAmmount());
-        station.repairTime += station.repairSpeed;
     }
 
     public virtual void OnShipBuilt(Ship ship) {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FactionAI : MonoBehaviour {
-    protected Faction faction;
+    public Faction faction { protected set; get; }
 
     [SerializeField] protected List<Ship> idleShips;
 

@@ -14864,20 +14864,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 762
   unitName: Transport
-  size: 0
-  health: 762
   followDist: 12
   shipClass: 0
   shipType: 0
-  mainBackThrusters:
-  - {fileID: 9215602422131196041}
-  subBackThrusters:
-  - {fileID: 9215602422008913200}
-  - {fileID: 9215602421707546619}
   turnSpeed: 20
   combatRotation: 0
+  dockedStation: {fileID: 0}
+  shipAction: 0
+  targetRotation: 0
+  movePosition: {x: 0, y: 0}
+  targetStation: {fileID: 0}
 --- !u!114 &547864794185174251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14891,6 +14890,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commands: []
+  newCommand: 0
+  currentCommandType: 0
 --- !u!198 &9215602423523637235
 ParticleSystem:
   m_ObjectHideFlags: 0

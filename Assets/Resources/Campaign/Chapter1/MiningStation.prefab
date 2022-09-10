@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 831600065110085483}
   - component: {fileID: 831600065110085477}
   - component: {fileID: 831600065110085478}
-  - component: {fileID: -7032057860321366728}
+  - component: {fileID: 4846717259595125145}
   - component: {fileID: 831600065110085479}
   - component: {fileID: 831600065110085480}
   - component: {fileID: 3457495768788648788}
@@ -392,12 +392,12 @@ MonoBehaviour:
   stationType: 3
   repairAmmount: 10
   repairSpeed: 5
-  repairTime: 0
+  activelyMinning: 0
   nearbyAsteroids: []
-  miningAmmount: 500
-  miningSpeed: 5
-  miningRange: 500
---- !u!114 &-7032057860321366728
+  miningAmmount: 100
+  miningSpeed: 10
+  miningRange: 5000
+--- !u!114 &4846717259595125145
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,9 +406,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 831600065110085484}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5771902d9bf74864a8e4368c0ffda0a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 287a59f724623374aababecec06e8323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitSpeed: 1
+  cargoSpeed: 2
+  cargoAmmount: 300
+  transportShips: []
 --- !u!199 &831600065110085479
 ParticleSystemRenderer:
   serializedVersion: 6

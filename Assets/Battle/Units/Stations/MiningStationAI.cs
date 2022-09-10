@@ -6,16 +6,24 @@ using UnityEngine.Profiling;
 public class MiningStationAI : StationAI {
 
     public List<Ship> transportShips;
-    int wantedTransports;
+    [SerializeField]int wantedTransports;
 
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
         transportShips = new List<Ship>(10);
-        SetupWantedTrasports();
+        if (station.faction.GetFleetCommand() != null) {
+            SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
+        } else {
+            SetupWantedTrasports(station.faction.factionPosition);
+        }
     }
 
-    void SetupWantedTrasports() {
-        wantedTransports = Mathf.RoundToInt(Vector2.Distance(station.GetPosition(), station.faction.GetFleetCommand().GetPosition()) / 1000);
+    public void SetupWantedTrasports(Vector2 targetPosition) {
+        float distance = Vector2.Distance(station.GetPosition(), targetPosition) * 2;
+        float miningAmount = GetMiningStation().GetMiningAmmount() / GetMiningStation().GetMiningSpeed();
+        float cargoPerTransport = 4800;
+        float transportSpeed = 20;
+        wantedTransports = Mathf.RoundToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
     }
 
     public override void UpdateAI(float deltaTime) {
@@ -40,8 +48,8 @@ public class MiningStationAI : StationAI {
         for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
             Ship ship = station.GetHanger().GetShips()[i];
             if (ship.GetShipType() == Ship.ShipType.Transport) {
-                ship.GetCargoBay().LoadCargoFromBay(station.GetCargoBay(), CargoBay.CargoTypes.Metal, 600);
-                cargoTime = 1;
+                ship.GetCargoBay().LoadCargoFromBay(station.GetCargoBay(), CargoBay.CargoTypes.Metal, cargoAmmount);
+                cargoTime += cargoSpeed;
                 break;
             }
         }

@@ -6,7 +6,7 @@ public class Shield : MonoBehaviour {
     Unit unit;
     ShieldGenerator shieldGenerator;
     private SpriteRenderer spriteRenderer;
-    private Collider2D collider;
+    private new Collider2D collider;
     public int health;
     public void SetShield(int health, ShieldGenerator shieldGenerator, Unit unit) {
         this.health = health;

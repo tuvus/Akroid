@@ -392,10 +392,9 @@ MonoBehaviour:
   stationType: 3
   repairAmmount: 10
   repairSpeed: 5
-  repairTime: 0
   activelyMinning: 0
   nearbyAsteroids: []
-  miningAmmount: 500
+  miningAmmount: 300
   miningSpeed: 5
   miningRange: 500
 --- !u!114 &2119983916170409296
@@ -410,7 +409,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 287a59f724623374aababecec06e8323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitSpeed: 1
+  cargoSpeed: 2
+  cargoAmmount: 300
   transportShips: []
+  wantedTransports: 0
 --- !u!199 &831600065110085479
 ParticleSystemRenderer:
   serializedVersion: 6

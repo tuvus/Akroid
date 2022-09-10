@@ -471,7 +471,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 89729561}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a13dcd4b70f5b0b4e9a7317e84c5e25f, type: 3}
+  m_Script: {fileID: 11500000, guid: a2ebdb81032f0bf4b9a0ac1e797cb8a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   campaignChapterPanel: {fileID: 252980502}

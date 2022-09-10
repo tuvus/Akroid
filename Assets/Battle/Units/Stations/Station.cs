@@ -47,7 +47,7 @@ public class Station : Unit, IPositionConfirmer {
     private CargoBay cargoBay;
     public int repairAmmount;
     public float repairSpeed;
-    public float repairTime;
+    public float repairTime { get; protected set; }
     protected bool built;
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built) {
@@ -126,15 +126,22 @@ public class Station : Unit, IPositionConfirmer {
     public override void UpdateUnit(float deltaTime) {
         if (built && IsSpawned()) {
             base.UpdateUnit(deltaTime);
-            stationAI.UpdateAI(deltaTime);
             repairTime -= deltaTime;
+            stationAI.UpdateAI(deltaTime);
+            if (repairTime <= 0) {
+                repairTime += repairSpeed;
+            }
         }
     }
 
     #region StationControlls
     public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
+        return BuildShip(faction.factionIndex, shipClass, cost, undock);
+    }
+
+    public virtual Ship BuildShip(int factionIndex, Ship.ShipClass shipClass, long cost, bool undock = false) {
         if (faction.UseCredits(cost)) {
-            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(faction.factionIndex, shipClass, shipClass.ToString(), transform.position, Random.Range(0, 360)));
+            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, shipClass, shipClass.ToString(), transform.position, Random.Range(0, 360)));
             if (undock) {
                 newShip.DockShip(this);
                 newShip.UndockShip();

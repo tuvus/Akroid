@@ -9,6 +9,7 @@ using static Station;
 
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
+    CampaingController campaignControler;
 
     public float researchModifier { get; private set; }
 
@@ -130,12 +131,13 @@ public class BattleManager : MonoBehaviour {
             simulationEnded = true;
     }
 
-    public void SetupBattle(CampaingController campaingControler) {
+    public void SetupBattle(CampaingController campaignControler) {
         if (Instance == null) {
             Instance = this;
         } else {
             Destroy(gameObject);
         }
+        this.campaignControler = campaignControler;
         this.researchModifier = researchModifier;
         factions = new List<Faction>(0);
         units = new List<Unit>(100);
@@ -150,7 +152,7 @@ public class BattleManager : MonoBehaviour {
         simulationEnded = false;
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         LocalPlayer.Instance.SetupFaction(null);
-        campaingControler.SetupBattle();
+        campaignControler.SetupBattle();
         simulationEnded = true;
     }
 
@@ -243,26 +245,26 @@ public class BattleManager : MonoBehaviour {
         stars.Add(newStar);
     }
 
-    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver) {
+    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(name, faction, positionGiver, Random.Range(0, 360));
+        newPlanet.SetupPlanet(name, faction, positionGiver,population, Random.Range(0, 360));
         planets.Add(newPlanet);
         return newPlanet;
     }
 
-    public void CreateNewAteroidField(Vector2 center, int count) {
-        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2),count);
+    public void CreateNewAteroidField(Vector2 center, int count, float resourceModifier = 1) {
+        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2),count, resourceModifier);
     }
 
-    public void CreateNewAteroidField(PositionGiver positionGiver, int count) {
+    public void CreateNewAteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
         AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(2f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size), CargoBay.CargoTypes.Metal));
+            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.asteroids.Add(newAsteroid);
         }
         asteroidFields.Add(newAsteroidField);
@@ -355,6 +357,9 @@ public class BattleManager : MonoBehaviour {
     #endregion
 
     public virtual void FixedUpdate() {
+        if (campaignControler != null) {
+            campaignControler.UpdateControler();
+        }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         for (int i = 0; i < factions.Count; i++) {
             Profiler.BeginSample("FactionsUpdate:" + factions[i].name + i);

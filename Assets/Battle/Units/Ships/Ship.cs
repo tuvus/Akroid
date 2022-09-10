@@ -68,13 +68,15 @@ public class Ship : Unit {
 
     [System.Serializable]
     public class ShipBlueprint {
+        public int factionIndex;
         public ShipClass shipClass;
         public string shipName;
         public int shipCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<float> resources;
 
-        public ShipBlueprint(ShipClass shipClass, string shipName, int shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<float> resources) {
+        public ShipBlueprint(int factionIndex,ShipClass shipClass, string shipName, int shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<float> resources) {
+            this.factionIndex = factionIndex;
             this.shipClass = shipClass;
             this.shipName = shipName;
             this.shipCost = shipCost;
@@ -104,6 +106,7 @@ public class Ship : Unit {
         }
         mass = size * 100;
         Spawn();
+        shipAction = ShipAction.Move;
         SetIdle();
     }
 
@@ -135,7 +138,7 @@ public class Ship : Unit {
         }
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
-            if (transform.eulerAngles.z - targetRotation > 0.00001) {
+            if (Mathf.Abs(transform.eulerAngles.z - targetRotation) > 0.00001) {
                 if (shipAction == ShipAction.Move) {
                     shipAction = ShipAction.MoveRotate;
                 } else if (shipAction == ShipAction.DockMove) {
@@ -194,10 +197,12 @@ public class Ship : Unit {
 
     #region ShipControlls
     public void SetIdle() {
+        if (shipAction != ShipAction.Idle) {
+            faction.GetFactionAI().AddIdleShip(this);
+        }
         shipAction = ShipAction.Idle;
         velocity = Vector2.zero;
         SetThrusters(false);
-        faction.GetFactionAI().AddIdleShip(this);
     }
 
     public void SetTargetRotate(float rotation) {
@@ -369,9 +374,21 @@ public class Ship : Unit {
     }
 
     public bool IsIdle() {
-        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.currentCommandType == UnitAICommand.CommandType.Idle);
+        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == UnitAICommand.CommandType.Idle);
     }
 
+    [ContextMenu("GetShipThrust")]
+    public void GetShipThrust() {
+        float thrust = 0;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        foreach (var thruster in GetComponentsInChildren<Thruster>()) {
+            thrust += thruster.thrustSpeed;
+        }
+        
+        mass = SetupSize() * 100;
+        thrust /= mass;
+        print(unitName + "Thrust:" + thrust);
+    }
     #endregion
 
 }
