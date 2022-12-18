@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using static FactionCommManager;
+using static FactionCommManager.CommunicationEvent;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class PlanetFactionAI : FactionAI {
     Chapter1 chapter1;
@@ -11,6 +15,7 @@ public class PlanetFactionAI : FactionAI {
 
     float updateTime;
     float metalOrder;
+    bool firstEvent = false;
 
     public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard) {
         this.chapter1 = chapter1;
@@ -29,6 +34,25 @@ public class PlanetFactionAI : FactionAI {
             if (tradeStation != null && tradeStation.IsSpawned()) {
                 UpdateTradeStation();
             }
+        }
+        if (!firstEvent && chapter1.GetBattleManager().GetSimulationTime() > 10) {
+            firstEvent = true;
+            faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, new CommunicationEvent(
+                "War has broken out on our planet! We require your metal in order to survive the war. Prices are high because of the war so you should be eagar to sell your metal.",
+                new CommunicationEventOption[] {
+                    new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, (communicationEvent) => {
+                        if (!communicationEvent.isActive)
+                            return false;
+                        communicationEvent.isActive = false;
+                        print("1");
+                        return true; }),
+                    new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
+                        if (!communicationEvent.isActive)
+                            return false;
+                        communicationEvent.isActive = false;
+                        print("2");
+                        return true; })
+                }, true));
         }
     }
 
@@ -73,6 +97,7 @@ public class PlanetFactionAI : FactionAI {
     public bool AddMetalOrder(Faction faction, float metal) {
         if (faction.UseCredits((long)(metal * chapter1.GetMetalCost()))) {
             metalOrder += metal;
+            faction.GetFactionCommManager().SendCommunication(faction, "We need " + metal + " metal. Please give it to us!");
             //this.faction.AddCredits((long)(metal * chapter1.GetMetalCost()));
             return true;
         }

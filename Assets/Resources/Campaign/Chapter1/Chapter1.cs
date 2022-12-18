@@ -4,7 +4,8 @@ using UnityEngine;
 using static BattleManager;
 
 public class Chapter1 : CampaingController {
-    Faction playerFaction;
+    BattleManager battleManager;
+    public Faction playerFaction { get; private set; }
     PlayerFactionAI playerFactionAI;
     MiningStation playerMiningStation;
     Faction otherMiningFaction;
@@ -22,7 +23,7 @@ public class Chapter1 : CampaingController {
 
     public override void SetupBattle() {
         base.SetupBattle();
-        BattleManager battleManager = BattleManager.Instance;
+        battleManager = BattleManager.Instance;
         battleManager.timeScale = 10;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
@@ -94,5 +95,9 @@ public class Chapter1 : CampaingController {
 
     public override string GetPathToChapterFolder() {
         return "Campaign/Chapter1";
+    }
+
+    public BattleManager GetBattleManager() {
+        return battleManager;
     }
 }

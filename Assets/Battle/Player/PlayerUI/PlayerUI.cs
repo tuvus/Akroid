@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ public class PlayerUI : MonoBehaviour {
 
     [SerializeField] private PlayerUnitStatusUI shipStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
+    [SerializeField] private PlayerCommsManager playerCommsManager;
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
     [SerializeField] private GameObject commandUI;
@@ -38,6 +40,7 @@ public class PlayerUI : MonoBehaviour {
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
         showUnitCombatIndicators = true;
+        playerCommsManager.SetupPlayerCommsManager(this);
     }
 
     public void UpdatePlayerUI() {
@@ -104,8 +107,10 @@ public class PlayerUI : MonoBehaviour {
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
             LocalPlayer.Instance.SetupFaction(null);
+            playerCommsManager.SetupFaction(null);
         } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != LocalPlayer.Instance.GetFaction().factionIndex) {
             LocalPlayer.Instance.SetupFaction(BattleManager.Instance.GetAllFactions()[menueUIFactionSelect.value - 1]);
+            playerCommsManager.SetupFaction(LocalPlayer.Instance.GetFaction());
         }
     }
 
@@ -178,6 +183,10 @@ public class PlayerUI : MonoBehaviour {
 
     public bool IsAMenueShown() {
         return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf;
+    }
+
+    public PlayerCommsManager GetPlayerCommsManager() {
+        return playerCommsManager;
     }
 
     public void QuitSimulation() {

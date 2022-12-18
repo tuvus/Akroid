@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 public class Faction : MonoBehaviour, IPositionConfirmer {
     public Vector2 factionPosition;
     [SerializeField] FactionAI factionAI;
+    [SerializeField] FactionCommManager commManager;
     [SerializeField] public new string name { get; private set; }
     [SerializeField] public long credits { get; private set; }
     [SerializeField] public long science { get; private set; }
@@ -42,14 +43,36 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public struct FactionData {
         public Type factionAI;
         public string name;
+        public Character leader;
         public long credits;
         public long science;
         public int ships;
         public int stations;
 
+        public FactionData(Type factionAI, string name, Character leader, long credits, long science, int ships, int stations) {
+            this.factionAI = factionAI;
+            this.name = name;
+            this.leader = leader;
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
+        }
+
+        public FactionData(string name, Character leader, long credits, long science, int ships, int stations) {
+            this.factionAI = typeof(SimulationFactionAI);
+            this.name = name;
+            this.leader = leader;
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
+        }
+
         public FactionData(Type factionAI, string name, long credits, long science, int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
+            this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
             this.ships = ships;
@@ -59,6 +82,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         public FactionData(string name, long credits, long science, int ships, int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
+            this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
             this.ships = ships;
@@ -83,6 +107,8 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         factionAI.SetupFactionAI(this);
         GenerateFaction(factionData, startingResearchCost);
         factionAI.GenerateFactionAI();
+        commManager = GetComponent<FactionCommManager>();
+        commManager.SetupCommunicationManager(this, factionData.leader);
     }
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
@@ -454,7 +480,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public Ship.ShipBlueprint GetTransportBlueprint() {
-        return new Ship.ShipBlueprint(factionIndex,Ship.ShipClass.Transport, "Transport", 3000,
+        return new Ship.ShipBlueprint(factionIndex, Ship.ShipClass.Transport, "Transport", 3000,
             new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 2400 });
     }
 
@@ -476,6 +502,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public FactionAI GetFactionAI() {
         return factionAI;
+    }
+
+    public FactionCommManager GetFactionCommManager() {
+        return commManager;
     }
     #endregion
 }
