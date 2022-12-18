@@ -28,7 +28,7 @@ public class ShipAI : MonoBehaviour {
         commands = new List<UnitAICommand>(10);
     }
 
-    public void AddUnitAICommand(UnitAICommand command, CommandAction commandAction) {
+    public void AddUnitAICommand(UnitAICommand command, CommandAction commandAction = CommandAction.AddToEnd) {
         if ((command.commandType == UnitAICommand.CommandType.AttackMove || command.commandType == UnitAICommand.CommandType.AttackMoveUnit || command.commandType == UnitAICommand.CommandType.Protect) && ship.GetTurrets().Count == 0) {
             return;
         }

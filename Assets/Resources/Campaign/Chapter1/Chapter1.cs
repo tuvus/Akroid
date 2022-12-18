@@ -7,7 +7,7 @@ public class Chapter1 : CampaingController {
     BattleManager battleManager;
     public Faction playerFaction { get; private set; }
     PlayerFactionAI playerFactionAI;
-    MiningStation playerMiningStation;
+    public MiningStation playerMiningStation { get; private set; }
     Faction otherMiningFaction;
     OtherMiningFactionAI otherMiningFactionAI;
     MiningStation otherMiningStation;

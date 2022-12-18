@@ -4,7 +4,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using static FactionCommManager;
 using static FactionCommManager.CommunicationEvent;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class PlanetFactionAI : FactionAI {
     Chapter1 chapter1;
@@ -15,14 +14,23 @@ public class PlanetFactionAI : FactionAI {
 
     float updateTime;
     float metalOrder;
-    bool firstEvent = false;
-
+    float timeUntilNextCommunication;
+    State planetFactionState;
+    enum State {
+        Begining,
+        AskedForMetal,
+        RejectedMetal,
+        RecievingMetal,
+        AttackingPlayer,
+    }
     public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;
         this.tradeStation = tradeStation;
         this.shipyard = shipyard;
+        planetFactionState = State.Begining;
+        timeUntilNextCommunication = Random.Range(30, 60);
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -35,9 +43,11 @@ public class PlanetFactionAI : FactionAI {
                 UpdateTradeStation();
             }
         }
-        if (!firstEvent && chapter1.GetBattleManager().GetSimulationTime() > 10) {
-            firstEvent = true;
-            faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, new CommunicationEvent(
+        timeUntilNextCommunication -= deltaTime;
+        if (timeUntilNextCommunication <= 0) {
+            if (planetFactionState == State.Begining) {
+                planetFactionState = State.AskedForMetal;
+                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, new CommunicationEvent(
                 "War has broken out on our planet! We require your metal in order to survive the war. Prices are high because of the war so you should be eagar to sell your metal.",
                 new CommunicationEventOption[] {
                     new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, (communicationEvent) => {
@@ -45,14 +55,48 @@ public class PlanetFactionAI : FactionAI {
                             return false;
                         communicationEvent.isActive = false;
                         print("1");
+                        planetFactionState = State.RecievingMetal;
                         return true; }),
                     new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
                         if (!communicationEvent.isActive)
                             return false;
                         communicationEvent.isActive = false;
-                        print("2");
+                        planetFactionState = State.RejectedMetal;
                         return true; })
                 }, true));
+                timeUntilNextCommunication = Random.Range(800, 2000);
+            } else if (planetFactionState == State.RejectedMetal) {
+                planetFactionState = State.AskedForMetal;
+                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, new CommunicationEvent(
+                "The war has devestated the planet. We need your metal in order to rebuild. Sadly we can't pay you much.",
+                new CommunicationEventOption[] {
+                    new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, (communicationEvent) => {
+                        if (!communicationEvent.isActive)
+                            return false;
+                        communicationEvent.isActive = false;
+                        planetFactionState = State.RecievingMetal;
+                        return true; }),
+                    new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
+                        if (!communicationEvent.isActive)
+                            return false;
+                        faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Since you won't give us your metal, we will have to take it from you by force.");
+                        Ship ship1 = tradeStation.BuildShip(Ship.ShipClass.Lancer,8000,false);
+                        Ship ship2 = tradeStation.BuildShip(Ship.ShipClass.Lancer,8000,false);
+                        ship1.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Wait,Random.Range(100,200)));
+                        ship1.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove,chapter1.playerMiningStation.GetPosition()));
+                        ship1.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock,tradeStation));
+                        ship2.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Wait,Random.Range(100,200)));
+                        ship2.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.AttackMove,chapter1.playerMiningStation.GetPosition()));
+                        ship2.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock,tradeStation));
+                        communicationEvent.isActive = false;
+                        faction.AddEnemyFaction(chapter1.playerFaction);
+                        planetFactionState = State.AttackingPlayer;
+                        return true; })
+                }, true));
+                timeUntilNextCommunication = Random.Range(400, 800);
+            } else if (planetFactionState == State.RecievingMetal) {
+                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Thank you so much for trading your metal with us.");
+            }
         }
     }
 
