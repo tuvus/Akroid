@@ -27,6 +27,7 @@ public class UnitAICommand {
     public float targetRotation;
     public Vector2 targetPosition;
     public Unit targetUnit;
+    public Unit protectUnit;
     public Star targetStar;
     public bool useAlternateCommandOnceDone;
 
@@ -91,7 +92,13 @@ public class UnitAICommand {
         waitTime = 0;
         targetRotation = 0;
         targetPosition = Vector2.zero;
-        targetUnit = unit;
+        if (commandType == CommandType.Protect) {
+            protectUnit = unit;
+            targetUnit = null;
+        } else {
+            protectUnit = null;
+            targetUnit = unit;
+        }
         cargoType = null;
         targetStar = null;
         useAlternateCommandOnceDone = false;

@@ -325,6 +325,9 @@ public class Ship : Unit {
     public float GetCombatRotation() {
         return combatRotation;
     }
+    public Vector2 GetTargetMovePosition() {
+        return movePosition;
+    }
 
     public override bool Destroyed() {
         return GetHealth() <= 0;
