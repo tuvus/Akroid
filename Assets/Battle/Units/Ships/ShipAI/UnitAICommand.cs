@@ -155,6 +155,19 @@ public class UnitAICommand {
         this.destinationStation = destination;
     }
 
+    public UnitAICommand(CommandType transport, Station producer, Station destination, bool oneTrip) {
+        this.commandType = transport;
+        waitTime = 0;
+        targetRotation = 0;
+        targetPosition = Vector2.zero;
+        targetUnit = null;
+        cargoType = null;
+        targetStar = null;
+        useAlternateCommandOnceDone = oneTrip;
+        this.productionStation = producer;
+        this.destinationStation = destination;
+    }
+
     public UnitAICommand(CommandType transportDelay, Station producer, Station destination, float delay) {
         this.commandType = transportDelay;
         waitTime = delay;

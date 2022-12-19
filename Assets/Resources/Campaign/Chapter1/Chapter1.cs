@@ -6,7 +6,7 @@ using static BattleManager;
 public class Chapter1 : CampaingController {
     BattleManager battleManager;
     public Faction playerFaction { get; private set; }
-    PlayerFactionAI playerFactionAI;
+    public PlayerFactionAI playerFactionAI { get; private set; }
     public MiningStation playerMiningStation { get; private set; }
     Faction otherMiningFaction;
     OtherMiningFactionAI otherMiningFactionAI;
@@ -20,16 +20,18 @@ public class Chapter1 : CampaingController {
     Shipyard shipyard;
     Faction researchFaction;
     Station researchStation;
+    float metalCost;
 
     public override void SetupBattle() {
         base.SetupBattle();
         battleManager = BattleManager.Instance;
         battleManager.timeScale = 10;
+        metalCost = 2.4f;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
             battleManager.CreateNewStar();
         }
-        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI),"PlayerFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "PlayerFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
@@ -70,9 +72,9 @@ public class Chapter1 : CampaingController {
         planetFaction.GetTransportShip(0).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
         planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
 
-        playerFactionAI.SetupPlayerFactionAI(this, shipyardFactionAI, playerMiningStation,tradeStation);
-        otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation,tradeStation);
-        planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation,shipyard);
+        playerFactionAI.SetupPlayerFactionAI(this, shipyardFactionAI, playerMiningStation);
+        otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation, tradeStation);
+        planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation, shipyard);
         shipyardFactionAI.SetupShipyardFactionAI(this, planetFactionAI, shipyard);
 
         int asteroidFieldCount = Random.Range(50, 80);
@@ -89,7 +91,15 @@ public class Chapter1 : CampaingController {
     }
 
     public float GetMetalCost() {
-        return 2.4f;
+        return metalCost;
+    }
+
+    /// <summary>
+    /// Multiplies the metal cost by the factor given
+    /// </summary>
+    /// <param name="factor"> float value close to 1</param>
+    public void ChangeMetalCost(float factor) {
+        metalCost = metalCost * factor;
     }
 
 

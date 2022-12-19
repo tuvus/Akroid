@@ -54,7 +54,7 @@ public class PlanetFactionAI : FactionAI {
                         if (!communicationEvent.isActive)
                             return false;
                         communicationEvent.isActive = false;
-                        print("1");
+                        chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
                         planetFactionState = State.RecievingMetal;
                         return true; }),
                     new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
@@ -62,6 +62,7 @@ public class PlanetFactionAI : FactionAI {
                             return false;
                         communicationEvent.isActive = false;
                         planetFactionState = State.RejectedMetal;
+                        chapter1.ChangeMetalCost(.6f);
                         return true; })
                 }, true));
                 timeUntilNextCommunication = Random.Range(800, 2000);
@@ -74,6 +75,7 @@ public class PlanetFactionAI : FactionAI {
                             if (!communicationEvent.isActive)
                                 return false;
                             communicationEvent.isActive = false;
+                            chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
                             planetFactionState = State.RecievingMetal;
                             return true; }),
                         new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
@@ -96,6 +98,8 @@ public class PlanetFactionAI : FactionAI {
                 timeUntilNextCommunication = Random.Range(400, 800);
             } else if (planetFactionState == State.RecievingMetal) {
                 faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Thank you so much for trading your metal with us.");
+                timeUntilNextCommunication = Random.Range(400, 800);
+                chapter1.ChangeMetalCost(.98f);
             }
         }
     }
