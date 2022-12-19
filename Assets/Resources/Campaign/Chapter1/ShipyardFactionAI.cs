@@ -34,10 +34,12 @@ public class ShipyardFactionAI : FactionAI {
                         " credits to purchase. Would you like a deal?",
                         new CommunicationEvent.CommunicationEventOption[] {
                             new CommunicationEvent.CommunicationEventOption("Buy Transport", (communicationEvent) => {
-                                return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
+                            return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
                                 if (!communicationEvent.isActive || !communicationEvent.options[0].checkStatus(communicationEvent))
                                     return false;
                                 PlaceTransportOrder(chapter1.playerFaction);
+                                if (chapter1.playerFaction.credits < cost)
+                                        communicationEvent.DeactivateEvent();
                                 faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "We have recieved your order and have begun construction of the transport.");
                                 return true;
                                 }
@@ -55,10 +57,12 @@ public class ShipyardFactionAI : FactionAI {
                         " credits to purchase. Would you like a deal?",
                         new CommunicationEvent.CommunicationEventOption[] {
                             new CommunicationEvent.CommunicationEventOption("Buy Lancer", (communicationEvent) => {
-                                return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
+                            return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
                                 if (!communicationEvent.isActive || !communicationEvent.options[0].checkStatus(communicationEvent))
                                     return false;
                                 PlaceCombatOrder(chapter1.playerFaction);
+                                if (chapter1.playerFaction.credits < cost)
+                                    communicationEvent.DeactivateEvent();
                                 faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "We have recieved your order and have begun construction of the lancer class cruiser.");
                                 return true;
                                 }

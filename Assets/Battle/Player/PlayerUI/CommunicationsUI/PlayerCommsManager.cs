@@ -20,6 +20,7 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private Transform communicationToggleTransform;
     [SerializeField] private Scrollbar verticleScrollbar;
     bool shown;
+    float portraitTime;
 
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
@@ -60,6 +61,13 @@ public class PlayerCommsManager : MonoBehaviour {
             verticleScrollbar.value = 0;
             lockToBottom = false;
         }
+        if (portraitTime > 0) {
+            portraitTime -= Time.deltaTime;
+            if (portraitTime <= 0) {
+                portraitTime = 0;
+                characterPortraitPanel.SetActive(false);
+            }
+        }
     }
 
     void CreateCommEvent(CommunicationEvent communicationEvent) {
@@ -97,6 +105,7 @@ public class PlayerCommsManager : MonoBehaviour {
             characterPortrait = Instantiate(factionCommManager.GetPortrait(), characterPortraitFrame);
             characterPortraitPanel.SetActive(true);
             characterName.text = factionCommManager.GetSenderName();
+            portraitTime = 10;
         }
     }
 
@@ -117,6 +126,9 @@ public class PlayerCommsManager : MonoBehaviour {
     public void ShowPanel() {
         shown = true;
         communicationPanel.SetActive(true);
+        if (portraitTime > 0) {
+            characterPortraitPanel.SetActive(true);
+        }
         for (int i = 0; i < communicationToggleTransform.childCount; i++) {
             communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 270);
         }
