@@ -144,7 +144,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool FreezeZoom() {
-        return controlsListUI.activeSelf;
+        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling();
     }
 
     public void ToggleUnitZoomIndicators() {

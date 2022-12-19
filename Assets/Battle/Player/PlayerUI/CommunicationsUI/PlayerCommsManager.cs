@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static FactionCommManager;
 
@@ -17,6 +18,8 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
+    bool shown;
+
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
         HidePanel();
@@ -79,7 +82,22 @@ public class PlayerCommsManager : MonoBehaviour {
         }
     }
 
+    public bool FreezeScrolling() {
+        if (!shown)
+            return false;
+        List<RaycastResult> raycastResults= new List<RaycastResult>();
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+        pointerEventData.position = playerUI.GetLocalPlayer().GetLocalPlayerInput().GetMousePosition();
+        EventSystem.current.RaycastAll(pointerEventData, raycastResults);
+        foreach (var result in raycastResults) {
+            if (result.gameObject.tag.Equals("FreezeScroll"))
+                return true;
+        }
+        return false;
+    }
+
     public void ShowPanel() {
+        shown = true;
         communicationPanel.SetActive(true);
         for (int i = 0; i < communicationToggleTransform.childCount; i++) {
             communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 270);
@@ -87,6 +105,7 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     public void HidePanel() {
+        shown = false;
         communicationPanel.SetActive(false);
         characterPortraitPanel.SetActive(false);
         for (int i = 0; i < communicationToggleTransform.childCount; i++) {
