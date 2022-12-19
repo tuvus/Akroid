@@ -16,10 +16,10 @@ public class PlayerCommsManager : MonoBehaviour {
     private GameObject characterPortrait;
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
+    [SerializeField] private Transform communicationToggleTransform;
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
-        characterPortraitPanel.SetActive(false);
-        communicationPanel.SetActive(false);
+        HidePanel();
     }
 
     public void SetupFaction(Faction faction) {
@@ -28,18 +28,21 @@ public class PlayerCommsManager : MonoBehaviour {
         }
         if (faction != null) {
             FactionCommManager factionCommManager = faction.GetFactionCommManager();
-            communicationPanel.SetActive(factionCommManager.communicationLog.Count > 0);
+            if (factionCommManager.communicationLog.Count > 0) {
+                ShowPanel();
+            } else {
+                HidePanel();
+            }
             for (int i = 0; i < factionCommManager.communicationLog.Count; i++) {
                 CreateCommEvent(factionCommManager.communicationLog[i]);
             }
         } else {
-            characterPortraitPanel.SetActive(false);
-            communicationPanel.SetActive(false);
+            HidePanel();
         }
     }
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
-        communicationPanel.SetActive(true);
+        ShowPanel();
         CreateCommEvent(communicationEvent);
         SetPortrait(communicationEvent.sender);
     }
@@ -73,6 +76,29 @@ public class PlayerCommsManager : MonoBehaviour {
             characterPortrait = Instantiate(factionCommManager.GetPortrait(), characterPortraitFrame);
             characterPortraitPanel.SetActive(true);
             characterName.text = factionCommManager.GetSenderName();
+        }
+    }
+
+    public void ShowPanel() {
+        communicationPanel.SetActive(true);
+        for (int i = 0; i < communicationToggleTransform.childCount; i++) {
+            communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 270);
+        }
+    }
+
+    public void HidePanel() {
+        communicationPanel.SetActive(false);
+        characterPortraitPanel.SetActive(false);
+        for (int i = 0; i < communicationToggleTransform.childCount; i++) {
+            communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 90);
+        }
+    }
+
+    public void ToggleVisibility() {
+        if (!communicationPanel.activeSelf && communicationLogTransform.childCount > 0) {
+            ShowPanel();
+        } else {
+            HidePanel();
         }
     }
 }
