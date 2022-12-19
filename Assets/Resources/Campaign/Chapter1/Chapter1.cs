@@ -83,8 +83,8 @@ public class Chapter1 : CampaingController {
         }
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
-        LocalPlayer.Instance.SetupFaction(playerFaction);
         LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
+        LocalPlayer.Instance.SetupFaction(playerFaction);
     }
 
 

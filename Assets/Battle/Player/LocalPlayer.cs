@@ -26,6 +26,7 @@ public class LocalPlayer : MonoBehaviour {
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
         localPlayerInput.Setup();
         playerUI.SetUpUI(localPlayerInput);
+        ownedUnits = new List<Unit>();
     }
 
     public void SetupFaction(Faction faction) {
@@ -34,11 +35,13 @@ public class LocalPlayer : MonoBehaviour {
             if (faction != null) {
                 ownedUnits = faction.units;
             } else {
-                ownedUnits = new List<Unit>();
+                ownedUnits.Clear();
             }
-        } else if (ownedUnits == null) {
-            ownedUnits = new List<Unit>();
         }
+        UpdateFactionColors();
+    }
+
+    public void UpdateFactionColors() {
         for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
             BattleManager.Instance.GetAllUnits()[i].GetUnitSelection().UpdateFactionColor();
         }

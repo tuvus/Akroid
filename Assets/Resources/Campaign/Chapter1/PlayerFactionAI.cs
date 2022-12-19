@@ -36,6 +36,14 @@ public class PlayerFactionAI : FactionAI {
         }
     }
 
+    public override void OnShipBuilt(Ship ship) {
+        if (ship.IsCombatShip()) {
+            LocalPlayer.Instance.AddOwnedUnit(ship);
+            ship.GetUnitSelection().UpdateFactionColor();
+        }
+        ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, playerMiningStation));
+    }
+
     public bool WantMoreTransportShips() {
         if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
             return true;

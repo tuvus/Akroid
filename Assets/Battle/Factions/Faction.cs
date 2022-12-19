@@ -151,6 +151,9 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public void AddEnemyFaction(Faction faction) {
         enemyFactions.Add(faction);
+        if (LocalPlayer.Instance.faction == this) {
+            LocalPlayer.Instance.UpdateFactionColors();
+        }
     }
 
     public void RemoveUnit(Unit unit) {

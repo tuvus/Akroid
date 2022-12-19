@@ -29,6 +29,11 @@ public class StationAI : MonoBehaviour {
     }
 
     public virtual void OnShipBuilt(Ship ship) {
-
+        if (ship.faction == station.faction) {
+            ship.faction.GetFactionAI().OnShipBuilt(ship);
+        } else {
+            ship.faction.GetFactionAI().OnShipBuilt(ship);
+            station.faction.GetFactionAI().OnShipBuiltForAnotherFaction(ship, ship.faction);
+        }
     }
 }

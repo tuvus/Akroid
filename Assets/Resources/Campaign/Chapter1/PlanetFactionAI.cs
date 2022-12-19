@@ -92,6 +92,7 @@ public class PlanetFactionAI : FactionAI {
                             ship2.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, tradeStation));
                             communicationEvent.isActive = false;
                             faction.AddEnemyFaction(chapter1.playerFaction);
+                            chapter1.playerFaction.AddEnemyFaction(faction);
                             planetFactionState = State.AttackingPlayer;
                             return true; })
                     }, true));

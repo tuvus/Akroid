@@ -24,6 +24,13 @@ public class FactionAI : MonoBehaviour {
     
     }
 
+    public virtual void OnShipBuilt(Ship ship) {
+
+    }
+
+    public virtual void OnShipBuiltForAnotherFaction(Ship ship, Faction faction) {
+    }
+
     public virtual void AddIdleShip(Ship ship) {
         idleShips.Add(ship);
     }
