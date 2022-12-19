@@ -311,6 +311,7 @@ public class Ship : Unit {
 
     public void UndockShip(float angle) {
         dockedStation.UndockShip(this, angle);
+        position = transform.position;
         ShowUnit(true);
         dockedStation = null;
     }
