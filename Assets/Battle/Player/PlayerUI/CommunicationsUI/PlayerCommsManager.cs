@@ -76,9 +76,15 @@ public class PlayerCommsManager : MonoBehaviour {
     void ChooseCommuncationEventOption(CommunicationEvent communicationEvent, GameObject commEvent, int optionIndex) {
         communicationEvent.ChooseOption(optionIndex);
         if (!communicationEvent.isActive) {
-            for (int i = commEvent.transform.transform.GetChild(1).childCount - 1; i >= 0; i--) {
-                DestroyImmediate(commEvent.transform.GetChild(1).transform.GetChild(i).gameObject);
+            for (int i = commEvent.transform.GetChild(1).childCount - 1; i >= 0; i--) {
+                DestroyImmediate(commEvent.transform.GetChild(1).GetChild(i).gameObject);
             }
+        }
+    }
+
+    public void OnCommunicationEventDeactivate(int communicationEventIndex) {
+        for (int i = communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1; i >= 0; i--) {
+            DestroyImmediate(communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i).gameObject);
         }
     }
 
@@ -97,7 +103,7 @@ public class PlayerCommsManager : MonoBehaviour {
     public bool FreezeScrolling() {
         if (!shown)
             return false;
-        List<RaycastResult> raycastResults= new List<RaycastResult>();
+        List<RaycastResult> raycastResults = new List<RaycastResult>();
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = playerUI.GetLocalPlayer().GetLocalPlayerInput().GetMousePosition();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);

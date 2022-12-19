@@ -14,6 +14,7 @@ public class LocalPlayer : MonoBehaviour {
     }
     public Faction faction;
     public List<Unit> ownedUnits;
+    public bool lockedOwnedUnits;
 
     public void SetUpPlayer() {
         if (Instance != null) {
@@ -29,10 +30,14 @@ public class LocalPlayer : MonoBehaviour {
 
     public void SetupFaction(Faction faction) {
         this.faction = faction;
-        if (faction != null) {
-            ownedUnits = faction.units;
-        } else {
-            ownedUnits = null;
+        if (!lockedOwnedUnits) {
+            if (faction != null) {
+                ownedUnits = faction.units;
+            } else {
+                ownedUnits = new List<Unit>();
+            }
+        } else if (ownedUnits == null) {
+            ownedUnits = new List<Unit>();
         }
         for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
             BattleManager.Instance.GetAllUnits()[i].GetUnitSelection().UpdateFactionColor();

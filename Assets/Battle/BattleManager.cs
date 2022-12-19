@@ -34,6 +34,7 @@ public class BattleManager : MonoBehaviour {
 
     float startOfSimulation;
     double simulationTime;
+    double realTime;
     bool simulationEnded;
     public struct PositionGiver {
         public Vector2 position;
@@ -363,6 +364,7 @@ public class BattleManager : MonoBehaviour {
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
+        realTime += Time.fixedDeltaTime;
         for (int i = 0; i < factions.Count; i++) {
             Profiler.BeginSample("FactionsUpdate:" + factions[i].name + i);
             factions[i].UpdateFaction(deltaTime);
@@ -414,6 +416,10 @@ public class BattleManager : MonoBehaviour {
 
     public double GetSimulationTime() {
         return simulationTime;
+    }
+
+    public double GetRealTime() {
+        return realTime;
     }
 
     public List<Ship> GetAllShips() {

@@ -98,7 +98,7 @@ public class PlanetFactionAI : FactionAI {
                 timeUntilNextCommunication = Random.Range(400, 800);
             } else if (planetFactionState == State.RecievingMetal) {
                 faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Thank you so much for trading your metal with us.");
-                timeUntilNextCommunication = Random.Range(400, 800);
+                timeUntilNextCommunication = Random.Range(4000, 8000);
                 chapter1.ChangeMetalCost(.98f);
             }
         }

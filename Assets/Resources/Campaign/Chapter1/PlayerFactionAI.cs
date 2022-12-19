@@ -18,13 +18,6 @@ public class PlayerFactionAI : FactionAI {
     }
 
     public override void UpdateFactionAI(float deltaTime) {
-        if (faction.credits > 10000) {
-            if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
-                shipyardFactionAI.PlaceTransportOrder(faction);
-            } else {
-                shipyardFactionAI.PlaceCombatOrder(faction);
-            }
-        }
         ManageIdleShips();
     }
 
@@ -40,6 +33,14 @@ public class PlayerFactionAI : FactionAI {
                     }
                 }
             }
+        }
+    }
+
+    public bool WantMoreTransportShips() {
+        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

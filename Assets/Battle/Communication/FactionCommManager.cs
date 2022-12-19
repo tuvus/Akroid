@@ -44,6 +44,15 @@ public class FactionCommManager : MonoBehaviour {
                 return false;
             return options[option].chooseOption(this);
         }
+
+        public void DeactivateEvent() {
+            if (isActive) {
+                isActive = false;
+                if (reciever.IsLocalPlayer()) {
+                    LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().OnCommunicationEventDeactivate(reciever.communicationLog.IndexOf(this));
+                }
+            }
+        }
     }
 
     public void SetupCommunicationManager(Faction faction, Character character) {
@@ -63,9 +72,13 @@ public class FactionCommManager : MonoBehaviour {
         newCommunication.sender = sender;
         newCommunication.reciever = this;
         communicationLog.Add(newCommunication);
-        if (LocalPlayer.Instance.GetFaction() == faction) {
+        if (IsLocalPlayer()) {
             LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(newCommunication);
         }
+    }
+
+    bool IsLocalPlayer() {
+        return LocalPlayer.Instance.GetFaction() == faction;
     }
 
     public string GetSenderName() {

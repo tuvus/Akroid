@@ -130,7 +130,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 }
             } else {
-                GiveCommandToAllSelectedUnits(new UnitAICommand(UnitAICommand.CommandType.AttackMoveUnit, mouseOverUnit,true), GetCommandAction());
+                GiveCommandToAllSelectedUnits(new UnitAICommand(UnitAICommand.CommandType.AttackMoveUnit, mouseOverUnit, true), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
             return;
@@ -178,7 +178,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void GenerateUndockTransportAtCommand() {
         foreach (var station in selectedUnits.GetAllStations()) {
             Ship firstShip = station.GetHanger().GetTransportShip();
-            if (firstShip != null) {
+            if (firstShip != null && LocalPlayer.Instance.ownedUnits.Contains(firstShip)) {
                 if (mouseOverUnit != null) {
                     if (mouseOverUnit.IsStation()) {
                         firstShip.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, (Station)mouseOverUnit), GetCommandAction());
@@ -202,18 +202,20 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         foreach (var station in selectedUnits.GetAllStations()) {
             List<Ship> combatShips = station.GetHanger().GetAllCombatShips();
             foreach (var ship in combatShips) {
-                if (mouseOverUnit != null) {
-                    if (mouseOverUnit.IsStation()) {
-                        ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, (Station)mouseOverUnit), GetCommandAction());
-                        LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
-                    } else {
-                        ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Follow, mouseOverUnit), GetCommandAction());
-                        LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
+                if (ship != null && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
+                    if (mouseOverUnit != null) {
+                        if (mouseOverUnit.IsStation()) {
+                            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, (Station)mouseOverUnit), GetCommandAction());
+                            LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
+                        } else {
+                            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Follow, mouseOverUnit), GetCommandAction());
+                            LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
+                        }
+                        return;
                     }
-                    return;
+                    ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Move, GetMouseWorldPosition()), GetCommandAction());
+                    LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.green);
                 }
-                ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Move, GetMouseWorldPosition()), GetCommandAction());
-                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.green);
             }
         }
     }

@@ -82,7 +82,9 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewAteroidField(new PositionGiver(Vector2.zero, 1500, 100000, 20000, 300, 1), Random.Range(8, 10), 10);
         }
 
+        LocalPlayer.Instance.lockedOwnedUnits = true;
         LocalPlayer.Instance.SetupFaction(playerFaction);
+        LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
     }
 
 

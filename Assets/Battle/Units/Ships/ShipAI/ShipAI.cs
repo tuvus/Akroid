@@ -345,9 +345,13 @@ public class ShipAI : MonoBehaviour {
             }
             if (ship.dockedStation != null || newCommand) {
                 newCommand = false;
+                if (newCommand)
+                    currentCommandType = UnitAICommand.CommandType.Transport;
                 if (ship.dockedStation == command.productionStation) {
-                    if (command.useAlternateCommandOnceDone && currentCommandType == UnitAICommand.CommandType.Move)
+                    if (command.useAlternateCommandOnceDone && currentCommandType == UnitAICommand.CommandType.Move) {
+                        currentCommandType = UnitAICommand.CommandType.Idle;
                         return CommandResult.StopRemove;
+                    }
                     if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
                         ship.SetDockTarget(command.destinationStation);
                         currentCommandType = UnitAICommand.CommandType.Dock;
