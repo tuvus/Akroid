@@ -18,6 +18,7 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
+    [SerializeField] private Scrollbar verticleScrollbar;
     bool shown;
 
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
@@ -43,11 +44,22 @@ public class PlayerCommsManager : MonoBehaviour {
             HidePanel();
         }
     }
+    bool lockToBottom = false;
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
+        lockToBottom = verticleScrollbar.value <= 0.1;
+        if (lockToBottom)
+            verticleScrollbar.value = 0;
         ShowPanel();
         CreateCommEvent(communicationEvent);
         SetPortrait(communicationEvent.sender);
+    }
+
+    private void LateUpdate() {
+        if (lockToBottom && verticleScrollbar.value > 0.1) {
+            verticleScrollbar.value = 0;
+            lockToBottom = false;
+        }
     }
 
     void CreateCommEvent(CommunicationEvent communicationEvent) {
