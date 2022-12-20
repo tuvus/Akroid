@@ -38,7 +38,7 @@ public class MiningStationAI : StationAI {
             }
         } else if (!GetMiningStation().activelyMinning && transportShips.Count > 0) {
             for (int i = transportShips.Count - 1; i >= 0; i--) {
-                transportShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Idle), ShipAI.CommandAction.Replace);
+                transportShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Idle), ShipAI.CommandAction.Replace);
                 transportShips.RemoveAt(i);
             }
         }
@@ -66,7 +66,7 @@ public class MiningStationAI : StationAI {
         }
         if (!transportShips.Contains(ship)) {
             transportShips.Add(ship);
-            ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Transport, station, station.faction.GetFleetCommand()), ShipAI.CommandAction.Replace);
+            ship.shipAI.AddUnitAICommand(new Command(Command.CommandType.Transport, station, station.faction.GetFleetCommand()), ShipAI.CommandAction.Replace);
         }
     }
 

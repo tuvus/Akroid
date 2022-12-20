@@ -244,7 +244,7 @@ public class UnitGroup {
         SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
     }
 
-    public void GiveCommand(UnitAICommand command, ShipAI.CommandAction commandAction) {
+    public void GiveCommand(Command command, ShipAI.CommandAction commandAction) {
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsSpawned() && units[i].IsShip()) {
                 ((Ship)units[i]).shipAI.AddUnitAICommand(command, commandAction);

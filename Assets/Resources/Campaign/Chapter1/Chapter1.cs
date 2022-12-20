@@ -64,13 +64,13 @@ public class Chapter1 : CampaingController {
         researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, GetPathToChapterFolder() + "/ResearchStation", "ResearchStation", researchFaction.factionPosition, Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        playerFaction.GetTransportShip(1).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Wait, Random.Range(40, 80)), ShipAI.CommandAction.AddToBegining);
+        playerFaction.GetTransportShip(1).shipAI.AddUnitAICommand(new Command(Command.CommandType.Wait, Random.Range(40, 80)), ShipAI.CommandAction.AddToBegining);
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        otherMiningFaction.GetTransportShip(0).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Wait, Random.Range(10, 20)), ShipAI.CommandAction.AddToBegining);
+        otherMiningFaction.GetTransportShip(0).shipAI.AddUnitAICommand(new Command(Command.CommandType.Wait, Random.Range(10, 20)), ShipAI.CommandAction.AddToBegining);
 
-        planetFaction.GetTransportShip(0).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
-        planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
+        planetFaction.GetTransportShip(0).shipAI.AddUnitAICommand(new Command(Command.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
+        planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(new Command(Command.CommandType.TransportDelay, tradeStation, shipyard, 1000), ShipAI.CommandAction.AddToEnd);
 
         playerFactionAI.SetupPlayerFactionAI(this, shipyardFactionAI, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation, tradeStation);

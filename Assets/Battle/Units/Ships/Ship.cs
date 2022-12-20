@@ -378,7 +378,7 @@ public class Ship : Unit {
     }
 
     public bool IsIdle() {
-        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == UnitAICommand.CommandType.Idle);
+        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
     }
 
     [ContextMenu("GetShipThrust")]

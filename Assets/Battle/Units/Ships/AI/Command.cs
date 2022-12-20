@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class UnitAICommand {
+public class Command {
     public enum CommandType {
         Idle,
         Wait,
@@ -34,7 +34,7 @@ public class UnitAICommand {
     public Station productionStation;
     public Station destinationStation;
     public string cargoType;
-    public UnitAICommand(CommandType idle) {
+    public Command(CommandType idle) {
         this.commandType = idle;
         waitTime = 0;
         targetRotation = 0;
@@ -47,7 +47,7 @@ public class UnitAICommand {
 
     /// <param name="commandType">Type of command</param>
     /// <param name="value">A 0 to 360 degree rotation or a wait time</param>
-    public UnitAICommand(CommandType waitOrRotate, float value) {
+    public Command(CommandType waitOrRotate, float value) {
         commandType = waitOrRotate;
         waitTime = 0;
         targetRotation = 0;
@@ -62,7 +62,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType research, Star star, Station returnStation) {
+    public Command(CommandType research, Star star, Station returnStation) {
         commandType = research;
         waitTime = 0;
         targetRotation = 0;
@@ -76,7 +76,7 @@ public class UnitAICommand {
         destinationStation = returnStation;
     }
 
-    public UnitAICommand(CommandType moveOrRotateTowardsOrAttackMoveLocation, Vector2 value) {
+    public Command(CommandType moveOrRotateTowardsOrAttackMoveLocation, Vector2 value) {
         this.commandType = moveOrRotateTowardsOrAttackMoveLocation;
         waitTime = 0;
         targetRotation = 0;
@@ -87,7 +87,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType followOrAttackMoveUnitOrProtect, Unit unit) {
+    public Command(CommandType followOrAttackMoveUnitOrProtect, Unit unit) {
         this.commandType = followOrAttackMoveUnitOrProtect;
         waitTime = 0;
         targetRotation = 0;
@@ -104,7 +104,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType attackMoveUnit, Unit unit, bool useAlternateCommandOnceDone) {
+    public Command(CommandType attackMoveUnit, Unit unit, bool useAlternateCommandOnceDone) {
         this.commandType = attackMoveUnit;
         waitTime = 0;
         targetRotation = 0;
@@ -115,7 +115,7 @@ public class UnitAICommand {
         this.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
     }
 
-    public UnitAICommand(CommandType formationOrAttackMovePosition, Unit unit, Vector2 offset) {
+    public Command(CommandType formationOrAttackMovePosition, Unit unit, Vector2 offset) {
         this.commandType = formationOrAttackMovePosition;
         waitTime = 0;
         targetRotation = 0;
@@ -126,7 +126,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType formationRotation, Unit unit, float rotation, Vector2 offset) {
+    public Command(CommandType formationRotation, Unit unit, float rotation, Vector2 offset) {
         this.commandType = formationRotation;
         waitTime = 0;
         targetRotation = rotation;
@@ -137,7 +137,7 @@ public class UnitAICommand {
         useAlternateCommandOnceDone = false;
     }
 
-    public UnitAICommand(CommandType dock, Station destination) {
+    public Command(CommandType dock, Station destination) {
         this.commandType = dock;
         waitTime = 0;
         targetRotation = 0;
@@ -149,7 +149,7 @@ public class UnitAICommand {
         this.destinationStation = destination;
     }
 
-    public UnitAICommand(CommandType transport, Station producer, Station destination) {
+    public Command(CommandType transport, Station producer, Station destination) {
         this.commandType = transport;
         waitTime = 0;
         targetRotation = 0;
@@ -162,7 +162,7 @@ public class UnitAICommand {
         this.destinationStation = destination;
     }
 
-    public UnitAICommand(CommandType transport, Station producer, Station destination, bool oneTrip) {
+    public Command(CommandType transport, Station producer, Station destination, bool oneTrip) {
         this.commandType = transport;
         waitTime = 0;
         targetRotation = 0;
@@ -175,7 +175,7 @@ public class UnitAICommand {
         this.destinationStation = destination;
     }
 
-    public UnitAICommand(CommandType transportDelay, Station producer, Station destination, float delay) {
+    public Command(CommandType transportDelay, Station producer, Station destination, float delay) {
         this.commandType = transportDelay;
         waitTime = delay;
         targetRotation = delay;

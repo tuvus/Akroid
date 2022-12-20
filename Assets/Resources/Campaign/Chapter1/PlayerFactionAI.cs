@@ -29,7 +29,7 @@ public class PlayerFactionAI : FactionAI {
                         nextStationToSendTo++;
                         if (nextStationToSendTo >= tradeRoutes.Count)
                             nextStationToSendTo = 0;
-                        idleShips[i].shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Transport, playerMiningStation, tradeRoutes[nextStationToSendTo], true), ShipAI.CommandAction.AddToEnd);
+                        idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Transport, playerMiningStation, tradeRoutes[nextStationToSendTo], true), ShipAI.CommandAction.AddToEnd);
                     }
                 }
             }
@@ -41,7 +41,7 @@ public class PlayerFactionAI : FactionAI {
             LocalPlayer.Instance.AddOwnedUnit(ship);
             ship.GetUnitSelection().UpdateFactionColor();
         }
-        ship.shipAI.AddUnitAICommand(new UnitAICommand(UnitAICommand.CommandType.Dock, playerMiningStation));
+        ship.shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, playerMiningStation));
     }
 
     public bool WantMoreTransportShips() {
