@@ -355,8 +355,8 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
+                    newCommand = false;
                 }
-                newCommand = false;
                 if (ship.dockedStation == command.productionStation) {
                     if (command.useAlternateCommandOnceDone && currentCommandType == CommandType.Move) {
                         currentCommandType = CommandType.Idle;
@@ -398,9 +398,11 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.StopRemove;
             }
             if (ship.dockedStation != null || newCommand) {
-                if (newCommand)
+                if (newCommand) {
+                    currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
-                newCommand = false;
+                    newCommand = false;
+                }
                 if (ship.dockedStation == command.productionStation) {
                     if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {
                         command.waitTime -= deltaTime;

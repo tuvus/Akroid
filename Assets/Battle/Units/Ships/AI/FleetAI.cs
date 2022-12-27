@@ -447,6 +447,15 @@ public class FleetAI : MonoBehaviour {
         AddUnitAICommand(CreateFormationCommand(ships[0].GetRotation()), commandAction);
     }
 
+    public void SetFormation(Vector2 position, CommandAction commandAction = CommandAction.Replace) {
+        AddUnitAICommand(CreateFormationCommand(ships[0].GetRotation()), commandAction);
+    }
+
+    public void SetFormation(Vector2 position, float rotation, CommandAction commandAction = CommandAction.Replace) {
+        AddUnitAICommand(CreateFormationCommand(rotation), commandAction);
+    }
+
+
     public void NextShipsCommand() {
         for (int i = 0; i < ships.Count; i++) {
             ships[i].shipAI.NextCommand();

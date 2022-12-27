@@ -67,13 +67,20 @@ public class Command {
     }
 
     public static Command CreateRotationCommand(Vector2 targetPosition) {
-        Command newCommand = new Command(CommandType.TurnToRotation);
+        Command newCommand = new Command(CommandType.TurnToPosition);
         newCommand.targetPosition = targetPosition;
         return newCommand;
     }
 
     public static Command CreateFormationCommand(float rotation) {
         Command newCommand = new Command(CommandType.Formation);
+        newCommand.targetRotation = rotation;
+        return newCommand;
+    }
+
+    public static Command CreateFormationCommand(Vector2 targetPosition,float rotation) {
+        Command newCommand = new Command(CommandType.Formation);
+        newCommand.targetPosition = targetPosition;
         newCommand.targetRotation = rotation;
         return newCommand;
     }
@@ -134,6 +141,7 @@ public class Command {
         newCommand.destinationStation = destinationStation;
         newCommand.productionStation = productionStation;
         newCommand.waitTime = delay;
+        newCommand.targetRotation = delay;
         return newCommand;
     }
 
