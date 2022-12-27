@@ -46,7 +46,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         } else if (!SelectGroup(buttonNumber)) {
             selectedUnits.UnselectAllUnits();
             selectedUnits.ClearGroup();
-            selectedUnits.AddUnits(groups[buttonNumber]);
+            selectedUnits.CopyGroup(groups[buttonNumber]);
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnitToStrongest();
             selectedGroup = buttonNumber;
@@ -71,7 +71,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
     public void SetGroupToUnits(UnitGroup newGroup, int groupNumber) {
         if (CheckGroupInt(groupNumber)) {
             groups[groupNumber].ClearGroup();
-            groups[groupNumber].SetUnits(newGroup);
+            groups[groupNumber].CopyGroup(newGroup);
         }
     }
 

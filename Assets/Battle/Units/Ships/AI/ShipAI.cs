@@ -12,12 +12,6 @@ public class ShipAI : MonoBehaviour {
         Continue = 3,
     }
 
-    public enum CommandAction {
-        AddToBegining = -1,
-        Replace = 0,
-        AddToEnd = 1,
-    }
-
     Ship ship;
 
     public List<Command> commands;
@@ -126,6 +120,7 @@ public class ShipAI : MonoBehaviour {
             if (newCommand) {
                 currentCommandType = CommandType.Move;
                 ship.SetMovePosition(command.targetPosition);
+                ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
@@ -154,6 +149,7 @@ public class ShipAI : MonoBehaviour {
                     ship.SetMovePosition(command.targetPosition);
                 }
                 currentCommandType = CommandType.Move;
+                ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
@@ -206,6 +202,7 @@ public class ShipAI : MonoBehaviour {
                 command.commandType = CommandType.AttackMove;
                 if (newCommand) {
                     command.targetPosition = ship.GetPosition();
+                    ship.SetMaxSpeed(command.maxSpeed);
                 }
                 newCommand = true;
                 return CommandResult.Stop;
@@ -241,6 +238,7 @@ public class ShipAI : MonoBehaviour {
             if (newCommand) {
                 ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
                 newCommand = false;
+                ship.SetMaxSpeed(command.maxSpeed);
                 return CommandResult.Stop;
             }
             if (command.targetUnit == null) {
@@ -257,7 +255,7 @@ public class ShipAI : MonoBehaviour {
             }
             float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition);
             if (distance > ship.GetTurnSpeed() * deltaTime / 10) {
-                CommandResult result = ResolveCommand(new Command(CommandType.Move, Vector3.MoveTowards(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition, distance)), deltaTime);
+                CommandResult result = ResolveCommand(CreateMoveCommand(Vector3.MoveTowards(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition, distance)), deltaTime);
                 if (result == CommandResult.ContinueRemove || result == CommandResult.Continue) {
                     return CommandResult.Continue;
                 }
@@ -276,13 +274,13 @@ public class ShipAI : MonoBehaviour {
             Vector2 targetOffsetPosition = Calculator.GetPositionOutOfAngleAndDistance(targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition), distanceToTargetAngle);
             float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + targetOffsetPosition);
             if (distance > ship.GetThrust() * deltaTime / 10) {
-                CommandResult result = ResolveCommand(new Command(CommandType.Move, (Vector2)command.targetUnit.transform.position + targetOffsetPosition), deltaTime);
+                CommandResult result = ResolveCommand(CreateMoveCommand((Vector2)command.targetUnit.transform.position + targetOffsetPosition), deltaTime);
                 if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
                     return CommandResult.Stop;
                 }
             }
             ship.transform.position = (Vector2)command.targetUnit.transform.position + targetOffsetPosition;
-            CommandResult rotationResult = ResolveCommand(new Command(CommandType.TurnToRotation, command.targetUnit.GetRotation()), deltaTime);
+            CommandResult rotationResult = ResolveCommand(CreateRotationCommand(command.targetUnit.GetRotation()), deltaTime);
             if (rotationResult == CommandResult.ContinueRemove || rotationResult == CommandResult.Continue) {
                 return CommandResult.Continue;
             }
@@ -293,6 +291,7 @@ public class ShipAI : MonoBehaviour {
             if (newCommand) {
                 if (command.destinationStation != null) {
                     ship.SetDockTarget(command.destinationStation);
+                    ship.SetMaxSpeed(command.maxSpeed);
                 } else {
                     ship.SetIdle();
                     return CommandResult.ContinueRemove;
@@ -318,6 +317,7 @@ public class ShipAI : MonoBehaviour {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandType = CommandType.Dock;
                 }
+                ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
             if (ship.shipAction == Ship.ShipAction.Idle) {
@@ -352,9 +352,11 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.StopRemove;
             }
             if (ship.dockedStation != null || newCommand) {
-                newCommand = false;
-                if (newCommand)
+                if (newCommand) {
                     currentCommandType = CommandType.Transport;
+                    ship.SetMaxSpeed(command.maxSpeed);
+                }
+                newCommand = false;
                 if (ship.dockedStation == command.productionStation) {
                     if (command.useAlternateCommandOnceDone && currentCommandType == CommandType.Move) {
                         currentCommandType = CommandType.Idle;
@@ -396,6 +398,8 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.StopRemove;
             }
             if (ship.dockedStation != null || newCommand) {
+                if (newCommand)
+                    ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
                 if (ship.dockedStation == command.productionStation) {
                     if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {

@@ -1247,7 +1247,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'F: Select all combat ships'
+  m_Text: 'D: Select all combat ships'
 --- !u!1 &874821397604490035
 GameObject:
   m_ObjectHideFlags: 0
@@ -2787,7 +2787,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'D + Selected Units: Select only combat ships'
+  m_Text: 'F + Selected Units: Create a fleet with selected combat ships'
 --- !u!1 &2272379538035144822
 GameObject:
   m_ObjectHideFlags: 0
@@ -9279,6 +9279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   faction: {fileID: 0}
   ownedUnits: []
+  lockedOwnedUnits: 0
 --- !u!114 &1340137321875934968
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9645,6 +9646,7 @@ MonoBehaviour:
     type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &8714345815869955018
 GameObject:
   m_ObjectHideFlags: 0

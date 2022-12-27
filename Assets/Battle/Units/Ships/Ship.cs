@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -33,6 +34,7 @@ public class Ship : Unit {
     }
 
     public ShipAI shipAI { get; private set; }
+    public FleetAI fleet;
     [SerializeField] private ShipClass shipClass;
     [SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
@@ -44,6 +46,7 @@ public class Ship : Unit {
     private float mass;
     private float thrust;
     private bool thrusting;
+    private float maxSetSpeed;
 
     public ShipAction shipAction;
     [SerializeField] private float targetRotation;
@@ -168,7 +171,8 @@ public class Ship : Unit {
 
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
-            float thrust = GetThrust() * deltaTime / GetMass();
+            float speed = math.min(maxSetSpeed, GetSpeed());
+            float thrust = math.min(maxSetSpeed,GetSpeed()) * deltaTime;
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
                 return;
@@ -184,7 +188,7 @@ public class Ship : Unit {
                 }
             } else {
                 transform.Translate(Vector2.up * thrust);
-                velocity = transform.up * GetThrust() / GetMass();
+                velocity = transform.up * math.min(maxSetSpeed, GetSpeed());
                 position = transform.position;
                 SetThrusters(true);
                 return;
@@ -258,8 +262,20 @@ public class Ship : Unit {
         shipAction = ShipAction.DockRotate;
     }
 
+    public void SetMaxSpeed() {
+        maxSetSpeed = GetSpeed();
+    }
+
+    public void SetMaxSpeed(float maxspeed) {
+        maxSetSpeed = maxspeed;
+    }
+
     public float GetThrust() {
         return thrust;
+    }
+
+    public float GetSpeed() {
+        return thrust / GetMass();
     }
 
     public void SetThrusters(bool trueOrFalse) {
@@ -289,6 +305,9 @@ public class Ship : Unit {
     public override void DestroyUnit() {
         if (shipAction == ShipAction.Idle)
             faction.GetFactionAI().RemoveIdleShip(this);
+        if (fleet != null) {
+            fleet.RemoveShip(this);
+        }
         BattleManager.Instance.DestroyShip(this);
     }
 
@@ -301,7 +320,7 @@ public class Ship : Unit {
     }
 
     public void UndockShip() {
-        UndockShip(Random.Range(0f, 360f));
+        UndockShip(UnityEngine.Random.Range(0f, 360f));
         velocity = Vector2.zero;
     }
 

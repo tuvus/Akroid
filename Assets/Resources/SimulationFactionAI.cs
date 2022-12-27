@@ -41,21 +41,21 @@ public class SimulationFactionAI : FactionAI {
             if (idleShips[i].IsIdle()) {
                 if (idleShips[i].IsCombatShip()) {
                     if (idleShips[i].dockedStation == null) {
-                        idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, fleetCommand), ShipAI.CommandAction.Replace);
+                        idleShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.Replace);
                     }
                 } else if (idleShips[i].IsTransportShip()) {
                     Station minningStation = faction.GetClosestMinningStationWantingTransport(idleShips[i].GetPosition());
                     if (minningStation != null) {
                         ((MiningStationAI)minningStation.stationAI).AddTransportShip(idleShips[i]);
                     } else if (idleShips[i].dockedStation != fleetCommand) {
-                        idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, fleetCommand), ShipAI.CommandAction.Replace);
+                        idleShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.Replace);
                     }
                 } else if (idleShips[i].IsScienceShip()) {
-                    idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Research, faction.GetClosestStar(idleShips[i].GetPosition()), fleetCommand), ShipAI.CommandAction.Replace);
+                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateResearchCommand(faction.GetClosestStar(idleShips[i].GetPosition()), fleetCommand), Command.CommandAction.Replace);
                 } else if (idleShips[i].IsConstructionShip()) {
                     MiningStation newMinningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, Station.StationType.MiningStation, "MiningStation", faction.factionPosition, Random.Range(0, 360), false));
                     ((ConstructionShip)idleShips[i]).targetStationBlueprint = newMinningStation;
-                    idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Move, newMinningStation.GetPosition()), ShipAI.CommandAction.AddToEnd);
+                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMinningStation.GetPosition()), Command.CommandAction.AddToEnd);
                     return;
                 }
             }
@@ -68,8 +68,8 @@ public class SimulationFactionAI : FactionAI {
                 List<Ship> combatShips = fleetCommand.GetHanger().GetAllCombatShips();
                 Vector2 position = fleetCommand.enemyUnitsInRange[0].GetPosition();
                 for (int i = 0; i < combatShips.Count; i++) {
-                    combatShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.AttackMove, position), ShipAI.CommandAction.AddToEnd);
-                    combatShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
+                    combatShips[i].shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(position), Command.CommandAction.AddToEnd);
+                    combatShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.AddToEnd);
                 }
             } else {
                 List<Ship> combatShips = fleetCommand.GetHanger().GetAllUndamagedCombatShips();
@@ -82,8 +82,8 @@ public class SimulationFactionAI : FactionAI {
                         Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
                         if (enemyStation != null) {
                             for (int i = 0; i < combatShips.Count; i++) {
-                                combatShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.AttackMove, enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), ShipAI.CommandAction.AddToEnd);
-                                combatShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, fleetCommand), ShipAI.CommandAction.AddToEnd);
+                                combatShips[i].shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(enemyStation.GetPosition() + new Vector2(Random.Range(-100, 100), Random.Range(-100, 100))), Command.CommandAction.AddToEnd);
+                                combatShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.AddToEnd);
                             }
                         }
                     }

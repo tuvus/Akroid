@@ -84,12 +84,12 @@ public class PlanetFactionAI : FactionAI {
                             faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Since you won't give us your metal, we will have to take it from you by force.");
                             Ship ship1 = tradeStation.BuildShip(Ship.ShipClass.Lancer, 8000, false);
                             Ship ship2 = tradeStation.BuildShip(Ship.ShipClass.Lancer, 8000, false);
-                            ship1.shipAI.AddUnitAICommand(new Command(Command.CommandType.Wait, Random.Range(200,400)));
-                            ship1.shipAI.AddUnitAICommand(new Command(Command.CommandType.AttackMove, chapter1.playerMiningStation.GetPosition()));
-                            ship1.shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, tradeStation));
-                            ship2.shipAI.AddUnitAICommand(new Command(Command.CommandType.Wait, Random.Range(200,400)));
-                            ship2.shipAI.AddUnitAICommand(new Command(Command.CommandType.AttackMove, chapter1.playerMiningStation.GetPosition()));
-                            ship2.shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, tradeStation));
+                            ship1.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(200,400)));
+                            ship1.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(chapter1.playerMiningStation.GetPosition()));
+                            ship1.shipAI.AddUnitAICommand(Command.CreateDockCommand(tradeStation));
+                            ship2.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(200,400)));
+                            ship2.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(chapter1.playerMiningStation.GetPosition()));
+                            ship2.shipAI.AddUnitAICommand(Command.CreateDockCommand(tradeStation));
                             communicationEvent.isActive = false;
                             faction.AddEnemyFaction(chapter1.playerFaction);
                             chapter1.playerFaction.AddEnemyFaction(faction);
@@ -137,7 +137,7 @@ public class PlanetFactionAI : FactionAI {
         for (int i = 0; i < idleShips.Count; i++) {
             if (idleShips[i].IsIdle()) {
                 if (idleShips[i].IsTransportShip()) {
-                    idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Transport, tradeStation, shipyard), ShipAI.CommandAction.AddToEnd);
+                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(tradeStation, shipyard), Command.CommandAction.AddToEnd);
                 }
             }
         }

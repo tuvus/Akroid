@@ -28,7 +28,7 @@ public class OtherMiningFactionAI : FactionAI {
         for (int i = 0; i < idleShips.Count; i++) {
             if (idleShips[i].IsIdle()) {
                 if (idleShips[i].IsTransportShip()) {
-                    idleShips[i].shipAI.AddUnitAICommand(new Command(Command.CommandType.Transport, otherMiningStation, tradeStation), ShipAI.CommandAction.AddToEnd);
+                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(otherMiningStation, tradeStation), Command.CommandAction.AddToEnd);
                 }
             }
         }

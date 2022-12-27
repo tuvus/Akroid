@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 
 [System.Serializable]
@@ -11,18 +12,26 @@ public class UnitGroup {
         Ships = 1,
         Units = 2,
         Fleet = 3,
-
     }
     public GroupType groupType;
 
     public List<Unit> units = new List<Unit>();
+    public FleetAI fleet;
 
     public void ClearGroup() {
         units.Clear();
+        fleet = null;
         groupType = GroupType.None;
     }
 
     public List<Unit> GetAllUnits() {
+        if (groupType == GroupType.Fleet) {
+            List<Unit> fleetUnits = new List<Unit>();
+            foreach (var ship in fleet.GetAllShips()) {
+                fleetUnits.Add(ship);
+            }
+            return fleetUnits;
+        }
         return units;
     }
 
@@ -101,6 +110,8 @@ public class UnitGroup {
     }
 
     public bool HasShip() {
+        if (groupType == GroupType.Fleet && fleet.GetAllShips().Count > 0)
+            return true;
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip())
                 return true;
@@ -152,8 +163,12 @@ public class UnitGroup {
         groupType = GroupType.Units;
     }
 
-    public void SetUnits(UnitGroup group) {
-        SetUnits(group.units);
+    public void CopyGroup(UnitGroup group) {
+        this.groupType = group.groupType;
+        foreach (var unit in group.units) {
+            units.Add(unit);
+        }
+        this.fleet = group.fleet;
     }
 
     public void AddUnits(List<Unit> unitList) {
@@ -221,7 +236,15 @@ public class UnitGroup {
         }
     }
 
+    public void SetFleet(FleetAI fleet) {
+        ClearGroup();
+        groupType = GroupType.Fleet;
+        this.fleet = fleet;
+    }
+
     public int GetUnitCount() {
+        if (groupType == GroupType.Fleet)
+            return fleet.GetAllShips().Count;
         return units.Count;
     }
 
@@ -238,13 +261,20 @@ public class UnitGroup {
         foreach (Unit unit in units) {
             unit.SelectUnit(strength);
         }
+        if (fleet != null) {
+            fleet.SelectFleet(strength);
+        }
     }
 
     public void UnselectAllUnits() {
         SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
     }
 
-    public void GiveCommand(Command command, ShipAI.CommandAction commandAction) {
+    public void GiveCommand(Command command, Command.CommandAction commandAction) {
+        if (groupType == GroupType.Fleet) {
+            fleet.AddUnitAICommand(command, commandAction);
+            return;
+        }
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsSpawned() && units[i].IsShip()) {
                 ((Ship)units[i]).shipAI.AddUnitAICommand(command, commandAction);

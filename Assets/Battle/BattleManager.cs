@@ -370,6 +370,9 @@ public class BattleManager : MonoBehaviour {
             factions[i].UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
+        for (int i = 0; i < factions.Count; i++) {
+            factions[i].UpdateFleets(deltaTime);
+        }
         for (int i = 0; i < units.Count; i++) {
             Profiler.BeginSample("UnitsUpdate:" + units[i].GetUnitName() + i);
             units[i].UpdateUnit(deltaTime);

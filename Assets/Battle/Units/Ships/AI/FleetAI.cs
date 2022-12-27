@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using static Command;
 
-public class FleetAI {
+public class FleetAI : MonoBehaviour {
+    Faction faction;
     enum CommandResult {
         Stop = 0,
         StopRemove = 1,
@@ -13,24 +14,55 @@ public class FleetAI {
         Continue = 3,
     }
 
-    public enum CommandAction {
-        AddToBegining = -1,
-        Replace = 0,
-        AddToEnd = 1,
-    }
     string fleetName;
-    List<Ship> ships;
+    [SerializeField] List<Ship> ships;
     public List<Command> commands;
     public bool newCommand;
     public CommandType currentCommandType;
+    float minFleetSpeed;
 
-    public FleetAI(string fleetName, Ship ship) : this(fleetName,new List<Ship>() { ship }) {
+    public void SetupFleetAI(Faction faction, string fleetName, Ship ship) {
+        SetupFleetAI(faction, fleetName, new List<Ship>() { ship });
     }
 
-    public FleetAI(string fleetName, List<Ship> ships) {
+    public void SetupFleetAI(Faction faction, string fleetName, List<Ship> ships) {
+        this.faction = faction;
         this.fleetName = fleetName;
-        this.ships = ships;
+        this.ships = new List<Ship>(ships.Count * 2);
         commands = new List<Command>(10);
+        for (int i = 0; i < ships.Count; i++) {
+            AddShip(ships[i], false);
+        }
+        minFleetSpeed = GetMinShipSpeed();
+        SetFormation();
+    }
+
+    public void DestroyFleet() {
+        foreach (Ship ship in ships) {
+            ship.fleet = null;
+        }
+        faction.RemoveFleet(this);
+        Destroy(gameObject);
+    }
+
+    public void AddShip(Ship ship, bool setMinSpeed = true) {
+        ships.Add(ship);
+        if (ship.fleet != null) {
+            ship.fleet.RemoveShip(ship);
+        }
+        ship.fleet = this;
+        if (setMinSpeed)
+            minFleetSpeed = GetMinShipSpeed();
+    }
+
+    public void RemoveShip(Ship ship) {
+        ships.Remove(ship);
+        ship.fleet = null;
+        if (ships.Count == 0) {
+            DestroyFleet();
+        } else {
+            minFleetSpeed = GetMinShipSpeed();
+        }
     }
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
@@ -77,7 +109,7 @@ public class FleetAI {
             Profiler.EndSample();
         }
     }
-    
+
     CommandResult ResolveCommand(Command command, float deltaTime, int index = -1) {
         //Idles until something removes this command.
         if (command.commandType == CommandType.Idle) {
@@ -128,12 +160,19 @@ public class FleetAI {
         //Rotates towards position then moves towards position, Stop until moved to postion, ContinueRemoveOnce Finished.
         if (command.commandType == CommandType.Move) {
             if (newCommand) {
-                currentCommandType = CommandType.Move;
+                currentCommandType = CommandType.TurnToPosition;
                 SetFleetMovePosition(command.targetPosition);
                 newCommand = false;
+                return CommandResult.Stop;
             }
 
-            if (IsFleetIdle() && currentCommandType == CommandType.Move) {
+            if (currentCommandType == CommandType.TurnToPosition && IsFleetIdle()) {
+                NextShipsCommand();
+                currentCommandType = CommandType.Move;
+                return CommandResult.Stop;
+            }
+
+            if (currentCommandType == CommandType.Move && IsFleetIdle()) {
                 return CommandResult.ContinueRemove;
             }
             return CommandResult.Stop;
@@ -206,147 +245,166 @@ public class FleetAI {
         }
         //Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished.
         if (command.commandType == CommandType.AttackMoveUnit) {
-        //    if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
-        //        command.commandType = CommandType.AttackMove;
-        //        if (newCommand) {
-        //            command.targetPosition = ship.GetPosition();
-        //        }
-        //        newCommand = true;
-        //        return CommandResult.Stop;
-        //    }
-        //    if (newCommand) {
-        //        currentCommandType = CommandType.Move;
-        //        SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-        //        command.targetPosition = command.targetUnit.GetPosition();
-        //        newCommand = false;
-        //    }
+            //    if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+            //        command.commandType = CommandType.AttackMove;
+            //        if (newCommand) {
+            //            command.targetPosition = ship.GetPosition();
+            //        }
+            //        newCommand = true;
+            //        return CommandResult.Stop;
+            //    }
+            //    if (newCommand) {
+            //        currentCommandType = CommandType.Move;
+            //        SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+            //        command.targetPosition = command.targetUnit.GetPosition();
+            //        newCommand = false;
+            //    }
 
-        //    if (currentCommandType == CommandType.Move) {
-        //        if (IsFleetIdle() || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
-        //            currentCommandType = CommandType.TurnToRotation;
-        //        } else {
-        //            SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-        //            return CommandResult.Stop;
-        //        }
-        //    }
+            //    if (currentCommandType == CommandType.Move) {
+            //        if (IsFleetIdle() || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
+            //            currentCommandType = CommandType.TurnToRotation;
+            //        } else {
+            //            SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+            //            return CommandResult.Stop;
+            //        }
+            //    }
 
-        //    if (currentCommandType == CommandType.TurnToRotation) {
-        //        if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
-        //            currentCommandType = CommandType.Move;
-        //            SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-        //        } else {
-        //            SetFleetRotation(command.targetUnit.GetPosition(), ship.GetCombatRotation());
-        //        }
-        //    }
-        //    return CommandResult.Stop;
-        //}
-        ////Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished.
-        //if (command.commandType == CommandType.Follow) {
-        //    if (newCommand) {
-        //        SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
-        //        newCommand = false;
-        //        return CommandResult.Stop;
-        //    }
-        //    if (command.targetUnit == null) {
-        //        ship.SetIdle();
-        //        return CommandResult.ContinueRemove;
-        //    }
-        //    SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
-        //    return CommandResult.Stop;
-        //}
-        ////Follows the friendly ship in a formation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
-        //if (command.commandType == CommandType.Formation) {
-        //    if (command.targetUnit == null) {
-        //        return CommandResult.ContinueRemove;
-        //    }
-        //    float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition);
-        //    if (distance > ship.GetTurnSpeed() * deltaTime / 10) {
-        //        CommandResult result = ResolveCommand(new Command(CommandType.Move, Vector3.MoveTowards(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition, distance)), deltaTime);
-        //        if (result == CommandResult.ContinueRemove || result == CommandResult.Continue) {
-        //            return CommandResult.Continue;
-        //        }
-        //    }
-        //    transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
-        //    return CommandResult.Continue;
-        //}
-        ////Follows the friendly ship in a formation relative to thier rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
-        //if (command.commandType == CommandType.FormationRotation) {
-        //    if (command.targetUnit == null) {
-        //        return CommandResult.ContinueRemove;
-        //    }
+            //    if (currentCommandType == CommandType.TurnToRotation) {
+            //        if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
+            //            currentCommandType = CommandType.Move;
+            //            SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+            //        } else {
+            //            SetFleetRotation(command.targetUnit.GetPosition(), ship.GetCombatRotation());
+            //        }
+            //    }
+            //    return CommandResult.Stop;
+            //}
+            ////Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished.
+            //if (command.commandType == CommandType.Follow) {
+            //    if (newCommand) {
+            //        SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+            //        newCommand = false;
+            //        return CommandResult.Stop;
+            //    }
+            //    if (command.targetUnit == null) {
+            //        ship.SetIdle();
+            //        return CommandResult.ContinueRemove;
+            //    }
+            //    SetFleetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+            //    return CommandResult.Stop;
+            //}
+            ////Follows the friendly ship in a formation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
+            //if (command.commandType == CommandType.Formation) {
+            //    if (command.targetUnit == null) {
+            //        return CommandResult.ContinueRemove;
+            //    }
+            //    float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition);
+            //    if (distance > ship.GetTurnSpeed() * deltaTime / 10) {
+            //        CommandResult result = ResolveCommand(new Command(CommandType.Move, Vector3.MoveTowards(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition, distance)), deltaTime);
+            //        if (result == CommandResult.ContinueRemove || result == CommandResult.Continue) {
+            //            return CommandResult.Continue;
+            //        }
+            //    }
+            //    transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
+            //    return CommandResult.Continue;
+            //}
+            ////Follows the friendly ship in a formation relative to thier rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
+            //if (command.commandType == CommandType.FormationRotation) {
+            //    if (command.targetUnit == null) {
+            //        return CommandResult.ContinueRemove;
+            //    }
 
-        //    float targetAngle = command.targetRotation - command.targetUnit.GetRotation();
-        //    float distanceToTargetAngle = Calculator.GetDistanceToPosition(command.targetPosition);
-        //    Vector2 targetOffsetPosition = Calculator.GetPositionOutOfAngleAndDistance(targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition), distanceToTargetAngle);
-        //    float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + targetOffsetPosition);
-        //    if (distance > ship.GetThrust() * deltaTime / 10) {
-        //        CommandResult result = ResolveCommand(new Command(CommandType.Move, (Vector2)command.targetUnit.transform.position + targetOffsetPosition), deltaTime);
-        //        if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
-        //            return CommandResult.Stop;
-        //        }
-        //    }
-        //    ship.transform.position = (Vector2)command.targetUnit.transform.position + targetOffsetPosition;
-        //    CommandResult rotationResult = ResolveCommand(new Command(CommandType.TurnToRotation, command.targetUnit.GetRotation()), deltaTime);
-        //    if (rotationResult == CommandResult.ContinueRemove || rotationResult == CommandResult.Continue) {
-        //        return CommandResult.Continue;
-        //    }
-        //    return CommandResult.Stop;
-        //}
-        ////Goes to then docks at the station.
-        //if (command.commandType == CommandType.Dock) {
-        //    if (newCommand) {
-        //        if (command.destinationStation != null) {
-        //            ship.SetDockTarget(command.destinationStation);
-        //        } else {
-        //            ship.SetIdle();
-        //            return CommandResult.ContinueRemove;
-        //        }
-        //        newCommand = false;
-        //    }
-        //    if (command.destinationStation == null || (IsFleetIdle() && ship.dockedStation == command.destinationStation)) {
-        //        ship.SetIdle();
-        //        return CommandResult.StopRemove;
-        //    }
-        //    return CommandResult.Stop;
-        //}
-        ////AttackMove to the star, do reasearch, then remove command.
-        //if (command.commandType == CommandType.Research) {
-        //    if (command.targetStar == null || command.destinationStation == null) {
-        //        return CommandResult.StopRemove;
-        //    }
-        //    if (newCommand) {
-        //        if (ship.GetResearchEquiptment().WantMoreData()) {
-        //            SetFleetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
-        //            currentCommandType = CommandType.Move;
-        //        } else {
-        //            ship.SetDockTarget(command.destinationStation);
-        //            currentCommandType = CommandType.Dock;
-        //        }
-        //        newCommand = false;
-        //    }
-        //    if (IsFleetIdle()) {
-        //        if (currentCommandType == CommandType.Move) {
-        //            currentCommandType = CommandType.Research;
-        //            return CommandResult.Stop;
-        //        } else if (currentCommandType == CommandType.Research) {
-        //            ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
-        //            if (!ship.GetResearchEquiptment().WantMoreData()) {
-        //                ship.SetDockTarget(command.destinationStation);
-        //                currentCommandType = CommandType.Dock;
-        //            }
-        //            return CommandResult.Stop;
-        //        } else if (currentCommandType == CommandType.Dock) {
-        //            currentCommandType = CommandType.Wait;
-        //            return CommandResult.Stop;
-        //        } else if (currentCommandType == CommandType.Wait) {
-        //            if (ship.GetResearchEquiptment().WantMoreData()) {
-        //                SetFleetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
-        //                currentCommandType = CommandType.Move;
-        //            }
-        //            return CommandResult.Stop;
-        //        }
-        //    }
-        //    return CommandResult.Stop;
+            //    float targetAngle = command.targetRotation - command.targetUnit.GetRotation();
+            //    float distanceToTargetAngle = Calculator.GetDistanceToPosition(command.targetPosition);
+            //    Vector2 targetOffsetPosition = Calculator.GetPositionOutOfAngleAndDistance(targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition), distanceToTargetAngle);
+            //    float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + targetOffsetPosition);
+            //    if (distance > ship.GetThrust() * deltaTime / 10) {
+            //        CommandResult result = ResolveCommand(new Command(CommandType.Move, (Vector2)command.targetUnit.transform.position + targetOffsetPosition), deltaTime);
+            //        if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
+            //            return CommandResult.Stop;
+            //        }
+            //    }
+            //    ship.transform.position = (Vector2)command.targetUnit.transform.position + targetOffsetPosition;
+            //    CommandResult rotationResult = ResolveCommand(new Command(CommandType.TurnToRotation, command.targetUnit.GetRotation()), deltaTime);
+            //    if (rotationResult == CommandResult.ContinueRemove || rotationResult == CommandResult.Continue) {
+            //        return CommandResult.Continue;
+            //    }
+            //    return CommandResult.Stop;
+            //}
+            ////Goes to then docks at the station.
+            //if (command.commandType == CommandType.Dock) {
+            //    if (newCommand) {
+            //        if (command.destinationStation != null) {
+            //            ship.SetDockTarget(command.destinationStation);
+            //        } else {
+            //            ship.SetIdle();
+            //            return CommandResult.ContinueRemove;
+            //        }
+            //        newCommand = false;
+            //    }
+            //    if (command.destinationStation == null || (IsFleetIdle() && ship.dockedStation == command.destinationStation)) {
+            //        ship.SetIdle();
+            //        return CommandResult.StopRemove;
+            //    }
+            //    return CommandResult.Stop;
+            //}
+            ////AttackMove to the star, do reasearch, then remove command.
+            //if (command.commandType == CommandType.Research) {
+            //    if (command.targetStar == null || command.destinationStation == null) {
+            //        return CommandResult.StopRemove;
+            //    }
+            //    if (newCommand) {
+            //        if (ship.GetResearchEquiptment().WantMoreData()) {
+            //            SetFleetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+            //            currentCommandType = CommandType.Move;
+            //        } else {
+            //            ship.SetDockTarget(command.destinationStation);
+            //            currentCommandType = CommandType.Dock;
+            //        }
+            //        newCommand = false;
+            //    }
+            //    if (IsFleetIdle()) {
+            //        if (currentCommandType == CommandType.Move) {
+            //            currentCommandType = CommandType.Research;
+            //            return CommandResult.Stop;
+            //        } else if (currentCommandType == CommandType.Research) {
+            //            ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
+            //            if (!ship.GetResearchEquiptment().WantMoreData()) {
+            //                ship.SetDockTarget(command.destinationStation);
+            //                currentCommandType = CommandType.Dock;
+            //            }
+            //            return CommandResult.Stop;
+            //        } else if (currentCommandType == CommandType.Dock) {
+            //            currentCommandType = CommandType.Wait;
+            //            return CommandResult.Stop;
+            //        } else if (currentCommandType == CommandType.Wait) {
+            //            if (ship.GetResearchEquiptment().WantMoreData()) {
+            //                SetFleetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+            //                currentCommandType = CommandType.Move;
+            //            }
+            //            return CommandResult.Stop;
+            //        }
+            //    }
+            //    return CommandResult.Stop;
+        }
+        if (command.commandType == CommandType.Formation) {
+            if (newCommand) {
+                float size = GetMaxShipSize();
+                Vector2 fleetCenter = GetFleetCenter();
+                Vector2 startPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * ships.Count * 2);
+                Vector2 endPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * ships.Count * 2);
+                for (int i = 0; i < ships.Count; i++) {
+                    ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(ships.Count - 1))), CommandAction.Replace);
+                    ships[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                }
+                currentCommandType = CommandType.Formation;
+                newCommand = false;
+                return CommandResult.Stop;
+            }
+            if (currentCommandType == CommandType.Formation && IsFleetIdle()) {
+                return CommandResult.StopRemove;
+            }
+
         }
         return CommandResult.Stop;
     }
@@ -371,13 +429,27 @@ public class FleetAI {
 
     public void SetFleetMovePosition(Vector2 movePosition) {
         for (int i = 0; i < ships.Count; i++) {
-            ships[i].SetMovePosition(movePosition);
+            Vector2 shipOffset = GetFleetCenter() - ships[i].GetPosition();
+            ships[i].shipAI.AddUnitAICommand(CreateRotationCommand(movePosition - shipOffset), CommandAction.Replace);
+            ships[i].shipAI.AddUnitAICommand(CreateIdleCommand());
+            ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, minFleetSpeed));
         }
     }
 
     public void SetFleetMovePositionOffset(Vector2 movePosition, float targetSize) {
         for (int i = 0; i < ships.Count; i++) {
-            ships[i].SetMovePosition(movePosition, (GetFleetSize() + targetSize) * 2);
+            Vector2 shipOffset = GetFleetCenter() - ships[i].GetPosition();
+            ships[i].SetMovePosition(movePosition - shipOffset, (GetFleetSize() + targetSize) * 2);
+        }
+    }
+
+    public void SetFormation(CommandAction commandAction = CommandAction.Replace) {
+        AddUnitAICommand(CreateFormationCommand(ships[0].GetRotation()), commandAction);
+    }
+
+    public void NextShipsCommand() {
+        for (int i = 0; i < ships.Count; i++) {
+            ships[i].shipAI.NextCommand();
         }
     }
 
@@ -390,7 +462,11 @@ public class FleetAI {
     }
 
     public Vector2 GetFleetCenter() {
-        return ships[0].GetPosition();
+        Vector2 sum = ships[0].GetPosition();
+        for (int i = 1; i < ships.Count; i++) {
+            sum += ships[i].GetPosition();
+        }
+        return sum / ships.Count;
     }
 
     public float GetFleetSize() {
@@ -401,6 +477,7 @@ public class FleetAI {
         }
         return size;
     }
+
     Unit GetClosestEnemyUnitInRadius(float radius) {
         Unit targetUnit = null;
         float distance = 0;
@@ -415,5 +492,33 @@ public class FleetAI {
         return targetUnit;
     }
 
+    float GetMinShipSpeed() {
+        float minSpeed = float.MaxValue;
+        for (int i = 0; i < ships.Count; i++) {
+            minSpeed = Math.Min(ships[i].GetSpeed(), minSpeed);
+        }
+        return minSpeed;
+    }
 
+    float GetMaxShipSize() {
+        float maxShipSize = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            maxShipSize = Math.Max(maxShipSize, ships[i].GetSize());
+        }
+        return maxShipSize;
+    }
+
+    public List<Ship> GetAllShips() {
+        return ships;
+    }
+
+    public void SelectFleet(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
+        foreach (Ship ship in ships) {
+            ship.SelectUnit(strength);
+        }
+    }
+
+    public void UnselectFleet() {
+        SelectFleet(UnitSelection.SelectionStrength.Unselected);
+    }
 }

@@ -19,7 +19,7 @@ public class ShipyardFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         if (shipyard.GetHanger().GetCombatShip(0) != null) {
             if (shipyard.GetHanger().GetCombatShip(0).faction.stations.Count > 0) {
-                shipyard.GetHanger().GetCombatShip(0).shipAI.AddUnitAICommand(new Command(Command.CommandType.Dock, shipyard.GetHanger().GetCombatShip(0).faction.stations[0]), ShipAI.CommandAction.AddToEnd);
+                shipyard.GetHanger().GetCombatShip(0).shipAI.AddUnitAICommand(Command.CreateDockCommand(shipyard.GetHanger().GetCombatShip(0).faction.stations[0]), Command.CommandAction.AddToEnd);
             }
         }
         timeUntilNextCommunication -= deltaTime;

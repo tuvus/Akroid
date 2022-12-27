@@ -294,7 +294,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SelectOnlyCombatShips",
+                    "name": "CreateFleet",
                     "type": "Button",
                     "id": "39f2bae7-fe7f-4d45-868c-247ca5a0c7d3",
                     "expectedControlType": "Button",
@@ -714,7 +714,7 @@
                 {
                     "name": "",
                     "id": "6fbc4b26-573f-414c-8f0c-cae9831dde5e",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -758,11 +758,11 @@
                 {
                     "name": "",
                     "id": "175b6979-144f-43cc-a36a-40329e636129",
-                    "path": "<Keyboard>/d",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SelectOnlyCombatShips",
+                    "action": "CreateFleet",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

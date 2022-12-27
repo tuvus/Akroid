@@ -27,7 +27,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         GetPlayerInput().Player.AdditiveModifier.canceled += context => AdditiveButtonUp();
 
         GetPlayerInput().Player.AllCombatUnits.performed += context => AllCombatUnitsButtonPressed();
-        GetPlayerInput().Player.SelectOnlyCombatShips.performed += context => SelectOnlyCombatShips();
     }
 
     public override void ChangeFaction() {
@@ -122,15 +121,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnitToStrongest();
         }
-    }
-
-    protected virtual void SelectOnlyCombatShips() {
-        if (LocalPlayer.Instance.ownedUnits == null)
-            return;
-        selectedUnits.RemoveAllNonCombatShips();
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
-        SetDisplayedUnitToStrongest();
-        selectedGroup = -1;
     }
 
     void StartBoxSelection(Vector2 mousePosition) {

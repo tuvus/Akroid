@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Mono.Cecil;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class Faction : MonoBehaviour, IPositionConfirmer {
@@ -31,6 +33,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public List<Unit> units { get; private set; }
     public List<Ship> ships { get; private set; }
+    public List<FleetAI> fleets { get; private set; }
     public List<Station> stations { get; private set; }
     public List<Station> stationBlueprints { get; private set; }
 
@@ -98,6 +101,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             factionPosition = Vector2.zero;
         units = new List<Unit>();
         ships = new List<Ship>();
+        fleets = new List<FleetAI>(10);
         stations = new List<Station>();
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
@@ -196,6 +200,23 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         activeMiningStations.Remove(miningStation);
     }
 
+    public FleetAI CreateNewFleet(string fleetName, Ship ship) {
+        FleetAI newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<FleetAI>();
+        newFleet.SetupFleetAI(this, fleetName, ship);
+        return newFleet;
+    }
+
+    public FleetAI CreateNewFleet(string fleetName, List<Ship> ships) {
+        FleetAI newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<FleetAI>();
+        newFleet.SetupFleetAI(this, fleetName, ships);
+        fleets.Add(newFleet);
+        return newFleet;
+    }
+
+    public void RemoveFleet(FleetAI fleetAI) {
+        fleets.Remove(fleetAI);
+    }
+
     public void AddCredits(long credits) {
         this.credits += credits;
     }
@@ -236,6 +257,14 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void UpdateFaction(float deltaTime) {
         factionAI.UpdateFactionAI(deltaTime);
         UpdateFactionTotalUnitSize();
+    }   
+
+    public void UpdateFleets(float deltaTime) {
+        for (int i = 0; i < fleets.Count; i++) {
+            Profiler.BeginSample("UpdatingFleet:" + fleets[i].name);
+            fleets[i].UpdateAI(deltaTime);
+            Profiler.EndSample();
+        }
     }
 
     public void UpdateFactionResearch() {
@@ -493,6 +522,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public Transform GetStationTransform() {
         return transform.GetChild(1);
+    }
+
+    public Transform GetFleetTransform() {
+        return transform.GetChild(2);
     }
 
     public Shipyard GetFleetCommand() {

@@ -21,6 +21,13 @@ public class Command {
         TransportDelay,
         Research,
     }
+
+    public enum CommandAction {
+        AddToBegining = -1,
+        Replace = 0,
+        AddToEnd = 1,
+    }
+
     public CommandType commandType;
 
     public float waitTime;
@@ -34,157 +41,106 @@ public class Command {
     public Station productionStation;
     public Station destinationStation;
     public string cargoType;
-    public Command(CommandType idle) {
-        this.commandType = idle;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector3.zero;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+
+    public float maxSpeed;
+
+    private Command(CommandType commandType) {
+        this.commandType = commandType;
+        maxSpeed = float.MaxValue;
     }
 
-    /// <param name="commandType">Type of command</param>
-    /// <param name="value">A 0 to 360 degree rotation or a wait time</param>
-    public Command(CommandType waitOrRotate, float value) {
-        commandType = waitOrRotate;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector3.zero;
-        targetUnit = null;
-        cargoType = null;
-        if (commandType == CommandType.Wait)
-            waitTime = value;
-        if (commandType == CommandType.TurnToRotation)
-            targetRotation = value;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+    public static Command CreateIdleCommand() {
+        Command newCommand = new Command(CommandType.Idle);
+        return newCommand;
     }
 
-    public Command(CommandType research, Star star, Station returnStation) {
-        commandType = research;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector3.zero;
-        targetUnit = null;
-        cargoType = null;
-        waitTime = 0;
-        targetRotation = 0;
-        targetStar = star;
-        useAlternateCommandOnceDone = false;
-        destinationStation = returnStation;
+    public static Command CreateWaitCommand(float waitTime) {
+        Command newCommand = new Command(CommandType.Wait);
+        newCommand.waitTime = waitTime;
+        return newCommand;
     }
 
-    public Command(CommandType moveOrRotateTowardsOrAttackMoveLocation, Vector2 value) {
-        this.commandType = moveOrRotateTowardsOrAttackMoveLocation;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = value;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+    public static Command CreateRotationCommand(float rotation) {
+        Command newCommand = new Command(CommandType.TurnToRotation);
+        newCommand.targetRotation = rotation;
+        return newCommand;
     }
 
-    public Command(CommandType followOrAttackMoveUnitOrProtect, Unit unit) {
-        this.commandType = followOrAttackMoveUnitOrProtect;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector2.zero;
-        if (commandType == CommandType.Protect) {
-            protectUnit = unit;
-            targetUnit = null;
-        } else {
-            protectUnit = null;
-            targetUnit = unit;
-        }
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+    public static Command CreateRotationCommand(Vector2 targetPosition) {
+        Command newCommand = new Command(CommandType.TurnToRotation);
+        newCommand.targetPosition = targetPosition;
+        return newCommand;
     }
 
-    public Command(CommandType attackMoveUnit, Unit unit, bool useAlternateCommandOnceDone) {
-        this.commandType = attackMoveUnit;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = unit.GetPosition();
-        targetUnit = unit;
-        cargoType = null;
-        targetStar = null;
-        this.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
+    public static Command CreateFormationCommand(float rotation) {
+        Command newCommand = new Command(CommandType.Formation);
+        newCommand.targetRotation = rotation;
+        return newCommand;
     }
 
-    public Command(CommandType formationOrAttackMovePosition, Unit unit, Vector2 offset) {
-        this.commandType = formationOrAttackMovePosition;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = offset;
-        targetUnit = unit;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+    public static Command CreateMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.Move);
+        newCommand.targetPosition = targetPosition;
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
     }
 
-    public Command(CommandType formationRotation, Unit unit, float rotation, Vector2 offset) {
-        this.commandType = formationRotation;
-        waitTime = 0;
-        targetRotation = rotation;
-        targetPosition = offset;
-        targetUnit = unit;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
+    public static Command CreateAttackMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.AttackMove);
+        newCommand.targetPosition = targetPosition;
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
     }
 
-    public Command(CommandType dock, Station destination) {
-        this.commandType = dock;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector2.zero;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
-        this.destinationStation = destination;
+    public static Command CreateAttackMoveCommand(Unit targetUnit, float maxSpeed = float.MaxValue, bool useAlternateCommandOnceDone = false) {
+        Command newCommand = new Command(CommandType.AttackMoveUnit);
+        newCommand.targetUnit = targetUnit;
+        newCommand.maxSpeed = maxSpeed;
+        newCommand.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
+        return newCommand;
     }
 
-    public Command(CommandType transport, Station producer, Station destination) {
-        this.commandType = transport;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector2.zero;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
-        this.productionStation = producer;
-        this.destinationStation = destination;
+    public static Command CreateFollowCommand(Unit targetUnit, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.Follow);
+        newCommand.targetUnit = targetUnit;
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
     }
 
-    public Command(CommandType transport, Station producer, Station destination, bool oneTrip) {
-        this.commandType = transport;
-        waitTime = 0;
-        targetRotation = 0;
-        targetPosition = Vector2.zero;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = oneTrip;
-        this.productionStation = producer;
-        this.destinationStation = destination;
+    public static Command CreateProtectCommand(Unit protectUnit, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.Protect);
+        newCommand.protectUnit = protectUnit;
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
     }
 
-    public Command(CommandType transportDelay, Station producer, Station destination, float delay) {
-        this.commandType = transportDelay;
-        waitTime = delay;
-        targetRotation = delay;
-        targetPosition = Vector2.zero;
-        targetUnit = null;
-        cargoType = null;
-        targetStar = null;
-        useAlternateCommandOnceDone = false;
-        this.productionStation = producer;
-        this.destinationStation = destination;
+    public static Command CreateDockCommand(Station destinationStation, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.Dock);
+        newCommand.destinationStation = destinationStation;
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
+    }
+
+    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, bool oneTrip = false) {
+        Command newCommand = new Command(CommandType.Transport);
+        newCommand.destinationStation = destinationStation;
+        newCommand.productionStation = productionStation;
+        newCommand.useAlternateCommandOnceDone = oneTrip;
+        return newCommand;
+    }
+
+    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, float delay) {
+        Command newCommand = new Command(CommandType.TransportDelay);
+        newCommand.destinationStation = destinationStation;
+        newCommand.productionStation = productionStation;
+        newCommand.waitTime = delay;
+        return newCommand;
+    }
+
+    public static Command CreateResearchCommand(Star targetStar, Station returnStation) {
+        Command newCommand = new Command(CommandType.Research);
+        newCommand.destinationStation = returnStation;
+        newCommand.targetStar = targetStar;
+        return newCommand;
     }
 }
