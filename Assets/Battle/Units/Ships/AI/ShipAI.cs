@@ -30,13 +30,11 @@ public class ShipAI : MonoBehaviour {
         if (commandAction == CommandAction.AddToBegining) {
             newCommand = true;
             commands.Insert(0, command);
-        }
-        if (commandAction == CommandAction.Replace) {
+        } else if (commandAction == CommandAction.Replace) {
             newCommand = true;
             ClearCommands();
             commands.Add(command);
-        }
-        if (commandAction == CommandAction.AddToEnd) {
+        } else if (commandAction == CommandAction.AddToEnd) {
             if (commands.Count == 0)
                 newCommand = true;
             commands.Add(command);
@@ -264,7 +262,7 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.Continue;
         }
         //Follows the friendly ship in a formation relative to thier rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
-        if (command.commandType == CommandType.FormationRotation) {
+        if (command.commandType == CommandType.FormationLocation) {
             if (command.targetUnit == null) {
                 return CommandResult.ContinueRemove;
             }

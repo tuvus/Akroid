@@ -15,7 +15,7 @@ public class Command {
         Follow,
         Protect,
         Formation,
-        FormationRotation,
+        FormationLocation,
         Dock,
         Transport,
         TransportDelay,
@@ -78,8 +78,8 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateFormationCommand(Vector2 targetPosition,float rotation) {
-        Command newCommand = new Command(CommandType.Formation);
+    public static Command CreateFormationCommand(Vector2 targetPosition, float rotation) {
+        Command newCommand = new Command(CommandType.FormationLocation);
         newCommand.targetPosition = targetPosition;
         newCommand.targetRotation = rotation;
         return newCommand;
