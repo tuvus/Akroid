@@ -127,7 +127,6 @@ public class ShipAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-
         //Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished.
         //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
         if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.Protect) {
@@ -135,7 +134,13 @@ public class ShipAI : MonoBehaviour {
                 command.commandType = CommandType.AttackMove;
                 command.protectUnit = null;
             }
-            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMaxWeaponRange() * 2)) {
+
+            float distanceToTargetUnit = 0;
+            if (command.targetUnit != null)
+                distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
+
+            //If there is a targetUnit check if a new one should be calculated
+            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || distanceToTargetUnit > ship.GetMaxWeaponRange() * 2 || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -154,7 +159,8 @@ public class ShipAI : MonoBehaviour {
             if (currentCommandType == CommandType.Move) {
                 command.targetUnit = GetClosestNearbyEnemyUnit();
                 if (command.targetUnit != null) {
-                    if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) < ship.GetMinWeaponRange()) {
+                    distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
+                    if (distanceToTargetUnit < ship.GetMinWeaponRange()) {
                         currentCommandType = CommandType.TurnToRotation;
                     } else {
                         currentCommandType = CommandType.AttackMove;
@@ -177,7 +183,7 @@ public class ShipAI : MonoBehaviour {
             }
 
             if (currentCommandType == CommandType.AttackMove) {
-                if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
+                if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
                     currentCommandType = CommandType.TurnToRotation;
                 } else {
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
@@ -186,7 +192,7 @@ public class ShipAI : MonoBehaviour {
             }
 
             if (currentCommandType == CommandType.TurnToRotation) {
-                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
+                if (distanceToTargetUnit > ship.GetMinWeaponRange()) {
                     currentCommandType = CommandType.AttackMove;
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());

@@ -109,7 +109,7 @@ public class Fleet : MonoBehaviour {
             if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > GetMaxSize() + maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                 continue;
             for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
-                FindUnit(enemyFaction.units[i]);
+                FindUnit(enemyFaction.unitsNotInFleet[i]);
             }
             for (int i = 0; i < enemyFaction.fleets.Count; i++) {
                 Fleet targetFleet = enemyFaction.fleets[i];
