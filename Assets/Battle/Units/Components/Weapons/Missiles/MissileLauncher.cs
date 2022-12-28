@@ -51,7 +51,7 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     public bool MissileLauncherHibernationStatus() {
-        return targetUnit == null && unit.enemyUnitsInRange.Count == 0 && reloadController.ReadyToHibernate();
+        return targetUnit == null && unit.GetEnemyUnitsInRange().Count == 0 && reloadController.ReadyToHibernate();
     }
 
     private bool IsTargetViable(Unit targetUnit) {
@@ -61,8 +61,8 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     private void FindNewTarget() {
-        for (int i = 0; i < unit.enemyUnitsInRange.Count; i++) {
-            Unit newTarget = unit.enemyUnitsInRange[i];
+        for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
+            Unit newTarget = unit.GetEnemyUnitsInRange()[i];
             if (!IsTargetViable(newTarget))
                 continue;
             if (IsTargetBetter(newTarget, targetUnit)) {

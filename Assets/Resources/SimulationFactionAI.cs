@@ -38,22 +38,24 @@ public class SimulationFactionAI : FactionAI {
     }
 
     void ManageFleets() {
-        foreach (FleetAI fleet in faction.fleets) {
+        for (int i = 0; i < faction.fleets.Count; i++) {
+            Fleet fleet = faction.fleets[i];
             if (fleet.IsFleetIdle()) {
                 if (fleet.GetAllShips().Count <= 2 || fleet.GetTotalFleetHealth() <= 1000) {
                     foreach (Ship ship in fleet.GetAllShips()) {
                         ship.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
                     }
                     fleet.DisbandFleet();
+                    i--;
                 } else {
-                    Vector2 fleetPosition = fleet.GetFleetCenter();
+                    Vector2 fleetPosition = fleet.GetPosition();
                     Station targetStation = faction.GetClosestEnemyStation(fleetPosition);
                     if (targetStation != null) {
-                        fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
-                        fleet.AddUnitAICommand(Command.CreateAttackMoveCommand(targetStation));
+                        fleet.FleetAI.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
+                        fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(targetStation));
                     } else {
-                        fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
-                        fleet.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
+                        fleet.FleetAI.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
+                        fleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
                     }
                 }
             }
@@ -105,10 +107,10 @@ public class SimulationFactionAI : FactionAI {
                     if (totalHealth > 3000) {
                         Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
                         if (enemyStation != null) {
-                            FleetAI fleet = faction.CreateNewFleet("AttackFleet", combatShips);
+                            Fleet fleet = faction.CreateNewFleet("AttackFleet", combatShips);
                             if (fleet != null) {
-                                fleet.SetFormation(Vector2.MoveTowards(fleetCommand.GetPosition(), enemyStation.GetPosition(), fleetCommand.GetSize() * 3),Calculator.GetAngleOutOfTwoPositions(fleetCommand.GetPosition(),enemyStation.GetPosition()));
-                                fleet.AddUnitAICommand(Command.CreateAttackMoveCommand(enemyStation), Command.CommandAction.AddToEnd);
+                                fleet.FleetAI.SetFormation(Vector2.MoveTowards(fleetCommand.GetPosition(), enemyStation.GetPosition(), fleetCommand.GetSize() * 3),Calculator.GetAngleOutOfTwoPositions(fleetCommand.GetPosition(),enemyStation.GetPosition()));
+                                fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(enemyStation), Command.CommandAction.AddToEnd);
                             }
                         }
                     }

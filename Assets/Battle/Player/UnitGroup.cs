@@ -16,7 +16,7 @@ public class UnitGroup {
     public GroupType groupType;
 
     public List<Unit> units = new List<Unit>();
-    public FleetAI fleet;
+    public Fleet fleet;
 
     public void ClearGroup() {
         units.Clear();
@@ -236,7 +236,7 @@ public class UnitGroup {
         }
     }
 
-    public void SetFleet(FleetAI fleet) {
+    public void SetFleet(Fleet fleet) {
         ClearGroup();
         groupType = GroupType.Fleet;
         this.fleet = fleet;
@@ -272,7 +272,7 @@ public class UnitGroup {
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {
         if (groupType == GroupType.Fleet) {
-            fleet.AddUnitAICommand(command, commandAction);
+            fleet.FleetAI.AddUnitAICommand(command, commandAction);
             return;
         }
         for (int i = 0; i < units.Count; i++) {

@@ -33,7 +33,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public List<Unit> units { get; private set; }
     public List<Ship> ships { get; private set; }
-    public List<FleetAI> fleets { get; private set; }
+    public List<Fleet> fleets { get; private set; }
     public List<Station> stations { get; private set; }
     public List<Station> stationBlueprints { get; private set; }
 
@@ -101,7 +101,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             factionPosition = Vector2.zero;
         units = new List<Unit>();
         ships = new List<Ship>();
-        fleets = new List<FleetAI>(10);
+        fleets = new List<Fleet>(10);
         stations = new List<Station>();
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
@@ -200,20 +200,20 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         activeMiningStations.Remove(miningStation);
     }
 
-    public FleetAI CreateNewFleet(string fleetName, Ship ship) {
-        FleetAI newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<FleetAI>();
-        newFleet.SetupFleetAI(this, fleetName, ship);
+    public Fleet CreateNewFleet(string fleetName, Ship ship) {
+        Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
+        newFleet.SetupFleet(this, fleetName, ship);
         return newFleet;
     }
 
-    public FleetAI CreateNewFleet(string fleetName, List<Ship> ships) {
-        FleetAI newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<FleetAI>();
-        newFleet.SetupFleetAI(this, fleetName, ships);
+    public Fleet CreateNewFleet(string fleetName, List<Ship> ships) {
+        Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
+        newFleet.SetupFleet(this, fleetName, ships);
         fleets.Add(newFleet);
         return newFleet;
     }
 
-    public void RemoveFleet(FleetAI fleetAI) {
+    public void RemoveFleet(Fleet fleetAI) {
         fleets.Remove(fleetAI);
     }
 
@@ -262,7 +262,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void UpdateFleets(float deltaTime) {
         for (int i = 0; i < fleets.Count; i++) {
             Profiler.BeginSample("UpdatingFleet:" + fleets[i].name);
-            fleets[i].UpdateAI(deltaTime);
+            fleets[i].UpdateFleet(deltaTime);
             Profiler.EndSample();
         }
     }

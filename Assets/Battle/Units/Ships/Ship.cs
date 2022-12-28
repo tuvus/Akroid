@@ -34,7 +34,7 @@ public class Ship : Unit {
     }
 
     public ShipAI shipAI { get; private set; }
-    public FleetAI fleet;
+    public Fleet fleet;
     [SerializeField] private ShipClass shipClass;
     [SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
@@ -78,7 +78,7 @@ public class Ship : Unit {
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<float> resources;
 
-        public ShipBlueprint(int factionIndex,ShipClass shipClass, string shipName, int shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<float> resources) {
+        public ShipBlueprint(int factionIndex, ShipClass shipClass, string shipName, int shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<float> resources) {
             this.factionIndex = factionIndex;
             this.shipClass = shipClass;
             this.shipName = shipName;
@@ -131,6 +131,11 @@ public class Ship : Unit {
         }
     }
 
+    protected override void FindEnemies() {
+        if (fleet == null)
+            base.FindEnemies();
+    }
+
     void UpdateMovement(float deltaTime) {
         if (shipAction == ShipAction.Idle) {
             return;
@@ -172,7 +177,7 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
-            float thrust = math.min(maxSetSpeed,GetSpeed()) * deltaTime;
+            float thrust = math.min(maxSetSpeed, GetSpeed()) * deltaTime;
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
                 return;
@@ -392,6 +397,20 @@ public class Ship : Unit {
         return cargoBay;
     }
 
+    public override List<Unit> GetEnemyUnitsInRange() {
+        if (fleet != null) {
+            return fleet.enemyUnitsInRange;
+        }
+        return base.GetEnemyUnitsInRange();
+    }
+
+    public override List<float> GetEnemyUnitsInRangeDistance() {
+        if (fleet != null) {
+            return fleet.enemyUnitsInRangeDistance;
+        }
+        return base.GetEnemyUnitsInRangeDistance();
+    }
+
     public ResearchEquiptment GetResearchEquiptment() {
         return researchEquiptment;
     }
@@ -407,7 +426,7 @@ public class Ship : Unit {
         foreach (var thruster in GetComponentsInChildren<Thruster>()) {
             thrust += thruster.thrustSpeed;
         }
-        
+
         mass = SetupSize() * 100;
         thrust /= mass;
         print(unitName + "Thrust:" + thrust);

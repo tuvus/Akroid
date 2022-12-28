@@ -47,7 +47,7 @@ public class EngagedVisual : MonoBehaviour {
     }
 
     bool ShouldShowEngageVisual() {
-        if (unit.enemyUnitsInRange.Count > 0)
+        if (unit.GetEnemyUnitsInRange().Count > 0)
             return true;
         return false;
     }

@@ -24,7 +24,7 @@ public abstract class Unit : BattleObject {
     protected Vector2 velocity;
 
     public List<Unit> enemyUnitsInRange { get; protected set; }
-    public List<float> enemyUnitsInRangedistance { get; protected set; }
+    public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
         this.faction = faction;
@@ -33,7 +33,7 @@ public abstract class Unit : BattleObject {
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
-        enemyUnitsInRangedistance = new List<float>(20);
+        enemyUnitsInRangeDistance = new List<float>(20);
         cargoBays = new List<CargoBay>(GetComponentsInChildren<CargoBay>());
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
@@ -81,7 +81,7 @@ public abstract class Unit : BattleObject {
     protected virtual void FindEnemies() {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
-        enemyUnitsInRangedistance.Clear();
+        enemyUnitsInRangeDistance.Clear();
         foreach (var enemyFaction in faction.enemyFactions) {
             if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                 continue;
@@ -92,9 +92,9 @@ public abstract class Unit : BattleObject {
                 float distance = Vector2.Distance(transform.position, targetUnit.GetPosition());
                 if (distance <= maxWeaponRange * 2) {
                     bool added = false;
-                    for (int f = 0; f < enemyUnitsInRangedistance.Count; f++) {
-                        if (enemyUnitsInRangedistance[f] >= distance) {
-                            enemyUnitsInRangedistance.Insert(f, distance);
+                    for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
+                        if (enemyUnitsInRangeDistance[f] >= distance) {
+                            enemyUnitsInRangeDistance.Insert(f, distance);
                             enemyUnitsInRange.Insert(f, targetUnit);
                             added = true;
                             break;
@@ -102,7 +102,7 @@ public abstract class Unit : BattleObject {
                     }
                     if (!added) {
                         enemyUnitsInRange.Add(targetUnit);
-                        enemyUnitsInRangedistance.Add(distance);
+                        enemyUnitsInRangeDistance.Add(distance);
                     }
                 }
             }
@@ -380,7 +380,14 @@ public abstract class Unit : BattleObject {
 
     public bool IsStation() {
         return this is Station;
+    }
 
+    public virtual List<Unit> GetEnemyUnitsInRange() {
+        return enemyUnitsInRange;
+    }
+
+    public virtual List<float> GetEnemyUnitsInRangeDistance() {
+        return enemyUnitsInRangeDistance;
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]

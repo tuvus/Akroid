@@ -54,7 +54,7 @@ public class Turret : MonoBehaviour {
     }
 
     protected virtual bool TurretHibernationStatus() {
-        return targetUnit == null && aimed && unit.enemyUnitsInRange.Count == 0 && reloadController.ReadyToHibernate();
+        return targetUnit == null && aimed && unit.GetEnemyUnitsInRange().Count == 0 && reloadController.ReadyToHibernate();
     }
 
     protected virtual void UpdateTurretReload(float deltaTime) {
@@ -107,8 +107,8 @@ public class Turret : MonoBehaviour {
 
     public virtual void FindNewTarget(float range, Faction faction) {
         Unit newTarget = null;
-        for (int i = 0; i < unit.enemyUnitsInRange.Count; i++) {
-            Unit targetUnit = unit.enemyUnitsInRange[i];
+        for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
+            Unit targetUnit = unit.GetEnemyUnitsInRange()[i];
             if (!IsTargetViable(targetUnit))
                 continue;
             Vector2 targetLocation;

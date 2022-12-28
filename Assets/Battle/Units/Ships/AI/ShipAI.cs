@@ -152,7 +152,7 @@ public class ShipAI : MonoBehaviour {
             }
 
             if (currentCommandType == CommandType.Move) {
-                command.targetUnit = GetClosestEnemyUnitInRadius(ship.GetMaxWeaponRange() * 2);
+                command.targetUnit = GetClosestNearbyEnemyUnit();
                 if (command.targetUnit != null) {
                     if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) < ship.GetMinWeaponRange()) {
                         currentCommandType = CommandType.TurnToRotation;
@@ -439,11 +439,26 @@ public class ShipAI : MonoBehaviour {
         return CommandResult.Stop;
     }
 
+    Unit GetClosestNearbyEnemyUnit() {
+        Unit targetUnit = null;
+        float distance = 0;
+        for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
+            Unit tempUnit = ship.GetEnemyUnitsInRange()[i];
+            float tempDistance = Vector2.Distance(ship.transform.position, tempUnit.transform.position);
+            if (targetUnit == null || tempDistance < distance) {
+                targetUnit = tempUnit;
+                distance = tempDistance;
+            }
+        }
+        return targetUnit;
+    }
+
+
     Unit GetClosestEnemyUnitInRadius(float radius) {
         Unit targetUnit = null;
         float distance = 0;
-        for (int i = 0; i < ship.enemyUnitsInRange.Count; i++) {
-            Unit tempUnit = ship.enemyUnitsInRange[i];
+        for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
+            Unit tempUnit = ship.GetEnemyUnitsInRange()[i];
             float tempDistance = Vector2.Distance(ship.transform.position, tempUnit.transform.position);
             if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
                 targetUnit = tempUnit;
