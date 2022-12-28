@@ -366,7 +366,7 @@ public class BattleManager : MonoBehaviour {
         simulationTime += deltaTime;
         realTime += Time.fixedDeltaTime;
         for (int i = 0; i < factions.Count; i++) {
-            Profiler.BeginSample("FactionsUpdate:" + factions[i].name + i);
+            Profiler.BeginSample("FactionUpdate");
             factions[i].UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
@@ -374,8 +374,10 @@ public class BattleManager : MonoBehaviour {
             factions[i].UpdateFleets(deltaTime);
         }
         for (int i = 0; i < units.Count; i++) {
-            Profiler.BeginSample("UnitsUpdate:" + units[i].GetUnitName() + i);
+            Profiler.BeginSample("UnitUpdate");
+            Profiler.BeginSample(units[i].GetUnitName());
             units[i].UpdateUnit(deltaTime);
+            Profiler.EndSample();
             Profiler.EndSample();
         }
         Profiler.BeginSample("ProjectilesUpdate");
