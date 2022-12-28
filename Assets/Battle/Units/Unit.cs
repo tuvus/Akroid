@@ -85,29 +85,37 @@ public abstract class Unit : BattleObject {
         foreach (var enemyFaction in faction.enemyFactions) {
             if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                 continue;
-            for (int i = 0; i < enemyFaction.units.Count; i++) {
-                Unit targetUnit = enemyFaction.units[i];
-                if (targetUnit == null || !targetUnit.IsTargetable())
-                    continue;
-                float distance = Vector2.Distance(transform.position, targetUnit.GetPosition());
-                if (distance <= maxWeaponRange * 2) {
-                    bool added = false;
-                    for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
-                        if (enemyUnitsInRangeDistance[f] >= distance) {
-                            enemyUnitsInRangeDistance.Insert(f, distance);
-                            enemyUnitsInRange.Insert(f, targetUnit);
-                            added = true;
-                            break;
-                        }
-                    }
-                    if (!added) {
-                        enemyUnitsInRange.Add(targetUnit);
-                        enemyUnitsInRangeDistance.Add(distance);
+            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
+                FindUnit(enemyFaction.units[i]);
+            }
+            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
+                Fleet targetFleet = enemyFaction.fleets[i];
+                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + targetFleet.GetSize()) {
+                    for (int f = 0; f < targetFleet.ships.Count; f++) {
+                        FindUnit(targetFleet.ships[f]);
                     }
                 }
             }
         }
         Profiler.EndSample();
+    }
+
+    void FindUnit(Unit targetUnit) {
+        if (targetUnit == null || !targetUnit.IsTargetable())
+            return;
+        float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
+        if (distance <= maxWeaponRange * 2 + targetUnit.GetSize()) {
+            for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
+                if (enemyUnitsInRangeDistance[f] >= distance) {
+                    enemyUnitsInRangeDistance.Insert(f, distance);
+                    enemyUnitsInRange.Insert(f, targetUnit);
+                    return;
+                }
+            }
+            //Has not been added yet
+            enemyUnitsInRange.Add(targetUnit);
+            enemyUnitsInRangeDistance.Add(distance);
+        }
     }
 
     protected virtual void UpdateWeapons(float deltaTime) {

@@ -50,6 +50,7 @@ public class Fleet : MonoBehaviour {
         if (ship.fleet != null) {
             ship.fleet.RemoveShip(ship);
         }
+        faction.unitsNotInFleet.Remove(ship);
         ship.fleet = this;
         if (setMinSpeed)
             minFleetSpeed = GetMinShipSpeed();
@@ -59,6 +60,7 @@ public class Fleet : MonoBehaviour {
     public void RemoveShip(Ship ship) {
         ships.Remove(ship);
         ship.fleet = null;
+        faction.unitsNotInFleet.Add(ship);
         if (ships.Count == 0) {
             DisbandFleet();
         } else {
@@ -106,29 +108,37 @@ public class Fleet : MonoBehaviour {
         foreach (var enemyFaction in faction.enemyFactions) {
             if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > GetMaxSize() + maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
                 continue;
-            for (int i = 0; i < enemyFaction.units.Count; i++) {
-                Unit targetUnit = enemyFaction.units[i];
-                if (targetUnit == null || !targetUnit.IsTargetable())
-                    continue;
-                float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
-                if (distance <= maxWeaponRange * 2) {
-                    bool added = false;
-                    for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
-                        if (enemyUnitsInRangeDistance[f] >= distance) {
-                            enemyUnitsInRangeDistance.Insert(f, distance);
-                            enemyUnitsInRange.Insert(f, targetUnit);
-                            added = true;
-                            break;
-                        }
-                    }
-                    if (!added) {
-                        enemyUnitsInRange.Add(targetUnit);
-                        enemyUnitsInRangeDistance.Add(distance);
+            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
+                FindUnit(enemyFaction.units[i]);
+            }
+            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
+                Fleet targetFleet = enemyFaction.fleets[i];
+                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + GetMaxSize() + targetFleet.GetSize()) {
+                    for (int f = 0; f < targetFleet.ships.Count; f++) {
+                        FindUnit(targetFleet.ships[f]);
                     }
                 }
             }
         }
         Profiler.EndSample();
+    }
+
+    void FindUnit(Unit targetUnit) {
+        if (targetUnit == null || !targetUnit.IsTargetable())
+            return;
+        float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
+        if (distance <= maxWeaponRange * 2 + GetMaxSize() + targetUnit.GetSize()) {
+            for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
+                if (enemyUnitsInRangeDistance[f] >= distance) {
+                    enemyUnitsInRangeDistance.Insert(f, distance);
+                    enemyUnitsInRange.Insert(f, targetUnit);
+                    return;
+                }
+            }
+            //Has not been added yet
+            enemyUnitsInRange.Add(targetUnit);
+            enemyUnitsInRangeDistance.Add(distance);
+        }
     }
 
     public void NextShipsCommand() {

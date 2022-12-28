@@ -32,6 +32,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public int factionIndex { get; private set; }
 
     public List<Unit> units { get; private set; }
+    public List<Unit> unitsNotInFleet { get; private set; }
     public List<Ship> ships { get; private set; }
     public List<Fleet> fleets { get; private set; }
     public List<Station> stations { get; private set; }
@@ -99,10 +100,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             factionPosition = targetPosition.Value;
         else
             factionPosition = Vector2.zero;
-        units = new List<Unit>();
-        ships = new List<Ship>();
+        units = new List<Unit>((factionData.ships + factionData.stations) * 5);
+        unitsNotInFleet = new List<Unit>((factionData.ships + factionData.stations) * 5);
+        ships = new List<Ship>(factionData.ships * 5);
         fleets = new List<Fleet>(10);
-        stations = new List<Station>();
+        stations = new List<Station>(factionData.stations * 5);
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
@@ -162,26 +164,31 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
+        unitsNotInFleet.Remove(unit);
     }
 
     public void AddShip(Ship ship) {
         ships.Add(ship);
         units.Add(ship);
+        unitsNotInFleet.Add(ship);
     }
 
     public void RemoveShip(Ship ship) {
         units.Remove(ship);
         ships.Remove(ship);
+        unitsNotInFleet.Remove(ship);
     }
 
     public void AddStation(Station station) {
         stations.Add(station);
         units.Add(station);
+        unitsNotInFleet.Add(station);
     }
 
     public void RemoveStation(Station station) {
         units.Remove(station);
         stations.Remove(station);
+        unitsNotInFleet.Remove(station);
     }
 
     public void AddStationBlueprint(Station station) {
