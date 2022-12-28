@@ -290,7 +290,7 @@ public abstract class Unit : BattleObject {
     }
 
     public bool IsDammaged() {
-        return health < maxHealth;
+        return health < GetMaxHealth();
     }
 
     public int Repair(int ammount) {
