@@ -37,7 +37,7 @@ public class FleetAI : MonoBehaviour {
         SetFormation();
     }
 
-    public void DestroyFleet() {
+    public void DisbandFleet() {
         foreach (Ship ship in ships) {
             ship.fleet = null;
         }
@@ -59,7 +59,7 @@ public class FleetAI : MonoBehaviour {
         ships.Remove(ship);
         ship.fleet = null;
         if (ships.Count == 0) {
-            DestroyFleet();
+            DisbandFleet();
         } else {
             minFleetSpeed = GetMinShipSpeed();
         }
@@ -315,6 +315,14 @@ public class FleetAI : MonoBehaviour {
             size = Math.Max(size, Vector2.Distance(center, ships[i].GetPosition()) + ships[i].GetSize());
         }
         return size;
+    }
+
+    public int GetTotalFleetHealth() {
+        int totalHealth = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            totalHealth += ships[i].GetTotalHealth();
+        }
+        return totalHealth;
     }
 
     Unit GetClosestEnemyUnitInRadius(float radius) {

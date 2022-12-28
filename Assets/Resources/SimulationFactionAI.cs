@@ -40,14 +40,21 @@ public class SimulationFactionAI : FactionAI {
     void ManageFleets() {
         foreach (FleetAI fleet in faction.fleets) {
             if (fleet.IsFleetIdle()) {
-                Vector2 fleetPosition = fleet.GetFleetCenter();
-                Station targetStation = faction.GetClosestEnemyStation(fleetPosition);
-                if (targetStation != null) {
-                    fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
-                    fleet.AddUnitAICommand(Command.CreateAttackMoveCommand(targetStation));
+                if (fleet.GetAllShips().Count <= 2 || fleet.GetTotalFleetHealth() <= 1000) {
+                    foreach (Ship ship in fleet.GetAllShips()) {
+                        ship.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
+                    }
+                    fleet.DisbandFleet();
                 } else {
-                    fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
-                    fleet.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
+                    Vector2 fleetPosition = fleet.GetFleetCenter();
+                    Station targetStation = faction.GetClosestEnemyStation(fleetPosition);
+                    if (targetStation != null) {
+                        fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
+                        fleet.AddUnitAICommand(Command.CreateAttackMoveCommand(targetStation));
+                    } else {
+                        fleet.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
+                        fleet.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
+                    }
                 }
             }
         }
