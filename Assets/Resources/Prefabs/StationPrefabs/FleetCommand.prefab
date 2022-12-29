@@ -157,7 +157,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 0.8
   fadeDuration: 0.4
-  laserDamagePerSecond: 80
+  laserDamagePerSecond: 160
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -513,7 +513,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 0.8
   fadeDuration: 0.4
-  laserDamagePerSecond: 80
+  laserDamagePerSecond: 160
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -643,7 +643,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 0.8
   fadeDuration: 0.4
-  laserDamagePerSecond: 80
+  laserDamagePerSecond: 160
   laserRange: 724
   laserSize: 3
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,

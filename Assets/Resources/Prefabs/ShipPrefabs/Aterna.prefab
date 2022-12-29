@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 600
-  targeting: 6
-  missileDamage: 35
+  targeting: 3
+  missileDamage: 90
   missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800
@@ -5666,7 +5666,7 @@ MonoBehaviour:
   targetUnit: {fileID: 0}
   fireDuration: 0.4
   fadeDuration: 0.2
-  laserDamagePerSecond: 40
+  laserDamagePerSecond: 300
   laserRange: 760
   laserSize: 1
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
@@ -5913,8 +5913,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   range: 600
-  targeting: 6
-  missileDamage: 35
+  targeting: 3
+  missileDamage: 90
   missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800

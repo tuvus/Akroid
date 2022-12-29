@@ -70,9 +70,9 @@ public class Missile : MonoBehaviour {
             }
         } else {
             turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
-            if (target != null || !target.IsTargetable())
+            if (target != null && target.IsTargetable()) {
                 RotateMissile();
-            else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
+            } else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
                 target = missileLauncher.FindNewTarget();
                 if (target == null)
                     retarget = false;

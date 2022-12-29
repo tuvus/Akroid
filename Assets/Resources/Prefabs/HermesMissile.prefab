@@ -107,6 +107,7 @@ MonoBehaviour:
   thrustSpeed: 0
   maxTurnSpeed: 0
   fuelRange: 0
+  retarget: 0
 --- !u!199 &6973132868627845792
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -188,7 +189,7 @@ ParticleSystem:
   m_GameObject: {fileID: 6973132868627845797}
   serializedVersion: 8
   lengthInSec: 0.1
-  simulationSpeed: 10
+  simulationSpeed: 1
   stopAction: 0
   cullingMode: 1
   ringBufferMode: 0
@@ -262,7 +263,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -315,8 +316,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 1
-      minScalar: 0.001
+      scalar: 5
+      minScalar: 0.2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5117,7 +5118,7 @@ ParticleSystem:
   m_GameObject: {fileID: 6973132870048437462}
   serializedVersion: 8
   lengthInSec: 0.05
-  simulationSpeed: 2
+  simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
@@ -5191,7 +5192,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5244,8 +5245,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
-      minScalar: 1
+      scalar: 4
+      minScalar: 2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -5360,7 +5361,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 2
+      scalar: 1
       minScalar: 0.7
       maxCurve:
         serializedVersion: 2
