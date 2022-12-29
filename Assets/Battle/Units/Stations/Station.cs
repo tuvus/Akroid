@@ -126,7 +126,8 @@ public class Station : Unit, IPositionConfirmer {
     public override void UpdateUnit(float deltaTime) {
         if (built && IsSpawned()) {
             base.UpdateUnit(deltaTime);
-            repairTime -= deltaTime;
+            if (enemyUnitsInRange.Count == 0)
+                repairTime -= deltaTime;
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
                 repairTime += repairSpeed;

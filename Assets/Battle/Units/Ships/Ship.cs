@@ -28,6 +28,7 @@ public class Ship : Unit {
         Rotate,
         Move,
         MoveRotate,
+        MoveLateral,
         Dock,
         DockMove,
         DockRotate,
@@ -177,7 +178,7 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
-            float thrust = math.min(maxSetSpeed, GetSpeed()) * deltaTime;
+            float thrust = speed * deltaTime;
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
                 return;
@@ -201,6 +202,20 @@ public class Ship : Unit {
         }
         if (shipAction == ShipAction.Dock) {
             DockShip(targetStation);
+        }
+        if (shipAction == ShipAction.MoveLateral) {
+            float speed = math.min(maxSetSpeed, GetSpeed()) / 2;
+            if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
+                transform.position = movePosition;
+                position = movePosition;
+                SetIdle();
+                return;
+            } else {
+                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, speed * deltaTime) - GetPosition();
+                transform.Translate(temp, Space.World);
+                position = transform.position;
+                return;
+            }
         }
     }
 
@@ -235,7 +250,22 @@ public class Ship : Unit {
         SetTargetRotate(Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + extraAngle));
     }
 
+    public void SetLateralMovePosition(Vector2 position) {
+        if (shipAction == ShipAction.Idle) {
+            faction.GetFactionAI().RemoveIdleShip(this);
+        }
+        if (dockedStation != null)
+            UndockShip(position);
+        SetThrusters(false);
+        shipAction = ShipAction.MoveLateral;
+        this.movePosition = position;
+    }
+
     public void SetMovePosition(Vector2 position) {
+        if (Vector2.Distance(GetPosition(), position) < GetSize() * 2) {
+            SetLateralMovePosition(position);
+            return;
+        }
         if (shipAction == ShipAction.Idle) {
             faction.GetFactionAI().RemoveIdleShip(this);
         }
