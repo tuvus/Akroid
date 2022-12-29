@@ -268,7 +268,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public void UpdateFleets(float deltaTime) {
         for (int i = 0; i < fleets.Count; i++) {
-            Profiler.BeginSample("UpdatingFleet:" + fleets[i].name);
+            Profiler.BeginSample("UpdateFleet");
             fleets[i].UpdateFleet(deltaTime);
             Profiler.EndSample();
         }

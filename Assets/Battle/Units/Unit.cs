@@ -67,7 +67,7 @@ public abstract class Unit : BattleObject {
     }
 
     public virtual void UpdateUnit(float deltaTime) {
-        if (IsTargetable()) {
+        if (IsTargetable() && HasWeapons()) {
             FindEnemies();
             UpdateWeapons(deltaTime);
         }
@@ -120,14 +120,14 @@ public abstract class Unit : BattleObject {
 
     protected virtual void UpdateWeapons(float deltaTime) {
         for (int i = 0; i < turrets.Count; i++) {
-            //Profiler.BeginSample("Turret" + i);
+            Profiler.BeginSample("Turret");
             turrets[i].UpdateTurret(deltaTime);
-            //Profiler.EndSample();
+            Profiler.EndSample();
         }
         for (int i = 0; i < missileLaunchers.Count; i++) {
-            //Profiler.BeginSample("MissileLauncher" + i);
+            Profiler.BeginSample("MissileLauncher");
             missileLaunchers[i].UpdateMissileLauncher(deltaTime);
-            //Profiler.EndSample();
+            Profiler.EndSample();
         }
     }
 
@@ -380,6 +380,10 @@ public abstract class Unit : BattleObject {
     }
     public UnitSelection GetUnitSelection() {
         return unitSelection;
+    }
+
+    public bool HasWeapons() {
+        return turrets.Count > 0 || missileLaunchers.Count > 0;
     }
 
     public bool IsShip() {

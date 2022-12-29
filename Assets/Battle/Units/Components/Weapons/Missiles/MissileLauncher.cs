@@ -35,7 +35,7 @@ public class MissileLauncher : MonoBehaviour {
     public void UpdateMissileLauncher(float deltaTime) {
         if (MissileLauncherHibernationStatus())
             return;
-        Profiler.BeginSample(name);
+        Profiler.BeginSample("UpdateMissileLauncher");
         reloadController.UpdateReloadController(deltaTime * unit.faction.MissileReloadModifier, 1);
         if (!reloadController.ReadyToFire()) {
             Profiler.EndSample();

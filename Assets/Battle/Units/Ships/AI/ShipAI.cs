@@ -54,7 +54,7 @@ public class ShipAI : MonoBehaviour {
 
     public void UpdateAI(float deltaTime) {
         if (commands.Count > 0) {
-            Profiler.BeginSample("ShipAI ResolveCommand " + commands[0].commandType);
+            Profiler.BeginSample("ShipAI ResolveCommand");
             CommandResult result = ResolveCommand(commands[0], deltaTime, 0);
             if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
                 commands.RemoveAt(0);
@@ -391,8 +391,8 @@ public class ShipAI : MonoBehaviour {
                         currentCommandType = CommandType.Dock;
                     }
                 }
-                return CommandResult.Stop;
             }
+            return CommandResult.Stop;
         }
         if (command.commandType == CommandType.TransportDelay) {
             if (command.destinationStation == null || !command.destinationStation.IsSpawned()) {

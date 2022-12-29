@@ -46,7 +46,7 @@ public class Turret : MonoBehaviour {
     public virtual void UpdateTurret(float deltaTime) {
         if (TurretHibernationStatus())
             return;
-        Profiler.BeginSample(name);
+        Profiler.BeginSample("UpdateTurretAction");
         UpdateTurretReload(deltaTime);
         UpdateTurretAim(deltaTime);
         UpdateTurretWeapon(deltaTime);

@@ -52,7 +52,7 @@ public class FleetAI : MonoBehaviour {
 
     public void UpdateAI(float deltaTime) {
         if (commands.Count > 0) {
-            Profiler.BeginSample("FleetAI ResolveCommand " + commands[0].commandType);
+            Profiler.BeginSample("FleetAI ResolveCommand");
             CommandResult result = ResolveCommand(commands[0], deltaTime, 0);
             if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
                 commands.RemoveAt(0);
