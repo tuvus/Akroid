@@ -94,7 +94,7 @@ public class FleetAI : MonoBehaviour {
                 SetFleetRotation(command.targetRotation);
                 newCommand = false;
             }
-            if (fleet.IsFleetIdle()) {
+            if (fleet.AreShipsIdle()) {
                 return CommandResult.ContinueRemove;
             }
             return CommandResult.Stop;
@@ -106,7 +106,7 @@ public class FleetAI : MonoBehaviour {
                 SetFleetRotation(command.targetPosition);
                 newCommand = false;
             }
-            if (fleet.IsFleetIdle()) {
+            if (fleet.AreShipsIdle()) {
                 return CommandResult.ContinueRemove;
             }
             return CommandResult.Stop;
@@ -120,13 +120,13 @@ public class FleetAI : MonoBehaviour {
                 return CommandResult.Stop;
             }
 
-            if (currentCommandType == CommandType.TurnToPosition && fleet.IsFleetIdle()) {
+            if (currentCommandType == CommandType.TurnToPosition && fleet.AreShipsIdle()) {
                 fleet.NextShipsCommand();
                 currentCommandType = CommandType.Move;
                 return CommandResult.Stop;
             }
 
-            if (currentCommandType == CommandType.Move && fleet.IsFleetIdle()) {
+            if (currentCommandType == CommandType.Move && fleet.AreShipsIdle()) {
                 return CommandResult.ContinueRemove;
             }
             return CommandResult.Stop;
@@ -167,7 +167,7 @@ public class FleetAI : MonoBehaviour {
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.Formation && fleet.IsFleetIdle()) {
+            if (currentCommandType == CommandType.Formation && fleet.AreShipsIdle()) {
                 return CommandResult.StopRemove;
             }
 
@@ -185,7 +185,7 @@ public class FleetAI : MonoBehaviour {
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.Formation && fleet.IsFleetIdle()) {
+            if (currentCommandType == CommandType.Formation && fleet.AreShipsIdle()) {
                 return CommandResult.StopRemove;
             }
         }

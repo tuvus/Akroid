@@ -18,4 +18,9 @@ public class Thruster : MonoBehaviour {
     public void EndThrust() {
         particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
     }
+
+    public void SetParticleSpeed(float speed) {
+        var main = particle.main;
+        main.simulationSpeed = speed;
+    }
 }

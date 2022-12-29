@@ -26,7 +26,7 @@ public abstract class Unit : BattleObject {
     public List<Unit> enemyUnitsInRange { get; protected set; }
     public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
+    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed) {
         this.faction = faction;
         base.SetupBattleObject(positionGiver, rotation);
         this.unitName = name;
@@ -53,6 +53,7 @@ public abstract class Unit : BattleObject {
         if (shieldGenerator != null)
             shieldGenerator.SetupShieldGenerator(this);
         unitSelection.SetupSelection(this);
+        SetParticleSpeed(particleSpeed);
     }
 
     public void SetupWeaponRanges() {
@@ -400,6 +401,11 @@ public abstract class Unit : BattleObject {
 
     public virtual List<float> GetEnemyUnitsInRangeDistance() {
         return enemyUnitsInRangeDistance;
+    }
+
+    public virtual void SetParticleSpeed(float speed) {
+        var main = destroyParticle.main;
+        main.simulationSpeed = speed;
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]

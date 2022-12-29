@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class Projectile : MonoBehaviour {
 	public int projectileIndex { get; private set; }
@@ -16,12 +17,13 @@ public class Projectile : MonoBehaviour {
 	private Vector2 startingScale;
 	private bool hit;
 
-	public void PrespawnProjectile(int projectileIndex) {
+	public void PrespawnProjectile(int projectileIndex, float particleSpeed) {
 		particleSystem = GetComponent<ParticleSystem>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		this.projectileIndex = projectileIndex;
 		startingScale = transform.localScale;
+		SetParticleSpeed(particleSpeed);
 		Activate(false);
 	}
 
@@ -108,4 +110,9 @@ public class Projectile : MonoBehaviour {
 		hit = false;
 		Activate(false);
 	}
+
+	public void SetParticleSpeed(float speed) {
+        var main = particleSystem.main;
+        main.simulationSpeed = speed;
+    }
 }

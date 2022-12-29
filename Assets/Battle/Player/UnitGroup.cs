@@ -286,7 +286,6 @@ public class UnitGroup {
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip()) {
                 ((Ship)units[i]).shipAI.ClearCommands();
-                ((Ship)units[i]).SetThrusters(false);
             }
         }
     }

@@ -50,6 +50,7 @@ public class ShipAI : MonoBehaviour {
 
     public void ClearCommands() {
         commands.Clear();
+        ship.SetIdle();
     }
 
     public void UpdateAI(float deltaTime) {

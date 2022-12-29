@@ -11,10 +11,10 @@ public class DecoyUnit : Unit {
         faction = tempFaction;
         enemyUnitsInRange = new List<Unit>() { target };
         Spawn();
-        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0);
+        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0, 1);
     }
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
+    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale) {
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         foreach (var turret in turrets) {
             turret.SetupTurret(this);

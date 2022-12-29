@@ -26,12 +26,13 @@ public class Missile : MonoBehaviour {
     bool hit;
     bool expired;
 
-    public void PrespawnMissile(int missileIndex) {
+    public void PrespawnMissile(int missileIndex, float particleSpeed) {
         explodeParticleSystem = GetComponent<ParticleSystem>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
         thrustParticleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();
         this.missileIndex = missileIndex;
+        SetParticleSpeed(particleSpeed);
         Activate(false);
     }
 
@@ -162,5 +163,12 @@ public class Missile : MonoBehaviour {
         }
         spriteRenderer.enabled = activate;
         boxCollider2D.enabled = activate;
+    }
+
+    public void SetParticleSpeed(float speed) {
+        var main = explodeParticleSystem.main;
+        main.simulationSpeed = speed;
+        main = thrustParticleSystem.main;
+        main.simulationSpeed = speed;
     }
 }

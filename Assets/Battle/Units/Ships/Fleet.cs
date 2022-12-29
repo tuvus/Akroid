@@ -149,6 +149,12 @@ public class Fleet : MonoBehaviour {
     }
 
     public bool IsFleetIdle() {
+        if (FleetAI.commands.Count == 0 || FleetAI.commands[0].commandType == Command.CommandType.Idle)
+            return AreShipsIdle();
+        return false;
+    }
+
+    public bool AreShipsIdle() {
         for (int i = 0; i < ships.Count; i++) {
             if (!ships[i].IsIdle())
                 return false;

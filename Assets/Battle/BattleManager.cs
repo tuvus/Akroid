@@ -219,7 +219,7 @@ public class BattleManager : MonoBehaviour {
         Ship newShip = Instantiate(shipPrefab, factions[shipData.faction].GetShipTransform()).GetComponent<Ship>();
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation);
+        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale);
         return newShip;
     }
 
@@ -230,7 +230,7 @@ public class BattleManager : MonoBehaviour {
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationData.path);
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built);
+        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -329,7 +329,7 @@ public class BattleManager : MonoBehaviour {
     public void PreSpawnNewProjectile() {
         GameObject projectilePrefab = (GameObject)Resources.Load("Prefabs/Projectile");
         Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
-        newProjectile.PrespawnProjectile(projectiles.Count);
+        newProjectile.PrespawnProjectile(projectiles.Count,timeScale);
         projectiles.Add(newProjectile);
     }
 
@@ -353,7 +353,7 @@ public class BattleManager : MonoBehaviour {
     public void PrespawnNewMissile() {
         GameObject missilePrefabe = (GameObject)Resources.Load("Prefabs/HermesMissile");
         Missile newMissile = Instantiate(missilePrefabe, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
-        newMissile.PrespawnMissile(missiles.Count);
+        newMissile.PrespawnMissile(missiles.Count, timeScale);
         missiles.Add(newMissile);
     }
     #endregion
@@ -421,6 +421,25 @@ public class BattleManager : MonoBehaviour {
 
     public double GetSimulationTime() {
         return simulationTime;
+    }
+
+    [SerializeField]
+    [ContextMenu("UpdateSimulationTimeScale")]
+    private void ManualUpdateTimeScale() {
+        SetSimulationTimeScale(timeScale);
+    }
+
+    public void SetSimulationTimeScale(float time) {
+        timeScale = time;
+        for (int i = 0; i < units.Count; i++) {
+            units[i].SetParticleSpeed(time);
+        }
+        for (int i = 0; i < projectiles.Count; i++) {
+            projectiles[i].SetParticleSpeed(time);
+        }
+        for (int i = 0; i < missiles.Count; i++) {
+            missiles[i].SetParticleSpeed(time);
+        }
     }
 
     public double GetRealTime() {

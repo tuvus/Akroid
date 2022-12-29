@@ -93,21 +93,21 @@ public class Ship : Unit {
         }
     }
 
-    public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation) {
+    public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed) {
         faction.AddShip(this);
-        base.SetupUnit(shipName, faction, positionGiver, rotation);
+        thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
+        foreach (var thruster in thrusters) {
+            thruster.SetupThruster();
+        }
+        base.SetupUnit(shipName, faction, positionGiver, rotation, particleSpeed);
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {
             researchEquiptment = GetComponentInChildren<ResearchEquiptment>();
             researchEquiptment.SetupResearchEquiptment(this);
         }
-        thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
         SetupThrusters();
         shipAI.SetupShipAI(this);
-        foreach (var thruster in thrusters) {
-            thruster.SetupThruster();
-        }
         mass = size * 100;
         Spawn();
         shipAction = ShipAction.Move;
@@ -163,14 +163,18 @@ public class Ship : Unit {
                     shipAction = ShipAction.Idle;
                 } else if (shipAction == ShipAction.MoveRotate) {
                     shipAction = ShipAction.Move;
+                    SetThrusters(true);
                 } else if (shipAction == ShipAction.DockRotate) {
                     shipAction = ShipAction.DockMove;
+                    SetThrusters(true);
                 }
             } else if (localRotation > 0) {
                 SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
+                SetThrusters(false);
                 return;
             } else {
                 SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * deltaTime));
+                SetThrusters(false);
                 return;
             }
         }
@@ -196,7 +200,6 @@ public class Ship : Unit {
                 transform.Translate(Vector2.up * thrust);
                 velocity = transform.up * math.min(maxSetSpeed, GetSpeed());
                 position = transform.position;
-                SetThrusters(true);
                 return;
             }
         }
@@ -237,7 +240,7 @@ public class Ship : Unit {
             SetIdle();
             return;
         }
-        SetThrusters(false);
+        //SetThrusters(false);
         shipAction = ShipAction.Rotate;
         this.targetRotation = rotation;
     }
@@ -447,6 +450,13 @@ public class Ship : Unit {
 
     public bool IsIdle() {
         return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
+    }
+
+    public override void SetParticleSpeed(float speed) {
+        base.SetParticleSpeed(speed);
+        foreach (var thruster in thrusters) {
+            thruster.SetParticleSpeed(speed);
+        }
     }
 
     [ContextMenu("GetShipThrust")]
