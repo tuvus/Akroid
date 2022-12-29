@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class MiningStation : Station {
@@ -62,7 +63,7 @@ public class MiningStation : Station {
             UpdateMinningStationAsteroids();
         }
         if (nearbyAsteroids.Count > 0) {
-            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(GetMiningAmmount()), CargoBay.CargoTypes.Metal);
+            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min((int)GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal), GetMiningAmmount())), CargoBay.CargoTypes.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
             }

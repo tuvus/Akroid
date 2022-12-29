@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -192,7 +193,7 @@ public class Fleet : MonoBehaviour {
     public float GetMinShipSpeed() {
         float minSpeed = float.MaxValue;
         for (int i = 0; i < ships.Count; i++) {
-            minSpeed = Math.Min(ships[i].GetSpeed(), minSpeed);
+            minSpeed = math.min(ships[i].GetSpeed(), minSpeed);
         }
         return minSpeed;
     }
@@ -200,7 +201,7 @@ public class Fleet : MonoBehaviour {
     public float GetMaxShipSize() {
         float maxShipSize = 0;
         for (int i = 0; i < ships.Count; i++) {
-            maxShipSize = Math.Max(maxShipSize, ships[i].GetSize());
+            maxShipSize = math.max(maxShipSize, ships[i].GetSize());
         }
         return maxShipSize;
     }
@@ -208,7 +209,7 @@ public class Fleet : MonoBehaviour {
     public float GetMaxTurretRange() {
         float maxTurretRange = 0;
         for (int i = 0; i < ships.Count; i++) {
-            maxTurretRange = Math.Max(maxTurretRange, ships[i].GetMaxWeaponRange());
+            maxTurretRange = math.max(maxTurretRange, ships[i].GetMaxWeaponRange());
         }
         return maxTurretRange;
     }
