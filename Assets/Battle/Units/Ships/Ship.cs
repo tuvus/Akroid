@@ -125,7 +125,7 @@ public class Ship : Unit {
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
         if (IsSpawned()) {
-            Profiler.BeginSample("Movement");
+            Profiler.BeginSample(shipAction.ToString());
             UpdateMovement(deltaTime);
             Profiler.EndSample();
             shipAI.UpdateAI(deltaTime);

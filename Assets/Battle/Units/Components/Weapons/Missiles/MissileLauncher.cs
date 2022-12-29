@@ -25,6 +25,7 @@ public class MissileLauncher : MonoBehaviour {
     public bool missileRetarget;
 
     public Unit targetUnit;
+    private bool hibernating;
 
     public void SetupMissileLauncher(Unit unit) {
         this.unit = unit;
@@ -33,8 +34,13 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     public void UpdateMissileLauncher(float deltaTime) {
-        if (MissileLauncherHibernationStatus())
+        if (hibernating && unit.GetEnemyUnitsInRange().Count == 0) {
             return;
+        } else if (MissileLauncherHibernationStatus()) {
+            hibernating = true;
+            return;
+        }
+        hibernating = false;
         Profiler.BeginSample("UpdateMissileLauncher");
         reloadController.UpdateReloadController(deltaTime * unit.faction.MissileReloadModifier, 1);
         if (!reloadController.ReadyToFire()) {

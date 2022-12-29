@@ -34,6 +34,7 @@ public class Turret : MonoBehaviour {
     public Vector2 targetVector;
     public Unit targetUnit;
     private bool aimed;
+    private bool hibernating;
 
     public virtual void SetupTurret(Unit unit) {
         this.unit = unit;
@@ -44,8 +45,13 @@ public class Turret : MonoBehaviour {
     }
 
     public virtual void UpdateTurret(float deltaTime) {
-        if (TurretHibernationStatus())
+        if (hibernating && unit.GetEnemyUnitsInRange().Count == 0) {
             return;
+        } else if (TurretHibernationStatus()) {
+            hibernating = true;
+            return;
+        }
+        hibernating = false;
         Profiler.BeginSample("UpdateTurretAction");
         UpdateTurretReload(deltaTime);
         UpdateTurretAim(deltaTime);
