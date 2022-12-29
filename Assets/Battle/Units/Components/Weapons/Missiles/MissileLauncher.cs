@@ -22,6 +22,7 @@ public class MissileLauncher : MonoBehaviour {
     public float missileThrust;
     public float missileTurnSpeed;
     public float missileFuelRange;
+    public bool missileRetarget;
 
     public Unit targetUnit;
 
@@ -41,7 +42,7 @@ public class MissileLauncher : MonoBehaviour {
             return;
         }
         if (!IsTargetViable(targetUnit)) {
-            FindNewTarget();
+            targetUnit = FindNewTarget();
         }
         if (targetUnit != null) {
             Fire();
@@ -60,15 +61,17 @@ public class MissileLauncher : MonoBehaviour {
         return true;
     }
 
-    private void FindNewTarget() {
+    public Unit FindNewTarget() {
+        Unit target = null;
         for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
             Unit newTarget = unit.GetEnemyUnitsInRange()[i];
             if (!IsTargetViable(newTarget))
                 continue;
             if (IsTargetBetter(newTarget, targetUnit)) {
-                targetUnit = newTarget;
+                target = newTarget;
             }
         }
+        return target;
     }
 
     private bool IsTargetBetter(Unit newTarget, Unit oldTarget) {
@@ -108,7 +111,7 @@ public class MissileLauncher : MonoBehaviour {
     public void Fire() {
         reloadController.Fire();
         Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange());
+        missile.SetMissile(unit.faction, this,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange(), missileRetarget);
     }
 
     public int GetDamage() {
@@ -136,5 +139,9 @@ public class MissileLauncher : MonoBehaviour {
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {
         print(GetDamagePerSecond());
+    }
+
+    public Unit GetUnit() {
+        return unit;
     }
 }

@@ -13,6 +13,7 @@ public class Missile : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
     public MissileType missileType;
+    private MissileLauncher missileLauncher;
     private Unit target;
     public int damage;
     public float thrustSpeed;
@@ -20,6 +21,7 @@ public class Missile : MonoBehaviour {
     private Vector2 velocity;
     float turnSpeed;
     public float fuelRange;
+    public bool retarget;
     float distance;
     bool hit;
     bool expired;
@@ -33,10 +35,11 @@ public class Missile : MonoBehaviour {
         Activate(false);
     }
 
-    public void SetMissile(Faction faction, Vector2 position, float rotation, Unit target, Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange) {
+    public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target, Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {
         transform.position = position;
         transform.eulerAngles = new Vector3(0, 0, rotation);
         this.faction = faction;
+        this.missileLauncher = missileLauncher;
         this.target = target;
         this.damage = damage;
         this.thrustSpeed = thrustSpeed;
@@ -44,6 +47,7 @@ public class Missile : MonoBehaviour {
         turnSpeed = 0;
         this.velocity = shipVelocity;
         this.fuelRange = fuelRange;
+        this.retarget = retarget;
         hit = false;
         expired = false;
         thrustParticleSystem.Play();
@@ -59,15 +63,21 @@ public class Missile : MonoBehaviour {
                 transform.Translate(velocity * deltaTime);
             }
         } else if (expired) {
-            if (thrustParticleSystem.isPlaying == false) { 
+            if (thrustParticleSystem.isPlaying == false) {
                 RemoveMissile();
             } else {
                 transform.Translate(velocity * deltaTime);
             }
         } else {
             turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
-            if (target != null)
+            if (target != null || !target.IsTargetable())
                 RotateMissile();
+            else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
+                target = missileLauncher.FindNewTarget();
+                if (target == null)
+                    retarget = false;
+            }
+                
             MoveMissile(deltaTime);
         }
     }

@@ -51,6 +51,7 @@ MonoBehaviour:
   missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800
+  missileRetarget: 1
   targetUnit: {fileID: 0}
 --- !u!114 &1925356263905456395
 MonoBehaviour:
@@ -5917,6 +5918,7 @@ MonoBehaviour:
   missileThrust: 200
   missileTurnSpeed: 80
   missileFuelRange: 1800
+  missileRetarget: 1
   targetUnit: {fileID: 0}
 --- !u!114 &3347565126329274896
 MonoBehaviour:
@@ -6147,14 +6149,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 2480
   unitName: Aterna
-  size: 0
   followDist: 30
+  fleet: {fileID: 0}
   shipClass: 4
   shipType: 6
   turnSpeed: 30
   combatRotation: 90
+  dockedStation: {fileID: 0}
+  shipAction: 0
+  targetRotation: 0
+  movePosition: {x: 0, y: 0}
+  targetStation: {fileID: 0}
 --- !u!114 &6622392364773092372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6168,6 +6176,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commands: []
+  newCommand: 0
+  currentCommandType: 0
 --- !u!198 &8328976631515970257
 ParticleSystem:
   m_ObjectHideFlags: 0
