@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,17 +7,19 @@ public class Star : MonoBehaviour, IPositionConfirmer {
     SpriteRenderer spriteRenderer;
     SpriteRenderer glareRenderer;
     public Vector2 position;
-    [SerializeField]float size;
+    [SerializeField] float size;
     Color color;
+    float targetBrightness;
+    float brightnessSpeed;
 
     public void SetupStar(BattleManager.PositionGiver positionGiver) {
         spriteRenderer = GetComponent<SpriteRenderer>();
         glareRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        color = Color.HSVToRGB(Random.Range(0f, 1f), Random.Range(.8f, 1f), Random.Range(.8f, 1f));
+        color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         spriteRenderer.color = color;
         glareRenderer.color = color;
-        transform.eulerAngles = new Vector3(0, 0, Random.Range(0, 360));
-        float scale = Random.Range(10, 50);
+        transform.eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(0, 360));
+        float scale = UnityEngine.Random.Range(10, 50);
         transform.localScale = new Vector2(scale, scale);
         size = GetSpriteSize() * scale;
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
@@ -25,6 +28,31 @@ public class Star : MonoBehaviour, IPositionConfirmer {
         else
             transform.position = positionGiver.position;
         this.position = transform.position;
+        RandomiseGlareTarget();
+    }
+
+    public void UpdateStar(float deltaTime) {
+        if (targetBrightness > color.a) {
+            float changeRate = (targetBrightness - color.a) / brightnessSpeed * deltaTime;
+            color = new Color(color.r, color.g, color.b, Math.Min(targetBrightness, color.a + changeRate));
+            brightnessSpeed -= deltaTime;
+            if (targetBrightness <= color.a || brightnessSpeed <= 0) {
+                RandomiseGlareTarget();
+            }
+        } else {
+            float changeRate = (targetBrightness - color.a) / brightnessSpeed * deltaTime;
+            color = new Color(color.r, color.g, color.b, Math.Max(targetBrightness, color.a + changeRate));
+            brightnessSpeed -= deltaTime;
+            if (targetBrightness >= color.a || brightnessSpeed <= 0) {
+                RandomiseGlareTarget();
+            }
+        }
+        glareRenderer.color = color;
+    }
+
+    void RandomiseGlareTarget() {
+        targetBrightness = UnityEngine.Random.Range(.5f, 1f);
+        brightnessSpeed = UnityEngine.Random.Range(10f, 30f);
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {

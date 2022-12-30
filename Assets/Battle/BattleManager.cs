@@ -395,6 +395,11 @@ public class BattleManager : MonoBehaviour {
             destroyedUnits[i].UpdateDestroyedUnit();
         }
         Profiler.EndSample();
+        Profiler.BeginSample("StarsUpdate");
+        for (int i = 0; i < stars.Count; i++) {
+            stars[i].UpdateStar(deltaTime);
+        }
+        Profiler.EndSample();
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
             LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, Time.time - startOfSimulation);
