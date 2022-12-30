@@ -141,7 +141,7 @@ public class ShipAI : MonoBehaviour {
                 distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
 
             //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || distanceToTargetUnit > ship.GetMaxWeaponRange() * 2 || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -447,6 +447,8 @@ public class ShipAI : MonoBehaviour {
     }
 
     Unit GetClosestNearbyEnemyUnit() {
+        if (ship.fleet == null && ship.GetEnemyUnitsInRange().Count > 0)
+            return ship.GetEnemyUnitsInRange()[0];
         Unit targetUnit = null;
         float distance = 0;
         for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
