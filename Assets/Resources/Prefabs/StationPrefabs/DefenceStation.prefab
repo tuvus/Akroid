@@ -395,14 +395,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3288064bce0faf4680d45bb8f76c916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 4046
   unitName: DefenceStation
-  size: 0
   followDist: 30
   stationType: 2
   repairAmmount: 0
   repairSpeed: 0
-  repairTime: 0
 --- !u!114 &6248176320533745593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -415,6 +414,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5771902d9bf74864a8e4368c0ffda0a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waitSpeed: 0
+  cargoSpeed: 0
+  cargoAmmount: 0
 --- !u!199 &7158030276076730622
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -570,7 +572,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 10
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -623,8 +625,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
-      minScalar: 0.5
+      scalar: 100
+      minScalar: 1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -739,8 +741,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 9.4
-      minScalar: 3
+      scalar: 30
+      minScalar: 10
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1202,7 +1204,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 30
       mode: 0
       spread: 0
       speed:

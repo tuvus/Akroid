@@ -203,20 +203,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab56a2cd88433004990e55e58494d7b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 1840
   unitName: StationBuilder
-  size: 0
-  health: 1840
   followDist: 30
+  fleet: {fileID: 0}
   shipClass: 5
   shipType: 1
-  mainBackThrusters:
-  - {fileID: 8113073671012103472}
-  subBackThrusters:
-  - {fileID: 8113073671046711098}
-  - {fileID: 8113073670920489672}
   turnSpeed: 20
   combatRotation: 0
+  dockedStation: {fileID: 0}
+  shipAction: 0
+  targetRotation: 0
+  movePosition: {x: 0, y: 0}
+  targetStation: {fileID: 0}
+  targetStationBlueprint: {fileID: 0}
 --- !u!114 &8113073670915643593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,6 +231,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commands: []
+  newCommand: 0
+  currentCommandType: 0
 --- !u!199 &8113073670915643592
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -438,7 +441,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4
+      scalar: 10
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -1017,7 +1020,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 10
       mode: 0
       spread: 0
       speed:
@@ -1246,7 +1249,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 60
+        scalar: 100
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -9933,7 +9936,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -14771,7 +14774,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -19609,7 +19612,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0

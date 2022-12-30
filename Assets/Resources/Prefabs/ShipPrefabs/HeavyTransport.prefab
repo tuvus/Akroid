@@ -5165,7 +5165,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -10003,7 +10003,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -14841,7 +14841,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -14985,14 +14985,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   maxHealth: 2840
   unitName: HeavyTransport
-  size: 0
   followDist: 30
+  fleet: {fileID: 0}
   shipClass: 1
   shipType: 0
   turnSpeed: 20
   combatRotation: 0
+  dockedStation: {fileID: 0}
+  shipAction: 0
+  targetRotation: 0
+  movePosition: {x: 0, y: 0}
+  targetStation: {fileID: 0}
 --- !u!114 &4268936986182817259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15006,6 +15012,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   commands: []
+  newCommand: 0
+  currentCommandType: 0
 --- !u!199 &4268936986182817258
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -15214,7 +15222,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 4
+      scalar: 10
       minScalar: 0.2
       maxCurve:
         serializedVersion: 2
@@ -15793,7 +15801,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 10
       mode: 0
       spread: 0
       speed:
@@ -16022,7 +16030,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 60
+        scalar: 100
         minScalar: 30
         maxCurve:
           serializedVersion: 2
