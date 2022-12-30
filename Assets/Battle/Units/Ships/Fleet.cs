@@ -41,6 +41,7 @@ public class Fleet : MonoBehaviour {
     public void DisbandFleet() {
         foreach (Ship ship in ships) {
             ship.fleet = null;
+            faction.unitsNotInFleet.Add(ship);
         }
         faction.RemoveFleet(this);
         Destroy(gameObject);
