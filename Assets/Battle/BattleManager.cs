@@ -428,7 +428,6 @@ public class BattleManager : MonoBehaviour {
         return simulationTime;
     }
 
-    [SerializeField]
     [ContextMenu("UpdateSimulationTimeScale")]
     private void ManualUpdateTimeScale() {
         SetSimulationTimeScale(timeScale);

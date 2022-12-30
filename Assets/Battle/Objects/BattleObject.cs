@@ -40,6 +40,12 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         return size;
     }
 
+    [ContextMenu("GetObjectSize")]
+    private void ManualLogSize() {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        Debug.Log(SetupSize());
+    }
+
     public virtual float GetSpriteSize() {
         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),

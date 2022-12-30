@@ -54,6 +54,7 @@ public abstract class Unit : BattleObject {
             shieldGenerator.SetupShieldGenerator(this);
         unitSelection.SetupSelection(this);
         SetParticleSpeed(particleSpeed);
+        followDist = (int)(size * 2);
     }
 
     public void SetupWeaponRanges() {
