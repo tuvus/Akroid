@@ -32,8 +32,9 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;
         size = GetSpriteSize();
-
         this.position = transform.position;
+        float greyColor = Random.Range(0.3f, 0.7f);
+        spriteRenderer.color = new Color(greyColor, greyColor, greyColor,1);
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
