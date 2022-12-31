@@ -1,18 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Planet : BattleObject, IPositionConfirmer {
     public string planetName { get; protected set; }
     public Faction faction { get; protected set; }
 
-    long population;
+    [SerializeField] long population;
 
-    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, float rotation) {
+    public double rateOfGrowth;
+    [SerializeField] long carryingCapacity;
+    [SerializeField] long stargingPop;
+    [SerializeField] float timeSinceStart;
+
+    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation) {
         this.faction = faction;
         base.SetupBattleObject(positionGiver, rotation);
         this.planetName = name;
         this.population = population;
+        this.rateOfGrowth = rateOfGrowth;
+        SetPopulationTarget(population);
+    }
+
+    public void UpdatePlanet(float deltaTime) {
+        timeSinceStart += deltaTime;
+        population = (long)((carryingCapacity / (1 + ((carryingCapacity / stargingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
+    }
+
+    public void SetPopulationTarget(long carryingCapacity) {
+        timeSinceStart = 0;
+        stargingPop = population;
+        this.carryingCapacity = carryingCapacity;
+    }
+
+    public void SetRateOfGrowth(double rateOfGrowth) {
+        this.rateOfGrowth = rateOfGrowth;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

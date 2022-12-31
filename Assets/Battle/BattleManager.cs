@@ -247,10 +247,10 @@ public class BattleManager : MonoBehaviour {
         stars.Add(newStar);
     }
 
-    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population) {
+    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population, double populationGrowthRate = 0.01) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(name, faction, positionGiver,population, Random.Range(0, 360));
+        newPlanet.SetupPlanet(name, faction, positionGiver,population, populationGrowthRate, Random.Range(0, 360));
         planets.Add(newPlanet);
         return newPlanet;
     }
@@ -398,6 +398,11 @@ public class BattleManager : MonoBehaviour {
         Profiler.BeginSample("StarsUpdate");
         for (int i = 0; i < stars.Count; i++) {
             stars[i].UpdateStar(deltaTime);
+        }
+        Profiler.EndSample();
+        Profiler.BeginSample("PlanetsUpdate");
+        for (int i = 0; i < planets.Count; i++) {
+            planets[i].UpdatePlanet(deltaTime);
         }
         Profiler.EndSample();
         Faction factionWon = CheckVictory();

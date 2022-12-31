@@ -51,6 +51,7 @@ public class Chapter1 : CampaingController {
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "PlanetFaction", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition), (long)Random.Range(2, 6) * 10000000000);
+        planet.SetPopulationTarget((long)(planet.GetPopulation() * .9));
         tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, GetPathToChapterFolder() + "/TradeStation", "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 300), 0, 1000, 30, 300, 3));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport, 0);
