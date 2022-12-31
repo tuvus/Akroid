@@ -161,6 +161,7 @@ public class Ship : Unit {
                 SetRotation(targetRotation);
                 if (shipAction == ShipAction.Rotate) {
                     shipAction = ShipAction.Idle;
+                    SetThrusters(false);
                 } else if (shipAction == ShipAction.MoveRotate) {
                     shipAction = ShipAction.Move;
                     SetThrusters(true);
@@ -207,6 +208,7 @@ public class Ship : Unit {
             DockShip(targetStation);
         }
         if (shipAction == ShipAction.MoveLateral) {
+            SetThrusters(false);
             float speed = math.min(maxSetSpeed, GetSpeed()) / 2;
             if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
                 transform.position = movePosition;
@@ -240,7 +242,6 @@ public class Ship : Unit {
             SetIdle();
             return;
         }
-        //SetThrusters(false);
         shipAction = ShipAction.Rotate;
         this.targetRotation = rotation;
     }
@@ -259,7 +260,6 @@ public class Ship : Unit {
         }
         if (dockedStation != null)
             UndockShip(position);
-        SetThrusters(false);
         shipAction = ShipAction.MoveLateral;
         this.movePosition = position;
     }
