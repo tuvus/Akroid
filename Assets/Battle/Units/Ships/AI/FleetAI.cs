@@ -153,6 +153,16 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
+        if (command.commandType == CommandType.Dock) {
+            if (newCommand) {
+                SetFleetDockTarget(command.destinationStation);
+                newCommand = false;
+            }
+            if (fleet.AreShipsIdle()) {
+                return CommandResult.StopRemove;
+            }
+            return CommandResult.Stop;
+        }
         if (command.commandType == CommandType.Formation) {
             if (newCommand) {
                 float size = fleet.GetMaxShipSize();
@@ -225,6 +235,12 @@ public class FleetAI : MonoBehaviour {
             fleet.ships[i].SetMovePosition(movePosition - shipOffset, (fleet.GetSize() + targetSize) * 2);
         }
     }
+
+    public void SetFleetDockTarget(Station targetStation) {
+        for (int i = 0; i < fleet.ships.Count; i++) {
+            fleet.ships[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
+        }
+    } 
 
     public void SetFleetAttackMovePosition(Vector2 movePosition) {
         for (int i = 0; i < fleet.ships.Count; i++) {
