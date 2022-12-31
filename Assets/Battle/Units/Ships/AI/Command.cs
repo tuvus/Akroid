@@ -20,6 +20,7 @@ public class Command {
         Transport,
         TransportDelay,
         Research,
+        DisbandFleet,
     }
 
     public enum CommandAction {
@@ -92,6 +93,13 @@ public class Command {
         return newCommand;
     }
 
+    public static Command CreateMoveOffsetCommand(Vector2 currentPosition, Vector2 targetPosition, float offset, float maxSpeed = float.MaxValue) {
+        Command newCommand = new Command(CommandType.Move);
+        newCommand.targetPosition = Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset);
+        newCommand.maxSpeed = maxSpeed;
+        return newCommand;
+    }
+
     public static Command CreateAttackMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
         Command newCommand = new Command(CommandType.AttackMove);
         newCommand.targetPosition = targetPosition;
@@ -149,6 +157,11 @@ public class Command {
         Command newCommand = new Command(CommandType.Research);
         newCommand.destinationStation = returnStation;
         newCommand.targetStar = targetStar;
+        return newCommand;
+    }
+
+    public static Command CreateDisbandFleetCommand() {
+        Command newCommand = new Command(CommandType.DisbandFleet);
         return newCommand;
     }
 }

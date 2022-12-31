@@ -34,6 +34,9 @@ public class Fleet : MonoBehaviour {
         enemyUnitsInRangeDistance = new List<float>(20);
         minFleetSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
+        position = CalculateFleetCenter();
+        size = CalculateFleetSize();
+        maxSize = calculateFleetMaxSize();
         FleetAI = GetComponent<FleetAI>();
         FleetAI.SetupFleetAI(this);
     }

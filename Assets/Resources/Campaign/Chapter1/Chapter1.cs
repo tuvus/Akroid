@@ -36,9 +36,7 @@ public class Chapter1 : CampaingController {
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.factionPosition, Random.Range(0, 360), true));
-        playerMiningStation.BuildShip(Ship.ShipClass.Transport, 0);
-        playerMiningStation.BuildShip(Ship.ShipClass.Transport, 0);
+        playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.factionPosition, Random.Range(0, 360), false));
 
         otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "OtherMiningFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
@@ -50,8 +48,8 @@ public class Chapter1 : CampaingController {
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "PlanetFaction", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition), (long)Random.Range(2, 6) * 10000000000);
-        planet.SetPopulationTarget((long)(planet.GetPopulation() * .9));
+        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition), (long)Random.Range(500, 600) * 100000000);
+        planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
         tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, GetPathToChapterFolder() + "/TradeStation", "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 300), 0, 1000, 30, 300, 3));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport, 0);
@@ -65,7 +63,14 @@ public class Chapter1 : CampaingController {
         researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, GetPathToChapterFolder() + "/ResearchStation", "ResearchStation", researchFaction.factionPosition, Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        playerFaction.GetTransportShip(1).shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(40, 80)), Command.CommandAction.AddToBegining);
+        shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport, 0);
+        ((ConstructionShip)shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder, 0)).targetStationBlueprint = playerMiningStation;
+        shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport, 0);
+        Fleet minningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
+        minningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4);
+        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(minningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
+        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
+        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDisbandFleetCommand());
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBegining);

@@ -51,10 +51,10 @@ public class SimulationFactionAI : FactionAI {
                     Vector2 fleetPosition = fleet.GetPosition();
                     Station targetStation = faction.GetClosestEnemyStation(fleetPosition);
                     if (targetStation != null) {
-                        fleet.FleetAI.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
+                        fleet.FleetAI.AddFormationCommand(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
                         fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(targetStation));
                     } else {
-                        fleet.FleetAI.SetFormation(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
+                        fleet.FleetAI.AddFormationCommand(fleetPosition, Calculator.GetAngleOutOfTwoPositions(fleetPosition, fleetCommand.GetPosition()), Command.CommandAction.Replace);
                         fleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
                     }
                 }
@@ -109,7 +109,7 @@ public class SimulationFactionAI : FactionAI {
                         if (enemyStation != null) {
                             Fleet fleet = faction.CreateNewFleet("AttackFleet", combatShips);
                             if (fleet != null) {
-                                fleet.FleetAI.SetFormation(Vector2.MoveTowards(fleetCommand.GetPosition(), enemyStation.GetPosition(), fleetCommand.GetSize() * 3),Calculator.GetAngleOutOfTwoPositions(fleetCommand.GetPosition(),enemyStation.GetPosition()));
+                                fleet.FleetAI.AddFormationTowardsPositionCommand(enemyStation.GetPosition(), fleetCommand.GetSize() * 4);
                                 fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(enemyStation), Command.CommandAction.AddToEnd);
                             }
                         }
