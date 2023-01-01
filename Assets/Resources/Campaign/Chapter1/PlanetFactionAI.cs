@@ -43,7 +43,8 @@ public class PlanetFactionAI : FactionAI {
                 UpdateTradeStation();
             }
         }
-        timeUntilNextCommunication -= deltaTime;
+        if (chapter1.playerMiningStation.IsBuilt())
+            timeUntilNextCommunication -= deltaTime;
         if (timeUntilNextCommunication <= 0) {
             if (planetFactionState == State.Begining) {
                 planetFactionState = State.AskedForMetal;
@@ -53,14 +54,14 @@ public class PlanetFactionAI : FactionAI {
                     new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, (communicationEvent) => {
                         if (!communicationEvent.isActive)
                             return false;
-                        communicationEvent.isActive = false;
+                        communicationEvent.DeactivateEvent();
                         chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
                         planetFactionState = State.RecievingMetal;
                         return true; }),
                     new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
                         if (!communicationEvent.isActive)
                             return false;
-                        communicationEvent.isActive = false;
+                        communicationEvent.DeactivateEvent();
                         planetFactionState = State.RejectedMetal;
                         chapter1.ChangeMetalCost(.6f);
                         return true; })
@@ -74,7 +75,7 @@ public class PlanetFactionAI : FactionAI {
                         new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, (communicationEvent) => {
                             if (!communicationEvent.isActive)
                                 return false;
-                            communicationEvent.isActive = false;
+                        communicationEvent.DeactivateEvent();
                             chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
                             planetFactionState = State.RecievingMetal;
                             return true; }),
@@ -90,7 +91,7 @@ public class PlanetFactionAI : FactionAI {
                             ship2.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(200,400)));
                             ship2.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(chapter1.playerMiningStation.GetPosition()));
                             ship2.shipAI.AddUnitAICommand(Command.CreateDockCommand(tradeStation));
-                            communicationEvent.isActive = false;
+                            communicationEvent.DeactivateEvent();
                             faction.AddEnemyFaction(chapter1.playerFaction);
                             chapter1.playerFaction.AddEnemyFaction(faction);
                             planetFactionState = State.AttackingPlayer;

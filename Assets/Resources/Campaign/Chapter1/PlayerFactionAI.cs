@@ -1,24 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static FactionCommManager;
+using static FactionCommManager.CommunicationEvent;
 
 public class PlayerFactionAI : FactionAI {
+    enum AIState {
+        SettingUp,
+        Normal,
+    }
     Chapter1 chapter1;
-    ShipyardFactionAI shipyardFactionAI;
     MiningStation playerMiningStation;
     List<Station> tradeRoutes;
     int nextStationToSendTo;
+    AIState state;
 
-    public void SetupPlayerFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, MiningStation playerMiningStation) {
+    public void SetupPlayerFactionAI(Chapter1 chapter1, MiningStation playerMiningStation) {
         this.chapter1 = chapter1;
-        this.shipyardFactionAI = shipyardFactionAI;
         this.playerMiningStation = playerMiningStation;
         tradeRoutes = new List<Station>();
         nextStationToSendTo = 0;
+        state = AIState.SettingUp;
     }
 
     public override void UpdateFactionAI(float deltaTime) {
+        UpdateFactionState();
         ManageIdleShips();
+    }
+
+    void UpdateFactionState() {
+        if (state == AIState.SettingUp && playerMiningStation.IsBuilt()) {
+            state = AIState.Normal;
+            faction.GetFactionCommManager().SendCommunication(chapter1.shipyardFaction, new CommunicationEvent("We have arrived safetly at the destination and are setting up our opperations.",
+                new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, 
+                (communicationEvent) => {
+                    if (!communicationEvent.isActive)
+                        return false;
+                    AddTradeRouteToStation(chapter1.shipyard); 
+                    communicationEvent.DeactivateEvent();
+                    return true; 
+                }) }, true));
+        }
     }
 
     void ManageIdleShips() {
@@ -45,7 +67,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     public bool WantMoreTransportShips() {
-        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
+        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
             return true;
         } else {
             return false;

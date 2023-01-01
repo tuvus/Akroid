@@ -15,9 +15,9 @@ public class Chapter1 : CampaingController {
     PlanetFactionAI planetFactionAI;
     Planet planet;
     Station tradeStation;
-    Faction shipyardFaction;
-    ShipyardFactionAI shipyardFactionAI;
-    Shipyard shipyard;
+    public Faction shipyardFaction { get; private set; }
+    public ShipyardFactionAI shipyardFactionAI { get; private set; }
+    public Shipyard shipyard { get; private set; }
     Faction researchFaction;
     Station researchStation;
     float metalCost;
@@ -78,7 +78,7 @@ public class Chapter1 : CampaingController {
         planetFaction.GetTransportShip(0).shipAI.AddUnitAICommand(Command.CreateTransportDelayCommand(tradeStation, shipyard, 1000), Command.CommandAction.AddToEnd);
         planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(Command.CreateTransportDelayCommand(tradeStation, shipyard, 1000), Command.CommandAction.AddToEnd);
 
-        playerFactionAI.SetupPlayerFactionAI(this, shipyardFactionAI, playerMiningStation);
+        playerFactionAI.SetupPlayerFactionAI(this, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation, tradeStation);
         planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation, shipyard);
         shipyardFactionAI.SetupShipyardFactionAI(this, planetFactionAI, shipyard);

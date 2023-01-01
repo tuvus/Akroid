@@ -14,6 +14,8 @@ public class ShipyardFactionAI : FactionAI {
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
+        faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Undocking procedure succesfull! \n You are now on route to the designated minning location. As we planned, you will construct the minning station at the designated point (" +
+            Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin opperations.\nGood luck!");
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -21,6 +23,14 @@ public class ShipyardFactionAI : FactionAI {
             if (shipyard.GetHanger().GetCombatShip(0).faction.stations.Count > 0) {
                 shipyard.GetHanger().GetCombatShip(0).shipAI.AddUnitAICommand(Command.CreateDockCommand(shipyard.GetHanger().GetCombatShip(0).faction.stations[0]), Command.CommandAction.AddToEnd);
             }
+        }
+        UpdateFactionCommunication(deltaTime);
+    }
+
+    void UpdateFactionCommunication(float deltaTime) {
+        for (int i = 0; i < faction.GetFactionCommManager().communicationLog.Count; i++) {
+            if (faction.GetFactionCommManager().communicationLog[i].isActive && faction.GetFactionCommManager().communicationLog[i].options.Length > 0)
+                faction.GetFactionCommManager().communicationLog[i].ChooseOption(0);
         }
         timeUntilNextCommunication -= deltaTime;
         if (timeUntilNextCommunication <= 0) {
