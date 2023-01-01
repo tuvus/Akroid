@@ -107,10 +107,8 @@ public class PlayerUI : MonoBehaviour {
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
             LocalPlayer.Instance.SetupFaction(null);
-            playerCommsManager.SetupFaction(null);
         } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != LocalPlayer.Instance.GetFaction().factionIndex) {
             LocalPlayer.Instance.SetupFaction(BattleManager.Instance.GetAllFactions()[menueUIFactionSelect.value - 1]);
-            playerCommsManager.SetupFaction(LocalPlayer.Instance.GetFaction());
         }
     }
 

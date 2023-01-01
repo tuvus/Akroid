@@ -39,6 +39,7 @@ public class LocalPlayer : MonoBehaviour {
             }
         }
         UpdateFactionColors();
+        playerUI.GetPlayerCommsManager().SetupFaction(faction);
     }
 
     public void UpdateFactionColors() {
