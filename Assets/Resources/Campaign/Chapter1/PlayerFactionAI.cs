@@ -38,6 +38,7 @@ public class PlayerFactionAI : FactionAI {
                         return false;
                     AddTradeRouteToStation(chapter1.shipyard); 
                     communicationEvent.DeactivateEvent();
+                    chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.");
                     return true; 
                 }) }, true));
         }

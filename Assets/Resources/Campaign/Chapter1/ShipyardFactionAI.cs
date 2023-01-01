@@ -7,8 +7,11 @@ public class ShipyardFactionAI : FactionAI {
     Chapter1 chapter1;
     PlanetFactionAI planetFactionAI;
     Shipyard shipyard;
-    CommunicationEvent lastQuestion;
     float timeUntilNextCommunication;
+    long transportMetalCost = 4800;
+    long transportCreditCost = 10000;
+    long lancerMetalCost = 9800;
+    long lancerCreditCost = 20000;
 
     public void SetupShipyardFactionAI(Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard) {
         this.chapter1 = chapter1;
@@ -34,75 +37,32 @@ public class ShipyardFactionAI : FactionAI {
         }
         timeUntilNextCommunication -= deltaTime;
         if (timeUntilNextCommunication <= 0) {
-            if (chapter1.playerFactionAI.WantMoreTransportShips()) {
-                float cost = GetTransportCost();
-                if (chapter1.playerFaction.credits > cost * 1.2f) {
-                    if (lastQuestion != null)
-                        lastQuestion.DeactivateEvent();
-                    lastQuestion = new CommunicationEvent(
-                        "We see that you have enough money to purchase a transport for your operations. It will cost you around " + cost +
-                        " credits to purchase. Would you like a deal?",
-                        new CommunicationEvent.CommunicationEventOption[] {
-                            new CommunicationEvent.CommunicationEventOption("Buy Transport", (communicationEvent) => {
-                            return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
-                                if (!communicationEvent.isActive || !communicationEvent.options[0].checkStatus(communicationEvent))
-                                    return false;
-                                PlaceTransportOrder(chapter1.playerFaction);
-                                if (chapter1.playerFaction.credits < cost)
-                                        communicationEvent.DeactivateEvent();
-                                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "We have recieved your order and have begun construction of the transport.");
-                                return true;
-                                }
-                            )
-                        }, true);
-                    faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, lastQuestion);
-                }
-            } else {
-                float cost = GetLancerCost();
-                if (chapter1.playerFaction.credits > cost * 1.2f) {
-                    if (lastQuestion != null)
-                        lastQuestion.DeactivateEvent();
-                    lastQuestion = new CommunicationEvent(
-                        "We see that you have enough money to purchase a lancer class cruiser from us. It will cost you around " + cost +
-                        " credits to purchase. Would you like a deal?",
-                        new CommunicationEvent.CommunicationEventOption[] {
-                            new CommunicationEvent.CommunicationEventOption("Buy Lancer", (communicationEvent) => {
-                            return chapter1.playerFaction.credits > cost; }, (communicationEvent) => {
-                                if (!communicationEvent.isActive || !communicationEvent.options[0].checkStatus(communicationEvent))
-                                    return false;
-                                PlaceCombatOrder(chapter1.playerFaction);
-                                if (chapter1.playerFaction.credits < cost)
-                                    communicationEvent.DeactivateEvent();
-                                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "We have recieved your order and have begun construction of the lancer class cruiser.");
-                                return true;
-                                }
-                            )
-                        }, true);
-                    faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, lastQuestion);
-                }
+            if (chapter1.playerFaction.credits > Mathf.Min(GetTransportTotalCost() * 1.2f, GetLancerTotalCost() * 1.2f)) {
+                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "You have enough money to order a ship from us, click our shipyard to open the build menue.");
             }
+
             timeUntilNextCommunication += Random.Range(1200, 5000);
         }
     }
 
     public void PlaceCombatOrder(Faction faction) {
-        long cost = GetLancerCost();
+        long cost = GetLancerTotalCost();
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, 9800)) {
                 shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Lancer, "Lancer", 12000,
-                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 9800 }));
+                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 9800 }));
             }
         }
     }
 
     public void PlaceTransportOrder(Faction faction) {
-        long cost = GetTransportCost();
+        long cost = GetTransportTotalCost();
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
-            if (planetFactionAI.AddMetalOrder(this.faction, 4800)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Transport, "Transport", 7000,
-                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 4800 }));
+            if (planetFactionAI.AddMetalOrder(this.faction, transportMetalCost)) {
+                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Transport, "Transport", transportCreditCost,
+                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { transportMetalCost }));
             }
         }
     }
@@ -111,12 +71,12 @@ public class ShipyardFactionAI : FactionAI {
         this.faction.GetFactionCommManager().SendCommunication(faction, "We have built a " + ship.GetUnitName() + " for you, it will be sent to your station.");
     }
 
-    long GetTransportCost() {
-        return (long)(4800 * chapter1.GetMetalCost()) + 10000;
+    long GetTransportTotalCost() {
+        return (long)(transportMetalCost * chapter1.GetMetalCost()) + transportCreditCost;
     }
 
-    long GetLancerCost() {
-        return (long)(9800 * chapter1.GetMetalCost()) + 20000;
+    long GetLancerTotalCost() {
+        return (long)(lancerMetalCost * chapter1.GetMetalCost()) + lancerCreditCost;
     }
 
     public int GetOrderCount(Ship.ShipClass shipClass, int factionIndex) {

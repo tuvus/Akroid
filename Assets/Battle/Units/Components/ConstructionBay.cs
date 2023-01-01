@@ -6,7 +6,7 @@ public class ConstructionBay : MonoBehaviour {
     private Shipyard shipyard;
 
     public float constructionSpeed;
-    public float constructionAmmount;
+    public long constructionAmmount;
     public int constructionBays;
 
     private float constructionTime;
@@ -44,11 +44,11 @@ public class ConstructionBay : MonoBehaviour {
             Ship.ShipBlueprint shipBlueprint = buildQueue[i];
             if (!shipBlueprint.IsFinished()) {
                 availableConstructionBays--;
-                float buildAmmount = constructionAmmount * ammountMultiplier;
+                long buildAmmount = constructionAmmount * ammountMultiplier;
                 for (int f = 0; f < shipBlueprint.resources.Count; f++) {
                     if (buildAmmount <= 0)
                         break;
-                    float ammountToUse = Mathf.Min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Mathf.Min(buildAmmount, shipBlueprint.resources[f]));
+                    long ammountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmmount, shipBlueprint.resources[f]));
                     shipBlueprint.resources[f] -= ammountToUse;
                     shipyard.UseCargo(ammountToUse, shipBlueprint.resourcesTypes[f]);
                     if (shipBlueprint.resources[f] <= 0) {

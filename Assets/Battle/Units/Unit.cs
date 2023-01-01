@@ -251,8 +251,8 @@ public abstract class Unit : BattleObject {
         return minWeaponRange;
     }
 
-    public float UseCargo(float amount, CargoBay.CargoTypes cargoType) {
-        float totalCargoToUse = amount;
+    public long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
+        long totalCargoToUse = amount;
         foreach (var bay in GetCargoBays()) {
             totalCargoToUse = bay.UseCargo(totalCargoToUse, cargoType);
             if (totalCargoToUse <= 0) {
@@ -262,8 +262,8 @@ public abstract class Unit : BattleObject {
         return totalCargoToUse;
     }
 
-    public float GetAllCargo(CargoBay.CargoTypes cargoType) {
-        float totalCargo = 0;
+    public long GetAllCargo(CargoBay.CargoTypes cargoType) {
+        long totalCargo = 0;
         foreach (var cargo in GetCargoBays()) {
             totalCargo += cargo.GetAllCargo(cargoType);
         }

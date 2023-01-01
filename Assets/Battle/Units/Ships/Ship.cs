@@ -75,11 +75,11 @@ public class Ship : Unit {
         public int factionIndex;
         public ShipClass shipClass;
         public string shipName;
-        public int shipCost;
+        public long shipCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
-        public List<float> resources;
+        public List<long> resources;
 
-        public ShipBlueprint(int factionIndex, ShipClass shipClass, string shipName, int shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<float> resources) {
+        public ShipBlueprint(int factionIndex, ShipClass shipClass, string shipName, long shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
             this.factionIndex = factionIndex;
             this.shipClass = shipClass;
             this.shipName = shipName;

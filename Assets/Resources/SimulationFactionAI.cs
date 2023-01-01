@@ -128,19 +128,19 @@ public class SimulationFactionAI : FactionAI {
             if (randomNumber < 20) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(
 new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Zarrack, "Science Ship", 21000,
-new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 5000 }));
+new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 5000 }));
             } else if (randomNumber < 50) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(
     new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Aria, "Aria", 2300,
-    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 800 }));
+    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 800 }));
             } else if (randomNumber < 80) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(
     new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Lancer, "Lancer", 5000,
-    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 1800 }));
+    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 1800 }));
             } else {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(
 new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Aterna, "Aterna", 30000,
-new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 9000 }));
+new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 9000 }));
             }
         }
     }
@@ -156,11 +156,11 @@ new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>()
             if (wantTransport) {
                 fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(
 new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Transport, "Transport", 1000,
-new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 1400 }));
+new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 1400 }));
             } else if (wantNewStationBuilder) {
                 fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(
 new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.StationBuilder, "StationBuilder", 3000,
-new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<float>() { 4000 }));
+new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 4000 }));
             }
         }
     }

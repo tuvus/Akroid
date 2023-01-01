@@ -13,7 +13,7 @@ public class PlanetFactionAI : FactionAI {
     Shipyard shipyard;
 
     float updateTime;
-    float metalOrder;
+    long metalOrder;
     float timeUntilNextCommunication;
     State planetFactionState;
     enum State {
@@ -144,10 +144,10 @@ public class PlanetFactionAI : FactionAI {
         }
     }
 
-    public bool AddMetalOrder(Faction faction, float metal) {
+    public bool AddMetalOrder(Faction faction, long metal) {
         if (faction.UseCredits((long)(metal * chapter1.GetMetalCost()))) {
             metalOrder += metal;
-            faction.GetFactionCommManager().SendCommunication(faction, "We need " + metal + " metal. Please give it to us!");
+            faction.GetFactionCommManager().SendCommunication(this.faction, "We need " + metal + " metal. Please give it to us!");
             //this.faction.AddCredits((long)(metal * chapter1.GetMetalCost()));
             return true;
         }

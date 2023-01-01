@@ -9,14 +9,14 @@ public class CargoBay : MonoBehaviour {
 
     }
     [SerializeField] int maxCargoBays;
-    [SerializeField] float cargoBaySize;
+    [SerializeField] long cargoBaySize;
     public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
-    public List<float> cargoBays = new List<float>();
+    public List<long> cargoBays = new List<long>();
 
     /// <summary>
     /// Returns Cargo that was not loaded.
     /// </summary>
-    public float LoadCargo(float cargoToLoad, CargoTypes cargoType) {
+    public long LoadCargo(long cargoToLoad, CargoTypes cargoType) {
         //Puts Cargo in existing cargo bays
         for (int i = 0; i < cargoBays.Count; i++) {
             cargoToLoad = AddCargoToBay(cargoToLoad, cargoType, i);
@@ -35,14 +35,14 @@ public class CargoBay : MonoBehaviour {
     /// <summary>
     /// Returns Unadded Cargo
     /// </summary>
-    float AddCargoToBay(float cargoToAdd, CargoTypes cargoType, int cargoBayNumber) {
+    long AddCargoToBay(long cargoToAdd, CargoTypes cargoType, int cargoBayNumber) {
         if (cargoBayTypes[cargoBayNumber] != cargoType)
             return cargoToAdd;
         if (cargoBays[cargoBayNumber] + cargoToAdd <= cargoBaySize) {
             cargoBays[cargoBayNumber] += cargoToAdd;
             return 0;
         }
-        float returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBaySize;
+        long returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBaySize;
         cargoBays[cargoBayNumber] = cargoBaySize;
         return returnValue;
     }
@@ -50,7 +50,7 @@ public class CargoBay : MonoBehaviour {
     /// <summary>
     /// Returns Unadded Cargo
     /// </summary>
-    float AddNewCargoBay(float cargoAmount, CargoTypes cargoType) {
+    long AddNewCargoBay(long cargoAmount, CargoTypes cargoType) {
         if (cargoBays.Count < maxCargoBays) {
             if (cargoAmount <= cargoBaySize) {
                 cargoBays.Add(cargoAmount);
@@ -72,8 +72,8 @@ public class CargoBay : MonoBehaviour {
     /// <summary>
     /// Returns Unused Cargo
     /// </summary>
-    public float UseCargo(float cargoAmount, CargoTypes cargoType) {
-        float cargoToUse = cargoAmount;
+    public long UseCargo(long cargoAmount, CargoTypes cargoType) {
+        long cargoToUse = cargoAmount;
         for (int i = 0; i < cargoBays.Count; i++) {
             cargoToUse = UseCargoFromBay(cargoAmount, cargoType, i);
             if (cargoToUse <= 0)
@@ -85,32 +85,32 @@ public class CargoBay : MonoBehaviour {
     /// <summary>
     /// Returns Unused Cargo
     /// </summary>
-    float UseCargoFromBay(float cargoAmount, CargoTypes cargoType, int cargoBayNumber) {
+    long UseCargoFromBay(long cargoAmount, CargoTypes cargoType, int cargoBayNumber) {
         if (cargoType != cargoBayTypes[cargoBayNumber])
             return cargoAmount;
         if (cargoBays[cargoBayNumber] > cargoAmount) {
             cargoBays[cargoBayNumber] -= cargoAmount;
             return 0;
         } else {
-            float cargo = cargoAmount -= cargoBays[cargoBayNumber];
+            long cargo = cargoAmount -= cargoBays[cargoBayNumber];
             cargoBays.RemoveAt(cargoBayNumber);
             cargoBayTypes.RemoveAt(cargoBayNumber);
             return cargo;
         }
     }
 
-    public void LoadCargoFromBay(CargoBay cargoBay, CargoTypes cargoType, float maxLoad = float.MaxValue) {
-        float openSpace = GetOpenCargoCapacityOfType(cargoType);
+    public void LoadCargoFromBay(CargoBay cargoBay, CargoTypes cargoType, long maxLoad = long.MaxValue) {
+        long openSpace = GetOpenCargoCapacityOfType(cargoType);
         if (openSpace <= 0)
             return;
-        float targetAvailableCargo= cargoBay.GetAllCargo(cargoType);
-        float cargoToTransfer = Mathf.Min(targetAvailableCargo, Mathf.Min(openSpace, maxLoad));
+        long targetAvailableCargo = cargoBay.GetAllCargo(cargoType);
+        long cargoToTransfer = Unity.Mathematics.math.min(targetAvailableCargo, Unity.Mathematics.math.min(openSpace, maxLoad));
         cargoBay.UseCargo(cargoToTransfer, cargoType);
         LoadCargo(cargoToTransfer, cargoType);
     }
 
-    public float GetOpenCargoCapacityOfType(CargoTypes cargoType) {
-        float totalCargoCapacity = 0;
+    public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
+        long totalCargoCapacity = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
             if (cargoBayTypes[i] == cargoType) {
                 totalCargoCapacity += cargoBaySize - cargoBays[i];
@@ -127,8 +127,8 @@ public class CargoBay : MonoBehaviour {
         return GetAllCargo(cargoTypes) <= 0;
     }
 
-    public float GetAllCargo(CargoTypes cargotype) {
-        float totalCargo = 0;
+    public long GetAllCargo(CargoTypes cargotype) {
+        long totalCargo = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
             if (cargoBayTypes[i] == cargotype) {
                 totalCargo += cargoBays[i];
