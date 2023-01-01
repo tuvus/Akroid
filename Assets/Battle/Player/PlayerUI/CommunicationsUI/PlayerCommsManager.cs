@@ -28,8 +28,8 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     public void SetupFaction(Faction faction) {
-        for (int i = 0; i < communicationLogTransform.childCount; i++) {
-            DestroyImmediate(communicationLogTransform.GetChild(0).gameObject);
+        for (int i = communicationLogTransform.childCount - 1; i >= 0; i--) {
+            DestroyImmediate(communicationLogTransform.GetChild(i).gameObject);
         }
         if (faction != null) {
             FactionCommManager factionCommManager = faction.GetFactionCommManager();
@@ -40,6 +40,9 @@ public class PlayerCommsManager : MonoBehaviour {
             }
             for (int i = 0; i < factionCommManager.communicationLog.Count; i++) {
                 CreateCommEvent(factionCommManager.communicationLog[i]);
+            }
+            if (factionCommManager.communicationLog.Count > 0) {
+                SetPortrait(factionCommManager.communicationLog[factionCommManager.communicationLog.Count - 1].sender);
             }
         } else {
             HidePanel();
@@ -73,11 +76,13 @@ public class PlayerCommsManager : MonoBehaviour {
     void CreateCommEvent(CommunicationEvent communicationEvent) {
         GameObject newCommEvent = Instantiate(communicationEventPrefab, communicationLogTransform);
         newCommEvent.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.sender.GetSenderName() + ": " + communicationEvent.text;
-        for (int i = 0; i < communicationEvent.options.Length; i++) {
-            GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
-            newOption.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.options[i].optionName;
-            newOption.GetComponent<Button>().interactable = communicationEvent.options[i].checkStatus(communicationEvent);
-            newOption.GetComponent<Button>().onClick.AddListener(() => ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
+        if (communicationEvent.isActive) {
+            for (int i = 0; i < communicationEvent.options.Length; i++) {
+                GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
+                newOption.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.options[i].optionName;
+                newOption.GetComponent<Button>().interactable = communicationEvent.options[i].checkStatus(communicationEvent);
+                newOption.GetComponent<Button>().onClick.AddListener(() => ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
+            }
         }
     }
 
