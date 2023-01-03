@@ -17,6 +17,7 @@ public class Command {
         Formation,
         FormationLocation,
         Dock,
+        UndockCommand,
         Transport,
         TransportDelay,
         Research,
@@ -133,6 +134,16 @@ public class Command {
         Command newCommand = new Command(CommandType.Dock);
         newCommand.destinationStation = destinationStation;
         newCommand.maxSpeed = maxSpeed;
+        return newCommand;
+    }
+
+    public static Command CreateUndockCommand() {
+        return CreateUndockCommand(Random.Range(0, 360f));
+    }
+
+    public static Command CreateUndockCommand(float rotation) {
+        Command newCommand = new Command(CommandType.UndockCommand);
+        newCommand.targetRotation = rotation;
         return newCommand;
     }
 
