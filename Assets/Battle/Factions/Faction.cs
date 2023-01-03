@@ -518,11 +518,6 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return false;
     }
 
-    public Ship.ShipBlueprint GetTransportBlueprint() {
-        return new Ship.ShipBlueprint(factionIndex, Ship.ShipClass.Transport, "Transport", 3000,
-            new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 2400 });
-    }
-
     public Transform GetShipTransform() {
         return transform.GetChild(0);
     }

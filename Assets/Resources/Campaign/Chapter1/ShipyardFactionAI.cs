@@ -50,8 +50,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, 9800)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Lancer, "Lancer", 12000,
-                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { 9800 }));
+                shipyard.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer).CreateShipBlueprint(faction.factionIndex));
             }
         }
     }
@@ -61,8 +60,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, transportMetalCost)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipBlueprint(faction.factionIndex, Ship.ShipClass.Transport, "Transport", transportCreditCost,
-                    new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Metal }, new List<long>() { transportMetalCost }));
+                shipyard.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport).CreateShipBlueprint(faction.factionIndex));
             }
         }
     }

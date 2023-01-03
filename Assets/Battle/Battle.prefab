@@ -236,6 +236,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb57881e4b6e1648a194659709ec7ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shipBlueprints:
+  - factionIndex: 0
+    shipClass: 0
+    shipName: Trsnport
+    shipCost: 1000
+    resourcesTypes: 01000000
+    resources: 7805000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipClass: 5
+    shipName: StationBuilder
+    shipCost: 3000
+    resourcesTypes: 01000000
+    resources: a00f000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipClass: 6
+    shipName: Zarrack
+    shipCost: 2100
+    resourcesTypes: 01000000
+    resources: 8813000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipClass: 2
+    shipName: Aria
+    shipCost: 1300
+    resourcesTypes: 01000000
+    resources: 2003000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipClass: 3
+    shipName: Lancer
+    shipCost: 5000
+    resourcesTypes: 01000000
+    resources: 0807000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipClass: 4
+    shipName: Aterna
+    shipCost: 30000
+    resourcesTypes: 01000000
+    resources: 2823000000000000
+    totalResourcesRequired: 0
   factions: []
   units: []
   ships: []

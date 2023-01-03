@@ -12,6 +12,7 @@ public class BattleManager : MonoBehaviour {
     CampaingController campaignControler;
 
     public float researchModifier { get; private set; }
+    public List<ShipBlueprint> shipBlueprints;
 
     public List<Faction> factions;
     public List<Unit> units;
@@ -250,13 +251,13 @@ public class BattleManager : MonoBehaviour {
     public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population, double populationGrowthRate = 0.01) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(name, faction, positionGiver,population, populationGrowthRate, Random.Range(0, 360));
+        newPlanet.SetupPlanet(name, faction, positionGiver, population, populationGrowthRate, Random.Range(0, 360));
         planets.Add(newPlanet);
         return newPlanet;
     }
 
     public void CreateNewAteroidField(Vector2 center, int count, float resourceModifier = 1) {
-        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2),count, resourceModifier);
+        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2), count, resourceModifier);
     }
 
     public void CreateNewAteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
@@ -329,7 +330,7 @@ public class BattleManager : MonoBehaviour {
     public void PreSpawnNewProjectile() {
         GameObject projectilePrefab = (GameObject)Resources.Load("Prefabs/Projectile");
         Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
-        newProjectile.PrespawnProjectile(projectiles.Count,timeScale);
+        newProjectile.PrespawnProjectile(projectiles.Count, timeScale);
         projectiles.Add(newProjectile);
     }
 
@@ -453,6 +454,15 @@ public class BattleManager : MonoBehaviour {
 
     public double GetRealTime() {
         return realTime;
+    }
+
+    public ShipBlueprint GetShipBlueprint(ShipClass shipClass) {
+        for (int i = 0; i < shipBlueprints.Count; i++) {
+            if (shipBlueprints[i].shipClass == shipClass) {
+                return shipBlueprints[i];
+            }
+        }
+        return null;
     }
 
     public List<Ship> GetAllShips() {
