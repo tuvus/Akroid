@@ -21,10 +21,14 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] List<Ship> shipsInHanger;
     float updateSpeed;
     float updateTime;
+    [SerializeField] Toggle autoBuildShips;
+    [SerializeField] GameObject shipBlueprintButtonPrefab;
+    [SerializeField] Transform buildShipsList;
     [SerializeField] Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
     public void SetupPlayerStationUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
+        UpdateShipBlueprintUI();
     }
 
     public void UpdateStationUI() {
@@ -58,6 +62,7 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
+
     void UpdateCargoBayUI(CargoBay cargoBay) {
         cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
         cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
@@ -76,21 +81,36 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
+    void UpdateShipBlueprintUI() {
+        for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count; i++) {
+            if (buildShipsList.childCount <= i) {
+                Instantiate(shipBlueprintButtonPrefab, buildShipsList);
+            }
+            Transform cargoBayButton = buildShipsList.GetChild(i);
+            Ship.ShipBlueprint blueprint = BattleManager.Instance.shipBlueprints[i];
+            cargoBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            int f = i;
+            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => ShipBlueprintButtonPressed(f)));
+            cargoBayButton.gameObject.SetActive(true);
+            cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.shipName;
+            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + blueprint.shipCost.ToString();
+        }
+        for (int i = BattleManager.Instance.shipBlueprints.Count; i < buildShipsList.childCount; i++) {
+            buildShipsList.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    public void ShipBlueprintButtonPressed(int index) {
+        ((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.shipBlueprints[index].CreateShipBlueprint(LocalPlayer.Instance.GetFaction().factionIndex));
+    }
+
     void UpdateConstructionUI(ConstructionBay constructionBay) {
-        //cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
-        //cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
-        //for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
-        //    if (cargoBayList.childCount <= i) {
-        //        Instantiate(cargoBayButtonPrefab, cargoBayList);
-        //    }
-        //    Transform cargoBayButton = cargoBayList.GetChild(i);
-        //    cargoBayButton.gameObject.SetActive(true);
-        //    cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-        //    cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
-        //}
-        //for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
-        //    cargoBayList.GetChild(i).gameObject.SetActive(false);
-        //}
+        autoBuildShips.transform.parent.gameObject.SetActive(displayedStation.faction.GetFactionAI() is SimulationFactionAI);
+        if (autoBuildShips.gameObject.activeInHierarchy) {
+            autoBuildShips.SetIsOnWithoutNotify(((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips);
+            autoBuildShips.onValueChanged.RemoveAllListeners();
+            autoBuildShips.onValueChanged.AddListener((autoBuildShips) => SetAutoBuildShips(autoBuildShips));
+        }
         constructionBayStatus.text = "Construction bays in use " + Mathf.Min(constructionBay.buildQueue.Count, constructionBay.constructionBays) + "/" + constructionBay.constructionBays;
         for (int i = 0; i < constructionBay.buildQueue.Count; i++) {
             if (constructionBayList.childCount <= i) {
@@ -108,6 +128,10 @@ public class PlayerStationUI : MonoBehaviour {
             constructionBayList.GetChild(i).gameObject.SetActive(false);
         }
     }
+
+    public void SetAutoBuildShips(bool autoBuildShips) {
+        ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
+    } 
 
     void UpdateHangerUI (Hanger hanger) {
         shipsInHanger.Clear();

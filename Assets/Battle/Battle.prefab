@@ -239,7 +239,7 @@ MonoBehaviour:
   shipBlueprints:
   - factionIndex: 0
     shipClass: 0
-    shipName: Trsnport
+    shipName: Tranport
     shipCost: 1000
     resourcesTypes: 01000000
     resources: 7805000000000000

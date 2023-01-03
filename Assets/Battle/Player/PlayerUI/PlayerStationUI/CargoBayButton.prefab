@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6240332334492449991}
   - component: {fileID: 5016847608162379214}
   m_Layer: 5
-  m_Name: CargoBay
+  m_Name: CargoBayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

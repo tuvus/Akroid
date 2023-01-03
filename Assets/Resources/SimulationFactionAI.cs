@@ -6,9 +6,11 @@ using UnityEngine.Profiling;
 public class SimulationFactionAI : FactionAI {
     public Shipyard fleetCommand { get; private set; }
     float updateTime;
+    public bool autoBuildShips;
 
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
+        autoBuildShips = true;
     }
 
     public override void GenerateFactionAI() {
@@ -29,8 +31,10 @@ public class SimulationFactionAI : FactionAI {
                 ManageFleets();
                 ManageIdleShips();
                 ManageDockedShips();
-                ManageStationBuilding();
-                ManageShipBuilding();
+                if (autoBuildShips) {
+                    ManageStationBuilding();
+                    ManageShipBuilding();
+                }
                 updateTime += .2f;
             }
         }
@@ -126,7 +130,7 @@ public class SimulationFactionAI : FactionAI {
                 randomNumber = Random.Range(0, 100);
             }
             if (randomNumber < 20) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Zarrack).CreateShipBlueprint(faction.factionIndex, "Science SHip"));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Zarrack).CreateShipBlueprint(faction.factionIndex, "Science Ship"));
             } else if (randomNumber < 50) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria).CreateShipBlueprint(faction.factionIndex));
             } else if (randomNumber < 80) {
