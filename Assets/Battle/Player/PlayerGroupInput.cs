@@ -48,7 +48,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             selectedUnits.ClearGroup();
             selectedUnits.CopyGroup(groups[buttonNumber]);
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            SetDisplayedUnitToStrongest();
+            SetDisplayedUnit();
             selectedGroup = buttonNumber;
         }
     }

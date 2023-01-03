@@ -136,4 +136,16 @@ public class CargoBay : MonoBehaviour {
         }
         return totalCargo;
     }
+
+    public int GetUsedCargoBays() {
+        return cargoBays.Count;
+    }
+
+    public int GetMaxCargoBays() {
+        return maxCargoBays;
+    }
+
+    public long GetCargoBayCapacity() {
+        return cargoBaySize;
+    }
 }

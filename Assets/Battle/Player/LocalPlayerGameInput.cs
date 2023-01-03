@@ -69,7 +69,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     protected override void PrimaryMouseUp() {
         base.PrimaryMouseUp();
-        SetDisplayedUnitToStrongest();
+        SetDisplayedUnit();
     }
 
     protected override void AdditiveButtonUp() {
@@ -246,7 +246,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             if (ships.Count > 0) {
                 selectedUnits.SetFleet(LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships));
             }
-            SetDisplayedUnitToStrongest();
+            SetDisplayedUnit();
             selectedGroup = -1;
         }
     }

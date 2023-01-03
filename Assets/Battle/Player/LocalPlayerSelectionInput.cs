@@ -119,7 +119,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 }
             }
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            SetDisplayedUnitToStrongest();
+            SetDisplayedUnit();
         }
     }
 
@@ -195,10 +195,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         selectedUnits.AddUnits(unitsInSelectionBox);
         selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
         unitsInSelectionBox.ClearGroup();
-        SetDisplayedUnitToStrongest();
+        SetDisplayedUnit();
     }
 
-    public void SetDisplayedUnitToStrongest() {
+    public void SetDisplayedUnit() {
         Unit strongestUnit = null;
         foreach (var unit in selectedUnits.GetAllUnits()) {
             if (strongestUnit == null || unit.GetMaxHealth() > strongestUnit.GetMaxHealth())

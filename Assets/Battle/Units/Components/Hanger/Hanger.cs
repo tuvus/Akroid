@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Hanger : MonoBehaviour {
     Station station;
-    [SerializeField] List<Ship> ships;
+    public List<Ship> ships { get; private set; }
     [SerializeField] int maxDockSpace;
     [SerializeField] int dockSpace;
 
     public void SetupHanger(Station station) {
-        ships = new List<Ship>();
+        ships = new List<Ship>(maxDockSpace);
         this.station = station;
     }
 
