@@ -78,6 +78,7 @@ public class Ship : Unit {
         public long shipCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<long> resources;
+        public long totalResourcesRequired;
 
         public ShipBlueprint(int factionIndex, ShipClass shipClass, string shipName, long shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
             this.factionIndex = factionIndex;
@@ -86,6 +87,17 @@ public class Ship : Unit {
             this.shipCost = shipCost;
             this.resourcesTypes = resourcesTypes;
             this.resources = resources;
+            for (int i = 0; i < resources.Count; i++) {
+                totalResourcesRequired += resources[i];
+            }
+        }
+
+        public long GetTotalResourcesPutIn() {
+            long totalResources = 0;
+            for (int i = 0; i < resources.Count; i++) {
+                totalResources += resources[i];
+            }
+            return totalResources;
         }
 
         public bool IsFinished() {

@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bed19c6025c5347a8f0e908136d8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ships: []
   maxDockSpace: 100
   dockSpace: 0
 --- !u!1 &889378031077826983
@@ -272,7 +271,7 @@ MonoBehaviour:
   maxCargoBays: 30
   cargoBaySize: 10000
   cargoBayTypes: 
-  cargoBays: []
+  cargoBays: 
 --- !u!1 &3637146194794599806
 GameObject:
   m_ObjectHideFlags: 0
@@ -974,7 +973,7 @@ MonoBehaviour:
   maxHealth: 9000
   unitName: Shipyard
   followDist: 0
-  stationType: 0
+  stationType: 4
   repairAmmount: 100
   repairSpeed: 5
 --- !u!114 &-4755380862419528990

@@ -21,6 +21,8 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] List<Ship> shipsInHanger;
     float updateSpeed;
     float updateTime;
+    [SerializeField] Text constructionBayStatus;
+    [SerializeField] Transform constructionBayList;
     public void SetupPlayerStationUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
     }
@@ -48,7 +50,7 @@ public class PlayerStationUI : MonoBehaviour {
             UpdateCargoBayUI(displayedStation.GetCargoBay());
         }
         if (stationConstructionUI.activeSelf) {
-            UpdateConstructionUI(displayedStation.GetCargoBay());
+            UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
         }
         if (stationHangerUI.activeSelf) {
             UpdateHangerUI(displayedStation.GetHanger());
@@ -74,33 +76,36 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
-    void UpdateConstructionUI(CargoBay cargoBay) {
-        return;
-        cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
-        cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
-        for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
-            if (cargoBayList.childCount <= i) {
-                Instantiate(cargoBayButtonPrefab, cargoBayList);
+    void UpdateConstructionUI(ConstructionBay constructionBay) {
+        //cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
+        //cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
+        //for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
+        //    if (cargoBayList.childCount <= i) {
+        //        Instantiate(cargoBayButtonPrefab, cargoBayList);
+        //    }
+        //    Transform cargoBayButton = cargoBayList.GetChild(i);
+        //    cargoBayButton.gameObject.SetActive(true);
+        //    cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
+        //    cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
+        //}
+        //for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
+        //    cargoBayList.GetChild(i).gameObject.SetActive(false);
+        //}
+        constructionBayStatus.text = "Construction bays in use " + Mathf.Min(constructionBay.buildQueue.Count, constructionBay.constructionBays) + "/" + constructionBay.constructionBays;
+        for (int i = 0; i < constructionBay.buildQueue.Count; i++) {
+            if (constructionBayList.childCount <= i) {
+                Instantiate(shipButtonPrefab, constructionBayList);
             }
-            Transform cargoBayButton = cargoBayList.GetChild(i);
-            cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
+            Transform constructionBayButton = constructionBayList.GetChild(i);
+            constructionBayButton.gameObject.SetActive(true);
+            Ship.ShipBlueprint blueprint = constructionBay.buildQueue[i];
+            constructionBayButton.GetChild(0).GetComponent<Text>().text = blueprint.shipName.ToString();
+            constructionBayButton.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].name;
+            constructionBayButton.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
+
         }
-        for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
-            cargoBayList.GetChild(i).gameObject.SetActive(false);
-        }
-        for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
-            if (cargoBayList.childCount <= i) {
-                Instantiate(cargoBayButtonPrefab, cargoBayList);
-            }
-            Transform cargoBayButton = cargoBayList.GetChild(i);
-            cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
-        }
-        for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
-            cargoBayList.GetChild(i).gameObject.SetActive(false);
+        for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
+            constructionBayList.GetChild(i).gameObject.SetActive(false);
         }
     }
 
