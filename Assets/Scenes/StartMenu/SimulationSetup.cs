@@ -51,7 +51,7 @@ public class SimulationSetup : MonoBehaviour {
         asteroidFieldCount = 40;
         starCount = 3;
         asteroidCountModifier = 1.2f;
-        researchModifier = 1.1f;
+        researchModifier = 1.05f;
         factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));

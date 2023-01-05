@@ -14,6 +14,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     [SerializeField] public long credits { get; private set; }
     [SerializeField] public long science { get; private set; }
     public long researchCost { get; private set; }
+    private double researchCostExtra;
     public int Discoveries { get; private set; }
 
     public enum ImprovementAreas {
@@ -134,6 +135,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         credits = factionData.credits;
         science = factionData.science;
         researchCost = startingResearchCost;
+        researchCostExtra = 0;
         Discoveries = 0;
         improvementModifiers = new float[13];
         for (int i = 0; i < improvementModifiers.Length; i++) {
@@ -298,7 +300,12 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             if (science < researchCost)
                 return;
             science -= researchCost;
-            researchCost = Mathf.RoundToInt(researchCost * BattleManager.Instance.researchModifier);
+            researchCost = (int)(researchCost * BattleManager.Instance.researchModifier);
+            researchCostExtra = researchCost * BattleManager.Instance.researchModifier - researchCost + researchCostExtra;
+            if (researchCostExtra > 0) {
+                researchCost += (int)researchCostExtra;
+                researchCostExtra -= (int)researchCostExtra;
+            }
         }
         Discoveries++;
         int improvementArea;
