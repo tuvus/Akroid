@@ -27,7 +27,7 @@ public class ShieldGenerator : MonoBehaviour {
 	}
 
 	public void UpdateShieldGenerator(float deltaTime) {
-		timeTillShieldCount -= deltaTime * unit.faction.ShieldRegenModifier;
+		timeTillShieldCount -= deltaTime * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldRegen);
 		if (shield.health == 0) {
 			if (timeTillShieldCount <= 0) {
 				CreateShield(false);
@@ -66,7 +66,7 @@ public class ShieldGenerator : MonoBehaviour {
 	}
 
 	public int GetMaxShieldStrenght() {
-		return Mathf.RoundToInt(maxShieldHealth * unit.faction.ShieldHealthModifier);
+		return Mathf.RoundToInt(maxShieldHealth * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
 	}
 
 	public Shield GetShield() {

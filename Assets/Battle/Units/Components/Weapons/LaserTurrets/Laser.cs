@@ -110,7 +110,7 @@ public class Laser : MonoBehaviour {
             contacts[i] = new RaycastHit2D();
         }
         if (hitUnit != null) {
-            hitUnit.TakeDamage(GetDamage(deltaTime,false));
+            hitUnit.TakeDamage(GetDamage(deltaTime, false));
             return;
         }
         if (hitShield != null) {
@@ -120,7 +120,7 @@ public class Laser : MonoBehaviour {
     }
 
     int GetDamage(float deltaTime, bool hitShield) {
-        float damage = laserTurret.laserDamagePerSecond * deltaTime * laserTurret.GetUnit().faction.LaserDamageModifier;
+        float damage = laserTurret.laserDamagePerSecond * deltaTime * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;
@@ -146,6 +146,6 @@ public class Laser : MonoBehaviour {
     }
 
     public float GetLaserRange() {
-        return laserTurret.laserRange * laserTurret.GetUnit().faction.LaserRangeModifier;
+        return laserTurret.laserRange * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 }

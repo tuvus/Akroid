@@ -13,21 +13,33 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     [SerializeField] public new string name { get; private set; }
     [SerializeField] public long credits { get; private set; }
     [SerializeField] public long science { get; private set; }
-    private long researchCost;
+    public long researchCost { get; private set; }
     public int Discoveries { get; private set; }
-    public float HealthModifier { get; private set; }
-    public float ShieldHealthModifier { get; private set; }
-    public float ShieldRegenModifier { get; private set; }
-    public float ProjectileDamageModifier { get; private set; }
-    public float ProjectileReloadModifier { get; private set; }
-    public float ProjectileRangeModifier { get; private set; }
-    public float LaserDamageModifier { get; private set; }
-    public float LaserChargeModifier { get; private set; }
-    public float LaserRangeModifier { get; private set; }
-    public float MissileDamageModifier { get; private set; }
-    public float MissileReloadModifier { get; private set; }
-    public float MissileRangeModifier { get; private set; }
-    public float ThrusterPowerModifier { get; private set; }
+
+    public enum ImprovementAreas {
+        HullStrength,
+        ShieldHealth,
+        ShieldRegen,
+        ThrustPower,
+        ProjectileDamage,
+        ProjectileRange,
+        ProjectileReload,
+        LaserDamage,
+        LaserRange,
+        LaserReload,
+        MissileDamage,
+        MissileRange,
+        MissileReload,
+    }
+
+    public enum ResearchAreas {
+        Engineering,
+        Electricity,
+        Chemicals,
+    }
+
+    public float[] improvementModifiers { get; private set; }
+    public int[] improvementDiscoveryCount { get; private set; }
 
     public int factionIndex { get; private set; }
 
@@ -123,19 +135,14 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         science = factionData.science;
         researchCost = startingResearchCost;
         Discoveries = 0;
-        HealthModifier = 1;
-        ShieldHealthModifier = 1;
-        ShieldRegenModifier = 1;
-        ProjectileDamageModifier = 1;
-        ProjectileReloadModifier = 1;
-        ProjectileRangeModifier = 1;
-        LaserDamageModifier = 1;
-        LaserChargeModifier = 1;
-        LaserRangeModifier = 1;
-        MissileDamageModifier = 1;
-        MissileReloadModifier = 1;
-        MissileRangeModifier = 1;
-        ThrusterPowerModifier = 1;
+        improvementModifiers = new float[13];
+        for (int i = 0; i < improvementModifiers.Length; i++) {
+            improvementModifiers[i] = 1;
+        }
+        improvementDiscoveryCount = new int[13];
+        for (int i = 0; i < improvementDiscoveryCount.Length; i++) {
+            improvementDiscoveryCount[i] = 0;
+        }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
             BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", factionPosition, Random.Range(0, 360)));
@@ -272,7 +279,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public void UpdateFaction(float deltaTime) {
         factionAI.UpdateFactionAI(deltaTime);
         UpdateFactionTotalUnitSize();
-    }   
+    }
 
     public void UpdateFleets(float deltaTime) {
         for (int i = 0; i < fleets.Count; i++) {
@@ -283,42 +290,74 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public void UpdateFactionResearch() {
-        if (science >= researchCost) {
-            Discoveries++;
+        DiscoverResearchArea((ResearchAreas)Random.Range(0, 3));
+    }
+
+    public void DiscoverResearchArea(ResearchAreas researchArea, bool free = false) {
+        if (!free) {
+            if (science < researchCost)
+                return;
             science -= researchCost;
             researchCost = Mathf.RoundToInt(researchCost * BattleManager.Instance.researchModifier);
-            int improveArea = Random.Range(0, 13);
-            if (improveArea == 0) {
-                HealthModifier += .2f;
-            } else if (improveArea == 1) {
-                ShieldHealthModifier += .15f;
-            } else if (improveArea == 2) {
-                ShieldRegenModifier += .1f;
-            } else if (improveArea == 3) {
-                ProjectileDamageModifier += .1f;
-            } else if (improveArea == 4) {
-                ProjectileReloadModifier += .12f;
-            } else if (improveArea == 5) {
-                ProjectileRangeModifier += .2f;
-                UpdateUnitTurretRanges();
-            } else if (improveArea == 6) {
-                LaserDamageModifier += .15f;
-            } else if (improveArea == 7) {
-                LaserChargeModifier += .12f;
-            } else if (improveArea == 8) {
-                LaserRangeModifier += .15f;
-                UpdateUnitTurretRanges();
-            } else if (improveArea == 9) {
-                MissileDamageModifier += .2f;
-            } else if (improveArea == 10) {
-                MissileReloadModifier += .2f;
-            } else if (improveArea == 11) {
-                MissileRangeModifier += .15f;
-                UpdateUnitTurretRanges();
-            } else if (improveArea == 12) {
-                ThrusterPowerModifier += .15f;
-                UpdateShipThrustPower();
-            }
+        }
+        Discoveries++;
+        int improvementArea;
+        switch (researchArea) {
+            case ResearchAreas.Engineering:
+                improvementArea = Random.Range(0, 4);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileDamage] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileDamage]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileReload] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileReload]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileRange] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
+            case ResearchAreas.Electricity:
+                improvementArea = Random.Range(0, 5);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.ShieldRegen] += .3f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldRegen]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.LaserDamage] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserDamage]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.LaserReload] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserReload]++;
+                } else if (improvementArea == 4) {
+                    improvementModifiers[(int)ImprovementAreas.LaserRange] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
+            case ResearchAreas.Chemicals:
+                improvementArea = Random.Range(0, 4);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
+                    UpdateShipThrustPower();
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.MissileDamage] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileDamage]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.MissileReload] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileReload]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.MissileRange] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
         }
     }
 
@@ -332,7 +371,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         }
     }
 
-    void UpdateUnitTurretRanges() {
+    void UpdateUnitWeaponRanges() {
         for (int i = 0; i < units.Count; i++) {
             units[i].SetupWeaponRanges();
         }
@@ -517,6 +556,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return star;
     }
 
+
+    public float GetImprovementModifier(ImprovementAreas improvementArea) {
+        return improvementModifiers[(int)improvementArea];
+    }
+    
     public bool HasEnemy() {
         foreach (var enemyFaction in enemyFactions) {
             if (enemyFaction.stations.Count >= 1) {

@@ -284,7 +284,7 @@ public abstract class Unit : BattleObject {
         return health;
     }
     public int GetMaxHealth() {
-        return Mathf.RoundToInt(maxHealth * faction.HealthModifier);
+        return Mathf.RoundToInt(maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public int GetTotalHealth() {

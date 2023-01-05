@@ -310,7 +310,8 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.Stop;
         }
         if (command.commandType == CommandType.UndockCommand) {
-            ship.UndockShip(command.targetRotation);
+            if (ship.dockedStation != null)
+                ship.UndockShip(command.targetRotation);
             return CommandResult.StopRemove;
         }
         //AttackMove to the star, do reasearch, then remove command.

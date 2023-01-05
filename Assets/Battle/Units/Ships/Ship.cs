@@ -136,7 +136,7 @@ public class Ship : Unit {
         thrusting = false;
         thrust = 0;
         for (int i = 0; i < thrusters.Count; i++) {
-            thrust += thrusters[i].thrustSpeed * faction.ThrusterPowerModifier;
+            thrust += thrusters[i].thrustSpeed * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
         }
     }
 

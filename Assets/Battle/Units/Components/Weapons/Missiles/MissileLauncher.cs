@@ -42,7 +42,7 @@ public class MissileLauncher : MonoBehaviour {
         }
         hibernating = false;
         Profiler.BeginSample("UpdateMissileLauncher");
-        reloadController.UpdateReloadController(deltaTime * unit.faction.MissileReloadModifier, 1);
+        reloadController.UpdateReloadController(deltaTime, unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
         if (!reloadController.ReadyToFire()) {
             Profiler.EndSample();
             return;
@@ -121,15 +121,15 @@ public class MissileLauncher : MonoBehaviour {
     }
 
     public int GetDamage() {
-        return Mathf.RoundToInt(missileDamage * unit.faction.MissileDamageModifier);
+        return Mathf.RoundToInt(missileDamage * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
     }
 
     public float GetRange() {
-        return range * unit.faction.MissileRangeModifier;
+        return range * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetFuelRange() {
-        return missileFuelRange * unit.faction.MissileRangeModifier;
+        return missileFuelRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetDamagePerSecond() {

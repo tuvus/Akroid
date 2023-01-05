@@ -22,7 +22,7 @@ public class MassTurret : Turret {
     public override void Fire() {
         base.Fire();
         Projectile projectile = BattleManager.Instance.GetNewProjectile();
-        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-fireAccuracy, fireAccuracy), unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.ProjectileDamageModifier), projectileRange * unit.faction.ProjectileRangeModifier, GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-fireAccuracy, fireAccuracy), unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
@@ -30,11 +30,11 @@ public class MassTurret : Turret {
     }
 
     public override float GetRange() {
-        return base.GetRange() * unit.faction.ProjectileRangeModifier;
+        return base.GetRange() * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange);
     }
 
     public override float GetReloadTimeModifier() {
-        return unit.faction.ProjectileReloadModifier;
+        return unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload);
     }
 
     public float GetDamagePerSecond() {

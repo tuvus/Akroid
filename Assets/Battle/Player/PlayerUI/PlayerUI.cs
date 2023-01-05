@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
@@ -13,6 +14,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [SerializeField] private PlayerCommsManager playerCommsManager;
     [SerializeField] private PlayerStationUI playerStationUI;
+    [SerializeField] private PlayerResearchUI playerResearchUI;
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
     [SerializeField] private GameObject commandUI;
@@ -30,6 +32,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Text victoryTitle;
     [SerializeField] private Text victoryElapsedTime;
     [SerializeField] private GameObject stationUI;
+    [SerializeField] private GameObject researchUI;
 
 
     bool showUnitZoomIndicators;
@@ -45,6 +48,7 @@ public class PlayerUI : MonoBehaviour {
         showUnitCombatIndicators = true;
         playerCommsManager.SetupPlayerCommsManager(this);
         playerStationUI.SetupPlayerStationUI(this);
+        playerResearchUI.SetupResearchUI(this);
     }
 
     public void UpdatePlayerUI() {
@@ -68,6 +72,9 @@ public class PlayerUI : MonoBehaviour {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
                 BattleManager.Instance.GetAllUnits()[i].UpdateUnitUI(showUnitZoomIndicators);
             }
+        }
+        if (researchUI.activeSelf) {
+            playerResearchUI.UpdateResearchUI(GetLocalPlayer().GetFaction());
         }
         Profiler.EndSample();
     }
@@ -149,6 +156,11 @@ public class PlayerUI : MonoBehaviour {
         stationUI.SetActive(shown);
     }
 
+    public void ShowResearchUI(bool shown) {
+        CloseAllMenues();
+        researchUI.SetActive(shown);
+    }
+
     public void CloseAllMenues() {
         menuUI.SetActive(false);
         controlsListUI.SetActive(false);
@@ -157,6 +169,9 @@ public class PlayerUI : MonoBehaviour {
             stationUI.SetActive(false);
             ((LocalPlayerSelectionInput)localPlayerInput).GetSelectedUnits().SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
             ((LocalPlayerSelectionInput)localPlayerInput).GetSelectedUnits().ClearGroup();
+        }
+        if (researchUI.activeSelf) {
+            researchUI.SetActive(false);
         }
     }
 
@@ -169,7 +184,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool FreezeZoom() {
-        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf;
+        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || researchUI.activeSelf;
     }
 
     public void ToggleUnitZoomIndicators() {
@@ -207,7 +222,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || researchUI.activeSelf;
     }
 
     public PlayerCommsManager GetPlayerCommsManager() {

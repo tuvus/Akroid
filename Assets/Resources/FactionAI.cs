@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class FactionAI : MonoBehaviour {
     public Faction faction { protected set; get; }
+    public bool autoResearch;
 
     [SerializeField] protected List<Ship> idleShips;
 
     public virtual void SetupFactionAI(Faction faction) {
         this.faction = faction;
         idleShips = new List<Ship>(10);
+        autoResearch = true;
     }
 
     public virtual void GenerateFactionAI() {
@@ -17,11 +19,12 @@ public class FactionAI : MonoBehaviour {
     }
 
     public virtual void UpdateFactionAI(float deltaTime) {
-        faction.UpdateFactionResearch();
+        if (autoResearch)
+            faction.UpdateFactionResearch();
     }
 
-    public virtual void OnStationBuilt(Station station) { 
-    
+    public virtual void OnStationBuilt(Station station) {
+
     }
 
     public virtual void OnShipBuilt(Ship ship) {

@@ -43,11 +43,11 @@ public class LaserTurret : Turret {
     }
 
     public override float GetRange() {
-        return base.GetRange() * unit.faction.LaserRangeModifier;
+        return base.GetRange() * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 
     public override float GetReloadTimeModifier() {
-        return unit.faction.LaserChargeModifier;
+        return unit.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload);
     }
 
     public float GetDamagePerSecond() {

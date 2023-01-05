@@ -231,7 +231,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public int GetRepairAmmount() {
-        return (int)(repairAmmount * faction.HealthModifier);
+        return (int)(repairAmmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
     #endregion
 
