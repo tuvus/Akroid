@@ -13,6 +13,7 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] Text stationName;
     [SerializeField] Text cargoBaysStatus;
     [SerializeField] Text cargoBayCapacity;
+    [SerializeField] Text cargoHeader;
     [SerializeField] Transform cargoBayList;
     [SerializeField] GameObject cargoBayButtonPrefab;
     [SerializeField] Text hangerStatus;
@@ -42,8 +43,8 @@ public class PlayerStationUI : MonoBehaviour {
     public void DisplayStation(Station displayedStation) {
         this.displayedStation = displayedStation;
         stationStatusUI.SetActive(displayedStation.stationType != Station.StationType.None);
-        stationConstructionUI.SetActive(displayedStation.stationType == Station.StationType.Shipyard || displayedStation.stationType == Station.StationType.FleetCommand);
-        stationHangerUI.SetActive(displayedStation.GetHanger() != null);
+        stationConstructionUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && (displayedStation.stationType == Station.StationType.Shipyard || displayedStation.stationType == Station.StationType.FleetCommand));
+        stationHangerUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && displayedStation.GetHanger() != null);
         UpdateStationDisplay();
     }
 
@@ -51,7 +52,7 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.BeginSample("StationDisplayUpdate");
         if (stationStatusUI.activeSelf) {
             stationName.text = displayedStation.GetUnitName();
-            UpdateCargoBayUI(displayedStation.GetCargoBay());
+            UpdateCargoBayUI(displayedStation.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction));
         }
         if (stationConstructionUI.activeSelf) {
             UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
@@ -62,22 +63,32 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-
-    void UpdateCargoBayUI(CargoBay cargoBay) {
-        cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
-        cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
-        for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
-            if (cargoBayList.childCount <= i) {
-                Instantiate(cargoBayButtonPrefab, cargoBayList);
+    void UpdateCargoBayUI(CargoBay cargoBay, bool isFreindlyFaction) {
+        if (isFreindlyFaction) {
+            cargoHeader.gameObject.SetActive(true);
+            cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
+            cargoBaysStatus.gameObject.SetActive(true);
+            cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
+            cargoBayCapacity.gameObject.SetActive(true);
+            for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
+                if (cargoBayList.childCount <= i) {
+                    Instantiate(cargoBayButtonPrefab, cargoBayList);
+                }
+                Transform cargoBayButton = cargoBayList.GetChild(i);
+                cargoBayButton.gameObject.SetActive(true);
+                cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
+                cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
+                cargoBayButton.GetChild(2).GetComponent<Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
             }
-            Transform cargoBayButton = cargoBayList.GetChild(i);
-            cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
-        }
-        for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
-            cargoBayList.GetChild(i).gameObject.SetActive(false);
+            for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
+                cargoBayList.GetChild(i).gameObject.SetActive(false);
+            }
+            cargoBayList.transform.parent.parent.gameObject.SetActive(true);
+        } else {
+            cargoHeader.gameObject.SetActive(false);
+            cargoBaysStatus.gameObject.SetActive(false);
+            cargoBayCapacity.gameObject.SetActive(false);
+            cargoBayList.transform.parent.parent.gameObject.SetActive(false);
         }
     }
 
@@ -131,9 +142,9 @@ public class PlayerStationUI : MonoBehaviour {
 
     public void SetAutoBuildShips(bool autoBuildShips) {
         ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
-    } 
+    }
 
-    void UpdateHangerUI (Hanger hanger) {
+    void UpdateHangerUI(Hanger hanger) {
         shipsInHanger.Clear();
         for (int i = 0; i < hanger.ships.Count; i++) {
             shipsInHanger.Add(hanger.ships[i]);
@@ -158,6 +169,7 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     public void HangerButtonPressed(int index) {
-        shipsInHanger[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
+        if (LocalPlayer.Instance.ownedUnits.Contains(displayedStation) || shipsInHanger[index].faction == LocalPlayer.Instance.GetFaction())
+            shipsInHanger[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
     }
 }
