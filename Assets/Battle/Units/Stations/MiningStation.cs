@@ -20,11 +20,6 @@ public class MiningStation : Station {
         faction.AddMinningStation(this);
     }
 
-    public override Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
-        Ship ship = base.BuildShip(shipClass, cost, undock);
-        return ship;
-    }
-
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;

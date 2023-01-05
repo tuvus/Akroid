@@ -136,12 +136,13 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     #region StationControlls
-    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost, bool undock = false) {
+    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool undock = false) {
         return BuildShip(faction.factionIndex, shipClass, cost, undock);
     }
 
-    public virtual Ship BuildShip(int factionIndex, Ship.ShipClass shipClass, long cost, bool undock = false) {
-        if (faction.UseCredits(cost)) {
+    public virtual Ship BuildShip(int factionIndex, Ship.ShipClass shipClass, long cost = 0, bool undock = false) {
+        if (BattleManager.Instance.factions[factionIndex].TransferCredits(cost,faction)) {
+            faction.UseCredits(cost);
             Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, shipClass, shipClass.ToString(), transform.position, Random.Range(0, 360)));
             if (undock) {
                 newShip.DockShip(this);

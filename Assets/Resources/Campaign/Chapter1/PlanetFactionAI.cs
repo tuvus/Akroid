@@ -83,8 +83,8 @@ public class PlanetFactionAI : FactionAI {
                             if (!communicationEvent.isActive)
                                 return false;
                             faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Since you won't give us your metal, we will have to take it from you by force.");
-                            Ship ship1 = tradeStation.BuildShip(Ship.ShipClass.Lancer, 8000, false);
-                            Ship ship2 = tradeStation.BuildShip(Ship.ShipClass.Lancer, 8000, false);
+                            Ship ship1 = tradeStation.BuildShip(Ship.ShipClass.Lancer);
+                            Ship ship2 = tradeStation.BuildShip(Ship.ShipClass.Lancer);
                             ship1.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(200,400)));
                             ship1.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(chapter1.playerMiningStation.GetPosition()));
                             ship1.shipAI.AddUnitAICommand(Command.CreateDockCommand(tradeStation));

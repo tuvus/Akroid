@@ -142,14 +142,14 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", factionPosition, Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
-                    Ship newTransport = newStation.BuildShip(Ship.ShipClass.Transport, 0, false);
+                    newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
                 }
             }
         }
         for (int i = 0; i < shipCount; i++) {
             if (GetFleetCommand() != null)
-                GetFleetCommand().BuildShip(Ship.ShipClass.Lancer, 0);
+                GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
             else
                 BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
@@ -231,6 +231,14 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public bool UseCredits(long credits) {
         if (this.credits > credits) {
             this.credits -= credits;
+            return true;
+        }
+        return false;
+    }
+
+    public bool TransferCredits(long credits, Faction faction) {
+        if (UseCredits(credits)) {
+            faction.AddCredits(credits);
             return true;
         }
         return false;
