@@ -169,22 +169,27 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void SecondaryMouseHeld() {
-        MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / 422);
+        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
+            MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / 422);
     }
 
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
-        if (rightClickedUnit != null && rightClickedUnit == mouseOverUnit && !LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
-            if (rightClickedUnit.IsShip()) {
-                if (rightClickedUnit != followUnit) {
-                    StartFollowingUnit(rightClickedUnit);
-                } else {
-                    StopFollowingUnit();
+        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+            if (rightClickedUnit != null && rightClickedUnit == mouseOverUnit) {
+                if (rightClickedUnit.IsShip()) {
+                    if (rightClickedUnit != followUnit) {
+                        StartFollowingUnit(rightClickedUnit);
+                    } else {
+                        StopFollowingUnit();
+                    }
+                } else if (rightClickedUnit.IsStation()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedUnit);
+                    rightClickedUnit = null;
                 }
-            } else if (rightClickedUnit.IsStation()) {
-                LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedUnit);
-                rightClickedUnit = null;
             }
+        } else {
+            LocalPlayer.Instance.GetPlayerUI().CloseAllMenues();
         }
     }
 
