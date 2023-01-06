@@ -21,6 +21,8 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject controlsListUI;
     [SerializeField] private GameObject menuUI;
     [SerializeField] private Dropdown menueUIFactionSelect;
+    [SerializeField] private Text timeScaleText;
+    [SerializeField] private Slider menueUITimeScale;
     [SerializeField] private Text factionName;
     [SerializeField] private Text factionCredits;
     [SerializeField] private Text factionScience;
@@ -118,6 +120,8 @@ public class PlayerUI : MonoBehaviour {
                 menueUIFactionSelect.SetValueWithoutNotify(0);
             else
                 menueUIFactionSelect.SetValueWithoutNotify(LocalPlayer.Instance.GetFaction().factionIndex + 1);
+            timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
+            menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
         }
     }
 
@@ -133,6 +137,11 @@ public class PlayerUI : MonoBehaviour {
         } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != LocalPlayer.Instance.GetFaction().factionIndex) {
             LocalPlayer.Instance.SetupFaction(BattleManager.Instance.GetAllFactions()[menueUIFactionSelect.value - 1]);
         }
+    }
+
+    public void UpdateBattleTimeScale() {
+        BattleManager.Instance.SetSimulationTimeScale(menueUITimeScale.value / 10f);
+        timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
     }
 
     public void ShowControlList(bool shown) {

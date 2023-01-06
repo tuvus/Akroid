@@ -72,7 +72,7 @@ public class Missile : MonoBehaviour {
         } else {
             turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
             if (target != null && target.IsTargetable()) {
-                RotateMissile();
+                RotateMissile(deltaTime);
             } else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
                 target = missileLauncher.FindNewTarget();
                 if (target == null)
@@ -83,11 +83,11 @@ public class Missile : MonoBehaviour {
         }
     }
 
-    void RotateMissile() {
+    void RotateMissile(float deltaTime) {
         Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
         float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position,targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - transform.eulerAngles.z);
-        float turnAmmont = turnSpeed * Time.fixedDeltaTime * BattleManager.Instance.timeScale;
+        float turnAmmont = turnSpeed * deltaTime;
         if (Mathf.Abs(angle) < turnAmmont) {
             transform.eulerAngles = new Vector3(0, 0, targetAngle);
         } else if (angle > turnAmmont) {
