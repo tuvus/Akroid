@@ -22,7 +22,7 @@ public class FleetAI : MonoBehaviour {
         this.fleet = fleet;
         commands = new List<Command>(10);
         AddFormationCommand();
-    }   
+    }
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
         if (commandAction == CommandAction.AddToBegining) {
@@ -148,9 +148,17 @@ public class FleetAI : MonoBehaviour {
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0 && Vector2.Distance(fleet.GetPosition(), command.targetPosition) <= fleet.GetSize()) {
+            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0) {
                 return CommandResult.ContinueRemove;
             }
+            if (fleet.enemyUnitsInRange.Count > 0) {
+                for (int i = 0; i < fleet.ships.Count; i++) {
+                    if (fleet.ships[i].IsIdle()) {
+                        SetFleetAttackMovePosition(command.targetPosition);
+                    }
+                }
+            }
+
             return CommandResult.Stop;
         }
         if (command.commandType == CommandType.Dock) {
@@ -237,7 +245,7 @@ public class FleetAI : MonoBehaviour {
         for (int i = 0; i < fleet.ships.Count; i++) {
             fleet.ships[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
         }
-    } 
+    }
 
     public void SetFleetAttackMovePosition(Vector2 movePosition) {
         for (int i = 0; i < fleet.ships.Count; i++) {

@@ -423,7 +423,7 @@ public class BattleManager : MonoBehaviour {
         if (simulationEnded)
             return null;
         for (int i = 0; i < factions.Count; i++) {
-            if (!factions[i].HasEnemy()) {
+            if (factions[i].units.Count > 0 && !factions[i].HasEnemy()) {
                 return factions[i];
             }
         }

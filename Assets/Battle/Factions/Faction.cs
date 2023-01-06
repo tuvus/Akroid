@@ -462,7 +462,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         foreach (var faction in enemyFactions) {
             for (int i = 0; i < faction.GetAllFactionStations().Count; i++) {
                 Station targetStation = faction.GetAllFactionStations()[i];
-                if (targetStation == null || !targetStation.IsSpawned())
+                if (targetStation == null || !targetStation.IsTargetable())
                     continue;
                 float targetDistance = Vector2.Distance(position, targetStation.GetPosition());
                 if (station == null || targetDistance < distance) {
@@ -472,6 +472,24 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             }
         }
         return station;
+    }
+
+    public Unit GetClosestEnemyUnit(Vector2 position) {
+        Unit unit = null;
+        float distance = 0;
+        foreach (var faction in enemyFactions) {
+            for (int i = 0; i < faction.units.Count; i++) {
+                Unit targetUnit = faction.units[i];
+                if (targetUnit == null || !targetUnit.IsTargetable())
+                    continue;
+                float targetDistance = Vector2.Distance(position, targetUnit.GetPosition());
+                if (unit == null || targetDistance < distance) {
+                    unit = targetUnit;
+                    distance = targetDistance;
+                }
+            }
+        }
+        return unit;
     }
 
     public Station GetClosestStation(Vector2 position) {
@@ -570,7 +588,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     
     public bool HasEnemy() {
         foreach (var enemyFaction in enemyFactions) {
-            if (enemyFaction.stations.Count >= 1) {
+            if (enemyFaction.units.Count > 0) {
                 return true;
             }
         }

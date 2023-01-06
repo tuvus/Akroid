@@ -43,7 +43,8 @@ public class Fleet : MonoBehaviour {
 
     public void DisbandFleet() {
         foreach (Ship ship in ships) {
-            ship.shipAI.AddUnitAICommand(Command.CreateIdleCommand(),Command.CommandAction.Replace);
+            ship.SetIdle();
+            ship.shipAI.ClearCommands();
             ship.fleet = null;
             faction.unitsNotInFleet.Add(ship);
         }
@@ -223,6 +224,14 @@ public class Fleet : MonoBehaviour {
             maxTurretRange = math.max(maxTurretRange, ships[i].GetMaxWeaponRange());
         }
         return maxTurretRange;
+    }
+
+    public bool IsDockedWithStation(Station station) {
+        for (int i = 0; i < ships.Count; i++) {
+            if (ships[i].dockedStation != station)
+                return false;
+        }
+        return true;
     }
 
     public List<Ship> GetAllShips() {
