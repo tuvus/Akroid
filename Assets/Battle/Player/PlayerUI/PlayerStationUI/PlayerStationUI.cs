@@ -42,6 +42,8 @@ public class PlayerStationUI : MonoBehaviour {
 
     public void DisplayStation(Station displayedStation) {
         this.displayedStation = displayedStation;
+        if (displayedStation == null)
+            return;
         stationStatusUI.SetActive(displayedStation.stationType != Station.StationType.None);
         stationConstructionUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && (displayedStation.stationType == Station.StationType.Shipyard || displayedStation.stationType == Station.StationType.FleetCommand));
         stationHangerUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && displayedStation.GetHanger() != null);

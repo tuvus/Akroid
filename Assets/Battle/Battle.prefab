@@ -294,4 +294,4 @@ MonoBehaviour:
   unusedProjectiles: 
   usedMissiles: 
   unusedMissiles: 
-  TimeScale: 1
+  timeScale: 1

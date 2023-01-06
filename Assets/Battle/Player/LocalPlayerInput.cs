@@ -36,7 +36,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected Unit mouseOverUnit;
     protected Unit leftClickedUnit;
     protected Unit displayedUnit;
-    protected Ship rightClickedShip;
+    protected Unit rightClickedUnit;
     protected Unit followUnit;
 
     private int[] timeSteps = new int[] { 0, 1, 2, 5, 10, 15, 20, 25 };
@@ -74,7 +74,7 @@ public class LocalPlayerInput : MonoBehaviour {
     public virtual void ChangeFaction() {
         displayedUnit = null;
         leftClickedUnit = null;
-        rightClickedShip = null;
+        rightClickedUnit = null;
         StopFollowingUnit();
         mouseOverUnit = null;
     }
@@ -165,10 +165,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseDown() {
         secondaryMousePressed = true;
         pastMousePosition = GetMousePosition();
-        if (mouseOverUnit == null)
-            rightClickedShip = null;
-        else if (mouseOverUnit != null && mouseOverUnit.IsShip())
-            rightClickedShip = (Ship)mouseOverUnit;
+        rightClickedUnit = mouseOverUnit;
     }
 
     protected virtual void SecondaryMouseHeld() {
@@ -177,11 +174,16 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
-        if (rightClickedShip != null && rightClickedShip == mouseOverUnit) {
-            if (rightClickedShip != followUnit) {
-                StartFollowingUnit(rightClickedShip);
-            } else {
-                StopFollowingUnit();
+        if (rightClickedUnit != null && rightClickedUnit == mouseOverUnit && !LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+            if (rightClickedUnit.IsShip()) {
+                if (rightClickedUnit != followUnit) {
+                    StartFollowingUnit(rightClickedUnit);
+                } else {
+                    StopFollowingUnit();
+                }
+            } else if (rightClickedUnit.IsStation()) {
+                LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedUnit);
+                rightClickedUnit = null;
             }
         }
     }
@@ -240,7 +242,7 @@ public class LocalPlayerInput : MonoBehaviour {
                 continue;
             }
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.transform.position);
-            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1,targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
+            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
                 unit = targetUnit;
                 distance = tempDistance;
             }

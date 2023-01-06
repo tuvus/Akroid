@@ -85,7 +85,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.SecondaryMouseUp();
         //EndBoxSelection();
         if (maxRightClickDistance < 1) {
-            if (rightClickedShip == null) {
+            if (rightClickedUnit == null) {
                 //CreateShipCommand(GetMouseWorldPosition());
             } else {
                 if (selectedUnits.GetAllShips().Count > 0) {
@@ -149,13 +149,13 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         Vector2 bottomLeft = selectionBox.anchoredPosition - (selectionBox.sizeDelta / 2);
         Vector2 topRight = selectionBox.anchoredPosition + (selectionBox.sizeDelta / 2);
 
-        if (rightClickedShip != null)
-            unitsInSelectionBox.AddUnit(rightClickedShip);
+        if (rightClickedUnit != null)
+            unitsInSelectionBox.AddUnit(rightClickedUnit);
         if (mouseOverUnit != null)
             unitsInSelectionBox.AddUnit(mouseOverUnit);
 
         foreach (Unit unit in BattleManager.Instance.GetAllUnits()) {
-            if (!unit.IsSelectable() || unit == rightClickedShip || unit == mouseOverUnit)
+            if (!unit.IsSelectable() || unit == rightClickedUnit || unit == mouseOverUnit)
                 continue;
             Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.transform.position);
             if (screenPosition.x > bottomLeft.x && screenPosition.x < topRight.x && screenPosition.y > bottomLeft.y && screenPosition.y < topRight.y)

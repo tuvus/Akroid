@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static UnityEngine.UI.CanvasScaler;
 
 public class PlayerUI : MonoBehaviour {
     private LocalPlayerInput localPlayerInput;
@@ -85,20 +86,21 @@ public class PlayerUI : MonoBehaviour {
         if (unit == null || !unit.IsSpawned()) {
             shipStatusUI.DeselectPlayerUnitStatusUI();
             //shipFuelCellsUI.DeleteFuelCellUI();
-            stationUI.SetActive(false);
         } else {
             shipStatusUI.RefreshPlayerUnitStatusUI(unit, unitCount);
-            if (unit.IsStation() && unitCount == 1) {
-                if (!stationUI.activeSelf)
-                    ShowStationUI(true);
-                if (playerStationUI.displayedStation == unit) {
-                    playerStationUI.UpdateStationUI();
-                } else {
-                    playerStationUI.DisplayStation((Station)unit);
-                }
-            } else {
-                stationUI.SetActive(false);
-            }
+        }
+    }
+
+    public void SetDisplayStation(Station station) {
+        if (!stationUI.activeSelf) {
+            ShowStationUI(true);
+            playerStationUI.DisplayStation(station);
+            return;
+        }
+        if (playerStationUI.displayedStation == station) {
+            playerStationUI.UpdateStationUI();
+        } else {
+            playerStationUI.DisplayStation(station);
         }
     }
 
@@ -163,6 +165,8 @@ public class PlayerUI : MonoBehaviour {
         stationUI.SetActive(false);
         CloseAllMenues();
         stationUI.SetActive(shown);
+        if (!shown)
+            playerStationUI.DisplayStation(null);
     }
 
     public void ShowResearchUI(bool shown) {
@@ -202,7 +206,6 @@ public class PlayerUI : MonoBehaviour {
         menueUIZoomIndicators.SetIsOnWithoutNotify(showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(showUnitZoomIndicators);
     }
-
 
     public void ToggleUnitCombatIndicators() {
         showUnitCombatIndicators = !showUnitCombatIndicators;
