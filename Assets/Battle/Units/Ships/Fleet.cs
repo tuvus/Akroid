@@ -76,6 +76,13 @@ public class Fleet : MonoBehaviour {
         }
     }
 
+    public void MergeIntoFleet(Fleet fleet) {
+        for (int i = ships.Count - 1; i >= 0; i--) {
+            fleet.AddShip(ships[i]);
+        }
+        fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+    }
+
     public void UpdateFleet(float deltaTime) {
         position = CalculateFleetCenter();
         size = CalculateFleetSize();
@@ -188,6 +195,15 @@ public class Fleet : MonoBehaviour {
         //    }
         //}
         return targetUnit;
+    }
+
+    public bool HasNearbyEnemyCombatShip() {
+        for (int i = 0; i < enemyUnitsInRange.Count; i++) {
+            if (enemyUnitsInRange[i].IsShip() && ((Ship)enemyUnitsInRange[i]).IsCombatShip()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Vector2 GetPosition() {

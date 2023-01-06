@@ -44,6 +44,18 @@ public class SimulationFactionAI : FactionAI {
     void ManageFleets() {
         for (int i = 0; i < faction.fleets.Count; i++) {
             Fleet fleet = faction.fleets[i];
+            if (fleet.IsFleetIdle() || !fleet.HasNearbyEnemyCombatShip()) {
+                bool merged = false;
+                for (int f = i + 1; f < faction.fleets.Count; f++) {
+                    if ((faction.fleets[f].IsFleetIdle() || !faction.fleets[f].HasNearbyEnemyCombatShip()) && Vector2.Distance(fleet.GetPosition(), faction.fleets[f].GetPosition()) < 1000) {
+                        fleet.MergeIntoFleet(faction.fleets[f]);
+                        merged = true;
+                        break;
+                    }
+                }
+                if (merged)
+                    continue;
+            } 
             if (fleet.IsFleetIdle() && (faction.HasEnemy() || !fleet.IsDockedWithStation(fleetCommand))) {
                 if (fleet.GetAllShips().Count <= 2 || fleet.GetTotalFleetHealth() <= 1000) {
                     List<Ship> shipsInFleet = new List<Ship>(fleet.GetAllShips());
