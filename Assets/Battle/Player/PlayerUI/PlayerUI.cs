@@ -1,12 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static UnityEngine.UI.CanvasScaler;
 
 public class PlayerUI : MonoBehaviour {
     private LocalPlayerInput localPlayerInput;
@@ -14,6 +11,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerUnitStatusUI shipStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [SerializeField] private PlayerCommsManager playerCommsManager;
+    [SerializeField] private PlayerMenueUI playerMenueUI;
     [SerializeField] private PlayerStationUI playerStationUI;
     [SerializeField] private PlayerResearchUI playerResearchUI;
     [SerializeField] private GameObject factionUI;
@@ -21,16 +19,11 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject commandUI;
     [SerializeField] private GameObject controlsListUI;
     [SerializeField] private GameObject menuUI;
-    [SerializeField] private Dropdown menueUIFactionSelect;
-    [SerializeField] private Text timeScaleText;
-    [SerializeField] private Slider menueUITimeScale;
     [SerializeField] private Text factionName;
     [SerializeField] private Text factionCredits;
     [SerializeField] private Text factionScience;
     [SerializeField] private Text command;
     [SerializeField] private CommandClick commandClick;
-    [SerializeField] private Toggle menueUIZoomIndicators;
-    [SerializeField] private Toggle menueUIUnitCombatIndicators;
     [SerializeField] private GameObject victoryUI;
     [SerializeField] private Text victoryTitle;
     [SerializeField] private Text victoryElapsedTime;
@@ -38,9 +31,9 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject researchUI;
 
 
-    bool showUnitZoomIndicators;
-    bool updateUnitZoomIndicators;
-    bool showUnitCombatIndicators;
+    public bool showUnitZoomIndicators;
+    public bool showUnitCombatIndicators;
+    public bool updateUnitZoomIndicators;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         this.localPlayerInput = localPlayerInput;
@@ -50,6 +43,7 @@ public class PlayerUI : MonoBehaviour {
         updateUnitZoomIndicators = true;
         showUnitCombatIndicators = true;
         playerCommsManager.SetupPlayerCommsManager(this);
+        playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
         playerResearchUI.SetupResearchUI(this);
     }
@@ -111,19 +105,7 @@ public class PlayerUI : MonoBehaviour {
     public void ToggleMenueUI() {
         ShowMenueUI(!menuUI.activeSelf);
         if (menuUI.activeSelf) {
-            menueUIFactionSelect.ClearOptions();
-            List<string> factionNames = new List<string>(BattleManager.Instance.GetAllFactions().Count);
-            factionNames.Add("None");
-            for (int i = 0; i < BattleManager.Instance.GetAllFactions().Count; i++) {
-                factionNames.Add(BattleManager.Instance.GetAllFactions()[i].name);
-            }
-            menueUIFactionSelect.AddOptions(factionNames);
-            if (LocalPlayer.Instance.GetFaction() == null)
-                menueUIFactionSelect.SetValueWithoutNotify(0);
-            else
-                menueUIFactionSelect.SetValueWithoutNotify(LocalPlayer.Instance.GetFaction().factionIndex + 1);
-            timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
-            menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
+            playerMenueUI.ShowMenueUI();
         }
     }
 
@@ -131,19 +113,6 @@ public class PlayerUI : MonoBehaviour {
         victoryTitle.text = "Victory \n " + factionName;
         victoryElapsedTime.text = "Time elapsed: " + (int)(time % 60) + " minutes";
         ShowVictoryUI(true);
-    }
-
-    public void ChangeFaction() {
-        if (menueUIFactionSelect.value == 0) {
-            LocalPlayer.Instance.SetupFaction(null);
-        } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != LocalPlayer.Instance.GetFaction().factionIndex) {
-            LocalPlayer.Instance.SetupFaction(BattleManager.Instance.GetAllFactions()[menueUIFactionSelect.value - 1]);
-        }
-    }
-
-    public void UpdateBattleTimeScale() {
-        BattleManager.Instance.SetSimulationTimeScale(menueUITimeScale.value / 10f);
-        timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
     }
 
     public void ShowControlList(bool shown) {
@@ -200,21 +169,20 @@ public class PlayerUI : MonoBehaviour {
         return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || researchUI.activeSelf;
     }
 
+    public bool GetShowUnitZoomIndicators() {
+        return showUnitZoomIndicators;
+    }
+
     public void ToggleUnitZoomIndicators() {
         showUnitZoomIndicators = !showUnitZoomIndicators;
         updateUnitZoomIndicators = true;
-        menueUIZoomIndicators.SetIsOnWithoutNotify(showUnitZoomIndicators);
-        menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(showUnitZoomIndicators);
+        playerMenueUI.UpdateUnitZoomIndicators(showUnitZoomIndicators);
     }
 
     public void ToggleUnitCombatIndicators() {
         showUnitCombatIndicators = !showUnitCombatIndicators;
         updateUnitZoomIndicators = true;
-        menueUIUnitCombatIndicators.SetIsOnWithoutNotify(showUnitCombatIndicators);
-    }
-
-    public bool GetShowUnitZoomIndicators() {
-        return showUnitZoomIndicators;
+        playerMenueUI.UpdateUnitZoomIndicators(showUnitCombatIndicators);
     }
 
     bool UpdateUnitZoomIndicators() {
@@ -243,10 +211,5 @@ public class PlayerUI : MonoBehaviour {
 
     public LocalPlayerInput GetLocalPlayerInput() {
         return localPlayerInput;
-    }
-
-
-    public void QuitSimulation() {
-        SceneManager.LoadScene("Start");
     }
 }
