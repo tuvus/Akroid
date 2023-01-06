@@ -43,6 +43,7 @@ public class Fleet : MonoBehaviour {
 
     public void DisbandFleet() {
         foreach (Ship ship in ships) {
+            ship.shipAI.AddUnitAICommand(Command.CreateIdleCommand(),Command.CommandAction.Replace);
             ship.fleet = null;
             faction.unitsNotInFleet.Add(ship);
         }
