@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : MonoBehaviour, IParticleHolder {
+public class Missile : BattleObject, IParticleHolder {
     public enum MissileType {
         Hermes,
     }
@@ -10,7 +10,6 @@ public class Missile : MonoBehaviour, IParticleHolder {
     private Faction faction;
     private ParticleSystem explodeParticleSystem;
     private ParticleSystem thrustParticleSystem;
-    private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
     public MissileType missileType;
     private MissileLauncher missileLauncher;
@@ -27,8 +26,8 @@ public class Missile : MonoBehaviour, IParticleHolder {
     bool expired;
 
     public void PrespawnMissile(int missileIndex, float particleSpeed) {
+        base.SetupBattleObject();
         explodeParticleSystem = GetComponent<ParticleSystem>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         boxCollider2D = GetComponent<BoxCollider2D>();
         thrustParticleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();
         this.missileIndex = missileIndex;

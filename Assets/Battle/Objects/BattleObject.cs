@@ -8,6 +8,24 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     protected Vector2 position;
     protected SpriteRenderer spriteRenderer;
 
+    /// <summary>
+    /// Sets up the BattleObject with default position and rotation.
+    /// Sets up the size as normal
+    /// </summary>
+    protected void SetupBattleObject() {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        size = SetupSize();
+        transform.position = Vector2.zero;
+        position = transform.position;
+        transform.eulerAngles = new Vector3(0, 0, 0);
+    }
+
+    /// <summary>
+    /// Uses the given positionGiver and rotation to set the position and the rotation of the BattleObject.
+    /// Also sets up the size.
+    /// </summary>
+    /// <param name="positionGiver"></param>
+    /// <param name="rotation"></param>
     protected void SetupBattleObject(BattleManager.PositionGiver positionGiver, float rotation) {
         spriteRenderer = GetComponent<SpriteRenderer>();
         size = SetupSize();

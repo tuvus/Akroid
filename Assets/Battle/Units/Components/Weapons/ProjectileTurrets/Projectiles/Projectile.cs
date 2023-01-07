@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
-public class Projectile : MonoBehaviour, IParticleHolder {
+public class Projectile : BattleObject, IParticleHolder {
     public int projectileIndex { get; private set; }
     private new ParticleSystem particleSystem;
-    private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider2D;
     private Faction faction;
     private float speed;
@@ -18,9 +16,9 @@ public class Projectile : MonoBehaviour, IParticleHolder {
     private bool hit;
 
     public void PrespawnProjectile(int projectileIndex, float particleSpeed) {
+        base.SetupBattleObject();
         particleSystem = GetComponent<ParticleSystem>();
         boxCollider2D = GetComponent<BoxCollider2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
         this.projectileIndex = projectileIndex;
         startingScale = transform.localScale;
         SetParticleSpeed(particleSpeed);
