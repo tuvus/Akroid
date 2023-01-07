@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-public abstract class Unit : BattleObject {
+public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected string unitName;

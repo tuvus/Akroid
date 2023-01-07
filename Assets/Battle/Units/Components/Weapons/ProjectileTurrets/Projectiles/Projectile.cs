@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.ParticleSystem;
 
-public class Projectile : MonoBehaviour {
+public class Projectile : MonoBehaviour, IParticleHolder {
     public int projectileIndex { get; private set; }
     private new ParticleSystem particleSystem;
     private SpriteRenderer spriteRenderer;
