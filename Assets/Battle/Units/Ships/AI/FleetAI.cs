@@ -74,7 +74,7 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Waits for a certain amount of time, Stop until the time is up,  ContinueRemove once finished.
+        //Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
         if (command.commandType == CommandType.Wait) {
             if (newCommand) {
                 currentCommandType = CommandType.Wait;
@@ -87,7 +87,7 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Rotates towards angle, Stop until turned to rotation, ContinueRemove once Finished
+        //Rotates all ships towards angle, Stop until turned to rotation, ContinueRemove once Finished
         if (command.commandType == CommandType.TurnToRotation) {
             if (newCommand) {
                 currentCommandType = CommandType.TurnToRotation;
@@ -232,6 +232,11 @@ public class FleetAI : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Clears all other commands, rotates the ships towards the position 
+    /// and tells them to move toward the position at the same speed in a rotated formation.
+    /// </summary>
+    /// <param name="movePosition">the position to move to</param>
     public void SetFleetMoveCommand(Vector2 movePosition) {
         for (int i = 0; i < fleet.ships.Count; i++) {
             Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();
@@ -241,12 +246,34 @@ public class FleetAI : MonoBehaviour {
         }
     }
 
-    public void SetFleetDockTarget(Station targetStation) {
+    /// <summary>
+    /// Clears all other commands, sets the formation of the ships towards the position 
+    /// and tells them to move toward the position at the same speed in the previous formation.
+    /// </summary>
+    /// <param name="movePosition">the position to move to</param>
+    public void SetFleetMoveFormationCommand(Vector2 movePosition) {
         for (int i = 0; i < fleet.ships.Count; i++) {
-            fleet.ships[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
+            Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();
+            AddFormationCommand(fleet.GetPosition(), Vector2.Angle(fleet.GetPosition(), movePosition));
+            fleet.ships[i].shipAI.AddUnitAICommand(CreateIdleCommand());
+            fleet.ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed));
         }
     }
 
+    /// <summary>
+    /// Clears all other commands and adds a dock command.
+    /// </summary>
+    /// <param name="targetStation"></param>
+    public void SetFleetDockTarget(Station targetStation) {
+        for (int i = 0; i < fleet.ships.Count; i++) {
+            fleet.ships[i].shipAI.AddUnitAICommand(CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
+        }
+    }
+
+    /// <summary>
+    /// Clears all other commands and adds an attack move command towards the position.
+    /// </summary>
+    /// <param name="movePosition">the position to AttackMove to</param>
     public void SetFleetAttackMovePosition(Vector2 movePosition) {
         for (int i = 0; i < fleet.ships.Count; i++) {
             Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();

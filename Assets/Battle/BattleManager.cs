@@ -67,6 +67,10 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets up the battle with only two factions, used for debugging.
+    /// Two factions means better preformance for faster debugging.
+    /// </summary>
     protected virtual void Start() {
         if (quickStart == true) {
             Debug.Log("Seting up test scene");
@@ -80,6 +84,14 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sets up the battle with manual values
+    /// </summary>
+    /// <param name="starCount"></param>
+    /// <param name="asteroidFieldCount"></param>
+    /// <param name="asteroidCountModifier"></param>
+    /// <param name="researchModifier"></param>
+    /// <param name="factionDatas"></param>
     public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, float researchModifier, List<FactionData> factionDatas) {
         if (Instance == null) {
             Instance = this;
@@ -134,6 +146,11 @@ public class BattleManager : MonoBehaviour {
             simulationEnded = true;
     }
 
+    /// <summary>
+    /// Sets up the battle with a CampaignController, doesen't spawn any asteroids or stars.
+    /// Lets the CampaingController set the settings.
+    /// </summary>
+    /// <param name="campaignControler">the given CampaingController</param>
     public void SetupBattle(CampaingController campaignControler) {
         if (Instance == null) {
             Instance = this;

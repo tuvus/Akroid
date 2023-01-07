@@ -295,6 +295,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         DiscoverResearchArea((ResearchAreas)Random.Range(0, 3));
     }
 
+    /// <summary>
+    /// Adds a discovery in the an improvement area in the given research area.
+    /// </summary>
+    /// <param name="researchArea">the given research area to improve</param>
+    /// <param name="free">should the discovery cost science or not?</param>
     public void DiscoverResearchArea(ResearchAreas researchArea, bool free = false) {
         if (!free) {
             if (science < researchCost)
@@ -399,6 +404,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return stations;
     }
 
+    /// <summary>
+    /// Gets the ammount of asteroid fields that are not empty and do not have a freindly station nearby.
+    /// </summary>
+    /// <returns>the available asteroid field count</returns>
     public int GetAvailableAsteroidFieldsCount() {
         int count = 0;
         for (int i = 0; i < BattleManager.Instance.GetAllAsteroidFields().Count; i++) {
@@ -456,6 +465,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return eligibleAsteroidFields;
     }
 
+    /// <summary>
+    /// Gets the closest enemy station to the position or null if there isen't any.
+    /// </summary>
+    /// <param name="position">the given position</param>
+    /// <returns>the closest enemy station to the position</returns>
     public Station GetClosestEnemyStation(Vector2 position) {
         Station station = null;
         float distance = 0;
@@ -474,6 +488,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return station;
     }
 
+    /// <summary>
+    /// Gets the closest enemy unit to the position or null if there isen't any.
+    /// </summary>
+    /// <param name="position">the given position</param>
+    /// <returns>the closest enemy unit to the position</returns>
     public Unit GetClosestEnemyUnit(Vector2 position) {
         Unit unit = null;
         float distance = 0;
@@ -508,6 +527,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return station;
     }
 
+    /// <summary>
+    /// Gets the closest minning station that wants transports to the position
+    /// </summary>
+    /// <param name="position">the given position</param>
+    /// <returns>the closest minning station</returns>
     public MiningStation GetClosestMinningStationWantingTransport(Vector2 position) {
         MiningStation minningStation = null;
         float distance = 0;
@@ -529,6 +553,10 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return minningStation;
     }
 
+    /// <summary>
+    /// Gets the total wanted transports of all the factions minning stations
+    /// </summary>
+    /// <returns>the total wanted transports throughout the faction</returns>
     public int GetTotalWantedTransports() {
         int count = 0;
         for (int i = 0; i < activeMiningStations.Count; i++) {
@@ -539,11 +567,15 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                     count += wantedTransportShips.Value;
                 }
             }
-
         }
         return count;
     }
 
+    /// <summary>
+    /// gets all ships of the given ShipType
+    /// </summary>
+    /// <param name="shipType">the given ShipType</param>
+    /// <returns>all ships of the given ShipiType</returns>
     public int GetShipsOfType(Ship.ShipType shipType) {
         int count = 0;
         for (int i = 0; i < ships.Count; i++) {
@@ -566,6 +598,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return null;
     }
 
+    /// <summary>
+    /// Gets the closest star to the given position
+    /// </summary>
+    /// <param name="position">the given position</param>
+    /// <returns>the closest star</returns>
     public Star GetClosestStar(Vector2 position) {
         Star star = null;
         float distance = 0;
@@ -581,7 +618,11 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         return star;
     }
 
-
+    /// <summary>
+    /// Gets the improvement modifier alligned with the given improvement area
+    /// </summary>
+    /// <param name="improvementArea">the given improvement area</param>
+    /// <returns>the improvement modifier of the area</returns>
     public float GetImprovementModifier(ImprovementAreas improvementArea) {
         return improvementModifiers[(int)improvementArea];
     }

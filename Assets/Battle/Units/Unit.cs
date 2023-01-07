@@ -296,6 +296,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return health < GetMaxHealth();
     }
 
+    /// <summary>
+    /// Repairs the unit and returns the extra ammount that was not used
+    /// </summary>
+    /// <param name="ammount">the ammount to repair</param>
+    /// <returns>the extra ammount not used</returns>
     public int Repair(int ammount) {
         health += ammount;
         if (health > GetMaxHealth()) {
@@ -320,10 +325,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
             shields += generator.GetMaxShieldStrenght();
         }
         return shields;
-    }
-
-    public int GetCost() {
-        return 0;
     }
 
     public int GetFollowDistance() {
