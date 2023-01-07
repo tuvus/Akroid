@@ -218,7 +218,8 @@ public abstract class Unit : BattleObject {
             return;
         Despawn();
         health = 0;
-        destroyParticle.Play(false);
+        if (BattleManager.Instance.GetParticlesShown())
+            destroyParticle.Play(false);
         ActivateColliders(false);
         spriteRenderer.enabled = false;
         for (int i = 0; i < transform.childCount; i++) {
@@ -407,6 +408,12 @@ public abstract class Unit : BattleObject {
     public virtual void SetParticleSpeed(float speed) {
         var main = destroyParticle.main;
         main.simulationSpeed = speed;
+    }
+
+    public virtual void ShowParticles(bool shown) {
+        if (!shown && destroyParticle.IsAlive()) {
+            destroyParticle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]

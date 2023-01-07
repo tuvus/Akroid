@@ -34,6 +34,7 @@ public class PlayerUI : MonoBehaviour {
     public bool showUnitZoomIndicators;
     public bool showUnitCombatIndicators;
     public bool updateUnitZoomIndicators;
+    public bool particles;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         this.localPlayerInput = localPlayerInput;
@@ -42,6 +43,7 @@ public class PlayerUI : MonoBehaviour {
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
         showUnitCombatIndicators = true;
+        particles = true;
         playerCommsManager.SetupPlayerCommsManager(this);
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
@@ -106,6 +108,14 @@ public class PlayerUI : MonoBehaviour {
         ShowMenueUI(!menuUI.activeSelf);
         if (menuUI.activeSelf) {
             playerMenueUI.ShowMenueUI();
+        }
+    }
+
+    public void SetParticles(bool shown) {
+        if (shown != particles) {
+            particles = shown;
+            BattleManager.Instance.ShowParticles(shown);
+            return;
         }
     }
 
@@ -182,7 +192,7 @@ public class PlayerUI : MonoBehaviour {
     public void ToggleUnitCombatIndicators() {
         showUnitCombatIndicators = !showUnitCombatIndicators;
         updateUnitZoomIndicators = true;
-        playerMenueUI.UpdateUnitZoomIndicators(showUnitCombatIndicators);
+        playerMenueUI.UpdateUnitCombatIndicators(showUnitCombatIndicators);
     }
 
     bool UpdateUnitZoomIndicators() {

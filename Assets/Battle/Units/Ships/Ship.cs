@@ -477,6 +477,15 @@ public class Ship : Unit {
         }
     }
 
+    public override void ShowParticles(bool shown) {
+        base.ShowParticles(shown);
+        if (thrusting) {
+            foreach (var thruster in thrusters) {
+                thruster.ShowParticles(shown);
+            }
+        }
+    }
+
     [ContextMenu("GetShipThrust")]
     public void GetShipThrust() {
         float thrust = 0;

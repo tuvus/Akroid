@@ -439,6 +439,10 @@ public class BattleManager : MonoBehaviour {
         SetSimulationTimeScale(timeScale);
     }
 
+    /// <summary>
+    /// Sets the playbackSpeed of all particles in the game.
+    /// </summary>
+    /// <param name="time"></param>
     public void SetSimulationTimeScale(float time) {
         timeScale = time;
         for (int i = 0; i < units.Count; i++) {
@@ -450,6 +454,31 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < missiles.Count; i++) {
             missiles[i].SetParticleSpeed(time);
         }
+    }
+
+    /// <summary>
+    /// Determines wether or not the particles in the game are rendered or not.
+    /// Will not be called with the same shown value twice in a row.
+    /// </summary>
+    /// <param name="shown"></param>
+    public void ShowParticles(bool shown) {
+        for (int i = 0; i < units.Count; i++) {
+            units[i].ShowParticles(shown);
+        }
+        for (int i = 0; i < projectiles.Count; i++) {
+            projectiles[i].ShowParticles(shown);
+        }
+        for (int i = 0; i < missiles.Count; i++) {
+            missiles[i].ShowParticles(shown);
+        }
+    }
+
+    /// <summary>
+    /// For particle emmiters to figure out if they should emit when begging their emissions.
+    /// </summary>
+    /// <returns>wether or not the particles should be shown</returns>
+    public bool GetParticlesShown() {
+        return LocalPlayer.Instance.GetPlayerUI().particles;
     }
 
     public double GetRealTime() {

@@ -51,7 +51,8 @@ public class Missile : MonoBehaviour {
         this.retarget = retarget;
         hit = false;
         expired = false;
-        thrustParticleSystem.Play();
+        if (BattleManager.Instance.GetParticlesShown())
+            thrustParticleSystem.Play();
         distance = 0;
         Activate(true);
     }
@@ -78,14 +79,14 @@ public class Missile : MonoBehaviour {
                 if (target == null)
                     retarget = false;
             }
-                
+
             MoveMissile(deltaTime);
         }
     }
 
     void RotateMissile(float deltaTime) {
         Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
-        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position,targetPosition));
+        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position, targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - transform.eulerAngles.z);
         float turnAmmont = turnSpeed * deltaTime;
         if (Mathf.Abs(angle) < turnAmmont) {
@@ -136,9 +137,10 @@ public class Missile : MonoBehaviour {
         transform.eulerAngles = Vector3.zero;
         spriteRenderer.enabled = false;
         thrustParticleSystem.Stop(false);
-        explodeParticleSystem.Play(false);
+        if (BattleManager.Instance.GetParticlesShown())
+            explodeParticleSystem.Play(false);
     }
-    
+
 
     public void Expire() {
         thrustParticleSystem.Stop();
@@ -148,10 +150,8 @@ public class Missile : MonoBehaviour {
     }
 
     public void RemoveMissile() {
-        thrustParticleSystem.Stop(false);
-        thrustParticleSystem.Clear();
-        explodeParticleSystem.Stop(false);
-        explodeParticleSystem.Clear();
+        thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        explodeParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         Activate(false);
     }
 
@@ -170,5 +170,15 @@ public class Missile : MonoBehaviour {
         main.simulationSpeed = speed;
         main = thrustParticleSystem.main;
         main.simulationSpeed = speed;
+    }
+
+    public void ShowParticles(bool shown) {
+        if (hit && !shown)
+            explodeParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        if (!shown)
+            thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        else if (spriteRenderer.enabled)
+            thrustParticleSystem.Play();
     }
 }
