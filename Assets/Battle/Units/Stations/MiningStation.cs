@@ -27,11 +27,11 @@ public class MiningStation : Station {
 
         for (int i = 0; i < eligibleAsteroidFields.Count; i++) {
             Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position, eligibleAsteroidFields[i].GetSize() + GetSize() + 10);
-            Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrament(new BattleManager.PositionGiver(targetCenterPosition, positionGiver.minDistance, positionGiver.maxDistance, positionGiver.incrementDistance, positionGiver.distanceFromObject, positionGiver.numberOfTries), this);
+            Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrement(new BattleManager.PositionGiver(targetCenterPosition, positionGiver.minDistance, positionGiver.maxDistance, positionGiver.incrementDistance, positionGiver.distanceFromObject, positionGiver.numberOfTries), this);
             if (targetLocationAsteroidField.HasValue)
                 return targetLocationAsteroidField.Value;
         }
-        Vector2? targetLocation = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetLocation = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetLocation.HasValue)
             return targetLocation.Value;
 

@@ -2,26 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AsteroidField : BattleObject, IPositionConfirmer {
+public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public List<Asteroid> asteroids;
     public float totalResources;
 
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
-        base.SetupBattleObject(positionGiver, 0);
-    }
-
-    protected override float SetupSize() {
-        float size = 0;
+        SetupObjectGroup(asteroids);
+        UpdateObjectGroup();
         for (int i = 0; i < asteroids.Count; i++) {
-            size = Mathf.Max(size, Vector2.Distance(position, asteroids[i].GetPosition()));
+            asteroids[i].AdjustPosition(-GetPosition());
         }
-        return size;
+        SetPosition(GetSetupPosition(positionGiver));
+        transform.position = GetPosition();
     }
 
-    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+    private Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         return positionGiver.position;
@@ -29,22 +27,22 @@ public class AsteroidField : BattleObject, IPositionConfirmer {
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.GetAllStars()) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + size + star.GetSize()) {
+            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + GetSize() + star.GetSize()) {
                 return false;
             }
         }
         foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
-            if (Vector2.Distance(position, asteroidField.position) <= minDistanceFromObject + size + asteroidField.size) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + GetSize() + asteroidField.GetSize()) {
                 return false;
             }
         }
         foreach (var station in BattleManager.Instance.GetAllStations()) {
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + size + station.GetSize()) {
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + GetSize() + station.GetSize()) {
                 return false;
             }
         }
         foreach (var planet in BattleManager.Instance.planets) {
-            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
                 return false;
             }
         }

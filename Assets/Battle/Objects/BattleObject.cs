@@ -4,9 +4,10 @@ using UnityEngine;
 
 public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
 
-    [SerializeField] protected float size;
+    [SerializeField] float size;
     protected Vector2 position;
     protected SpriteRenderer spriteRenderer;
+    //Transform sizeIndicator;
 
     /// <summary>
     /// Sets up the BattleObject with default position and rotation.
@@ -14,10 +15,9 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// </summary>
     protected void SetupBattleObject() {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        size = SetupSize();
-        transform.position = Vector2.zero;
         position = transform.position;
-        transform.eulerAngles = new Vector3(0, 0, 0);
+        //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
+        SetSize(SetupSize());
     }
 
     /// <summary>
@@ -28,14 +28,20 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// <param name="rotation"></param>
     protected void SetupBattleObject(BattleManager.PositionGiver positionGiver, float rotation) {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        size = SetupSize();
+        transform.eulerAngles = new Vector3(0, 0, rotation);
+        //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
+        SetSize(SetupSize());
         transform.position = GetSetupPosition(positionGiver);
         position = transform.position;
-        transform.eulerAngles = new Vector3(0, 0, rotation);
     }
 
     protected virtual float SetupSize() {
         return GetSpriteSize();
+    }
+
+    protected void SetSize(float newSize) {
+        size = newSize;
+        //sizeIndicator.localScale = new Vector3(GetSize() / transform.localScale.x * 2, GetSize() / transform.localScale.y * 2, 1);
     }
 
     protected virtual Vector2 GetSetupPosition(BattleManager.PositionGiver position) {

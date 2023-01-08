@@ -74,13 +74,13 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return base.SetupSize() * 6 / 10;
+        return base.SetupSize() * 7 / 10;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         return positionGiver.position;
@@ -88,17 +88,17 @@ public class Station : Unit, IPositionConfirmer {
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.stars) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + star.GetSize() + size) {
+            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + star.GetSize() + GetSize()) {
                 return false;
             }
         }
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + size) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + GetSize()) {
                 return false;
             }
         }
         foreach (var planet in BattleManager.Instance.planets) {
-            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
                 return false;
             }
         }
@@ -107,7 +107,7 @@ public class Station : Unit, IPositionConfirmer {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(station.faction))
                 enemyBonus = GetMaxWeaponRange() * 2;
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.size + size) {
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.GetSize() + GetSize()) {
                 return false;
             }
         }
@@ -116,7 +116,7 @@ public class Station : Unit, IPositionConfirmer {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(stationBlueprint.faction))
                 enemyBonus = GetMaxWeaponRange() * 2;
-            if (Vector2.Distance(position, stationBlueprint.GetPosition()) <= minDistanceFromObject + enemyBonus + stationBlueprint.size + size) {
+            if (Vector2.Distance(position, stationBlueprint.GetPosition()) <= minDistanceFromObject + enemyBonus + stationBlueprint.GetSize() + GetSize()) {
                 return false;
             }
         }

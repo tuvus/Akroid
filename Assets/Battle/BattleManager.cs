@@ -211,7 +211,7 @@ public class BattleManager : MonoBehaviour {
     /// <param name="isCenterObject">Is the centerLocation on a station or asteroid?</param>
     /// <param name="tyCount">The ammount of times to try for each incrament</param>
     /// <returns></returns>
-    public Vector2? FindFreeLocationIncrament(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
+    public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
         float distance = positionGiver.minDistance;
         while (true) {
             Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance, distance + positionGiver.incrementDistance);
@@ -283,7 +283,7 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
-            float size = Random.Range(2f, 20f);
+            float size = Random.Range(8f, 20f);
             newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.asteroids.Add(newAsteroid);
         }
@@ -557,5 +557,9 @@ public class BattleManager : MonoBehaviour {
 
     public Transform GetMissileTransform() {
         return transform.GetChild(5);
+    }
+
+    public static GameObject GetSizeIndicatorPrefab() {
+        return Resources.Load<GameObject>("Prefabs/SizeIndicator");
     }
 }

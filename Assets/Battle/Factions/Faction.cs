@@ -6,8 +6,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
-public class Faction : MonoBehaviour, IPositionConfirmer {
-    public Vector2 factionPosition;
+public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [SerializeField] public new string name { get; private set; }
@@ -54,8 +53,6 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
-
-    public float factionUnitsSize;
 
     public struct FactionData {
         public Type factionAI;
@@ -108,12 +105,13 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     }
 
     public void SetUpFaction(int factionIndex, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
-        if (targetPosition.HasValue)
-            factionPosition = targetPosition.Value;
-        else
-            factionPosition = Vector2.zero;
         units = new List<Unit>((factionData.ships + factionData.stations) * 5);
+        base.SetupObjectGroup(units);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        if (targetPosition.HasValue)
+            SetPosition(targetPosition.Value);
+        else
+            SetPosition(Vector2.zero);
         unitsNotInFleet = new List<Unit>((factionData.ships + factionData.stations) * 5);
         ships = new List<Ship>(factionData.ships * 5);
         fleets = new List<Fleet>(10);
@@ -147,9 +145,9 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", factionPosition, Random.Range(0, 360)));
+            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", factionPosition, Random.Range(0, 360))).GetComponent<MiningStation>();
+                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -162,6 +160,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
             else
                 BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
+        UpdateObjectGroup(true);
     }
 
     public void AddEnemyFaction(Faction faction) {
@@ -171,33 +170,36 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         }
     }
 
+    public void AddUnit(Unit unit) {
+        units.Add(unit);
+        AddBattleObject(unit);
+        unitsNotInFleet.Add(unit);
+    }
+
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
+        RemoveBattleObject(unit);
         unitsNotInFleet.Remove(unit);
     }
 
     public void AddShip(Ship ship) {
+        AddUnit(ship);
         ships.Add(ship);
-        units.Add(ship);
-        unitsNotInFleet.Add(ship);
     }
 
     public void RemoveShip(Ship ship) {
-        units.Remove(ship);
+        RemoveUnit(ship);
         ships.Remove(ship);
-        unitsNotInFleet.Remove(ship);
     }
 
     public void AddStation(Station station) {
+        AddUnit(station);
         stations.Add(station);
-        units.Add(station);
-        unitsNotInFleet.Add(station);
     }
 
     public void RemoveStation(Station station) {
-        units.Remove(station);
+        RemoveUnit(station);
         stations.Remove(station);
-        unitsNotInFleet.Remove(station);
     }
 
     public void AddStationBlueprint(Station station) {
@@ -259,7 +261,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.GetAllStars()) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + star.GetSize()) {
+            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + star.GetSize()) {
                 return false;
             }
         }
@@ -271,7 +273,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
         foreach (var faction in BattleManager.Instance.GetAllFactions()) {
             if (faction == this)
                 continue;
-            if (Vector2.Distance(position, faction.factionPosition) <= minDistanceFromObject + 5000) {
+            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject + 5000) {
                 return false;
             }
         }
@@ -280,7 +282,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
 
     public void UpdateFaction(float deltaTime) {
         factionAI.UpdateFactionAI(deltaTime);
-        UpdateFactionTotalUnitSize();
+        UpdateObjectGroup(true);
     }
 
     public void UpdateFleets(float deltaTime) {
@@ -370,16 +372,6 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
                     UpdateUnitWeaponRanges();
                 }
                 break;
-        }
-    }
-
-    public void UpdateFactionTotalUnitSize() {
-        factionUnitsSize = 0;
-        for (int i = 0; i < stations.Count; i++) {
-            factionUnitsSize = Mathf.Max(factionUnitsSize, Vector2.Distance(factionPosition, stations[i].GetPosition()) + stations[i].GetSize());
-        }
-        for (int i = 0; i < ships.Count; i++) {
-            factionUnitsSize = Mathf.Max(factionUnitsSize, Vector2.Distance(factionPosition, ships[i].GetPosition()) + ships[i].GetSize());
         }
     }
 
@@ -626,7 +618,7 @@ public class Faction : MonoBehaviour, IPositionConfirmer {
     public float GetImprovementModifier(ImprovementAreas improvementArea) {
         return improvementModifiers[(int)improvementArea];
     }
-    
+
     public bool HasEnemy() {
         foreach (var enemyFaction in enemyFactions) {
             if (enemyFaction.units.Count > 0) {

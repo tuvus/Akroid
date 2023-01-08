@@ -23,7 +23,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         }
     }
 
-    public void SetupAsteroid(AsteroidField asteroidField,BattleManager.PositionGiver positionGiver, AsteroidData asteroidData) {
+    public void SetupAsteroid(AsteroidField asteroidField, BattleManager.PositionGiver positionGiver, AsteroidData asteroidData) {
         transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
         this.asteroidField = asteroidField;
         base.SetupBattleObject(positionGiver, asteroidData.rotation);
@@ -31,14 +31,17 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;
-        size = GetSpriteSize();
         this.position = transform.position;
         float greyColor = Random.Range(0.3f, 0.7f);
-        spriteRenderer.color = new Color(greyColor, greyColor, greyColor,1);
+        spriteRenderer.color = new Color(greyColor, greyColor, greyColor, 1);
+    }
+
+    protected override float SetupSize() {
+        return GetSpriteSize() * transform.localScale.x;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         else
@@ -48,13 +51,12 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var asteroid in asteroidField.asteroids) {
             float dist = Vector2.Distance(position, asteroid.position);
-            if (dist <= minDistanceFromObject + size + asteroid.GetSize()) {
+            if (dist <= minDistanceFromObject + GetSize() + asteroid.GetSize()) {
                 return false;
             }
         }
         return true;
     }
-
 
     /// <summary>
     /// Returns the ammount mined.
@@ -75,5 +77,14 @@ public class Asteroid : BattleObject, IPositionConfirmer {
 
     public bool HasResources() {
         return resources > 0;
+    }
+
+    public void AdjustPosition(Vector2 position) {
+        transform.position += (Vector3)position;
+        this.position = transform.position;
+    }
+
+    public override float GetSpriteSize() {
+        return spriteRenderer.sprite.bounds.size.x / 2;
     }
 }

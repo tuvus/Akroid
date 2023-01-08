@@ -126,7 +126,7 @@ public class Ship : Unit {
         }
         SetupThrusters();
         shipAI.SetupShipAI(this);
-        mass = size * 100;
+        mass = GetSize() * 100;
         Spawn();
         shipAction = ShipAction.Move;
         SetIdle();

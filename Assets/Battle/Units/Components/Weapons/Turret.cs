@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
-public class Turret : MonoBehaviour {
+public class Turret : BattleObject {
     public enum TargetingBehaviors {
         closest = 1,
         strongest = 2,
@@ -37,6 +37,7 @@ public class Turret : MonoBehaviour {
     private bool hibernating;
 
     public virtual void SetupTurret(Unit unit) {
+        base.SetupBattleObject();
         this.unit = unit;
         spriteRenderer = GetComponent<SpriteRenderer>();
         targetRotation = startRotation;

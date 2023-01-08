@@ -41,7 +41,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         return positionGiver.position;
@@ -49,17 +49,17 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.stars) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + star.GetSize() + size) {
+            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + star.GetSize() + GetSize()) {
                 return false;
             }
         }
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + size) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + GetSize()) {
                 return false;
             }
         }
         foreach (var station in BattleManager.Instance.stations) {
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + size) {
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + GetSize()) {
                 return false;
             }
         }

@@ -2,33 +2,33 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class Star : MonoBehaviour, IPositionConfirmer {
-    SpriteRenderer spriteRenderer;
+public class Star : BattleObject, IPositionConfirmer {
     SpriteRenderer glareRenderer;
-    public Vector2 position;
-    [SerializeField] float size;
     Color color;
     float targetBrightness;
     float brightnessSpeed;
 
     public void SetupStar(BattleManager.PositionGiver positionGiver) {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        float scale = UnityEngine.Random.Range(10, 50);
+        transform.localScale = new Vector2(scale, scale);
+        base.SetupBattleObject(positionGiver, UnityEngine.Random.Range(0, 360));
         glareRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         spriteRenderer.color = color;
         glareRenderer.color = color;
-        transform.eulerAngles = new Vector3(0, 0, UnityEngine.Random.Range(0, 360));
-        float scale = UnityEngine.Random.Range(10, 50);
-        transform.localScale = new Vector2(scale, scale);
-        size = GetSpriteSize() * scale;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrament(positionGiver, this);
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             transform.position = targetPosition.Value;
         else
             transform.position = positionGiver.position;
         this.position = transform.position;
         RandomiseGlareTarget();
+    }
+
+    protected override float SetupSize() {
+        return GetSpriteSize() * transform.localScale.x;
     }
 
     public void UpdateStar(float deltaTime) {
@@ -58,34 +58,24 @@ public class Star : MonoBehaviour, IPositionConfirmer {
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.stars) {
             float dist = Vector2.Distance(position, star.position);
-            if (dist <= minDistanceFromObject + size + star.GetSize()) {
+            if (dist <= minDistanceFromObject + GetSize() + star.GetSize()) {
                 return false;
             }
         }
         foreach (var planet in BattleManager.Instance.planets) {
-            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + size) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
                 return false;
             }
         }
         foreach (var station in BattleManager.Instance.stations) {
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + size) {
+            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + GetSize()) {
                 return false;
             }
         }
         return true;
     }
 
-    public float GetSpriteSize() {
-        return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2;
+    public override float GetSpriteSize() {
+        return spriteRenderer.sprite.bounds.size.x / 2;
     }
-
-    public Vector2 GetPosition() {
-        return position;
-    }
-    public float GetSize() {
-        return size;
-    }
-
 }

@@ -14,7 +14,7 @@ public class MiningStationAI : StationAI {
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
         } else {
-            SetupWantedTrasports(station.faction.factionPosition);
+            SetupWantedTrasports(station.faction.GetPosition());
         }
     }
 

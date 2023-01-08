@@ -54,7 +54,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
             shieldGenerator.SetupShieldGenerator(this);
         unitSelection.SetupSelection(this);
         SetParticleSpeed(particleSpeed);
-        followDist = (int)(size * 2);
+        followDist = (int)(GetSize() * 2);
     }
 
     public void SetupWeaponRanges() {
@@ -85,7 +85,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
         foreach (var enemyFaction in faction.enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
+            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > maxWeaponRange * 2 + enemyFaction.GetSize())
                 continue;
             for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
                 FindUnit(enemyFaction.units[i]);

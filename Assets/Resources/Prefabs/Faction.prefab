@@ -79,10 +79,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd31a442cc04f342b1fe2420f95140d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  factionPosition: {x: 0, y: 0}
+  battleObjects: []
+  position: {x: 0, y: 0}
+  size: 0
   factionAI: {fileID: 0}
   commManager: {fileID: 0}
-  factionUnitsSize: 0
 --- !u!114 &9073843244415287113
 MonoBehaviour:
   m_ObjectHideFlags: 0

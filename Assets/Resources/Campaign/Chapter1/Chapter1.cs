@@ -34,21 +34,21 @@ public class Chapter1 : CampaingController {
         playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "PlayerFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
+            battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.factionPosition, Random.Range(0, 360), false));
+        playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.GetPosition(), Random.Range(0, 360), false));
 
         otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "OtherMiningFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAteroidField(new PositionGiver(otherMiningFaction.factionPosition, 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
+            battleManager.CreateNewAteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        otherMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMiningFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", otherMiningFaction.factionPosition, Random.Range(0, 360), true));
+        otherMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMiningFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", otherMiningFaction.GetPosition(), Random.Range(0, 360), true));
         otherMiningStation.BuildShip(Ship.ShipClass.Transport);
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "PlanetFaction", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.factionPosition), (long)Random.Range(500, 600) * 100000000);
+        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.GetPosition()), (long)Random.Range(500, 600) * 100000000);
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
         tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, GetPathToChapterFolder() + "/TradeStation", "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 300), 0, 1000, 30, 300, 3));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
@@ -56,11 +56,11 @@ public class Chapter1 : CampaingController {
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
 
         shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "ShipyardFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Station.StationType.Shipyard, "Shipyard", shipyardFaction.factionPosition, Random.Range(0, 360)));
+        shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Station.StationType.Shipyard, "Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
 
         researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("ResearchFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
-        researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, GetPathToChapterFolder() + "/ResearchStation", "ResearchStation", researchFaction.factionPosition, Random.Range(0, 360)));
+        researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, GetPathToChapterFolder() + "/ResearchStation", "ResearchStation", researchFaction.GetPosition(), Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);

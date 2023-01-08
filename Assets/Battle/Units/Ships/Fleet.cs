@@ -5,14 +5,11 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-public class Fleet : MonoBehaviour {
+public class Fleet : ObjectGroup<Ship> {
     Faction faction;
     public FleetAI FleetAI { get; private set; }
     string fleetName;
     public List<Ship> ships;
-    protected Vector2 position;
-    protected float size;
-    protected float maxSize;
     public float minFleetSpeed { get; private set; }
     public float maxWeaponRange { get; private set; }
 
@@ -30,13 +27,11 @@ public class Fleet : MonoBehaviour {
         for (int i = 0; i < ships.Count; i++) {
             AddShip(ships[i], false);
         }
+        SetupObjectGroup(ships);
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
         minFleetSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
-        position = CalculateFleetCenter();
-        size = CalculateFleetSize();
-        maxSize = calculateFleetMaxSize();
         FleetAI = GetComponent<FleetAI>();
         FleetAI.SetupFleetAI(this);
     }
@@ -54,6 +49,7 @@ public class Fleet : MonoBehaviour {
 
     public void AddShip(Ship ship, bool setMinSpeed = true) {
         ships.Add(ship);
+        AddBattleObject(ship);
         if (ship.fleet != null) {
             ship.fleet.RemoveShip(ship);
         }
@@ -66,6 +62,7 @@ public class Fleet : MonoBehaviour {
 
     public void RemoveShip(Ship ship) {
         ships.Remove(ship);
+        RemoveBattleObject(ship);
         ship.fleet = null;
         faction.unitsNotInFleet.Add(ship);
         if (ships.Count == 0) {
@@ -84,50 +81,33 @@ public class Fleet : MonoBehaviour {
     }
 
     public void UpdateFleet(float deltaTime) {
-        position = CalculateFleetCenter();
-        size = CalculateFleetSize();
-        maxSize = calculateFleetMaxSize();
+        UpdateObjectGroup();
         FindEnemies();
         FleetAI.UpdateAI(deltaTime);
+        transform.position = GetPosition();
     }
 
-    Vector2 CalculateFleetCenter() {
-        Vector2 sum = ships[0].GetPosition();
-        for (int i = 1; i < ships.Count; i++) {
-            sum += ships[i].GetPosition();
-        }
-        return sum / ships.Count;
-    }
-
-    float CalculateFleetSize() {
-        float size = ships[0].GetSize();
-        for (int i = 1; i < ships.Count; i++) {
-            size = Math.Max(size, Vector2.Distance(GetPosition(), ships[i].GetPosition()) + ships[i].GetSize());
-        }
-        return size;
-    }
-
-    float calculateFleetMaxSize() {
-        float maxSize = 0;
-        for (int i = 0; i < ships.Count; i++) {
-            maxSize = Math.Max(maxSize, Vector2.Distance(GetPosition(), ships[i].GetPosition()) + ships[i].GetSize());
-        }
-        return maxSize;
-    }
+    //Vector2 CalculateFleetCenter() {
+    //    Vector2 sum = ships[0].GetPosition();
+    //    for (int i = 1; i < ships.Count; i++) {
+    //        sum += ships[i].GetPosition();
+    //    }
+    //    return sum / ships.Count;
+    //}
 
     void FindEnemies() {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
         foreach (var enemyFaction in faction.enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.factionPosition) > GetMaxSize() + maxWeaponRange * 2 + enemyFaction.factionUnitsSize)
+            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > GetSize() + maxWeaponRange * 2 + enemyFaction.GetSize())
                 continue;
             for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
                 FindUnit(enemyFaction.unitsNotInFleet[i]);
             }
             for (int i = 0; i < enemyFaction.fleets.Count; i++) {
                 Fleet targetFleet = enemyFaction.fleets[i];
-                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + GetMaxSize() + targetFleet.GetSize()) {
+                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + GetSize() + targetFleet.GetSize()) {
                     for (int f = 0; f < targetFleet.ships.Count; f++) {
                         FindUnit(targetFleet.ships[f]);
                     }
@@ -141,7 +121,7 @@ public class Fleet : MonoBehaviour {
         if (targetUnit == null || !targetUnit.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
-        if (distance <= maxWeaponRange * 2 + GetMaxSize() + targetUnit.GetSize()) {
+        if (distance <= maxWeaponRange * 2 + GetSize() + targetUnit.GetSize()) {
             for (int f = 0; f < enemyUnitsInRangeDistance.Count; f++) {
                 if (enemyUnitsInRangeDistance[f] >= distance) {
                     enemyUnitsInRangeDistance.Insert(f, distance);
@@ -204,18 +184,6 @@ public class Fleet : MonoBehaviour {
             }
         }
         return false;
-    }
-
-    public Vector2 GetPosition() {
-        return position;
-    }
-
-    public float GetSize() {
-        return size;
-    }
-
-    public float GetMaxSize() {
-        return maxSize;
     }
 
     public float GetMinShipSpeed() {

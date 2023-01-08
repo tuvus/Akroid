@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bed19c6025c5347a8f0e908136d8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ships: []
   maxDockSpace: 20
   dockSpace: 0
 --- !u!1 &3808216882477336809
@@ -94,7 +93,7 @@ MonoBehaviour:
   maxCargoBays: 30
   cargoBaySize: 10000
   cargoBayTypes: 
-  cargoBays: []
+  cargoBays: 
 --- !u!1 &5959528503276961870
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,7 +308,7 @@ GameObject:
   m_Layer: 6
   m_Name: DefenceStation
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 2800000, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
