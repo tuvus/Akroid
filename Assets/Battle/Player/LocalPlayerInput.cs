@@ -179,11 +179,11 @@ public class LocalPlayerInput : MonoBehaviour {
         if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
             if (rightClickedUnit != null && rightClickedUnit == mouseOverUnit) {
                 if (rightClickedUnit.IsShip()) {
-                    if (rightClickedUnit != followUnit) {
-                        StartFollowingUnit(rightClickedUnit);
-                    } else {
-                        StopFollowingUnit();
-                    }
+                    //if (rightClickedUnit != followUnit) {
+                    //    StartFollowingUnit(rightClickedUnit);
+                    //} else {
+                    //    StopFollowingUnit();
+                    //}
                 } else if (rightClickedUnit.IsStation()) {
                     LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedUnit);
                     rightClickedUnit = null;
