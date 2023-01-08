@@ -8,9 +8,10 @@ public class Missile : BattleObject, IParticleHolder {
     }
     public int missileIndex { get; private set; }
     private Faction faction;
-    private ParticleSystem explodeParticleSystem;
-    private ParticleSystem thrustParticleSystem;
-    private BoxCollider2D boxCollider2D;
+    [SerializeField] private SpriteRenderer highlight;
+    [SerializeField] private ParticleSystem explodeParticleSystem;
+    [SerializeField] private ParticleSystem thrustParticleSystem;
+    [SerializeField] private BoxCollider2D boxCollider2D;
     public MissileType missileType;
     private MissileLauncher missileLauncher;
     private Unit target;
@@ -27,11 +28,9 @@ public class Missile : BattleObject, IParticleHolder {
 
     public void PrespawnMissile(int missileIndex, float particleSpeed) {
         base.SetupBattleObject();
-        explodeParticleSystem = GetComponent<ParticleSystem>();
-        boxCollider2D = GetComponent<BoxCollider2D>();
-        thrustParticleSystem = transform.GetChild(0).GetComponent<ParticleSystem>();
         this.missileIndex = missileIndex;
         SetParticleSpeed(particleSpeed);
+        highlight.enabled = false;
         Activate(false);
     }
 
@@ -53,6 +52,7 @@ public class Missile : BattleObject, IParticleHolder {
         if (BattleManager.Instance.GetParticlesShown())
             thrustParticleSystem.Play();
         distance = 0;
+        highlight.enabled = true;
         Activate(true);
     }
 
@@ -133,6 +133,7 @@ public class Missile : BattleObject, IParticleHolder {
 
     public void Explode() {
         hit = true;
+        highlight.enabled = false;
         transform.eulerAngles = Vector3.zero;
         spriteRenderer.enabled = false;
         thrustParticleSystem.Stop(false);
@@ -146,6 +147,7 @@ public class Missile : BattleObject, IParticleHolder {
         spriteRenderer.enabled = false;
         expired = true;
         boxCollider2D.enabled = false;
+        highlight.enabled = false;
     }
 
     public void RemoveMissile() {

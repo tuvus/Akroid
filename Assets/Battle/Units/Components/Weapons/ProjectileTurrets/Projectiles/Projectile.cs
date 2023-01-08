@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Projectile : BattleObject, IParticleHolder {
     public int projectileIndex { get; private set; }
-    private new ParticleSystem particleSystem;
-    private BoxCollider2D boxCollider2D;
+    [SerializeField] private SpriteRenderer highlight;
+    [SerializeField] private new ParticleSystem particleSystem;
+    [SerializeField] private BoxCollider2D boxCollider2D;
     private Faction faction;
     private float speed;
     private int damage;
@@ -17,11 +18,10 @@ public class Projectile : BattleObject, IParticleHolder {
 
     public void PrespawnProjectile(int projectileIndex, float particleSpeed) {
         base.SetupBattleObject();
-        particleSystem = GetComponent<ParticleSystem>();
-        boxCollider2D = GetComponent<BoxCollider2D>();
         this.projectileIndex = projectileIndex;
         startingScale = transform.localScale;
         SetParticleSpeed(particleSpeed);
+        highlight.enabled = false;
         Activate(false);
     }
 
@@ -39,6 +39,7 @@ public class Projectile : BattleObject, IParticleHolder {
         transform.localScale *= scale;
         distance = 0;
         hit = false;
+        highlight.enabled = true;
         Activate(true);
     }
 
@@ -83,6 +84,7 @@ public class Projectile : BattleObject, IParticleHolder {
 
     public void Explode() {
         hit = true;
+        highlight.enabled = false;
         transform.position = new Vector3(transform.position.x, transform.position.y, 10);
         transform.localScale = new Vector2(.5f, .5f);
         transform.rotation.eulerAngles.Set(0, 0, 0);
@@ -106,6 +108,7 @@ public class Projectile : BattleObject, IParticleHolder {
         transform.localScale = startingScale;
         particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         hit = false;
+        highlight.enabled = false;
         Activate(false);
     }
 

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour {
 
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer startHighlight;
+    [SerializeField] private SpriteRenderer endHighlight;
     LaserTurret laserTurret;
     bool fireing;
 
@@ -18,7 +20,6 @@ public class Laser : MonoBehaviour {
     float extraDamage;
 
     public void SetLaser(LaserTurret laserTurret, float offset, float laserSize) {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         transform.localScale = new Vector2(laserSize, 1);
         this.translateAmount = offset;
         this.laserTurret = laserTurret;
@@ -28,6 +29,10 @@ public class Laser : MonoBehaviour {
         fadeTime = 0;
 
         spriteRenderer.enabled = false;
+        startHighlight.enabled = false;
+        endHighlight.enabled = false;
+        startHighlight.transform.localScale = new Vector2(1 / laserSize, 1);
+        endHighlight.transform.localScale = new Vector2(1 / laserSize, 1);
         extraDamage = 0;
     }
 
@@ -36,10 +41,14 @@ public class Laser : MonoBehaviour {
         fireTime = laserTurret.fireDuration;
         fadeTime = laserTurret.fadeDuration;
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, 1);
+        startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, 1);
+        endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
     }
 
     void ExpireLaser() {
         spriteRenderer.enabled = false;
+        startHighlight.enabled = false;
+        endHighlight.enabled = false;
         fireing = false;
     }
 
@@ -47,6 +56,8 @@ public class Laser : MonoBehaviour {
     public void UpdateLaser(float deltaTime) {
         if (fireing) {
             spriteRenderer.enabled = true;
+            startHighlight.enabled = true;
+            endHighlight.enabled = true;
             transform.localPosition = new Vector2(0, 0);
             transform.rotation = transform.parent.rotation;
 
@@ -72,6 +83,8 @@ public class Laser : MonoBehaviour {
             ExpireLaser();
         } else {
             spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, fadeTime / laserTurret.fadeDuration);
+            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, fadeTime / laserTurret.fadeDuration);
+            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, fadeTime / laserTurret.fadeDuration);
         }
     }
 
@@ -134,11 +147,15 @@ public class Laser : MonoBehaviour {
     void SetDistance() {
         transform.Translate(Vector2.up * translateAmount * laserTurret.transform.localScale.y);
         if (hitPoint.HasValue) {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, ((hitPoint.Value.distance) / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (hitPoint.Value.distance / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+            endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
+            endHighlight.enabled = true;
         } else {
             spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+            endHighlight.enabled = false;
         }
-        transform.Translate(Vector2.up * (spriteRenderer.size) / 2 * laserTurret.transform.localScale.y * laserTurret.GetUnitScale());
+        transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.transform.localScale.y * laserTurret.GetUnitScale());
+        startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
     }
 
     public bool IsFireing() {
