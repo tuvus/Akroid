@@ -48,7 +48,10 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             selectedUnits.ClearGroup();
             selectedUnits.CopyGroup(groups[buttonNumber]);
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            SetDisplayedUnit();
+            if (groups[buttonNumber].groupType == UnitGroup.GroupType.Fleet)
+                SetDisplayedFleet(groups[buttonNumber].fleet);
+            else
+                SetDisplayedUnit();
             selectedGroup = buttonNumber;
         }
     }

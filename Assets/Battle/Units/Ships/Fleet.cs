@@ -163,6 +163,38 @@ public class Fleet : ObjectGroup<Ship> {
         return totalHealth;
     }
 
+    public int GetFleetHealth() {
+        int health = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            health += ships[i].GetHealth();
+        }
+        return health;
+    }
+
+    public int GetMaxFleetHealth() {
+        int maxHealth = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            maxHealth += ships[i].GetMaxHealth();
+        }
+        return maxHealth;
+    }
+
+
+    public int GetFleetSheilds() {
+        int shields = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            shields += ships[i].GetShields();
+        }
+        return shields;
+    }
+
+    public int GetMaxFleetShields() {
+        int maxShields = 0;
+        for (int i = 0; i < ships.Count; i++) {
+            maxShields += ships[i].GetMaxShields();
+        }
+        return maxShields;
+    }
     Unit GetClosestEnemyUnitInRadius(float radius) {
         Unit targetUnit = null;
         float distance = 0;
@@ -230,5 +262,9 @@ public class Fleet : ObjectGroup<Ship> {
 
     public void UnselectFleet() {
         SelectFleet(UnitSelection.SelectionStrength.Unselected);
+    }
+
+    public string GetFleetName() {
+        return fleetName;
     }
 }

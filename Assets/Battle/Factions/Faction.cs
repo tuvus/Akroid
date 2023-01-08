@@ -172,13 +172,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void AddUnit(Unit unit) {
         units.Add(unit);
-        AddBattleObject(unit);
         unitsNotInFleet.Add(unit);
     }
 
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
-        RemoveBattleObject(unit);
         unitsNotInFleet.Remove(unit);
     }
 

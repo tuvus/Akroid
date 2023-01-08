@@ -36,6 +36,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected Unit mouseOverUnit;
     protected Unit leftClickedUnit;
     protected Unit displayedUnit;
+    protected Fleet displayedFleet;
     protected Unit rightClickedUnit;
     protected Unit followUnit;
 
@@ -264,8 +265,12 @@ public class LocalPlayerInput : MonoBehaviour {
         return playerInput;
     }
 
-    public Unit GetDisplayedUnit() {
+    public virtual Unit GetDisplayedUnit() {
         return displayedUnit;
+    }
+
+    public Fleet GetDisplayedFleet() {
+        return displayedFleet;
     }
 
     private void OnDisable() {
@@ -287,5 +292,4 @@ public class LocalPlayerInput : MonoBehaviour {
     public Camera GetCamera() {
         return mainCamera;
     }
-
 }

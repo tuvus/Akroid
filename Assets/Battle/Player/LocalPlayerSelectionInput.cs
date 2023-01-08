@@ -182,9 +182,16 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 if (!additiveButtonPressed) {
                     ClearSelectedUnits();
                 }
-                selectedUnits.AddUnit(mouseOverUnit);
-                selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-                displayedUnit = mouseOverUnit;
+                //Check if the fleet should be selected instead of the ship
+                if (!additiveButtonPressed && !altButtonPressed && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {
+                    selectedUnits.SetFleet(((Ship)mouseOverUnit).fleet);
+                    selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+                    SetDisplayedFleet(selectedUnits.fleet);
+                } else {
+                    selectedUnits.AddUnit(mouseOverUnit);
+                    selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+                    SetDisplayedUnit();
+                }
             }
             return;
         }
@@ -192,19 +199,43 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (!additiveButtonPressed) {
             ClearSelectedUnits();
         }
-        selectedUnits.AddUnits(unitsInSelectionBox);
-        selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-        unitsInSelectionBox.ClearGroup();
-        SetDisplayedUnit();
+        if (!additiveButtonPressed && !altButtonPressed && AreUnitsInSelectionBoxInOneFleet()) {
+            selectedUnits.SetFleet(unitsInSelectionBox.GetShip().fleet);
+            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            unitsInSelectionBox.ClearGroup();
+            SetDisplayedFleet(selectedUnits.fleet);
+        } else {
+            selectedUnits.AddUnits(unitsInSelectionBox);
+            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            unitsInSelectionBox.ClearGroup();
+            SetDisplayedUnit();
+        }
+    }
+
+    bool AreUnitsInSelectionBoxInOneFleet() {
+        List<Ship> allShips = unitsInSelectionBox.GetAllShips();
+        if (allShips.Count == 0 || allShips.Count < unitsInSelectionBox.units.Count || allShips[0].fleet == null)
+            return false;
+        for (int i = 1; i < allShips.Count; i++) {
+            if (allShips[i].fleet != allShips[0].fleet)
+                return false;
+        }
+        return true;
     }
 
     public void SetDisplayedUnit() {
+        displayedFleet = null;
         Unit strongestUnit = null;
         foreach (var unit in selectedUnits.GetAllUnits()) {
             if (strongestUnit == null || unit.GetMaxHealth() > strongestUnit.GetMaxHealth())
                 strongestUnit = unit;
         }
         displayedUnit = strongestUnit;
+    }
+
+    public void SetDisplayedFleet(Fleet fleet) {
+        SetDisplayedUnit();
+        displayedFleet = fleet;
     }
 
     /// <summary>
@@ -233,6 +264,13 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     protected virtual void ClearSelectedUnits() {
         selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
         selectedUnits.ClearGroup();
+    }
+
+    public override Unit GetDisplayedUnit() {
+        if ((displayedUnit == null || !displayedUnit.IsSpawned()) && displayedFleet != null) {
+            SetDisplayedFleet(displayedFleet);
+        }
+        return base.GetDisplayedUnit();
     }
 
     public override void UnitDestroyed(Unit unit) {

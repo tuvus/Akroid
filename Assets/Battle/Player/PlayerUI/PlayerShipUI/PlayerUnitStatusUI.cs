@@ -21,7 +21,20 @@ public class PlayerUnitStatusUI : MonoBehaviour {
 		gameObject.SetActive(true);
 	}
 
-	public void DeselectPlayerUnitStatusUI() {
+    public void RefreshPlayerUnitStatusUI(Fleet fleet, Unit unit, int unitCount) {
+        unitImage.enabled = true;
+        unitImage.sprite = unit.GetSpriteRenderer().sprite;
+        unitImage.SetNativeSize();
+        unitImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
+        float sizeRatio = unitImage.rectTransform.sizeDelta.y / unitImage.rectTransform.sizeDelta.x;
+        unitImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
+        healthText.GetComponent<Text>().text = "Hull " + fleet.GetFleetHealth() + "/" + fleet.GetMaxFleetHealth();
+        shieldText.GetComponent<Text>().text = "Shields " + fleet.GetFleetSheilds() + "/" + fleet.GetMaxFleetShields();
+        nameText.GetComponent<Text>().text = fleet.GetFleetName() + " (" + unitCount + ")";
+        gameObject.SetActive(true);
+    }
+
+    public void DeselectPlayerUnitStatusUI() {
 		healthText.GetComponent<Text>().text = "Hull 0/0";
 		shieldText.GetComponent<Text>().text = "Shields 0/0";
 		nameText.GetComponent<Text>().text = "ShipName";

@@ -191,16 +191,29 @@ public class UnitGroup {
         }
     }
 
+    /// <summary>
+    /// Gets the first ship in the group.
+    /// If the group is a fleet returns the first ship in the fleet
+    /// </summary>
+    /// <returns>the first ship in the group</returns>
     public Ship GetShip() {
-        if (groupType == GroupType.Ship && GetAllShips().Count > 0) {
-            return GetAllShips()[0];
+        if (groupType == GroupType.Fleet)
+            return fleet.ships[0];
+        for (int i = 0; i < units.Count; i++) {
+            if (units[i].IsShip())
+                return (Ship)units[i];
         }
         return null;
     }
 
+    /// <summary>
+    /// Gets the first station in the group.
+    /// </summary>
+    /// <returns>the first station in the group</returns>
     public Station GetStation() {
-        if (groupType == GroupType.Station && GetAllUnits().Count > 0) {
-            return (Station)GetAllUnits()[0];
+        for (int i = 0; i < units.Count; i++) {
+            if (units[i].IsStation())
+                return (Station)units[i];
         }
         return null;
     }

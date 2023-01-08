@@ -69,7 +69,6 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     protected override void PrimaryMouseUp() {
         base.PrimaryMouseUp();
-        SetDisplayedUnit();
     }
 
     protected override void AdditiveButtonUp() {
