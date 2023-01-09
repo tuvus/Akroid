@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MassTurret : Turret {
+    private SpriteRenderer flash;
+    static float flashSpeed = 0.5f;
+    private float flashTime;
     //The Projectiles's start variables
     [Tooltip("Max at around 150")]
     public float fireVelocity;
@@ -17,12 +20,34 @@ public class MassTurret : Turret {
 
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
+        flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
+        flash.transform.localPosition = new Vector2(0, turretOffset);
+        flash.enabled = false;
     }
 
     public override void Fire() {
         base.Fire();
         Projectile projectile = BattleManager.Instance.GetNewProjectile();
         projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-fireAccuracy, fireAccuracy), unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+        flashTime = flashSpeed;
+        flash.enabled = true;
+        flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
+    }
+
+    public override void UpdateTurret(float deltaTime) {
+        base.UpdateTurret(deltaTime);
+        if (flash.enabled) {
+            flashTime -= deltaTime;
+            if (flashTime <= 0) {
+                flashTime = 0;
+                flash.enabled = false;
+            } else {
+                flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, flashTime / flashSpeed);
+            }
+        }
+    }
+    protected override bool TurretHibernationStatus() {
+        return base.TurretHibernationStatus() && !flash.enabled;
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
