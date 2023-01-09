@@ -210,8 +210,7 @@ public class Ship : Unit {
                 transform.position = movePosition;
                 position = movePosition;
                 if (shipAction == ShipAction.Move) {
-                    shipAction = ShipAction.Idle;
-                    SetThrusters(false);
+                    SetIdle();
                 } else if (shipAction == ShipAction.DockMove) {
                     shipAction = ShipAction.Dock;
                 }

@@ -29,7 +29,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected bool primaryMousePressed;
     protected bool secondaryMousePressed;
 
-    protected bool altButtonPressed;
+    public bool AltButtonPressed { get; private set; }
 
     protected Vector2 pastMousePosition;
 
@@ -95,7 +95,7 @@ public class LocalPlayerInput : MonoBehaviour {
         if (LocalPlayer.Instance.GetPlayerUI().FreezeZoom())
             return;
         float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor));
-        if (!altButtonPressed) {
+        if (!AltButtonPressed) {
             float diference = mainCamera.orthographicSize - targetSize;
             MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * diference / mainCamera.orthographicSize);
         }
@@ -157,6 +157,8 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void PrimaryMouseUp() {
         primaryMousePressed = false;
+        if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
+            return;
         displayedUnit = null;
         if (leftClickedUnit != null) {
             displayedUnit = leftClickedUnit;
@@ -207,11 +209,11 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     void AltButtonDown() {
-        altButtonPressed = true;
+        AltButtonPressed = true;
     }
 
     void AltButtonUp() {
-        altButtonPressed = false;
+        AltButtonPressed = false;
     }
 
     void EscapeButtonPressed() {

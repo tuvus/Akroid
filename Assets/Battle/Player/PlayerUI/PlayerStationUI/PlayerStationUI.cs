@@ -115,6 +115,7 @@ public class PlayerStationUI : MonoBehaviour {
 
     public void ShipBlueprintButtonPressed(int index) {
         ((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.shipBlueprints[index].CreateShipBlueprint(LocalPlayer.Instance.GetFaction().factionIndex));
+        UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
     }
 
     void UpdateConstructionUI(ConstructionBay constructionBay) {
@@ -148,6 +149,10 @@ public class PlayerStationUI : MonoBehaviour {
 
     void UpdateHangerUI(Hanger hanger) {
         shipsInHanger.Clear();
+        LocalPlayerSelectionInput localPlayerSelection = null;
+        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
+            localPlayerSelection = (LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput();
+        }
         for (int i = 0; i < hanger.ships.Count; i++) {
             shipsInHanger.Add(hanger.ships[i]);
         }
@@ -156,14 +161,20 @@ public class PlayerStationUI : MonoBehaviour {
             if (hangerList.childCount <= i) {
                 Instantiate(shipButtonPrefab, hangerList);
             }
-            Transform hangerBayButton = hangerList.GetChild(i);
-            hangerBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            Transform hangerBayButtonTransform = hangerList.GetChild(i);
+            Button hangerBayButton = hangerBayButtonTransform.GetComponent<Button>();
+            hangerBayButton.onClick.RemoveAllListeners();
             int f = i;
-            hangerBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerButtonPressed(f)));
-            hangerBayButton.gameObject.SetActive(true);
-            hangerBayButton.GetChild(0).GetComponent<Text>().text = shipsInHanger[i].GetUnitName();
-            hangerBayButton.GetChild(1).GetComponent<Text>().text = shipsInHanger[i].faction.name;
-            hangerBayButton.GetChild(2).GetComponent<Text>().text = ((shipsInHanger[i].GetHealth() * 100) / shipsInHanger[i].GetMaxHealth()).ToString() + "%";
+            hangerBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerButtonPressed(f)));
+            hangerBayButtonTransform.gameObject.SetActive(true);
+            hangerBayButtonTransform.GetChild(0).GetComponent<Text>().text = shipsInHanger[i].GetUnitName();
+            hangerBayButtonTransform.GetChild(1).GetComponent<Text>().text = shipsInHanger[i].faction.name;
+            hangerBayButtonTransform.GetChild(2).GetComponent<Text>().text = ((shipsInHanger[i].GetHealth() * 100) / shipsInHanger[i].GetMaxHealth()).ToString() + "%";
+            if (localPlayerSelection != null && localPlayerSelection.GetSelectedUnits().ContainsUnit(shipsInHanger[i])) {
+                hangerBayButton.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            } else {
+                hangerBayButton.GetComponent<Image>().color = new Color(.5f, .5f, 5f, 1);
+            }
         }
         for (int i = shipsInHanger.Count; i < hangerList.childCount; i++) {
             hangerList.GetChild(i).gameObject.SetActive(false);
@@ -171,7 +182,17 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     public void HangerButtonPressed(int index) {
-        if (LocalPlayer.Instance.ownedUnits.Contains(displayedStation) || shipsInHanger[index].faction == LocalPlayer.Instance.GetFaction())
-            shipsInHanger[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
+        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
+            LocalPlayerSelectionInput localPlayerSelection = (LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput();
+
+            if (localPlayerSelection.AdditiveButtonPressed) {
+                localPlayerSelection.ToggleSelectedUnit(shipsInHanger[index]);
+            } else {
+                localPlayerSelection.SelectUnits(shipsInHanger[index]);
+            }
+            UpdateHangerUI(displayedStation.GetHanger());
+        }
+        //if (LocalPlayer.Instance.ownedUnits.Contains(displayedStation) || shipsInHanger[index].faction == LocalPlayer.Instance.GetFaction())
+        //    shipsInHanger[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
     }
 }

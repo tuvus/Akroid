@@ -5,14 +5,10 @@ using UnityEngine.InputSystem;
 
 public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
-    protected bool setButtonPressed;
 
     public override void Setup() {
         base.Setup();
         GetPlayerInput().Player.ClearCommands.started += context => ClearCommands();
-
-        GetPlayerInput().Player.SetModifier.started += context => SetButtonDown();
-        GetPlayerInput().Player.SetModifier.canceled += context => SetButtonUp();
 
         GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPerfomed();
         GetPlayerInput().Player.SeccondaryCommand.performed += context => SeccondaryCommandButtonPerfomed();
@@ -28,26 +24,26 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 SelectOnlyControllableUnits();
                 GenerateMoveCommand();
                 SelectGroup(-1);
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
             case ActionType.UndockCombatAtCommand:
                 SelectOnlyControllableUnits();
                 GenerateUndockCombatAtCommand();
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
             case ActionType.AttackCommand:
                 SelectOnlyControllableUnits();
                 GenerateAttackCommand();
                 SelectGroup(-1);
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
             case ActionType.UndockTransportAtCommand:
                 SelectOnlyControllableUnits();
                 GenerateUndockTransportAtCommand();
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
             case ActionType.FormationCommand:
@@ -55,13 +51,13 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 GenerateFormationCommand();
                 SelectGroup(-1);
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.green);
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
             case ActionType.UndockAllCombatCommand:
                 SelectOnlyControllableUnits();
                 GenerateUndockAllCombatCommand();
-                if (!additiveButtonPressed)
+                if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
         }
@@ -75,14 +71,6 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         base.AdditiveButtonUp();
         if (actionType == ActionType.MoveCommand || actionType == ActionType.AttackCommand || actionType == ActionType.FormationCommand)
             actionType = ActionType.None;
-    }
-
-    void SetButtonDown() {
-        setButtonPressed = true;
-    }
-
-    void SetButtonUp() {
-        setButtonPressed = false;
     }
 
     void PrimaryCommandButtonPerfomed() {
@@ -232,9 +220,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
         if (selectedUnits.groupType == UnitGroup.GroupType.Fleet) {
-            if (additiveButtonPressed)
+            if (AdditiveButtonPressed)
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
-            else if (altButtonPressed)
+            else if (AltButtonPressed)
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
             else
                 selectedUnits.fleet.FleetAI.AddFormationCommand();
@@ -251,9 +239,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     protected Command.CommandAction GetCommandAction() {
-        if (altButtonPressed)
+        if (AltButtonPressed)
             return Command.CommandAction.AddToBegining;
-        if (additiveButtonPressed)
+        if (AdditiveButtonPressed)
             return Command.CommandAction.AddToEnd;
         return Command.CommandAction.Replace;
     }

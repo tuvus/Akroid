@@ -76,6 +76,9 @@ public class PlayerUI : MonoBehaviour {
                 BattleManager.Instance.GetAllUnits()[i].UpdateUnitUI(showUnitZoomIndicators);
             }
         }
+        if (stationUI.activeSelf) {
+            playerStationUI.UpdateStationUI();
+        }
         if (shipUI.activeSelf) {
             playerShipUI.UpdateShipUI();
         }

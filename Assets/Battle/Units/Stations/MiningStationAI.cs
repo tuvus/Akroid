@@ -6,7 +6,7 @@ using UnityEngine.Profiling;
 public class MiningStationAI : StationAI {
 
     public List<Ship> transportShips;
-    [SerializeField]int wantedTransports;
+    [SerializeField] int wantedTransports;
 
     public override void SetupStationAI(Station station) {
         base.SetupStationAI(station);
@@ -38,7 +38,7 @@ public class MiningStationAI : StationAI {
             }
         } else if (!GetMiningStation().activelyMinning && transportShips.Count > 0) {
             for (int i = transportShips.Count - 1; i >= 0; i--) {
-                transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand());
+                transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 transportShips.RemoveAt(i);
             }
         }
@@ -66,15 +66,14 @@ public class MiningStationAI : StationAI {
         }
         if (!transportShips.Contains(ship)) {
             transportShips.Add(ship);
-            ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand()), Command.CommandAction.Replace);
         }
+        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand()), Command.CommandAction.Replace);
     }
 
     public int? GetWantedTransportShips() {
-        for (int i = 0; i < transportShips.Count; i++) {
+        for (int i = transportShips.Count - 1; i >= 0; i--) {
             if (transportShips[i] == null) {
                 transportShips.RemoveAt(i);
-                i--;
             }
         }
         if (!station.IsBuilt() || !GetMiningStation().activelyMinning)

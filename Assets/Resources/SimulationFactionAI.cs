@@ -87,7 +87,7 @@ public class SimulationFactionAI : FactionAI {
 
     void ManageIdleShips() {
         for (int i = 0; i < idleShips.Count; i++) {
-            if (idleShips[i].IsIdle()) {
+            if (idleShips[i].IsIdle() && idleShips[i].fleet == null) {
                 if (idleShips[i].IsCombatShip()) {
                     if (idleShips[i].dockedStation == null) {
                         idleShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.Replace);

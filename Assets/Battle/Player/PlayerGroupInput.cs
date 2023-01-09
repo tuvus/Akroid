@@ -37,10 +37,10 @@ public class PlayerGroupInput : LocalPlayerGameInput {
     void GroupButtonPressed(InputAction.CallbackContext context, int buttonNumber) {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        if (additiveButtonPressed) {
+        if (AdditiveButtonPressed) {
             SelectOnlyControllableUnits();
             AddUnitsToGroup(selectedUnits, buttonNumber);
-        } else if (setButtonPressed) {
+        } else if (SetButtonPressed) {
             SelectOnlyControllableUnits();
             SetGroupToUnits(selectedUnits, buttonNumber);
         } else if (!SelectGroup(buttonNumber)) {

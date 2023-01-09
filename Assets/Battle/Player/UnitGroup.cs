@@ -35,25 +35,6 @@ public class UnitGroup {
         return units;
     }
 
-    public Unit GetStrongestUnit(Faction faction = null) {
-        int health = 0;
-        Unit returnUnit = null;
-        if (faction != null) {
-            foreach (Unit unit in GetAllUnits()) {
-                if (unit.GetTotalHealth() > health && unit.faction == faction) {
-                    returnUnit = unit;
-                }
-            }
-            return returnUnit;
-        }
-        foreach (Unit unit in GetAllShips()) {
-            if (unit.GetTotalHealth() > health) {
-                returnUnit = unit;
-            }
-        }
-        return returnUnit;
-    }
-
     public List<Ship> GetAllShips(Faction faction = null) {
         List<Ship> listOfShips = new List<Ship>();
         foreach (Unit unit in units) {
@@ -68,25 +49,6 @@ public class UnitGroup {
             }
         }
         return listOfShips;
-    }
-
-    public Ship GetStrongestShip(Faction faction = null) {
-        int health = 0;
-        Ship returnShip = null;
-        if (faction != null) {
-            foreach (Ship ship in GetAllShips()) {
-                if (ship.GetTotalHealth() > health && ship.faction == faction) {
-                    returnShip = ship;
-                }
-            }
-            return returnShip;
-        }
-        foreach (Ship ship in GetAllShips()) {
-            if (ship.GetTotalHealth() > health) {
-                returnShip = ship;
-            }
-        }
-        return returnShip;
     }
 
     public List<Station> GetAllStations(Faction faction = null) {
@@ -186,8 +148,17 @@ public class UnitGroup {
     }
 
     public void RemoveUnit(Unit unit) {
-        if (units.Contains(unit)) {
-            units.Remove(unit);
+        List<Unit> groupUnits = GetAllUnits();
+        if (groupUnits.Contains(unit)) {
+            if (groupType == GroupType.Fleet) {
+                groupUnits.Remove(unit);
+                ClearGroup();
+                for (int i = 0; i < groupUnits.Count; i++) {
+                    AddShip((Ship)groupUnits[i]);
+                }
+            } else {
+                units.Remove(unit);
+            }
         }
     }
 

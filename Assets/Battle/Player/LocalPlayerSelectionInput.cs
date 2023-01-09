@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class LocalPlayerSelectionInput : LocalPlayerInput {
 
-    protected bool additiveButtonPressed;
+    public bool AdditiveButtonPressed { get; private set; }
+    public bool SetButtonPressed { get; private set; }
 
     [SerializeField] RectTransform selectionBox;
     Vector2 boxStartPosition;
@@ -22,6 +24,9 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.Setup();
         selectedUnits = new UnitGroup();
         unitsInSelectionBox = new UnitGroup();
+
+        GetPlayerInput().Player.SetModifier.started += context => SetButtonDown();
+        GetPlayerInput().Player.SetModifier.canceled += context => SetButtonUp();
 
         GetPlayerInput().Player.AdditiveModifier.started += context => AdditiveButtonDown();
         GetPlayerInput().Player.AdditiveModifier.canceled += context => AdditiveButtonUp();
@@ -99,12 +104,20 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         maxRightClickDistance = 0;
     }
 
+    void SetButtonDown() {
+        SetButtonPressed = true;
+    }
+
+    void SetButtonUp() {
+        SetButtonPressed = false;
+    }
+
     protected virtual void AdditiveButtonDown() {
-        additiveButtonPressed = true;
+        AdditiveButtonPressed = true;
     }
 
     protected virtual void AdditiveButtonUp() {
-        additiveButtonPressed = false;
+        AdditiveButtonPressed = false;
     }
 
     protected virtual void AllCombatUnitsButtonPressed() {
@@ -126,13 +139,13 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     void StartBoxSelection(Vector2 mousePosition) {
         actionType = ActionType.Selecting;
         boxStartPosition = mousePosition;
-        if (!additiveButtonPressed) {
+        if (!AdditiveButtonPressed) {
             ClearSelectedUnits();
         }
     }
 
     void UpdateBoxSelection(Vector2 mousePosition) {
-        if (!additiveButtonPressed) {
+        if (!AdditiveButtonPressed) {
             unitsInSelectionBox.UnselectAllUnits();
             selectedUnits.SelectAllUnits();
         }
@@ -167,54 +180,85 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     void EndBoxSelection() {
         actionType = ActionType.None;
         selectionBox.gameObject.SetActive(false);
-        if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 2) {
-            unitsInSelectionBox.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
-            unitsInSelectionBox.ClearGroup();
+        if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
             if (mouseOverUnit != null) {
                 selectedGroup = -1;
-                if (selectedUnits.ContainsUnit(mouseOverUnit)) {
-                    if (additiveButtonPressed) {
-                        mouseOverUnit.UnselectUnit();
-                        selectedUnits.RemoveUnit(mouseOverUnit);
-                    }
-                    return;
-                }
-                if (!additiveButtonPressed) {
-                    ClearSelectedUnits();
-                }
-                //Check if the fleet should be selected instead of the ship
-                if (!additiveButtonPressed && !altButtonPressed && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {
-                    selectedUnits.SetFleet(((Ship)mouseOverUnit).fleet);
-                    selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-                    SetDisplayedFleet(selectedUnits.fleet);
+                if (AdditiveButtonPressed) {
+                    ToggleSelectedUnit(mouseOverUnit);
                 } else {
-                    selectedUnits.AddUnit(mouseOverUnit);
-                    selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+                    SelectUnits(mouseOverUnit);
+                }
+            } else if (!AdditiveButtonPressed) {
+                unitsInSelectionBox.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
+                unitsInSelectionBox.ClearGroup();
+            } else {
+                if (displayedFleet != null) {
+                    SetDisplayedFleet(displayedFleet);
+                } else {
                     SetDisplayedUnit();
                 }
             }
             return;
         }
         selectedGroup = -1;
-        if (!additiveButtonPressed) {
-            ClearSelectedUnits();
-        }
-        if (!additiveButtonPressed && !altButtonPressed && AreUnitsInSelectionBoxInOneFleet()) {
-            selectedUnits.SetFleet(unitsInSelectionBox.GetShip().fleet);
-            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            unitsInSelectionBox.ClearGroup();
-            SetDisplayedFleet(selectedUnits.fleet);
+        if (AdditiveButtonPressed) {
+            AddSelectedUnits(unitsInSelectionBox.GetAllUnits());
         } else {
-            selectedUnits.AddUnits(unitsInSelectionBox);
+            SelectUnits(unitsInSelectionBox.GetAllUnits());
+        }
+        unitsInSelectionBox.ClearGroup();
+    }
+
+    public void SelectUnits(Unit unit) {
+        SelectUnits(new List<Unit>() { unit });
+    }
+
+    public void SelectUnits(List<Unit> newUnits) {
+        ClearSelectedUnits();
+        selectedUnits.AddUnits(newUnits);
+        if (!AdditiveButtonPressed && !AltButtonPressed && AreUnitsInUnitGroupInOneFleet(selectedUnits)) {
+            Fleet fleet = selectedUnits.GetShip().fleet;
+            ClearSelectedUnits();
+            selectedUnits.SetFleet(fleet);
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            unitsInSelectionBox.ClearGroup();
+            SetDisplayedFleet(fleet);
+        } else {
+            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
     }
 
-    bool AreUnitsInSelectionBoxInOneFleet() {
-        List<Ship> allShips = unitsInSelectionBox.GetAllShips();
-        if (allShips.Count == 0 || allShips.Count < unitsInSelectionBox.units.Count || allShips[0].fleet == null)
+    public void ToggleSelectedUnit(Unit newUnit) {
+        if (selectedUnits.ContainsUnit(newUnit)) {
+            selectedUnits.RemoveUnit(newUnit);
+            newUnit.SelectUnit(UnitSelection.SelectionStrength.Unselected);
+            SetDisplayedUnit();
+        } else {
+            AddSelectedUnits(newUnit);
+        }
+    }
+
+    public void AddSelectedUnits(Unit newUnit) {
+        AddSelectedUnits(new List<Unit>() { newUnit });
+    }
+
+    public void AddSelectedUnits(List<Unit> newUnits) {
+        for (int i = newUnits.Count - 1; i >= 0; i--) {
+            if (selectedUnits.ContainsUnit(newUnits[i]))
+                newUnits.RemoveAt(i);
+        }
+        selectedUnits.AddUnits(newUnits);
+        selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+        SetDisplayedUnit();
+    }
+
+    /// <summary>
+    /// Check the unitGroup to see if it composed of only ships and if all ships belong to the same fleet
+    /// </summary>
+    /// <returns>true if all ships belong to the same fleet, otherswise returns false </returns>
+    bool AreUnitsInUnitGroupInOneFleet(UnitGroup unitGroup) {
+        List<Ship> allShips = unitGroup.GetAllShips();
+        if (allShips.Count == 0 || allShips.Count < unitGroup.units.Count || allShips[0].fleet == null)
             return false;
         for (int i = 1; i < allShips.Count; i++) {
             if (allShips[i].fleet != allShips[0].fleet)
@@ -261,6 +305,9 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
     }
 
+    /// <summary>
+    /// Unselects all selected units and then clears the selectUnits group
+    /// </summary>
     protected virtual void ClearSelectedUnits() {
         selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
         selectedUnits.ClearGroup();
