@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerMenueUI : MonoBehaviour {
@@ -60,9 +59,5 @@ public class PlayerMenueUI : MonoBehaviour {
     public void UpdateBattleTimeScale() {
         BattleManager.Instance.SetSimulationTimeScale(menueUITimeScale.value / 10f);
         timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
-    }
-
-    public void QuitSimulation() {
-        SceneManager.LoadScene("Start");
     }
 }

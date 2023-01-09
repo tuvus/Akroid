@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static System.Collections.Specialized.BitVector32;
 
@@ -256,5 +257,9 @@ public class PlayerUI : MonoBehaviour {
 
     public LocalPlayerInput GetLocalPlayerInput() {
         return localPlayerInput;
+    }
+
+    public void QuitSimulation() {
+        SceneManager.LoadScene("Start");
     }
 }

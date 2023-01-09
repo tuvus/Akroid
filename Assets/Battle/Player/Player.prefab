@@ -10853,8 +10853,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3805286146913107314}
-        m_TargetAssemblyTypeName: PlayerMenueUI, Assembly-CSharp
+      - m_Target: {fileID: 8714345815927367769}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
         m_MethodName: QuitSimulation
         m_Mode: 1
         m_Arguments:
