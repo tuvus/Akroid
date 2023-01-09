@@ -278,4 +278,8 @@ public class Turret : BattleObject {
     public virtual float GetReloadTimeModifier() {
         return 1f;
     }
+
+    public virtual float GetDamagePerSecond() {
+        return 0;
+    }
 }

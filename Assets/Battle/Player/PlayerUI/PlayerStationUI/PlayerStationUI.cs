@@ -66,7 +66,7 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFreindlyFaction) {
-        if (isFreindlyFaction) {
+        if (isFreindlyFaction && cargoBay != null) {
             cargoHeader.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
             cargoBaysStatus.gameObject.SetActive(true);

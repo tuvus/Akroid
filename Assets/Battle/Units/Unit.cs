@@ -418,7 +418,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]
-    public void GetUnitDamagePerSecond() {
+    public void GetEditorUnitDamagePerSecond() {
         float dps = 0;
         foreach (var massTurret in GetComponentsInChildren<MassTurret>()) {
             dps += massTurret.GetDamagePerSecond();
@@ -431,6 +431,23 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
         print(unitName + "Dps:" + dps);
     }
+
+    public float GetUnitDamagePerSecond() {
+        float dps = 0;
+        foreach (var massTurret in turrets) {
+            dps += massTurret.GetDamagePerSecond();
+        }
+
+        foreach (var missileLauncher in missileLaunchers) {
+            dps += missileLauncher.GetDamagePerSecond();
+        }
+        return dps;
+    }
+
+    public int GetWeaponCount() {
+        return turrets.Count + missileLaunchers.Count;
+    }
+    
     #endregion
 
 }

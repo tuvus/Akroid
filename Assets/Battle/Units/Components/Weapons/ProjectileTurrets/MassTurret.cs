@@ -62,7 +62,7 @@ public class MassTurret : Turret {
         return unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload);
     }
 
-    public float GetDamagePerSecond() {
+    public override float GetDamagePerSecond() {
         reloadController = GetComponent<ReloadController>();
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {

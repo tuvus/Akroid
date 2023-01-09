@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
+using static System.Collections.Specialized.BitVector32;
 
 public class PlayerUI : MonoBehaviour {
     private LocalPlayerInput localPlayerInput;
@@ -13,6 +14,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerCommsManager playerCommsManager;
     [SerializeField] private PlayerMenueUI playerMenueUI;
     [SerializeField] private PlayerStationUI playerStationUI;
+    [SerializeField] private PlayerShipUI playerShipUI;
     [SerializeField] private PlayerResearchUI playerResearchUI;
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
@@ -28,6 +30,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Text victoryTitle;
     [SerializeField] private Text victoryElapsedTime;
     [SerializeField] private GameObject stationUI;
+    [SerializeField] private GameObject shipUI;
     [SerializeField] private GameObject researchUI;
 
 
@@ -47,6 +50,7 @@ public class PlayerUI : MonoBehaviour {
         playerCommsManager.SetupPlayerCommsManager(this);
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
+        playerShipUI.SetupPlayerShipUI(this);
         playerResearchUI.SetupResearchUI(this);
     }
 
@@ -71,6 +75,9 @@ public class PlayerUI : MonoBehaviour {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
                 BattleManager.Instance.GetAllUnits()[i].UpdateUnitUI(showUnitZoomIndicators);
             }
+        }
+        if (shipUI.activeSelf) {
+            playerShipUI.UpdateShipUI();
         }
         if (researchUI.activeSelf) {
             playerResearchUI.UpdateResearchUI(GetLocalPlayer().GetFaction());
@@ -100,6 +107,19 @@ public class PlayerUI : MonoBehaviour {
             playerStationUI.UpdateStationUI();
         } else {
             playerStationUI.DisplayStation(station);
+        }
+    }
+
+    public void SetDisplayShip(Ship ship) {
+        if (!stationUI.activeSelf) {
+            ShowShipUI(true);
+            playerShipUI.DisplayShip(ship);
+            return;
+        }
+        if (playerShipUI.displayedShip == ship) {
+            playerShipUI.UpdateShipUI();
+        } else {
+            playerShipUI.DisplayShip(ship);
         }
     }
 
@@ -151,6 +171,14 @@ public class PlayerUI : MonoBehaviour {
             playerStationUI.DisplayStation(null);
     }
 
+    public void ShowShipUI(bool shown) {
+        shipUI.SetActive(false);
+        CloseAllMenues();
+        shipUI.SetActive(shown);
+        if (!shown)
+            playerShipUI.DisplayShip(null);
+    }
+
     public void ShowResearchUI(bool shown) {
         CloseAllMenues();
         researchUI.SetActive(shown);
@@ -162,8 +190,9 @@ public class PlayerUI : MonoBehaviour {
         victoryUI.SetActive(false);
         if (stationUI.activeSelf) {
             stationUI.SetActive(false);
-            ((LocalPlayerSelectionInput)localPlayerInput).GetSelectedUnits().SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
-            ((LocalPlayerSelectionInput)localPlayerInput).GetSelectedUnits().ClearGroup();
+        }
+        if (shipUI.activeSelf) {
+            shipUI.SetActive(false);
         }
         if (researchUI.activeSelf) {
             researchUI.SetActive(false);
@@ -179,7 +208,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool FreezeZoom() {
-        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || researchUI.activeSelf;
+        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
     }
 
     public bool GetShowUnitZoomIndicators() {
@@ -215,7 +244,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || researchUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
     }
 
     public PlayerCommsManager GetPlayerCommsManager() {

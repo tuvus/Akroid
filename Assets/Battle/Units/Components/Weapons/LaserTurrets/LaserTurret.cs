@@ -50,7 +50,7 @@ public class LaserTurret : Turret {
         return unit.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload);
     }
 
-    public float GetDamagePerSecond() {
+    public override float GetDamagePerSecond() {
         reloadController = GetComponent<ReloadController>();
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
