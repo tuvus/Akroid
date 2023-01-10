@@ -130,12 +130,16 @@ public class PlayerStationUI : MonoBehaviour {
             if (constructionBayList.childCount <= i) {
                 Instantiate(shipButtonPrefab, constructionBayList);
             }
-            Transform constructionBayButton = constructionBayList.GetChild(i);
-            constructionBayButton.gameObject.SetActive(true);
+            Transform constructionBayButtonTransform = constructionBayList.GetChild(i);
+            Button constructionBayButton = constructionBayButtonTransform.GetComponent<Button>();
+            constructionBayButton.onClick.RemoveAllListeners();
+            int f = i;
+            constructionBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => ConstructionButtonPressed(f)));
+            constructionBayButtonTransform.gameObject.SetActive(true);
             Ship.ShipBlueprint blueprint = constructionBay.buildQueue[i];
-            constructionBayButton.GetChild(0).GetComponent<Text>().text = blueprint.shipName.ToString();
-            constructionBayButton.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].name;
-            constructionBayButton.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
+            constructionBayButtonTransform.GetChild(0).GetComponent<Text>().text = blueprint.shipName.ToString();
+            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].name;
+            constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
 
         }
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
@@ -145,6 +149,14 @@ public class PlayerStationUI : MonoBehaviour {
 
     public void SetAutoBuildShips(bool autoBuildShips) {
         ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
+    }
+
+    public void ConstructionButtonPressed(int index) {
+        ConstructionBay constructionBay = ((Shipyard)displayedStation).GetConstructionBay();
+        if (constructionBay.buildQueue[index].factionIndex == LocalPlayer.Instance.GetFaction().factionIndex) {
+            constructionBay.RemoveBlueprintFromQueue(index);
+            UpdateConstructionUI(constructionBay);
+        }
     }
 
     void UpdateHangerUI(Hanger hanger) {

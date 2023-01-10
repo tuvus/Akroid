@@ -27,6 +27,10 @@ public class ConstructionBay : MonoBehaviour {
         buildQueue.Insert(0, shipBlueprint);
     }
 
+    public void RemoveBlueprintFromQueue(int index) {
+        buildQueue.RemoveAt(index);
+    }
+
     public void UpdateConstructionBay(float deltaTime) {
         constructionTime -= deltaTime;
         if (constructionTime <= 0) {
