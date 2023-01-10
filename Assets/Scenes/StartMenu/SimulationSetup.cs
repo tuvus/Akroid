@@ -37,7 +37,7 @@ public class SimulationSetup : MonoBehaviour {
         starCount = 3;
         asteroidFieldCount = 40;
         asteroidCountModifier = 1;
-        researchModifier = 1.1f;
+        researchModifier = 1.01f;
 
         for (int i = 0; i < factionList.childCount; i++) {
             Destroy(factionList.GetChild(i).gameObject);
@@ -51,7 +51,7 @@ public class SimulationSetup : MonoBehaviour {
         asteroidFieldCount = 40;
         starCount = 3;
         asteroidCountModifier = 1.2f;
-        researchModifier = 1.05f;
+        researchModifier = 1.01f;
         factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
@@ -86,7 +86,18 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void AddFaction() {
-        factions.Add(new FactionData("New Faction", 1000000, 0, 1, 1));
+        if (factions.Count > 0) {
+            string newName = factions[factions.Count - 1].name;
+            int pastInt = 0;
+            if (int.TryParse(newName.Substring(newName.Length - 1),out pastInt)) {
+                newName = newName.Substring(0, newName.Length - 1) + (pastInt + 1).ToString();
+            } else {
+                newName = newName + 1;
+            }
+            factions.Add(new FactionData(newName, factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
+        } else {
+            factions.Add(new FactionData("New Faction", 1000000, 0, 1, 2));
+        }
         GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
         newFactionPrefab.name = factions[factions.Count - 1].name;
         newFactionPrefab.transform.GetChild(0).GetComponent<Text>().text = newFactionPrefab.name;
@@ -160,7 +171,7 @@ public class SimulationSetup : MonoBehaviour {
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount,asteroidCountModifier, researchModifier, factions);
+        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, researchModifier, factions);
         Destroy(gameObject);
     }
 

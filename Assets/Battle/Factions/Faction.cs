@@ -155,9 +155,16 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             }
         }
         for (int i = 0; i < shipCount; i++) {
-            if (GetFleetCommand() != null)
-                GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
-            else
+            if (GetFleetCommand() != null) {
+                int randomNum = Random.Range(0, 3);
+                if (randomNum == 0) {
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aria);
+                } else if (randomNum == 1) {
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
+                } else if (randomNum == 2) {
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
+                }
+            } else
                 BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
         UpdateObjectGroup(true);
