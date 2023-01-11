@@ -11,6 +11,7 @@ public class SimulationFactionAI : FactionAI {
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
         autoBuildShips = true;
+        updateTime = Random.Range(0, 0.2f);
     }
 
     public override void GenerateFactionAI() {
