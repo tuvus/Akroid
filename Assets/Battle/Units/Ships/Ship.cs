@@ -53,6 +53,8 @@ public class Ship : Unit {
     [SerializeField] private float targetRotation;
     [SerializeField] private Vector2 movePosition;
     [SerializeField] private Station targetStation;
+    private float timeUntilCheckRotation;
+    private float checkRotationSpeed = 0.2f;
 
     public struct ShipData {
         public int faction;
@@ -164,13 +166,18 @@ public class Ship : Unit {
             SetIdle();
         }
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
-            targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
-            if (Mathf.Abs(transform.eulerAngles.z - targetRotation) > 0.00001) {
-                if (shipAction == ShipAction.Move) {
-                    shipAction = ShipAction.MoveRotate;
-                } else if (shipAction == ShipAction.DockMove) {
-                    shipAction = ShipAction.DockRotate;
+            if (timeUntilCheckRotation > 0)
+                timeUntilCheckRotation -= deltaTime;
+            if (timeUntilCheckRotation <= 0) {
+                targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
+                if (Mathf.Abs(transform.eulerAngles.z - targetRotation) > 0.00001) {
+                    if (shipAction == ShipAction.Move) {
+                        shipAction = ShipAction.MoveRotate;
+                    } else if (shipAction == ShipAction.DockMove) {
+                        shipAction = ShipAction.DockRotate;
+                    }
                 }
+                timeUntilCheckRotation += checkRotationSpeed;
             }
         }
         if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate) {
@@ -216,7 +223,7 @@ public class Ship : Unit {
                 }
             } else {
                 transform.Translate(Vector2.up * thrust);
-                velocity = transform.up * math.min(maxSetSpeed, GetSpeed());
+                velocity = transform.up * speed;
                 position = transform.position;
                 return;
             }
@@ -498,5 +505,4 @@ public class Ship : Unit {
         print(unitName + "Thrust:" + thrust);
     }
     #endregion
-
 }
