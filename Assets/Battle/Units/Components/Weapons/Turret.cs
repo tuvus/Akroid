@@ -35,6 +35,8 @@ public class Turret : BattleObject {
     public Unit targetUnit;
     private bool aimed;
     private bool hibernating;
+    private static float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateTime;
 
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject();
@@ -43,6 +45,7 @@ public class Turret : BattleObject {
         targetRotation = startRotation;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController();
+        findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
     public virtual void UpdateTurret(float deltaTime) {
@@ -69,12 +72,18 @@ public class Turret : BattleObject {
     }
 
     protected void UpdateTurretAim(float deltaTime) {
-        if (IsTargetViable(targetUnit) && IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
+        float range = GetRange();
+        if (findNewTargetUpdateTime > 0)
+            findNewTargetUpdateTime -= deltaTime;
+        if (IsTargetViable(targetUnit, range) && IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
             SetTargetRotation(localShipAngle);
         } else {
             ChangeTargetUnit(null);
             SetTargetRotation(startRotation);
-            FindNewTarget(GetRange(), unit.faction);
+            if (findNewTargetUpdateTime <= 0) {
+                FindNewTarget(range, unit.faction);
+                findNewTargetUpdateTime += findNewTargetUpdateSpeed;
+            }
         }
 
         if (!aimed)
@@ -88,8 +97,8 @@ public class Turret : BattleObject {
         }
     }
 
-    public bool IsTargetViable(Unit targetUnit) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > GetRange())
+    public bool IsTargetViable(Unit targetUnit, float range) {
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
@@ -116,7 +125,7 @@ public class Turret : BattleObject {
         Unit newTarget = null;
         for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
             Unit targetUnit = unit.GetEnemyUnitsInRange()[i];
-            if (!IsTargetViable(targetUnit))
+            if (!IsTargetViable(targetUnit, range))
                 continue;
             Vector2 targetLocation;
             float localShipAngle;

@@ -74,7 +74,7 @@ public class Missile : BattleObject, IParticleHolder {
             if (target != null && target.IsTargetable()) {
                 RotateMissile(deltaTime);
             } else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
-                target = missileLauncher.FindNewTarget();
+                target = missileLauncher.FindNewTarget(missileLauncher.GetRange());
                 if (target == null)
                     retarget = false;
             }

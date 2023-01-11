@@ -27,10 +27,14 @@ public class MissileLauncher : MonoBehaviour {
     public Unit targetUnit;
     private bool hibernating;
 
+    private static float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateTime;
+
     public void SetupMissileLauncher(Unit unit) {
         this.unit = unit;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController();
+        findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
     public void UpdateMissileLauncher(float deltaTime) {
@@ -47,8 +51,11 @@ public class MissileLauncher : MonoBehaviour {
             Profiler.EndSample();
             return;
         }
-        if (!IsTargetViable(targetUnit)) {
-            targetUnit = FindNewTarget();
+        if (findNewTargetUpdateTime > 0)
+            findNewTargetUpdateTime -= deltaTime;
+        if (findNewTargetUpdateTime <= 0 && !IsTargetViable(targetUnit, GetRange())) {
+            targetUnit = FindNewTarget(GetRange());
+            findNewTargetUpdateTime += findNewTargetUpdateSpeed;
         }
         if (targetUnit != null) {
             Fire();
@@ -61,17 +68,17 @@ public class MissileLauncher : MonoBehaviour {
         return targetUnit == null && unit.GetEnemyUnitsInRange().Count == 0 && reloadController.ReadyToHibernate();
     }
 
-    private bool IsTargetViable(Unit targetUnit) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > GetRange())
+    private bool IsTargetViable(Unit targetUnit, float range) {
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
 
-    public Unit FindNewTarget() {
+    public Unit FindNewTarget(float range) {
         Unit target = null;
         for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
             Unit newTarget = unit.GetEnemyUnitsInRange()[i];
-            if (!IsTargetViable(newTarget))
+            if (!IsTargetViable(newTarget, range))
                 continue;
             if (IsTargetBetter(newTarget, targetUnit)) {
                 target = newTarget;
@@ -117,7 +124,7 @@ public class MissileLauncher : MonoBehaviour {
     public void Fire() {
         reloadController.Fire();
         Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction, this,transform.position,transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange(), missileRetarget);
+        missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange(), missileRetarget);
     }
 
     public int GetDamage() {
