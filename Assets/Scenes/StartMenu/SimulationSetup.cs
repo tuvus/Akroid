@@ -89,8 +89,8 @@ public class SimulationSetup : MonoBehaviour {
         if (factions.Count > 0) {
             string newName = factions[factions.Count - 1].name;
             int pastInt = 0;
-            if (int.TryParse(newName.Substring(newName.Length - 1),out pastInt)) {
-                newName = newName.Substring(0, newName.Length - 1) + (pastInt + 1).ToString();
+            if (int.TryParse(newName.Substring(newName.Length - 1), out pastInt)) {
+                newName = AddNumberToTheEnd(newName.Substring(0, newName.Length - 1), pastInt);
             } else {
                 newName = newName + 1;
             }
@@ -103,6 +103,19 @@ public class SimulationSetup : MonoBehaviour {
         newFactionPrefab.transform.GetChild(0).GetComponent<Text>().text = newFactionPrefab.name;
         newFactionPrefab.GetComponent<Button>().onClick.AddListener(() => SelectFaction(newFactionPrefab.transform.GetSiblingIndex()));
         SelectFaction(factions.Count - 1);
+    }
+
+    private string AddNumberToTheEnd(string original, int pastInt) {
+        if (pastInt == 9) {
+            int nextPastInt = 0;
+            if (int.TryParse(original.Substring(original.Length - 1), out nextPastInt)) {
+                return AddNumberToTheEnd(original.Substring(0, original.Length - 1), nextPastInt) + "0";
+            } else {
+                return original + "10";
+            }
+        } else {
+            return original + (pastInt + 1);
+        }
     }
 
     public void SelectFaction(int factionIndex) {
