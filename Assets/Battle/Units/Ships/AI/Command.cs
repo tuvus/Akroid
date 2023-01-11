@@ -105,6 +105,7 @@ public class Command {
         Command newCommand = new Command(CommandType.AttackMove);
         newCommand.targetPosition = targetPosition;
         newCommand.maxSpeed = maxSpeed;
+        newCommand.waitTime = Random.Range(0, 0.2f);
         return newCommand;
     }
 
@@ -113,6 +114,7 @@ public class Command {
         newCommand.targetUnit = targetUnit;
         newCommand.maxSpeed = maxSpeed;
         newCommand.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
+        newCommand.waitTime = Random.Range(0, 0.2f);
         return newCommand;
     }
 

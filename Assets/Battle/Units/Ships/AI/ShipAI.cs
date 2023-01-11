@@ -131,109 +131,121 @@ public class ShipAI : MonoBehaviour {
         //Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished.
         //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
         if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.Protect) {
+
             if (command.commandType == CommandType.Protect && command.protectUnit == null) {
                 command.commandType = CommandType.AttackMove;
                 command.protectUnit = null;
             }
+            if (command.waitTime > 0)
+                command.waitTime -= deltaTime;
+            if (command.waitTime < 0 || newCommand) {
+                command.waitTime += 0.2f;
 
-            float distanceToTargetUnit = 0;
-            if (command.targetUnit != null)
-                distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
-
-            //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
-                newCommand = true;
-                command.targetUnit = null;
-            }
-            if (newCommand) {
-                if (command.commandType == CommandType.Protect) {
-                    ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
-                    command.targetPosition = ship.GetTargetMovePosition();
-                } else {
-                    ship.SetMovePosition(command.targetPosition);
-                }
-                currentCommandType = CommandType.Move;
-                ship.SetMaxSpeed(command.maxSpeed);
-                newCommand = false;
-            }
-
-            if (currentCommandType == CommandType.Move) {
-                command.targetUnit = GetClosestNearbyEnemyUnit();
-                if (command.targetUnit != null) {
+                float distanceToTargetUnit = 0;
+                if (command.targetUnit != null)
                     distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
-                    if (distanceToTargetUnit < ship.GetMinWeaponRange()) {
-                        currentCommandType = CommandType.TurnToRotation;
-                    } else {
-                        currentCommandType = CommandType.AttackMove;
-                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-                    }
-                } else if (ship.shipAction == Ship.ShipAction.Idle) {
-                    if (command.commandType == CommandType.Protect) {
-                        if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) > (ship.GetSize() + command.protectUnit.GetSize()) * 3)
-                            ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
-                        return CommandResult.Stop;
-                    }
-                    return CommandResult.ContinueRemove;
-                } else {
+
+                //If there is a targetUnit check if a new one should be calculated
+                if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+                    newCommand = true;
+                    command.targetUnit = null;
+                }
+                if (newCommand) {
                     if (command.commandType == CommandType.Protect) {
                         ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                         command.targetPosition = ship.GetTargetMovePosition();
+                    } else {
+                        ship.SetMovePosition(command.targetPosition);
                     }
-                    return CommandResult.Stop;
+                    currentCommandType = CommandType.Move;
+                    ship.SetMaxSpeed(command.maxSpeed);
+                    newCommand = false;
                 }
-            }
 
-            if (currentCommandType == CommandType.AttackMove) {
-                if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
-                    currentCommandType = CommandType.TurnToRotation;
-                } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-                    return CommandResult.Stop;
+                if (currentCommandType == CommandType.Move) {
+
+                    command.targetUnit = GetClosestNearbyEnemyUnit();
+                    if (command.targetUnit != null) {
+                        distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
+                        if (distanceToTargetUnit < ship.GetMinWeaponRange()) {
+                            currentCommandType = CommandType.TurnToRotation;
+                        } else {
+                            currentCommandType = CommandType.AttackMove;
+                            ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                        }
+                    } else if (ship.shipAction == Ship.ShipAction.Idle) {
+                        if (command.commandType == CommandType.Protect) {
+                            if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) > (ship.GetSize() + command.protectUnit.GetSize()) * 3)
+                                ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                            return CommandResult.Stop;
+                        }
+                        return CommandResult.ContinueRemove;
+                    } else {
+                        if (command.commandType == CommandType.Protect) {
+                            ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                            command.targetPosition = ship.GetTargetMovePosition();
+                        }
+                        return CommandResult.Stop;
+                    }
                 }
-            }
 
-            if (currentCommandType == CommandType.TurnToRotation) {
-                if (distanceToTargetUnit > ship.GetMinWeaponRange()) {
-                    currentCommandType = CommandType.AttackMove;
-                } else {
-                    ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
+                if (currentCommandType == CommandType.AttackMove) {
+                    if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
+                        currentCommandType = CommandType.TurnToRotation;
+                    } else {
+                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                        return CommandResult.Stop;
+                    }
+                }
+
+                if (currentCommandType == CommandType.TurnToRotation) {
+                    if (distanceToTargetUnit > ship.GetMinWeaponRange()) {
+                        currentCommandType = CommandType.AttackMove;
+                    } else {
+                        ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
+                    }
                 }
             }
             return CommandResult.Stop;
         }
         //Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished.
         if (command.commandType == CommandType.AttackMoveUnit) {
-            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
-                command.commandType = CommandType.AttackMove;
-                if (newCommand) {
-                    command.targetPosition = ship.GetPosition();
-                    ship.SetMaxSpeed(command.maxSpeed);
-                }
-                newCommand = true;
-                return CommandResult.Stop;
-            }
-            if (newCommand) {
-                currentCommandType = CommandType.Move;
-                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-                command.targetPosition = command.targetUnit.GetPosition();
-                newCommand = false;
-            }
-
-            if (currentCommandType == CommandType.Move) {
-                if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
-                    currentCommandType = CommandType.TurnToRotation;
-                } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+            if (command.waitTime > 0)
+                command.waitTime -= deltaTime;
+            if (command.waitTime < 0 || newCommand) {
+                command.waitTime += 0.2f;
+                if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                    command.commandType = CommandType.AttackMove;
+                    if (newCommand) {
+                        command.targetPosition = ship.GetPosition();
+                        ship.SetMaxSpeed(command.maxSpeed);
+                    }
+                    newCommand = true;
                     return CommandResult.Stop;
                 }
-            }
-
-            if (currentCommandType == CommandType.TurnToRotation) {
-                if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
+                if (newCommand) {
                     currentCommandType = CommandType.Move;
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
-                } else {
-                    ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
+                    command.targetPosition = command.targetUnit.GetPosition();
+                    newCommand = false;
+                }
+
+                if (currentCommandType == CommandType.Move) {
+                    if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
+                        currentCommandType = CommandType.TurnToRotation;
+                    } else {
+                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                        return CommandResult.Stop;
+                    }
+                }
+
+                if (currentCommandType == CommandType.TurnToRotation) {
+                    if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
+                        currentCommandType = CommandType.Move;
+                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    } else {
+                        ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
+                    }
                 }
             }
             return CommandResult.Stop;
