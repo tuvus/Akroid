@@ -106,7 +106,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void SetUpFaction(int factionIndex, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
         units = new List<Unit>((factionData.ships + factionData.stations) * 5);
-        base.SetupObjectGroup(units);
+        base.SetupObjectGroup(units, false);
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             SetPosition(targetPosition.Value);
@@ -167,7 +167,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             } else
                 BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
-        UpdateObjectGroup(true);
     }
 
     public void AddEnemyFaction(Faction faction) {

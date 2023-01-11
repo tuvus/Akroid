@@ -9,10 +9,11 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     [SerializeField] float size;
     //public Transform sizeIndicator { get; private set; }
 
-    public void SetupObjectGroup(List<T> objects, bool changeSizeIndicatorPosition = false) {
+    public void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         battleObjects = objects;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
-        UpdateObjectGroup(changeSizeIndicatorPosition);
+        if (setupGroupPositionAndSize)
+            UpdateObjectGroup(changeSizeIndicatorPosition);
     }
 
     public void SetPosition(Vector2 position) {

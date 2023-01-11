@@ -174,6 +174,9 @@ public class BattleManager : MonoBehaviour {
         LocalPlayer.Instance.SetupFaction(null);
         campaignControler.SetupBattle();
         simulationEnded = true;
+        foreach (var faction in factions) {
+            faction.UpdateObjectGroup();
+        }
     }
 
     #region Spawning
