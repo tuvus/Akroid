@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 90
   turretOffset: 1.5
@@ -228,6 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ea2d2d6cab7654fad3eba09f713a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 0
   turretOffset: 3.4
@@ -14888,6 +14890,7 @@ GameObject:
   - component: {fileID: 4268936986182817261}
   - component: {fileID: 3049327884886133802}
   - component: {fileID: 697873143071377945}
+  - component: {fileID: 584391392391931609}
   m_Layer: 10
   m_Name: HeavyTransport
   m_TagString: Units/Ship
@@ -19880,7 +19883,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.823523, y: 32.7}
+    oldSize: {x: 10.82, y: 32.7}
     newSize: {x: 10.823523, y: 32.7}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -19910,6 +19913,102 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!82 &584391392391931609
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4268936986182817265}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: b49d3a7919bcd3948a6de64a3d0ec8ff, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 136
+  DopplerLevel: 0
+  MinDistance: 0
+  MaxDistance: 1000
+  Pan2D: 0
+  rolloffMode: 2
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.07571411
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.4027778
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &4762157301957148754
 GameObject:
   m_ObjectHideFlags: 0
@@ -20008,6 +20107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 270
   turretOffset: 1.5
@@ -20184,7 +20284,7 @@ MonoBehaviour:
   maxCargoBays: 22
   cargoBaySize: 1200
   cargoBayTypes: 
-  cargoBays: []
+  cargoBays: 
 --- !u!1 &7003093554253581178
 GameObject:
   m_ObjectHideFlags: 0
@@ -20283,6 +20383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 90
   turretOffset: 1.5
@@ -20413,6 +20514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ea2d2d6cab7654fad3eba09f713a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 0
   turretOffset: 3.4
@@ -20543,6 +20645,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 270
   turretOffset: 1.5

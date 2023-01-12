@@ -14,6 +14,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
     protected ParticleSystem destroyParticle;
+    protected AudioSource destroyAudio;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
     protected List<CargoBay> cargoBays;
@@ -39,6 +40,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
         unitSelection = GetComponentInChildren<UnitSelection>();
         destroyParticle = GetComponent<ParticleSystem>();
+        destroyAudio = GetComponent<AudioSource>();
         shieldGenerator = GetComponentInChildren<ShieldGenerator>();
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
         minWeaponRange = float.MaxValue;
@@ -140,7 +142,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public void UpdateDestroyedUnit() {
-        if (destroyParticle.isPlaying == false && GetHealth() <= 0) {
+        if (destroyParticle.isPlaying == false && (destroyAudio != null || destroyAudio.isPlaying)  && GetHealth() <= 0) {
             if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
                 return;
             BattleManager.Instance.RemoveDestroyedUnit(this);
@@ -220,6 +222,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
         health = 0;
         if (BattleManager.Instance.GetParticlesShown())
             destroyParticle.Play(false);
+        if (destroyAudio != null)
+            destroyAudio.Play();
         ActivateColliders(false);
         spriteRenderer.enabled = false;
         for (int i = 0; i < transform.childCount; i++) {

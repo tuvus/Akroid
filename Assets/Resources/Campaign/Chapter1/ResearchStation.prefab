@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 120
   turretOffset: 1.5
@@ -177,8 +178,7 @@ MonoBehaviour:
   maxCargoBays: 1
   cargoBaySize: 10000
   cargoBayTypes: 01000000
-  cargoBays:
-  - 4800
+  cargoBays: c012000000000000
 --- !u!1 &831600065081341662
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 831600065110085480}
   - component: {fileID: 3457495768788648788}
   - component: {fileID: -3571867724185488838}
+  - component: {fileID: 6833378776768760750}
   m_Layer: 6
   m_Name: ResearchStation
   m_TagString: Untagged
@@ -5293,6 +5294,102 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!82 &6833378776768760750
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831600065110085484}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: b49d3a7919bcd3948a6de64a3d0ec8ff, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 136
+  DopplerLevel: 0
+  MinDistance: 0
+  MaxDistance: 1000
+  Pan2D: 0
+  rolloffMode: 2
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.07571411
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.4027778
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1418648728745741662
 GameObject:
   m_ObjectHideFlags: 0
@@ -5337,7 +5434,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51bed19c6025c5347a8f0e908136d8fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ships: []
   maxDockSpace: 30
   dockSpace: 0
 --- !u!1 &6119899473199738345
@@ -5438,6 +5534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 0
   turretOffset: 1.5
@@ -5665,6 +5762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  size: 0
   targetRotation: 0
   startRotation: 240
   turretOffset: 1.5
