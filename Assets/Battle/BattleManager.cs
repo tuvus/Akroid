@@ -35,7 +35,6 @@ public class BattleManager : MonoBehaviour {
 
     float startOfSimulation;
     double simulationTime;
-    double realTime;
     bool simulationEnded;
     public struct PositionGiver {
         public Vector2 position;
@@ -385,7 +384,6 @@ public class BattleManager : MonoBehaviour {
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
-        realTime += Time.fixedDeltaTime;
         for (int i = 0; i < factions.Count; i++) {
             Profiler.BeginSample("FactionUpdate");
             factions[i].UpdateFaction(deltaTime);
@@ -428,7 +426,7 @@ public class BattleManager : MonoBehaviour {
         Profiler.EndSample();
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
-            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, Time.time - startOfSimulation);
+            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, GetRealTime(), GetSimulationTime());
             simulationEnded = true;
             LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }
@@ -502,7 +500,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     public double GetRealTime() {
-        return realTime;
+        return Time.unscaledTime - startOfSimulation;
     }
 
     public ShipBlueprint GetShipBlueprint(ShipClass shipClass) {

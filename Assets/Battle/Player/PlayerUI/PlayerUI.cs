@@ -30,6 +30,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject victoryUI;
     [SerializeField] private Text victoryTitle;
     [SerializeField] private Text victoryElapsedTime;
+    [SerializeField] private Text victoryRealTime;
     [SerializeField] private GameObject stationUI;
     [SerializeField] private GameObject shipUI;
     [SerializeField] private GameObject researchUI;
@@ -146,9 +147,10 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
-    public void FactionWon(string factionName, float time) {
+    public void FactionWon(string factionName, double realTime, double timeElapsed) {
         victoryTitle.text = "Victory \n " + factionName;
-        victoryElapsedTime.text = "Time elapsed: " + (int)(time % 60) + " minutes";
+        victoryRealTime.text = "Real time: " + (int)(realTime / 60) + " minutes";
+        victoryElapsedTime.text = "Time elapsed: " + (int)(timeElapsed / 60) + " minutes";
         ShowVictoryUI(true);
     }
 
