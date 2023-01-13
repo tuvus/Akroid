@@ -22,14 +22,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         ShieldRegen,
         ThrustPower,
         ProjectileDamage,
-        ProjectileRange,
         ProjectileReload,
+        ProjectileRange,
         LaserDamage,
-        LaserRange,
         LaserReload,
+        LaserRange,
         MissileDamage,
-        MissileRange,
         MissileReload,
+        MissileRange,
     }
 
     public enum ResearchAreas {
