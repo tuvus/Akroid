@@ -141,12 +141,14 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
     }
 
-    public void UpdateDestroyedUnit() {
+    public void UpdateDestroyedUnit(float deltaTime) {
         if (destroyEffect.IsPlaying() == false && GetHealth() <= 0) {
             BattleManager.Instance.RemoveDestroyedUnit(this);
             //if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
             //    return;
             Destroy(gameObject);
+        } else {
+            destroyEffect.UpdateExplosion(deltaTime);
         }
     }
 

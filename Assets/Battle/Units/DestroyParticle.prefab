@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1562748241310097966
 Transform:
   m_ObjectHideFlags: 0
@@ -40,13 +40,13 @@ LensFlare:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534518343815882992}
   m_Enabled: 1
-  m_Flare: {fileID: 12100000, guid: 392860aefca37a944840a985ff14bb55, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Flare: {fileID: 12100000, guid: 957c43a2608b4234c8464457cc71a68e, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Brightness: 1
-  m_FadeSpeed: 3
+  m_FadeSpeed: 10
   m_IgnoreLayers:
     serializedVersion: 2
-    m_Bits: 6
+    m_Bits: 2147483647
   m_Directional: 0
 --- !u!1 &918098293504690070
 GameObject:
@@ -98,6 +98,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosion: {fileID: 8353732590059730950}
   fragments: {fileID: 5626107184251421489}
+  flare: {fileID: 1482487795117946562}
+  flareSpeed: 2
+  fadeSpeed: 1
 --- !u!198 &8353732590059730950
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -1047,7 +1050,7 @@ ParticleSystem:
     m_BurstCount: 2
     m_Bursts:
     - serializedVersion: 2
-      time: 0.2
+      time: 0
       countCurve:
         serializedVersion: 2
         minMaxState: 0
@@ -1102,7 +1105,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
       cycleCount: 0
-      repeatInterval: 0.05
+      repeatInterval: 0.1
       probability: 1
     - serializedVersion: 2
       time: 1.5
@@ -1160,7 +1163,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
       cycleCount: 0
-      repeatInterval: 0.2
+      repeatInterval: 0.5
       probability: 0.7
   SizeModule:
     enabled: 1

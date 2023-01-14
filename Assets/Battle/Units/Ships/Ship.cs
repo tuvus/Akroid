@@ -492,7 +492,7 @@ public class Ship : Unit {
 
     public override void ShowParticles(bool shown) {
         base.ShowParticles(shown);
-        if (thrusting) {
+        if (thrusting || !IsSpawned()) {
             foreach (var thruster in thrusters) {
                 thruster.ShowParticles(shown);
             }

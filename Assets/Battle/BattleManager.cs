@@ -73,13 +73,11 @@ public class BattleManager : MonoBehaviour {
     protected virtual void Start() {
         if (quickStart == true) {
             Debug.Log("Seting up test scene");
-            List<FactionData> tempFactions = new List<FactionData>();
-            tempFactions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 5));
-            tempFactions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 5));
-            //tempFactions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
-            //tempFactions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
-
-            SetupBattle(3, 40, 1, 1.1f, tempFactions);
+            List<FactionData> tempFactions = new List<FactionData> {
+                new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
+                new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
+            };
+            SetupBattle(1, 0, 1, 1.1f, tempFactions);
         }
     }
 
@@ -411,7 +409,7 @@ public class BattleManager : MonoBehaviour {
         Profiler.EndSample();
         Profiler.BeginSample("DestroyedUnitsUpdate");
         for (int i = 0; i < destroyedUnits.Count; i++) {
-            destroyedUnits[i].UpdateDestroyedUnit();
+            destroyedUnits[i].UpdateDestroyedUnit(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("StarsUpdate");
@@ -488,6 +486,9 @@ public class BattleManager : MonoBehaviour {
         }
         for (int i = 0; i < missiles.Count; i++) {
             missiles[i].ShowParticles(shown);
+        }
+        for (int i = 0; i < destroyedUnits.Count; i++) {
+            destroyedUnits[i].ShowParticles(shown);
         }
     }
 

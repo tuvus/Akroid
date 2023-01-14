@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 public class DestroyEffect : MonoBehaviour, IParticleHolder {
@@ -7,6 +9,11 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
     SpriteRenderer unitRenderer;
     [SerializeField] ParticleSystem explosion;
     [SerializeField] ParticleSystem fragments;
+    [SerializeField] LensFlare flare;
+    [SerializeField] public float flareSpeed;
+    [SerializeField] public float fadeSpeed;
+    float targetBrightness;
+    float flareTime;
 
     public void SetupDestroyEffect(Unit unit, SpriteRenderer targetRenderer) {
         this.unit = unit;
@@ -19,15 +26,35 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         shape = fragments.shape;
         shape.spriteRenderer = targetRenderer;
         shape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
+        flare.enabled = false;
+        flare.brightness = 0;
+        targetBrightness = unit.GetSize() * 80;
+        flareTime = 0;
     }
 
     public void Explode() {
-        explosion.Play(false);
-        fragments.Play(false);
+        if (BattleManager.Instance.GetParticlesShown()) {
+            explosion.Play(false);
+            fragments.Play(false);
+        }
+        flare.enabled = true;
+        UpdateExplosion(0);
+    }
+
+    public void UpdateExplosion(float deltaTime) {
+        flareTime += deltaTime;
+        if (flareTime <= flareSpeed) {
+            flare.brightness = targetBrightness * flareTime / flareSpeed;
+        } else if (flareTime <= flareSpeed + fadeSpeed) {
+            flare.brightness = targetBrightness *  (1 / Mathf.Pow(1 + flareTime - flareSpeed, 2));
+        } else if (flare.enabled) {
+            flare.brightness = 0;
+            flare.enabled = false;
+        }
     }
 
     public bool IsPlaying() {
-        return explosion.isPlaying || fragments.isPlaying;
+        return explosion.isPlaying || fragments.isPlaying || flare.brightness > 0;
     }
 
     public void SetParticleSpeed(float speed) {
