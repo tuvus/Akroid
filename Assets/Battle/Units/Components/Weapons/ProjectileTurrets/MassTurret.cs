@@ -72,6 +72,11 @@ public class MassTurret : Turret {
         return damage / time;
     }
 
+    public override void StopFireing() {
+        base.StopFireing();
+        flash.enabled = false;
+    }
+
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {
         print(GetDamagePerSecond());

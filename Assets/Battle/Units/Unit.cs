@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
+using static UnityEngine.UI.CanvasScaler;
 
 public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
@@ -13,7 +14,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
-    protected ParticleSystem destroyParticle;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
     protected List<CargoBay> cargoBays;
@@ -22,6 +22,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     private float maxWeaponRange;
     private float minWeaponRange;
     protected Vector2 velocity;
+    private DestroyEffect destroyEffect;
 
     public List<Unit> enemyUnitsInRange { get; protected set; }
     public List<float> enemyUnitsInRangeDistance { get; protected set; }
@@ -38,7 +39,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
         unitSelection = GetComponentInChildren<UnitSelection>();
-        destroyParticle = GetComponent<ParticleSystem>();
+        destroyEffect = GetComponentInChildren<DestroyEffect>();
+        destroyEffect.SetupDestroyEffect(this, spriteRenderer);
         shieldGenerator = GetComponentInChildren<ShieldGenerator>();
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
         minWeaponRange = float.MaxValue;
@@ -140,10 +142,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public void UpdateDestroyedUnit() {
-        if (destroyParticle.isPlaying == false && GetHealth() <= 0) {
-            if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
-                return;
+        if (destroyEffect.IsPlaying() == false && GetHealth() <= 0) {
             BattleManager.Instance.RemoveDestroyedUnit(this);
+            //if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
+            //    return;
             Destroy(gameObject);
         }
     }
@@ -218,12 +220,19 @@ public abstract class Unit : BattleObject, IParticleHolder {
             return;
         Despawn();
         health = 0;
-        if (BattleManager.Instance.GetParticlesShown())
-            destroyParticle.Play(false);
         ActivateColliders(false);
-        spriteRenderer.enabled = false;
-        for (int i = 0; i < transform.childCount; i++) {
-            transform.GetChild(i).gameObject.SetActive(false);
+        unitSelection.ShowUnitSelection(false);
+        if (BattleManager.Instance.GetParticlesShown())
+            destroyEffect.Explode();
+        if (shieldGenerator != null)
+            shieldGenerator.DestroyShield();
+        for(int i = 0; i < turrets.Count; i++) {
+            turrets[i].StopFireing();
+        }
+        float value = Random.Range(0.2f, 0.6f);
+        spriteRenderer.color = new Color(value, value, value, 1);
+        for (int i = 0; i < turrets.Count; i++) {
+            turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
         }
         DestroyUnit();
     }
@@ -407,14 +416,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public virtual void SetParticleSpeed(float speed) {
-        var main = destroyParticle.main;
-        main.simulationSpeed = speed;
+        destroyEffect.SetParticleSpeed(speed);
     }
 
     public virtual void ShowParticles(bool shown) {
-        if (!shown && destroyParticle.IsAlive()) {
-            destroyParticle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        }
+        destroyEffect.ShowParticles(shown);
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]
@@ -447,7 +453,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public int GetWeaponCount() {
         return turrets.Count + missileLaunchers.Count;
     }
-    
+
     #endregion
 
 }

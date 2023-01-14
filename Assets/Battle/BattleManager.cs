@@ -74,8 +74,8 @@ public class BattleManager : MonoBehaviour {
         if (quickStart == true) {
             Debug.Log("Seting up test scene");
             List<FactionData> tempFactions = new List<FactionData>();
-            tempFactions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
-            tempFactions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
+            tempFactions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 5));
+            tempFactions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 5));
             //tempFactions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
             //tempFactions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
 

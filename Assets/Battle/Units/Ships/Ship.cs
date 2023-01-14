@@ -396,6 +396,13 @@ public class Ship : Unit {
         ShowUnit(true);
         dockedStation = null;
     }
+
+    public override void Explode() {
+        base.Explode();
+        for (int i = 0; i < thrusters.Count; i++) {
+            thrusters[i].EndThrust();
+        }
+    }
     #endregion
 
     #region GetMethods

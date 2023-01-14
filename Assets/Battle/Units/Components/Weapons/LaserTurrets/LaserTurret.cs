@@ -60,6 +60,11 @@ public class LaserTurret : Turret {
         return damage / time;
     }
 
+    public override void StopFireing() {
+        base.StopFireing();
+        Destroy(laser.gameObject);
+    }
+
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {
         print(GetDamagePerSecond());

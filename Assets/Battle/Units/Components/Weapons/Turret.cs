@@ -27,7 +27,6 @@ public class Turret : BattleObject {
     public float minRotate;
     public float maxRotate;
 
-    private SpriteRenderer spriteRenderer;
     protected Unit unit;
     protected ReloadController reloadController;
 
@@ -41,7 +40,6 @@ public class Turret : BattleObject {
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject();
         this.unit = unit;
-        spriteRenderer = GetComponent<SpriteRenderer>();
         targetRotation = startRotation;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController();
@@ -290,5 +288,9 @@ public class Turret : BattleObject {
 
     public virtual float GetDamagePerSecond() {
         return 0;
+    }
+
+    public virtual void StopFireing() {
+
     }
 }
