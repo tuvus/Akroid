@@ -82,7 +82,7 @@ public class UnitSelection : MonoBehaviour {
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
-        } else if (realSize > 50f) {
+        } else if (realSize > 100f) {
             float size = Mathf.Max(1.2f, realSize / 10 / unit.GetSize());
             spriteRenderer.sortingOrder = -10;
             spriteRenderer.enabled = true;
