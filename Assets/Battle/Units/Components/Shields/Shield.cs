@@ -6,14 +6,14 @@ public class Shield : MonoBehaviour {
     Unit unit;
     ShieldGenerator shieldGenerator;
     private SpriteRenderer spriteRenderer;
-    private new Collider2D collider;
+    private Collider2D shieldCollider;
     public int health;
     public void SetShield(int health, ShieldGenerator shieldGenerator, Unit unit) {
         this.health = health;
         this.shieldGenerator = shieldGenerator;
         this.unit = unit;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        collider = GetComponent<Collider2D>();
+        shieldCollider = GetComponent<Collider2D>();
         RefreshSheild();
     }
 
@@ -44,7 +44,7 @@ public class Shield : MonoBehaviour {
 
     public void ShowSield(bool show) {
         spriteRenderer.enabled = show;
-        collider.enabled = show;
+        shieldCollider.enabled = show;
     }
 
     public Unit GetUnit() {

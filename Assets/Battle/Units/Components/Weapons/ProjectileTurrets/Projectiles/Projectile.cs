@@ -5,7 +5,7 @@ using UnityEngine;
 public class Projectile : BattleObject, IParticleHolder {
     public int projectileIndex { get; private set; }
     [SerializeField] private SpriteRenderer highlight;
-    [SerializeField] private new ParticleSystem particleSystem;
+    [SerializeField] private ParticleSystem particles;
     [SerializeField] private BoxCollider2D boxCollider2D;
     private Faction faction;
     private float speed;
@@ -46,7 +46,7 @@ public class Projectile : BattleObject, IParticleHolder {
 
     public void UpdateProjectile(float deltaTime) {
         if (hit) {
-            if (particleSystem.isPlaying == false) {
+            if (particles.isPlaying == false) {
                 RemoveProjectile();
             }
         } else {
@@ -92,7 +92,7 @@ public class Projectile : BattleObject, IParticleHolder {
         spriteRenderer.enabled = false;
         boxCollider2D.enabled = false;
         if (BattleManager.Instance.GetParticlesShown())
-            particleSystem.Play();
+            particles.Play();
     }
 
     void Activate(bool activate = true) {
@@ -107,7 +107,7 @@ public class Projectile : BattleObject, IParticleHolder {
 
     public void RemoveProjectile() {
         transform.localScale = startingScale;
-        particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        particles.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         hit = false;
         highlight.enabled = false;
         Activate(false);
@@ -119,13 +119,13 @@ public class Projectile : BattleObject, IParticleHolder {
     }
 
     public void SetParticleSpeed(float speed) {
-        var main = particleSystem.main;
+        var main = particles.main;
         main.simulationSpeed = speed;
     }
 
     public void ShowParticles(bool shown) {
         if (hit && !shown) {
-            particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            particles.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 }
