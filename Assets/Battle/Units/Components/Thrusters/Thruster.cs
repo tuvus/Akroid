@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Thruster : MonoBehaviour {
-    ParticleSystem particle;
+    [SerializeField] ParticleSystem particle;
+    [SerializeField] LensFlare thrusterFlare;
+    float targetBrightness;
 
     public float thrustSpeed;
     public void SetupThruster() {
-        particle = GetComponent<ParticleSystem>();
+        targetBrightness = thrusterFlare.brightness;
         EndThrust();
     }
 
     public void BeginThrust() {
         if (BattleManager.Instance.GetParticlesShown())
             particle.Play();
+        thrusterFlare.brightness = targetBrightness;
     }
 
     public void EndThrust() {
+        thrusterFlare.brightness = 0;
         particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
     }
 
