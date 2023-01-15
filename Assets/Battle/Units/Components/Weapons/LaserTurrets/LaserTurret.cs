@@ -64,6 +64,10 @@ public class LaserTurret : Turret {
         base.StopFireing();
         Destroy(laser.gameObject);
     }
+    public override void ShowEffects(bool shown) {
+        base.ShowEffects(shown);
+        laser.ShowEffects(shown);
+    }
 
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {

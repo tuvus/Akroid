@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using static System.Collections.Specialized.BitVector32;
 
 public class PlayerUI : MonoBehaviour {
+    public static PlayerUI Instance { get; protected set; }
     private LocalPlayerInput localPlayerInput;
 
     [SerializeField] private PlayerUnitStatusUI shipStatusUI;
@@ -39,15 +40,18 @@ public class PlayerUI : MonoBehaviour {
     public bool showUnitZoomIndicators;
     public bool showUnitCombatIndicators;
     public bool updateUnitZoomIndicators;
+    public bool effects;
     public bool particles;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
+        Instance = this;
         this.localPlayerInput = localPlayerInput;
         CloseAllMenues();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
         showUnitCombatIndicators = true;
+        effects = true;
         particles = true;
         playerCommsManager.SetupPlayerCommsManager(this);
         playerMenueUI.SetupMenueUI(this);
@@ -139,11 +143,17 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void SetEffects(bool shown) {
+        if (shown != effects) {
+            effects = shown;
+            BattleManager.Instance.ShowEffects(shown);
+        }
+    }
+
     public void SetParticles(bool shown) {
         if (shown != particles) {
             particles = shown;
             BattleManager.Instance.ShowParticles(shown);
-            return;
         }
     }
 

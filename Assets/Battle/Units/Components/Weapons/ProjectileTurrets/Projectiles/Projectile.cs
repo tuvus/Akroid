@@ -39,7 +39,8 @@ public class Projectile : BattleObject, IParticleHolder {
         transform.localScale *= scale;
         distance = 0;
         hit = false;
-        highlight.enabled = true;
+
+        highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
     }
 
@@ -110,6 +111,11 @@ public class Projectile : BattleObject, IParticleHolder {
         hit = false;
         highlight.enabled = false;
         Activate(false);
+    }
+
+    public void ShowEffects(bool shown) {
+        if (highlight.enabled)
+            highlight.enabled = shown;
     }
 
     public void SetParticleSpeed(float speed) {

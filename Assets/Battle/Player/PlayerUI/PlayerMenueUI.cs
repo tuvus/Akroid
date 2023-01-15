@@ -7,6 +7,7 @@ public class PlayerMenueUI : MonoBehaviour {
     PlayerUI playerUI;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
+    [SerializeField] private Toggle menueUIEffects;
     [SerializeField] private Toggle menueUIParticles;
     [SerializeField] private Dropdown menueUIFactionSelect;
     [SerializeField] private Text timeScaleText;
@@ -24,7 +25,10 @@ public class PlayerMenueUI : MonoBehaviour {
             factionNames.Add(BattleManager.Instance.GetAllFactions()[i].name);
         }
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
+        menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.SetIsOnWithoutNotify(playerUI.showUnitCombatIndicators);
+        menueUIEffects.SetIsOnWithoutNotify(playerUI.effects);
+        menueUIParticles.transform.parent.gameObject.SetActive(playerUI.effects);
         menueUIParticles.SetIsOnWithoutNotify(playerUI.particles);
         menueUIFactionSelect.AddOptions(factionNames);
         if (LocalPlayer.Instance.GetFaction() == null)
@@ -42,6 +46,11 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void UpdateUnitCombatIndicators(bool newSetting) {
         menueUIUnitCombatIndicators.SetIsOnWithoutNotify(newSetting);
+    }
+
+    public void SetEffects() {
+        playerUI.SetEffects(menueUIEffects.isOn);
+        menueUIParticles.transform.parent.gameObject.SetActive(menueUIEffects.isOn);
     }
 
     public void SetParticles() {

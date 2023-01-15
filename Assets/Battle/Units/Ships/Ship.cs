@@ -483,6 +483,13 @@ public class Ship : Unit {
         return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
     }
 
+    public override void ShowEffects(bool shown) {
+        base.ShowEffects(shown);
+        foreach (var thruster in thrusters) {
+            thruster.ShowEffects(shown);
+        }
+    }
+
     public override void SetParticleSpeed(float speed) {
         base.SetParticleSpeed(speed);
         foreach (var thruster in thrusters) {

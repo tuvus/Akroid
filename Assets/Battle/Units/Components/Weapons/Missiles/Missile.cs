@@ -52,7 +52,7 @@ public class Missile : BattleObject, IParticleHolder {
         if (BattleManager.Instance.GetParticlesShown())
             thrustParticleSystem.Play();
         distance = 0;
-        highlight.enabled = true;
+        highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
     }
 
@@ -164,6 +164,11 @@ public class Missile : BattleObject, IParticleHolder {
         }
         spriteRenderer.enabled = activate;
         boxCollider2D.enabled = activate;
+    }
+
+    public void ShowEffects(bool shown) {
+        if (highlight.enabled)
+            highlight.enabled = shown;
     }
 
     public void SetParticleSpeed(float speed) {

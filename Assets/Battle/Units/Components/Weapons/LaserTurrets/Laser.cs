@@ -56,8 +56,8 @@ public class Laser : MonoBehaviour {
     public void UpdateLaser(float deltaTime) {
         if (fireing) {
             spriteRenderer.enabled = true;
-            startHighlight.enabled = true;
-            endHighlight.enabled = true;
+            startHighlight.enabled = BattleManager.Instance.GetEffectsShown();
+            endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
             transform.localPosition = new Vector2(0, 0);
             transform.rotation = transform.parent.rotation;
 
@@ -149,7 +149,7 @@ public class Laser : MonoBehaviour {
         if (hitPoint.HasValue) {
             spriteRenderer.size = new Vector2(spriteRenderer.size.x, (hitPoint.Value.distance / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
             endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
-            endHighlight.enabled = true;
+            endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
         } else {
             spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
             endHighlight.enabled = false;
@@ -164,5 +164,10 @@ public class Laser : MonoBehaviour {
 
     public float GetLaserRange() {
         return laserTurret.laserRange * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
+    }
+
+    public void ShowEffects(bool shown) { 
+        startHighlight.enabled = shown;
+        endHighlight.enabled = shown;
     }
 }

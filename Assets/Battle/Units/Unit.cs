@@ -70,6 +70,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
     }
 
+    #region Update
     public virtual void UpdateUnit(float deltaTime) {
         if (IsTargetable() && HasWeapons()) {
             FindEnemies();
@@ -151,6 +152,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
             destroyEffect.UpdateExplosion(deltaTime);
         }
     }
+    #endregion
 
     #region UnitControlls
     public void SetRotation(float rotation) {
@@ -415,6 +417,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual List<float> GetEnemyUnitsInRangeDistance() {
         return enemyUnitsInRangeDistance;
+    }
+
+    public virtual void ShowEffects(bool shown) {
+        destroyEffect.ShowEffects(shown);
     }
 
     public virtual void SetParticleSpeed(float speed) {

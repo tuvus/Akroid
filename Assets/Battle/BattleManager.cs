@@ -473,6 +473,26 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
+    /// Determines wether or not the effects will be shown or not.
+    /// </summary>
+    /// <param name="shown"></param>
+    public void ShowEffects(bool shown) {
+        ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
+        for (int i = 0; i < units.Count; i++) {
+            units[i].ShowEffects(shown);
+        }
+        for (int i = 0; i < projectiles.Count; i++) {
+            projectiles[i].ShowEffects(shown);
+        }
+        for (int i = 0; i < missiles.Count; i++) {
+            missiles[i].ShowEffects(shown);
+        }
+        for (int i = 0; i < destroyedUnits.Count; i++) {
+            destroyedUnits[i].ShowEffects(shown);
+        }
+    }
+
+    /// <summary>
     /// Determines wether or not the particles in the game are rendered or not.
     /// Will not be called with the same shown value twice in a row.
     /// </summary>
@@ -492,12 +512,16 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    public bool GetEffectsShown() {
+        return PlayerUI.Instance.effects;
+    }
+
     /// <summary>
     /// For particle emmiters to figure out if they should emit when begging their emissions.
     /// </summary>
     /// <returns>wether or not the particles should be shown</returns>
     public bool GetParticlesShown() {
-        return LocalPlayer.Instance.GetPlayerUI().particles;
+        return PlayerUI.Instance.effects &&  PlayerUI.Instance.particles;
     }
 
     public double GetRealTime() {

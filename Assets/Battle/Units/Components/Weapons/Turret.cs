@@ -290,6 +290,8 @@ public class Turret : BattleObject {
         return 0;
     }
 
+    public virtual void ShowEffects(bool shown) { }
+
     public virtual void StopFireing() {
 
     }

@@ -37,7 +37,8 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
             explosion.Play(false);
             fragments.Play(false);
         }
-        flare.enabled = true;
+        if (BattleManager.Instance.GetEffectsShown())
+            flare.enabled = true;
         UpdateExplosion(0);
     }
 
@@ -46,7 +47,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         if (flareTime <= flareSpeed) {
             flare.brightness = targetBrightness * flareTime / flareSpeed;
         } else if (flareTime <= flareSpeed + fadeSpeed) {
-            flare.brightness = targetBrightness *  (1 / Mathf.Pow(1 + flareTime - flareSpeed, 2));
+            flare.brightness = targetBrightness * (1 / Mathf.Pow(1 + flareTime - flareSpeed, 2));
         } else if (flare.enabled) {
             flare.brightness = 0;
             flare.enabled = false;
@@ -54,7 +55,11 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
     }
 
     public bool IsPlaying() {
-        return explosion.isPlaying || fragments.isPlaying || flare.brightness > 0;
+        return explosion.isPlaying || fragments.isPlaying || (flare.brightness > 0 && flare.enabled);
+    }
+
+    public void ShowEffects(bool shown) {
+        flare.enabled = shown;
     }
 
     public void SetParticleSpeed(float speed) {
