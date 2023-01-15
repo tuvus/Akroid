@@ -137,7 +137,7 @@ public class BattleManager : MonoBehaviour {
         else
             LocalPlayer.Instance.SetupFaction(null);
         LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
-        startOfSimulation = Time.time;
+        startOfSimulation = Time.unscaledTime;
         simulationEnded = false;
         if (CheckVictory())
             simulationEnded = true;
