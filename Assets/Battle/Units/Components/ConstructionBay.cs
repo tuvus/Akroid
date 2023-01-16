@@ -54,7 +54,7 @@ public class ConstructionBay : MonoBehaviour {
                         break;
                     long ammountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmmount, shipBlueprint.resources[f]));
                     shipBlueprint.resources[f] -= ammountToUse;
-                    shipyard.UseCargo(ammountToUse, shipBlueprint.resourcesTypes[f]);
+                    shipyard.GetCargoBay().UseCargo(ammountToUse, shipBlueprint.resourcesTypes[f]);
                     if (shipBlueprint.resources[f] <= 0) {
                         shipBlueprint.resources.RemoveAt(f);
                         shipBlueprint.resourcesTypes.RemoveAt(f);

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static FactionCommManager;
@@ -119,7 +118,7 @@ public class PlayerCommsManager : MonoBehaviour {
             return false;
         List<RaycastResult> raycastResults = new List<RaycastResult>();
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = playerUI.GetLocalPlayer().GetLocalPlayerInput().GetMousePosition();
+        pointerEventData.position = playerUI.GetLocalPlayerInput().GetMousePosition();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
         foreach (var result in raycastResults) {
             if (result.gameObject.tag.Equals("FreezeScroll"))

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
-using static UnityEngine.UI.CanvasScaler;
 
 public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
@@ -256,7 +255,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
     #endregion
 
-    #region GetMethods
+    #region HelperMethods
     public float GetMaxWeaponRange() {
         return maxWeaponRange;
     }

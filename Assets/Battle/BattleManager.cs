@@ -66,6 +66,7 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    #region Setup
     /// <summary>
     /// Sets up the battle with only two factions, used for debugging.
     /// Two factions means better preformance for faster debugging.
@@ -175,6 +176,7 @@ public class BattleManager : MonoBehaviour {
             faction.UpdateObjectGroup();
         }
     }
+    #endregion
 
     #region Spawning
     /// <summary>
@@ -292,6 +294,8 @@ public class BattleManager : MonoBehaviour {
         newAsteroidField.SetupAsteroidField(positionGiver);
     }
     #endregion
+
+    #region ObjectLists
     public void BuildStationBlueprint(Station station) {
         stationBlueprints.Remove(station);
         units.Add(station);
@@ -326,7 +330,6 @@ public class BattleManager : MonoBehaviour {
         destroyedUnits.Remove(unit);
     }
 
-    #region Projectiles and Missiles
     public void AddProjectile(Projectile projectile) {
         usedProjectiles.Add(projectile.projectileIndex);
         unusedProjectiles.Remove(projectile.projectileIndex);
@@ -435,6 +438,7 @@ public class BattleManager : MonoBehaviour {
         LocalPlayer.Instance.UpdatePlayer();
     }
 
+    #region HelperMethods
     public Faction CheckVictory() {
         if (simulationEnded)
             return null;
@@ -521,7 +525,7 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     /// <returns>wether or not the particles should be shown</returns>
     public bool GetParticlesShown() {
-        return PlayerUI.Instance.effects &&  PlayerUI.Instance.particles;
+        return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
     }
 
     public double GetRealTime() {
@@ -588,4 +592,5 @@ public class BattleManager : MonoBehaviour {
     public static GameObject GetSizeIndicatorPrefab() {
         return Resources.Load<GameObject>("Prefabs/SizeIndicator");
     }
+    #endregion
 }

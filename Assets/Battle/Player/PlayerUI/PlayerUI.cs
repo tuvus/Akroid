@@ -75,7 +75,7 @@ public class PlayerUI : MonoBehaviour {
         if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
             unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
         }
-        UpdateDisplayedUnitUI(GetLocalPlayer().GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayer().GetLocalPlayerInput().GetDisplayedUnit(), unitCount);
+        UpdateDisplayedUnitUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedUnit(), unitCount);
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
@@ -106,6 +106,48 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    #region MenueUIs
+    public void ShowControlList(bool shown) {
+        CloseAllMenues();
+        controlsListUI.SetActive(shown);
+    }
+
+    public void ToggleControlsList() {
+        ShowControlList(!controlsListUI.activeSelf);
+    }
+
+    public void ShowMenueUI(bool shown) {
+        CloseAllMenues();
+        menuUI.SetActive(shown);
+    }
+
+    public void ToggleMenueUI() {
+        ShowMenueUI(!menuUI.activeSelf);
+        if (menuUI.activeSelf) {
+            playerMenueUI.ShowMenueUI();
+        }
+    }
+
+    public void ShowVictoryUI(bool shown) {
+        CloseAllMenues();
+        victoryUI.SetActive(shown);
+    }
+
+    public void FactionWon(string factionName, double realTime, double timeElapsed) {
+        victoryTitle.text = "Victory \n " + factionName;
+        victoryRealTime.text = "Real time: " + (int)(realTime / 60) + " minutes";
+        victoryElapsedTime.text = "Time elapsed: " + (int)(timeElapsed / 60) + " minutes";
+        ShowVictoryUI(true);
+    }
+
+    public void ShowStationUI(bool shown) {
+        stationUI.SetActive(false);
+        CloseAllMenues();
+        stationUI.SetActive(shown);
+        if (!shown)
+            playerStationUI.DisplayStation(null);
+    }
+
     public void SetDisplayStation(Station station) {
         if (!stationUI.activeSelf) {
             ShowStationUI(true);
@@ -119,6 +161,14 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void ShowShipUI(bool shown) {
+        shipUI.SetActive(false);
+        CloseAllMenues();
+        shipUI.SetActive(shown);
+        if (!shown)
+            playerShipUI.DisplayShip(null);
+    }
+
     public void SetDisplayShip(Ship ship) {
         if (!stationUI.activeSelf) {
             ShowShipUI(true);
@@ -130,69 +180,6 @@ public class PlayerUI : MonoBehaviour {
         } else {
             playerShipUI.DisplayShip(ship);
         }
-    }
-
-    public void ToggleControlsList() {
-        ShowControlList(!controlsListUI.activeSelf);
-    }
-
-    public void ToggleMenueUI() {
-        ShowMenueUI(!menuUI.activeSelf);
-        if (menuUI.activeSelf) {
-            playerMenueUI.ShowMenueUI();
-        }
-    }
-
-    public void SetEffects(bool shown) {
-        if (shown != effects) {
-            effects = shown;
-            BattleManager.Instance.ShowEffects(shown);
-        }
-    }
-
-    public void SetParticles(bool shown) {
-        if (shown != particles) {
-            particles = shown;
-            BattleManager.Instance.ShowParticles(shown);
-        }
-    }
-
-    public void FactionWon(string factionName, double realTime, double timeElapsed) {
-        victoryTitle.text = "Victory \n " + factionName;
-        victoryRealTime.text = "Real time: " + (int)(realTime / 60) + " minutes";
-        victoryElapsedTime.text = "Time elapsed: " + (int)(timeElapsed / 60) + " minutes";
-        ShowVictoryUI(true);
-    }
-
-    public void ShowControlList(bool shown) {
-        CloseAllMenues();
-        controlsListUI.SetActive(shown);
-    }
-
-    public void ShowMenueUI(bool shown) {
-        CloseAllMenues();
-        menuUI.SetActive(shown);
-    }
-
-    public void ShowVictoryUI(bool shown) {
-        CloseAllMenues();
-        victoryUI.SetActive(shown);
-    }
-
-    public void ShowStationUI(bool shown) {
-        stationUI.SetActive(false);
-        CloseAllMenues();
-        stationUI.SetActive(shown);
-        if (!shown)
-            playerStationUI.DisplayStation(null);
-    }
-
-    public void ShowShipUI(bool shown) {
-        shipUI.SetActive(false);
-        CloseAllMenues();
-        shipUI.SetActive(shown);
-        if (!shown)
-            playerShipUI.DisplayShip(null);
     }
 
     public void ShowResearchUI(bool shown) {
@@ -215,22 +202,6 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
-    public LocalPlayer GetLocalPlayer() {
-        return LocalPlayer.Instance;
-    }
-
-    public CommandClick GetCommandClick() {
-        return commandClick;
-    }
-
-    public bool FreezeZoom() {
-        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
-    }
-
-    public bool GetShowUnitZoomIndicators() {
-        return showUnitZoomIndicators;
-    }
-
     public void ToggleUnitZoomIndicators() {
         showUnitZoomIndicators = !showUnitZoomIndicators;
         updateUnitZoomIndicators = true;
@@ -241,6 +212,20 @@ public class PlayerUI : MonoBehaviour {
         showUnitCombatIndicators = !showUnitCombatIndicators;
         updateUnitZoomIndicators = true;
         playerMenueUI.UpdateUnitCombatIndicators(showUnitCombatIndicators);
+    }
+
+    public void SetEffects(bool shown) {
+        if (shown != effects) {
+            effects = shown;
+            BattleManager.Instance.ShowEffects(shown);
+        }
+    }
+
+    public void SetParticles(bool shown) {
+        if (shown != particles) {
+            particles = shown;
+            BattleManager.Instance.ShowParticles(shown);
+        }
     }
 
     bool UpdateUnitZoomIndicators() {
@@ -254,6 +239,16 @@ public class PlayerUI : MonoBehaviour {
     public bool ShowUnitCombatIndicators() {
         return showUnitCombatIndicators;
     }
+    #endregion
+
+    #region HelperMethods
+    public bool FreezeZoom() {
+        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
+    }
+
+    public bool GetShowUnitZoomIndicators() {
+        return showUnitZoomIndicators;
+    }
 
     public bool IsControlsListShown() {
         return controlsListUI.activeSelf;
@@ -261,6 +256,14 @@ public class PlayerUI : MonoBehaviour {
 
     public bool IsAMenueShown() {
         return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
+    }
+
+    public LocalPlayer GetLocalPlayer() {
+        return LocalPlayer.Instance;
+    }
+
+    public CommandClick GetCommandClick() {
+        return commandClick;
     }
 
     public PlayerCommsManager GetPlayerCommsManager() {
@@ -274,4 +277,5 @@ public class PlayerUI : MonoBehaviour {
     public void QuitSimulation() {
         SceneManager.LoadScene("Start");
     }
+    #endregion
 }

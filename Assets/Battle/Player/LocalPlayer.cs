@@ -1,8 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
+/// <summary>
+/// LocalPlayer should contain all the relevant information that any part of the simulation/game
+/// below it needs to interact with the player. This allows the simulation/game to be oblivious
+/// to the PlayerUI and it's functions.
+/// </summary>
 public class LocalPlayer : MonoBehaviour {
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
@@ -42,6 +46,10 @@ public class LocalPlayer : MonoBehaviour {
         playerUI.GetPlayerCommsManager().SetupFaction(faction);
     }
 
+    /// <summary>
+    /// Refreshes the colors of the unit displays to thier proper color.
+    /// Call after the player faction or the player faction's enemies list is modified.
+    /// </summary>
     public void UpdateFactionColors() {
         for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
             BattleManager.Instance.GetAllUnits()[i].GetUnitSelection().UpdateFactionColor();
@@ -52,11 +60,11 @@ public class LocalPlayer : MonoBehaviour {
         playerUI.UpdatePlayerUI();
     }
 
+    #region HelperMethods
     public void AddOwnedUnit(Unit unit) {
         ownedUnits.Add(unit);
     }
 
-    #region GetMethods
     public LocalPlayerInput GetInputManager() {
         return localPlayerInput;
     }

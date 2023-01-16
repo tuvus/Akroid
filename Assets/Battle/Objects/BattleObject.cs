@@ -60,6 +60,10 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         return transform.eulerAngles.z;
     }
 
+    /// <summary>
+    /// Returns the game size of the object used for collisions, targeting, etc.
+    /// </summary>
+    /// <returns>the physical size of the object</returns>
     public float GetSize() {
         return size;
     }
@@ -70,6 +74,10 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         Debug.Log(SetupSize());
     }
 
+    /// <summary>
+    /// Returns the size of the sprite not including any scale modifications specific to the BattleObject.
+    /// </summary>
+    /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
