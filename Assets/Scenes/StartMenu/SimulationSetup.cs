@@ -10,6 +10,7 @@ public class SimulationSetup : MonoBehaviour {
     [SerializeField] private InputField editSimulationStars;
     [SerializeField] private InputField editSimulationAsteroids;
     [SerializeField] private InputField editSimulationAsteroidCount;
+    [SerializeField] private InputField editSimulationSystemSizeModifier;
     [SerializeField] private InputField editSimulationResearchModifier;
     [SerializeField] private GameObject factionPrefab;
     [SerializeField] private Transform factionList;
@@ -25,6 +26,7 @@ public class SimulationSetup : MonoBehaviour {
     private int starCount;
     private int asteroidFieldCount;
     private float asteroidCountModifier;
+    private float systemSizeModifier;
     private float researchModifier;
 
     public void Awake() {
@@ -37,6 +39,7 @@ public class SimulationSetup : MonoBehaviour {
         starCount = 3;
         asteroidFieldCount = 40;
         asteroidCountModifier = 1;
+        systemSizeModifier = 1;
         researchModifier = 1.01f;
 
         for (int i = 0; i < factionList.childCount; i++) {
@@ -51,6 +54,7 @@ public class SimulationSetup : MonoBehaviour {
         asteroidFieldCount = 40;
         starCount = 3;
         asteroidCountModifier = 1.2f;
+        systemSizeModifier = 1;
         researchModifier = 1.01f;
         factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
         factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
@@ -66,6 +70,7 @@ public class SimulationSetup : MonoBehaviour {
             editSimulationStars.SetTextWithoutNotify(starCount.ToString());
             editSimulationAsteroids.SetTextWithoutNotify(asteroidFieldCount.ToString());
             editSimulationAsteroidCount.SetTextWithoutNotify((asteroidCountModifier).ToString());
+            editSimulationSystemSizeModifier.SetTextWithoutNotify((systemSizeModifier).ToString());
             editSimulationResearchModifier.SetTextWithoutNotify((researchModifier).ToString());
         }
     }
@@ -75,6 +80,7 @@ public class SimulationSetup : MonoBehaviour {
             starCount = int.Parse(editSimulationStars.text);
             asteroidFieldCount = int.Parse(editSimulationAsteroids.text);
             asteroidCountModifier = float.Parse(editSimulationAsteroidCount.text);
+            systemSizeModifier = float.Parse(editSimulationSystemSizeModifier.text);
             researchModifier = float.Parse(editSimulationResearchModifier.text);
         } catch {
             Debug.LogWarning("Error parsing simulation inputs");
@@ -184,7 +190,7 @@ public class SimulationSetup : MonoBehaviour {
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, researchModifier, factions);
+        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, systemSizeModifier, researchModifier, factions);
         Destroy(gameObject);
     }
 

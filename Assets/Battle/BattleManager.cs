@@ -12,6 +12,7 @@ public class BattleManager : MonoBehaviour {
     CampaingController campaignControler;
 
     public float researchModifier { get; private set; }
+    public float systemSizeModifier { get; private set; }
     public List<ShipBlueprint> shipBlueprints;
 
     public List<Faction> factions;
@@ -78,7 +79,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
                 new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
             };
-            SetupBattle(1, 0, 1, 1.1f, tempFactions);
+            SetupBattle(1, 0, 1, 0.5f, 1.1f, tempFactions);
         }
     }
 
@@ -90,12 +91,13 @@ public class BattleManager : MonoBehaviour {
     /// <param name="asteroidCountModifier"></param>
     /// <param name="researchModifier"></param>
     /// <param name="factionDatas"></param>
-    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, float researchModifier, List<FactionData> factionDatas) {
+    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, float systemSizeModifier, float researchModifier, List<FactionData> factionDatas) {
         if (Instance == null) {
             Instance = this;
         } else {
             Destroy(gameObject);
         }
+        this.systemSizeModifier = systemSizeModifier;
         this.researchModifier = researchModifier;
         factions = new List<Faction>(10);
         units = new List<Unit>(200);
@@ -122,7 +124,7 @@ public class BattleManager : MonoBehaviour {
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
-            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 6), 100);
+            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 10), 100);
         }
 
         for (int i = 0; i < factions.Count; i++) {
@@ -156,7 +158,8 @@ public class BattleManager : MonoBehaviour {
             Destroy(gameObject);
         }
         this.campaignControler = campaignControler;
-        this.researchModifier = researchModifier;
+        systemSizeModifier = campaignControler.systemSizeModifier;
+        researchModifier = campaignControler.researchModifier;
         factions = new List<Faction>(0);
         units = new List<Unit>(100);
         ships = new List<Ship>(50);
@@ -193,7 +196,7 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
             float distance = Random.Range(minRange, maxRange);
             Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0f, 360f), distance);
-            if (positionConfirmer.ConfirmPosition(tryPos, positionGiver.distanceFromObject)) {
+            if (positionConfirmer.ConfirmPosition(tryPos, positionGiver.distanceFromObject * systemSizeModifier)) {
                 return tryPos;
             }
         }
