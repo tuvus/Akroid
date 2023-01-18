@@ -217,14 +217,14 @@ public class BattleManager : MonoBehaviour {
     /// <param name="tyCount">The ammount of times to try for each incrament</param>
     /// <returns></returns>
     public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
-        float distance = positionGiver.minDistance;
+        float distance = positionGiver.minDistance * systemSizeModifier;
         while (true) {
-            Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance, distance + positionGiver.incrementDistance);
+            Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance, distance + positionGiver.incrementDistance * systemSizeModifier);
             if (targetPosition.HasValue) {
                 return targetPosition.Value;
             }
-            distance += positionGiver.incrementDistance;
-            if (distance > positionGiver.maxDistance - positionGiver.incrementDistance) {
+            distance += positionGiver.incrementDistance * systemSizeModifier;
+            if (distance > (positionGiver.maxDistance - positionGiver.incrementDistance) * systemSizeModifier) {
                 return null;
             }
         }
