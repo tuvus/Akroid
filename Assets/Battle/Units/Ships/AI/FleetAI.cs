@@ -134,7 +134,7 @@ public class FleetAI : MonoBehaviour {
 
         //Follows closest enemy ship then goes to target position, Stop until all nearby enemy fleet.ships are removed and at target position, ContinueRemove once Finished.
         //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
-        if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
+        if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
             if (newCommand) {
                 if (command.commandType == CommandType.Protect) {
                     Vector2 fleetCenter = fleet.GetPosition();
@@ -142,14 +142,45 @@ public class FleetAI : MonoBehaviour {
                 } else if (command.commandType == CommandType.AttackMoveUnit) {
                     Vector2 fleetCenter = fleet.GetPosition();
                     command.targetPosition = Vector2.MoveTowards(fleetCenter, command.targetUnit.GetPosition(), Vector2.Distance(fleetCenter, command.targetUnit.GetPosition()) - (fleet.GetMaxShipSize() + command.targetUnit.GetSize()) * 2);
+                } else if (command.commandType == CommandType.AttackFleet) {
+                    command.targetPosition = command.targetFleet.GetPosition();
                 }
                 SetFleetAttackMovePosition(command.targetPosition);
                 currentCommandType = CommandType.Move;
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0) {
+            if (currentCommandType == CommandType.AttackFleet && command.targetFleet == null) {
+                newCommand = true;
+            }
+
+            Fleet targetFleet = fleet.GetNearbyEnemyFleet();
+            if (targetFleet != null && currentCommandType == CommandType.Move) {
+                command.targetFleet = targetFleet;
+                currentCommandType = CommandType.AttackFleet;
+                for (int i = 0; i < fleet.GetAllShips().Count; i++) {
+                    Vector2 relativeVector = fleet.GetAllShips()[i].GetPosition() - fleet.GetPosition();
+                    Ship target = null;
+                    float relativeDistance = 0;
+                    for (int j = 0; j < targetFleet.GetAllShips().Count; j++) {
+                        float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetAllShips()[j].GetPosition() - targetFleet.GetPosition());
+                        if (target == null || newRelativeDistance < relativeDistance) {
+                            target = targetFleet.GetAllShips()[j];
+                            relativeDistance = newRelativeDistance;
+                        }
+                    }
+                    fleet.GetAllShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
+                }
+                return CommandResult.Stop;
+            }
+            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0 && command.targetFleet == null && (command.targetUnit == null || !command.targetUnit.IsSpawned()) && command.protectUnit == null) {
                 return CommandResult.ContinueRemove;
+            } else if (currentCommandType == CommandType.AttackFleet && command.targetFleet == null) {
+                if (command.commandType == CommandType.AttackFleet) {
+                    return CommandResult.StopRemove;
+                }
+                newCommand = true;
+                return CommandResult.Stop;
             }
             if (fleet.enemyUnitsInRange.Count > 0) {
                 for (int i = 0; i < fleet.ships.Count; i++) {

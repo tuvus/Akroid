@@ -32,6 +32,7 @@ public class Ship : Unit {
         Dock,
         DockMove,
         DockRotate,
+        MoveAndRotate,
     }
 
     public ShipAI shipAI { get; private set; }
@@ -180,7 +181,7 @@ public class Ship : Unit {
                 timeUntilCheckRotation += checkRotationSpeed;
             }
         }
-        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate) {
+        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate || shipAction == ShipAction.MoveAndRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
             if (Mathf.Abs(localRotation) <= GetTurnSpeed() * deltaTime) {
                 SetRotation(targetRotation);
@@ -196,16 +197,20 @@ public class Ship : Unit {
                 }
             } else if (localRotation > 0) {
                 SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
-                SetThrusters(false);
-                return;
+                if (shipAction != ShipAction.MoveAndRotate) {
+                    SetThrusters(false);
+                    return;
+                }
             } else {
                 SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * deltaTime));
-                SetThrusters(false);
-                return;
+                if (shipAction == ShipAction.MoveAndRotate) {
+                    SetThrusters(false);
+                    return;
+                }
             }
         }
 
-        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
+        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove || shipAction == ShipAction.MoveAndRotate) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
             float thrust = speed * deltaTime;
@@ -216,7 +221,7 @@ public class Ship : Unit {
             if (distance <= thrust + 2) {
                 transform.position = movePosition;
                 position = movePosition;
-                if (shipAction == ShipAction.Move) {
+                if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveAndRotate) {
                     SetIdle();
                 } else if (shipAction == ShipAction.DockMove) {
                     shipAction = ShipAction.Dock;
@@ -322,6 +327,12 @@ public class Ship : Unit {
         this.targetStation = targetStation;
         SetMovePosition(targetStation.GetPosition(), GetSize() + targetStation.GetSize());
         shipAction = ShipAction.DockRotate;
+    }
+
+    public void SetMoveRotateTarget(Vector2 position) {
+        movePosition = position;
+        targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
+        shipAction = ShipAction.MoveAndRotate;
     }
 
     public void SetMaxSpeed() {

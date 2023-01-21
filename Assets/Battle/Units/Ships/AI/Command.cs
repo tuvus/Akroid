@@ -12,6 +12,7 @@ public class Command {
         Move,
         AttackMove,
         AttackMoveUnit,
+        AttackFleet,
         Follow,
         Protect,
         Formation,
@@ -35,6 +36,7 @@ public class Command {
     public float waitTime;
     public float targetRotation;
     public Vector2 targetPosition;
+    public Fleet targetFleet;
     public Unit targetUnit;
     public Unit protectUnit;
     public Star targetStar;
@@ -115,6 +117,21 @@ public class Command {
         newCommand.maxSpeed = maxSpeed;
         newCommand.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
         newCommand.waitTime = Random.Range(0, 0.2f);
+        return newCommand;
+    }
+
+    public static Command CreateAttackFleetCommand(Fleet targetFleet) {
+        Command newCommand = new Command(CommandType.AttackFleet);
+        newCommand.targetFleet = targetFleet;
+        newCommand.maxSpeed = float.MaxValue;
+        return newCommand;
+    }
+
+    public static Command CreateSkirmishCommand(Ship targetShip, Fleet targetFleet) {
+        Command newCommand = new Command(CommandType.AttackFleet);
+        newCommand.targetUnit = targetShip;
+        newCommand.targetFleet = targetFleet;
+        newCommand.maxSpeed = float.MaxValue;
         return newCommand;
     }
 

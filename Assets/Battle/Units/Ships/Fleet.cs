@@ -209,6 +209,19 @@ public class Fleet : ObjectGroup<Ship> {
         return targetUnit;
     }
 
+    /// <summary>
+    /// Returns the fleet of the closest enemy ship with a fleet.
+    /// </summary>
+    /// <returns>the closest Enemy fleet</returns>
+    public Fleet GetNearbyEnemyFleet() {
+        for (int i = 0; i < enemyUnitsInRange.Count; i++) {
+            if (enemyUnitsInRange[i].IsShip() && ((Ship)enemyUnitsInRange[i]).fleet) {
+                return ((Ship)enemyUnitsInRange[i]).fleet;
+            }
+        }
+        return null;
+    }
+
     public bool HasNearbyEnemyCombatShip() {
         for (int i = 0; i < enemyUnitsInRange.Count; i++) {
             if (enemyUnitsInRange[i].IsShip() && ((Ship)enemyUnitsInRange[i]).IsCombatShip()) {

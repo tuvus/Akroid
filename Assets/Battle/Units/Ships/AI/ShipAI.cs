@@ -460,6 +460,31 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             }
         }
+        if (command.commandType == CommandType.AttackFleet) {
+            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                command.targetUnit = GetClosestShipInTargetFleet(command.targetFleet);
+                newCommand = true;
+            }
+            if ((newCommand || ship.shipAction == Ship.ShipAction.Idle) && command.targetUnit != null && command.targetUnit.IsSpawned()) {
+                Vector2 targetPosition;
+                float targetAngle = Calculator.GetAngleOutOfTwoPositions(ship.GetPosition(), command.targetUnit.GetPosition());
+                if (targetAngle <= 0) {
+                    targetAngle = Calculator.ConvertTo360DegRotation(targetAngle + 120);
+                    targetPosition = command.targetUnit.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                } else {
+                    targetAngle = Calculator.ConvertTo360DegRotation(targetAngle - 120);
+                    targetPosition = command.targetUnit.GetPosition() - Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                }
+                ship.SetMoveRotateTarget(targetPosition);
+                ship.SetMaxSpeed(command.maxSpeed);
+                //newCommand = false;
+            }
+            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                ship.SetIdle();
+                return CommandResult.ContinueRemove;
+            }
+            return CommandResult.Stop;
+        }
         return CommandResult.Stop;
     }
 
@@ -477,6 +502,20 @@ public class ShipAI : MonoBehaviour {
             }
         }
         return targetUnit;
+    }
+
+    Ship GetClosestShipInTargetFleet(Fleet fleet) {
+        Ship targetShip = null;
+        float targetDistance = 0;
+        for (int i = 0; i < fleet.GetAllShips().Count; i++) {
+            Ship newTargetShip = fleet.GetAllShips()[i];
+            float newTargetDistance = Vector2.Distance(ship.GetPosition(), newTargetShip.GetPosition());
+            if (newTargetDistance < targetDistance || targetShip == null) {
+                targetShip = newTargetShip;
+                targetDistance = newTargetDistance;
+            }
+        }
+        return targetShip;
     }
 
 

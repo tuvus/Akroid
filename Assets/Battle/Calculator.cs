@@ -25,7 +25,7 @@ public class Calculator {
     /// <summary>
     /// Returns distance from an angle in degrees and a distance.
     /// </summary>
-    /// <param name="angle">Angle in degrees</param>
+    /// <param name="angle">Angle in degrees from 0 to 360</param>
     /// <param name="distance">Distance to point</param>
     /// <returns></returns>
     public static Vector2 GetPositionOutOfAngleAndDistance(float angle, float distance) {
