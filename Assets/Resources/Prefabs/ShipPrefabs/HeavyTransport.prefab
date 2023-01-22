@@ -103,7 +103,7 @@ MonoBehaviour:
   startRotation: 90
   turretOffset: 1.5
   range: 380
-  rotateSpeed: 25
+  rotateSpeed: 75
   targeting: 1
   minRotate: 45
   maxRotate: 135
@@ -234,7 +234,7 @@ MonoBehaviour:
   startRotation: 0
   turretOffset: 3.4
   range: 530
-  rotateSpeed: 38
+  rotateSpeed: 76
   targeting: 1
   minRotate: 200
   maxRotate: 20
@@ -651,7 +651,7 @@ MonoBehaviour:
   startRotation: 270
   turretOffset: 1.5
   range: 380
-  rotateSpeed: 25
+  rotateSpeed: 75
   targeting: 1
   minRotate: 225
   maxRotate: 315
@@ -927,7 +927,7 @@ MonoBehaviour:
   startRotation: 90
   turretOffset: 1.5
   range: 380
-  rotateSpeed: 25
+  rotateSpeed: 75
   targeting: 1
   minRotate: 45
   maxRotate: 135
@@ -1058,7 +1058,7 @@ MonoBehaviour:
   startRotation: 0
   turretOffset: 3.4
   range: 530
-  rotateSpeed: 38
+  rotateSpeed: 76
   targeting: 1
   minRotate: 340
   maxRotate: 160
@@ -1189,7 +1189,7 @@ MonoBehaviour:
   startRotation: 270
   turretOffset: 1.5
   range: 380
-  rotateSpeed: 25
+  rotateSpeed: 75
   targeting: 1
   minRotate: 225
   maxRotate: 315
