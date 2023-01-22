@@ -79,7 +79,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
                 new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
             };
-            SetupBattle(1, 0, 1, 0.5f, 1.1f, tempFactions);
+            SetupBattle(1, 0, 1, 0.2f, 1.1f, tempFactions);
         }
     }
 
@@ -124,7 +124,7 @@ public class BattleManager : MonoBehaviour {
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
-            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 10), 100);
+            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 250, 5000, 10), 100);
         }
 
         for (int i = 0; i < factions.Count; i++) {

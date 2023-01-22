@@ -183,7 +183,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         foreach (var faction in BattleManager.Instance.GetAllFactions()) {
             if (faction == this)
                 continue;
-            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject + 5000) {
+            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject + 1000) {
                 return false;
             }
         }
