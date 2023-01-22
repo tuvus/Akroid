@@ -194,6 +194,8 @@ public class Ship : Unit {
                 } else if (shipAction == ShipAction.DockRotate) {
                     shipAction = ShipAction.DockMove;
                     SetThrusters(true);
+                } else if (shipAction == ShipAction.MoveAndRotate) {
+                    shipAction = ShipAction.Move;
                 }
             } else if (localRotation > 0) {
                 SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
