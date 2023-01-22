@@ -41,6 +41,10 @@ public class ReloadController : MonoBehaviour {
         return ammo > 0 && firetime <= 0;
     }
 
+    public bool Empty() {
+        return ammo == 0;
+    }
+
     public bool ReadyToHibernate() {
         return ammo == maxAmmo && firetime <= 0 && reloadTime <= 0;
     }

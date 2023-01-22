@@ -32,7 +32,7 @@ public class MassTurret : Turret {
         flashTime = flashSpeed;
         flash.enabled = BattleManager.Instance.GetEffectsShown();
         flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
-        return true;
+        return reloadController.Empty();
     }
 
     public override void UpdateTurret(float deltaTime) {
