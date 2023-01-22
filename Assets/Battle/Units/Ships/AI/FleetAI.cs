@@ -131,10 +131,8 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-
-        //Follows closest enemy ship then goes to target position, Stop until all nearby enemy fleet.ships are removed and at target position, ContinueRemove once Finished.
-        //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
         if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
+            //Sets the target position of the command and tells all ships to attack move
             if (newCommand) {
                 if (command.commandType == CommandType.Protect) {
                     Vector2 fleetCenter = fleet.GetPosition();
@@ -150,38 +148,42 @@ public class FleetAI : MonoBehaviour {
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.AttackFleet && command.targetFleet == null) {
-                newCommand = true;
-            }
-
-            Fleet targetFleet = fleet.GetNearbyEnemyFleet();
-            if (targetFleet != null && currentCommandType == CommandType.Move) {
-                command.targetFleet = targetFleet;
-                currentCommandType = CommandType.AttackFleet;
-                for (int i = 0; i < fleet.GetAllShips().Count; i++) {
-                    Vector2 relativeVector = fleet.GetAllShips()[i].GetPosition() - fleet.GetPosition();
-                    Ship target = null;
-                    float relativeDistance = 0;
-                    for (int j = 0; j < targetFleet.GetAllShips().Count; j++) {
-                        float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetAllShips()[j].GetPosition() - targetFleet.GetPosition());
-                        if (target == null || newRelativeDistance < relativeDistance) {
-                            target = targetFleet.GetAllShips()[j];
-                            relativeDistance = newRelativeDistance;
-                        }
-                    }
-                    fleet.GetAllShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
-                }
-                return CommandResult.Stop;
-            }
+            //Checks if the command should stop or reapply itself
             if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0 && command.targetFleet == null && (command.targetUnit == null || !command.targetUnit.IsSpawned()) && command.protectUnit == null) {
                 return CommandResult.ContinueRemove;
             } else if (currentCommandType == CommandType.AttackFleet && command.targetFleet == null) {
                 if (command.commandType == CommandType.AttackFleet) {
                     return CommandResult.StopRemove;
                 }
+                if (fleet.GetNearbyEnemyFleet() == null) {
+                    AddFormationTowardsPositionCommand(command.targetPosition, fleet.GetSize() / 2, CommandAction.AddToBegining);
+                    return CommandResult.Stop;
+                }
                 newCommand = true;
-                return CommandResult.Stop;
             }
+            //Finds a new target fleet if there is one, then orders ships to attack it.
+            if (command.targetFleet == null) {
+                Fleet targetFleet = fleet.GetNearbyEnemyFleet();
+                if (targetFleet != null && currentCommandType == CommandType.Move) {
+                    command.targetFleet = targetFleet;
+                    currentCommandType = CommandType.AttackFleet;
+                    for (int i = 0; i < fleet.GetAllShips().Count; i++) {
+                        Vector2 relativeVector = fleet.GetAllShips()[i].GetPosition() - fleet.GetPosition();
+                        Ship target = null;
+                        float relativeDistance = 0;
+                        for (int j = 0; j < targetFleet.GetAllShips().Count; j++) {
+                            float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetAllShips()[j].GetPosition() - targetFleet.GetPosition());
+                            if (target == null || newRelativeDistance < relativeDistance) {
+                                target = targetFleet.GetAllShips()[j];
+                                relativeDistance = newRelativeDistance;
+                            }
+                        }
+                        fleet.GetAllShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
+                    }
+                    return CommandResult.Stop;
+                }
+            }
+            //Sets all idle ships to attackMove to the commands targetposition
             if (fleet.enemyUnitsInRange.Count > 0) {
                 for (int i = 0; i < fleet.ships.Count; i++) {
                     if (fleet.ships[i].IsIdle()) {
@@ -189,7 +191,6 @@ public class FleetAI : MonoBehaviour {
                     }
                 }
             }
-
             return CommandResult.Stop;
         }
         if (command.commandType == CommandType.Dock) {
@@ -324,6 +325,12 @@ public class FleetAI : MonoBehaviour {
         AddUnitAICommand(CreateFormationCommand(position, rotation), commandAction);
     }
 
+    /// <summary>
+    /// Adds a formation command distance towards targetPosition pointing towards targetPosition
+    /// </summary>
+    /// <param name="targetPosition">the position to point towards</param>
+    /// <param name="distance">the distance from the current fleet position</param>
+    /// <param name="commandAction">how the command should be added to the list</param>
     public void AddFormationTowardsPositionCommand(Vector2 targetPosition, float distance, CommandAction commandAction = CommandAction.Replace) {
         AddFormationCommand(Vector2.MoveTowards(fleet.GetPosition(), targetPosition, distance), Calculator.GetAngleOutOfTwoPositions(fleet.GetPosition(), targetPosition));
     }
