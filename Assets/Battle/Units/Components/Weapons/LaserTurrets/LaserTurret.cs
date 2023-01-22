@@ -33,9 +33,10 @@ public class LaserTurret : Turret {
         laser.UpdateLaser(deltaTime);
     }
 
-    public override void Fire() {
+    public override bool Fire() {
         base.Fire();
         laser.FireLaser();
+        return false;
     }
 
     public override bool ReadyToFire() {
