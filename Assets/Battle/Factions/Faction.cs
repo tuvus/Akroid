@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
+using static System.Collections.Specialized.BitVector32;
 using Random = UnityEngine.Random;
 
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
@@ -53,6 +54,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
+
+    public List<Unit> closeEnemyUnits { get; private set; }
+    public List<float> closeEnemyUnitsDistance { get; private set; }
 
     public struct FactionData {
         public Type factionAI;
@@ -119,6 +123,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
+        closeEnemyUnits = new List<Unit>(500);
+        closeEnemyUnitsDistance = new List<float>(500);
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
         factionAI.SetupFactionAI(this);
@@ -369,8 +375,50 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     #region Update
     public void UpdateFaction(float deltaTime) {
-        factionAI.UpdateFactionAI(deltaTime);
         UpdateObjectGroup(true);
+        Profiler.BeginSample("FindingEnemies");
+        UpdateNearbyEnemyUnits();
+        Profiler.EndSample();
+        factionAI.UpdateFactionAI(deltaTime);
+    }
+
+    public void UpdateNearbyEnemyUnits() {
+        closeEnemyUnits.Clear();
+        closeEnemyUnitsDistance.Clear();
+        foreach (var enemyFaction in enemyFactions) {
+            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) >  GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
+                continue;
+            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
+                FindUnit(enemyFaction.units[i]);
+            }
+            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
+                Fleet targetFleet = enemyFaction.fleets[i];
+                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= GetSize() * 1.2 + targetFleet.GetSize() + 3000) {
+                    for (int f = 0; f < targetFleet.ships.Count; f++) {
+                        FindUnit(targetFleet.ships[f]);
+                    }
+                }
+            }
+        }
+    }
+
+    void FindUnit(Unit targetUnit) {
+        if (targetUnit == null || !targetUnit.IsTargetable())
+            return;
+        float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
+        if (distance <= GetSize() * 1.2f + targetUnit.GetSize() + 3000) {
+            for (int f = 0; f < closeEnemyUnitsDistance.Count; f++) {
+                if (closeEnemyUnitsDistance[f] >= distance) {
+                    closeEnemyUnitsDistance.Insert(f, distance);
+  
+                    closeEnemyUnits.Insert(f, targetUnit);
+                    return;
+                }
+            }
+            //Has not been added yet
+            closeEnemyUnits.Add(targetUnit);
+            closeEnemyUnitsDistance.Add(distance);
+        }
     }
 
     public void UpdateFleets(float deltaTime) {

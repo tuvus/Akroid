@@ -18,6 +18,8 @@ public class SimulationFactionAI : FactionAI {
         updateTime = Random.Range(0, 0.2f);
         defenceFleets = new List<Fleet>();
         attackFleets = new List<Fleet>();
+        newThreats = new List<TargetShipGroup>();
+        threats = new List<TargetShipGroup>();
     }
 
     public override void GenerateFactionAI() {
