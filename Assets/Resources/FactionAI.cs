@@ -7,6 +7,7 @@ public class FactionAI : MonoBehaviour {
     public bool autoResearch;
 
     [SerializeField] protected List<Ship> idleShips;
+    [SerializeField] public List<UnitGroup> newNearbyEnemyUnits;
 
     public virtual void SetupFactionAI(Faction faction) {
         this.faction = faction;

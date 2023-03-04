@@ -282,4 +282,14 @@ public class UnitGroup {
             }
         }
     }
+
+    public int GetTotalUnitHealth() {
+        int totalHealth = 0;
+        if (groupType == GroupType.Fleet)
+            totalHealth += fleet.GetTotalFleetHealth();
+        for (int i = 0; i < units.Count; i++) {
+            totalHealth += units[i].GetTotalHealth();
+        }
+        return totalHealth;
+    }
 }

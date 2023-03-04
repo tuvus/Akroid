@@ -54,6 +54,10 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
         return size;
     }
 
+    public List<T> GetBattleObjects() {
+        return battleObjects;
+    }
+
     protected void AddBattleObject(T battleObject) {
         battleObjects.Add(battleObject);
     }
