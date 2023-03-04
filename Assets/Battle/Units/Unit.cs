@@ -69,7 +69,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
     }
 
-    #region Update
+     #region Update
     public virtual void UpdateUnit(float deltaTime) {
         if (IsTargetable() && HasWeapons()) {
             FindEnemies();
@@ -86,20 +86,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
-        foreach (var enemyFaction in faction.enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > maxWeaponRange * 2 + enemyFaction.GetSize())
-                continue;
-            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
-                FindUnit(enemyFaction.units[i]);
-            }
-            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
-                Fleet targetFleet = enemyFaction.fleets[i];
-                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + targetFleet.GetSize()) {
-                    for (int f = 0; f < targetFleet.ships.Count; f++) {
-                        FindUnit(targetFleet.ships[f]);
-                    }
-                }
-            }
+        float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition());
+        for (int i = 0; i < faction.closeEnemyUnits.Count; i++) {
+            if (faction.closeEnemyUnitsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
+                break;
+            FindUnit(faction.closeEnemyUnits[i]);
+
         }
         Profiler.EndSample();
     }
