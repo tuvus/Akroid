@@ -183,7 +183,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
             if (mouseOverUnit != null) {
                 selectedGroup = -1;
-                if (AdditiveButtonPressed) {
+                if (AdditiveButtonPressed && !(selectedUnits.groupType == UnitGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet == selectedUnits.fleet)) {
                     ToggleSelectedUnit(mouseOverUnit);
                 } else {
                     SelectUnits(mouseOverUnit);
