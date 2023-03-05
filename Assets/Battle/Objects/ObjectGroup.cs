@@ -6,6 +6,7 @@ using UnityEngine;
 public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     [SerializeField] List<T> battleObjects;
     [SerializeField] Vector2 position;
+    [SerializeField] Vector2 averagePosition;
     [SerializeField] float size;
     //public Transform sizeIndicator { get; private set; }
 
@@ -21,7 +22,7 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     }
 
     public void UpdateObjectGroup(bool changeSizeIndicatorPosition = false) {
-        position = CalculateObjectGroupCenter();
+        CalculateObjectGroupCenters();
         size = CalculateObjectGroupSize();
         //sizeIndicator.localScale = new Vector3(GetSize() / transform.localScale.x * 2, GetSize() / transform.localScale.y * 2, 1);
         //if (changeSizeIndicatorPosition)
@@ -29,21 +30,18 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     }
 
 
-    public Vector2 CalculateObjectGroupCenter() {
+    void CalculateObjectGroupCenters() {
         Vector2 min = new Vector2(int.MaxValue, int.MaxValue);
         Vector2 max = new Vector2(int.MinValue, int.MinValue);
+        Vector2 sum = Vector2.zero;
         for (int i = 0; i < battleObjects.Count; i++) {
             Vector2 tempPos = battleObjects[i].GetPosition();
-            if (min.x > tempPos.x)
-                min = new Vector2(tempPos.x, min.y);
-            if (min.y > tempPos.y)
-                min = new Vector2(min.x, tempPos.y);
-            if (max.x < tempPos.x)
-                max = new Vector2(tempPos.x, max.y);
-            if (max.y < tempPos.y)
-                max = new Vector2(max.x, tempPos.y);
+            sum += tempPos;
+            min = Vector2.Min(min, tempPos);
+            max = Vector2.Max(max, tempPos);
         }
-        return (min + max) / 2;
+        position = (min + max) / 2;
+        averagePosition = sum / battleObjects.Count;
     }
 
     private float CalculateObjectGroupSize() {
@@ -66,9 +64,9 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
         battleObjects.Remove(battleObject);
     }
 
-    public Vector2 GetPosition() {
-        return position;
-    }
+    public Vector2 GetPosition() { return position; }
+
+    public Vector2 GetAveragePosition() { return averagePosition; }
 
     public float GetSize() {
         return size;
