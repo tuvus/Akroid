@@ -6,6 +6,12 @@ public class TargetShipGroup : ObjectGroup<Ship> {
     Fleet targetFleet;
     public List<Fleet> sentFleets;
 
+    public void SetupTargetGroup(Fleet targetFleet, List<Ship> ships) {
+        List<Ship> newShips = targetFleet.GetAllShips();
+        newShips.AddRange(ships);
+        SetupTargetGroup(newShips);
+    }
+
     public void SetupTargetGroup(Fleet targetFleet) {
         this.targetFleet = targetFleet;
         SetupTargetGroup(targetFleet.GetAllShips());
