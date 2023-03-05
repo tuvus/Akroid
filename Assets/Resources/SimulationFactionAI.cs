@@ -10,9 +10,9 @@ public class SimulationFactionAI : FactionAI {
     public List<Fleet> defenceFleets;
     static int wantedDefenceFleets = 1;
     public List<Fleet> attackFleets;
-    public List<TargetShipGroup> newThreats;
+    public List<ShipGroup> newThreats;
     static float threatDistance = 1000;
-    public List<TargetShipGroup> threats;
+    public List<ShipGroup> threats;
     float updateTime;
     public bool autoBuildShips;
 
@@ -22,8 +22,8 @@ public class SimulationFactionAI : FactionAI {
         updateTime = Random.Range(0, 0.2f);
         defenceFleets = new List<Fleet>();
         attackFleets = new List<Fleet>();
-        newThreats = new List<TargetShipGroup>();
-        threats = new List<TargetShipGroup>();
+        newThreats = new List<ShipGroup>();
+        threats = new List<ShipGroup>();
     }
 
     public override void GenerateFactionAI() {
@@ -77,6 +77,7 @@ public class SimulationFactionAI : FactionAI {
                 attackFleets.RemoveAt(i);
         }
         for (int i = newThreats.Count - 1; i >= 0; i--) {
+            List<Ship> targetShips = newThreats[i].GetTargetShips();
             Fleet closestFleet = null;
             float distanceToThreat = 0;
             for (int f = 0; f < defenceFleets.Count; f++) {
@@ -89,8 +90,15 @@ public class SimulationFactionAI : FactionAI {
             if (closestFleet == null)
                 break;
             if (closestFleet.FleetAI.commands[0].commandType == Command.CommandType.AttackMove) {
-                if (newThreats[i].GetTargetFleet() != null) {
-                    closestFleet.FleetAI.AddUnitAICommand(Command.CreateAttackFleetCommand(newThreats[i].GetTargetFleet()), Command.CommandAction.Replace);
+                Fleet newThreatFleet = null;
+                for (int j = 0; j < targetShips.Count; j++) {
+                    if (targetShips[j].fleet != null) {
+                        newThreatFleet = targetShips[j].fleet;
+                        break;
+                    }
+                }
+                if (newThreatFleet != null) {
+                    closestFleet.FleetAI.AddUnitAICommand(Command.CreateAttackFleetCommand(newThreatFleet), Command.CommandAction.Replace);
                 } else {
                     closestFleet.FleetAI.ClearCommands();
                     for (int j = 0; j < newThreats[i].GetTargetShips().Count; j++) {
@@ -107,7 +115,7 @@ public class SimulationFactionAI : FactionAI {
         for (int i = 0; i < defenceFleets.Count; i++) {
             Fleet fleet = defenceFleets[i];
             if (fleet.IsFleetIdle()) {
-                Vector2 randomTargetPosition = faction.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(100, faction.GetSize()));
+                Vector2 randomTargetPosition = faction.GetAveragePosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(100, faction.GetSize()));
                 fleet.FleetAI.AddUnitAICommand(Command.CreateFormationCommand(fleet.GetPosition(), Calculator.GetAngleOutOfTwoPositions(fleet.GetPosition(), randomTargetPosition)), Command.CommandAction.Replace);
                 fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(randomTargetPosition), Command.CommandAction.AddToEnd);
             }
@@ -201,7 +209,7 @@ public class SimulationFactionAI : FactionAI {
                         if (defenceFleets.Count < wantedDefenceFleets) {
                             Fleet fleet = faction.CreateNewFleet("DefenceFleet" + (int)(defenceFleets.Count + 1), combatShips);
                             defenceFleets.Add(fleet);
-                            fleet.FleetAI.AddFormationTowardsPositionCommand(faction.GetPosition(), fleetCommand.GetSize() * 4);
+                            fleet.FleetAI.AddFormationTowardsPositionCommand(faction.GetAveragePosition(), fleetCommand.GetSize() * 4);
                         } else {
                             Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
                             if (enemyStation != null) {
