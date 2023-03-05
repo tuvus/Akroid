@@ -2,20 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TargetShipGroup : ObjectGroup<Ship> {
-    Fleet targetFleet;
+public class ShipGroup : ObjectGroup<Ship> {
     public List<Fleet> sentFleets;
 
-    public void SetupTargetGroup(Fleet targetFleet, List<Ship> ships) {
-        List<Ship> newShips = targetFleet.GetAllShips();
-        newShips.AddRange(ships);
-        SetupTargetGroup(newShips);
-    }
-
-    public void SetupTargetGroup(Fleet targetFleet) {
-        this.targetFleet = targetFleet;
-        SetupTargetGroup(targetFleet.GetAllShips());
-    }
     public void SetupTargetGroup(List<Ship> ships) {
         SetupObjectGroup(ships);
         UpdateObjectGroup();
@@ -44,9 +33,5 @@ public class TargetShipGroup : ObjectGroup<Ship> {
 
     public List<Ship> GetTargetShips() {
         return GetBattleObjects();
-    }
-
-    public Fleet GetTargetFleet() {
-        return targetFleet;
     }
 }
