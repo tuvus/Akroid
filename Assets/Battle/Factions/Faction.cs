@@ -54,7 +54,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
-
+    public List<ObjectGroup<Unit>> groups { get; private set; }
     public List<Unit> closeEnemyUnits { get; private set; }
     public List<float> closeEnemyUnitsDistance { get; private set; }
 

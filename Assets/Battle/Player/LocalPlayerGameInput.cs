@@ -154,7 +154,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             if (selectionType != UnitSelection.SelectionType.Enemy) {
                 GiveCommandToAllSelectedUnits(Command.CreateProtectCommand(mouseOverUnit), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
-            } else if (selectedUnits.groupType == UnitGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {
+            } else if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {
                 GiveCommandToAllSelectedUnits(Command.CreateAttackFleetCommand(((Ship)mouseOverUnit).fleet), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             } else {
@@ -222,7 +222,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     protected virtual void CreateFleetCommand() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        if (selectedUnits.groupType == UnitGroup.GroupType.Fleet) {
+        if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
             if (AdditiveButtonPressed)
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             else if (AltButtonPressed)

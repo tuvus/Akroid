@@ -4,7 +4,7 @@ using System.Diagnostics.Tracing;
 using UnityEngine;
 
 [System.Serializable]
-public class UnitGroup {
+public class SelectionGroup {
     public enum GroupType {
         Station = -2,
         Ship = -1,
@@ -125,7 +125,7 @@ public class UnitGroup {
         groupType = GroupType.Units;
     }
 
-    public void CopyGroup(UnitGroup group) {
+    public void CopyGroup(SelectionGroup group) {
         this.groupType = group.groupType;
         foreach (var unit in group.units) {
             units.Add(unit);
@@ -138,7 +138,7 @@ public class UnitGroup {
         groupType = GroupType.Units;
     }
 
-    public void AddUnits(UnitGroup unitGroup) {
+    public void AddUnits(SelectionGroup unitGroup) {
         AddUnits(unitGroup.units);
     }
 
