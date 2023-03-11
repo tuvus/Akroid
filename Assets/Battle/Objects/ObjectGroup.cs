@@ -10,7 +10,7 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     [SerializeField] float size;
     //public Transform sizeIndicator { get; private set; }
 
-    public void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public virtual void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         battleObjects = objects;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
         if (setupGroupPositionAndSize)
@@ -56,11 +56,11 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
         return battleObjects;
     }
 
-    protected void AddBattleObject(T battleObject) {
+    protected virtual void AddBattleObject(T battleObject) {
         battleObjects.Add(battleObject);
     }
 
-    protected void RemoveBattleObject(T battleObject) {
+    protected virtual void RemoveBattleObject(T battleObject) {
         battleObjects.Remove(battleObject);
     }
 

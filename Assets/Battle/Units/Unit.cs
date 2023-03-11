@@ -5,6 +5,7 @@ using UnityEngine.Profiling;
 
 public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
+    private IUnitGroup group;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected string unitName;
 
@@ -247,6 +248,14 @@ public abstract class Unit : BattleObject, IParticleHolder {
     #endregion
 
     #region HelperMethods
+    public void SetGroup(IUnitGroup newGroup) {
+        group = newGroup;
+    }
+
+    public IUnitGroup GetGroup() {
+        return group;
+    }
+
     public float GetMaxWeaponRange() {
         return maxWeaponRange;
     }

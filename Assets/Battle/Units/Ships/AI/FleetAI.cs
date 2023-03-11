@@ -167,18 +167,18 @@ public class FleetAI : MonoBehaviour {
                 if (targetFleet != null && currentCommandType == CommandType.Move) {
                     command.targetFleet = targetFleet;
                     currentCommandType = CommandType.AttackFleet;
-                    for (int i = 0; i < fleet.GetAllShips().Count; i++) {
-                        Vector2 relativeVector = fleet.GetAllShips()[i].GetPosition() - fleet.GetPosition();
+                    for (int i = 0; i < fleet.GetShips().Count; i++) {
+                        Vector2 relativeVector = fleet.GetShips()[i].GetPosition() - fleet.GetPosition();
                         Ship target = null;
                         float relativeDistance = 0;
-                        for (int j = 0; j < targetFleet.GetAllShips().Count; j++) {
-                            float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetAllShips()[j].GetPosition() - targetFleet.GetPosition());
+                        for (int j = 0; j < targetFleet.GetShips().Count; j++) {
+                            float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetShips()[j].GetPosition() - targetFleet.GetPosition());
                             if (target == null || newRelativeDistance < relativeDistance) {
-                                target = targetFleet.GetAllShips()[j];
+                                target = targetFleet.GetShips()[j];
                                 relativeDistance = newRelativeDistance;
                             }
                         }
-                        fleet.GetAllShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
                     }
                     return CommandResult.Stop;
                 }

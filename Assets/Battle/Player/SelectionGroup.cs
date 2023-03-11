@@ -27,7 +27,7 @@ public class SelectionGroup {
     public List<Unit> GetAllUnits() {
         if (groupType == GroupType.Fleet) {
             List<Unit> fleetUnits = new List<Unit>();
-            foreach (var ship in fleet.GetAllShips()) {
+            foreach (var ship in fleet.GetShips()) {
                 fleetUnits.Add(ship);
             }
             return fleetUnits;
@@ -72,7 +72,7 @@ public class SelectionGroup {
     }
 
     public bool HasShip() {
-        if (groupType == GroupType.Fleet && fleet.GetAllShips().Count > 0)
+        if (groupType == GroupType.Fleet && fleet.GetShips().Count > 0)
             return true;
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip())
@@ -228,7 +228,7 @@ public class SelectionGroup {
 
     public int GetUnitCount() {
         if (groupType == GroupType.Fleet)
-            return fleet.GetAllShips().Count;
+            return fleet.GetShips().Count;
         return units.Count;
     }
 

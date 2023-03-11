@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-public class Fleet : ObjectGroup<Ship> {
+public class Fleet : ShipGroup {
     Faction faction;
     public FleetAI FleetAI { get; private set; }
     string fleetName;
@@ -86,14 +86,6 @@ public class Fleet : ObjectGroup<Ship> {
         FleetAI.UpdateAI(deltaTime);
         transform.position = GetPosition();
     }
-
-    //Vector2 CalculateFleetCenter() {
-    //    Vector2 sum = ships[0].GetPosition();
-    //    for (int i = 1; i < ships.Count; i++) {
-    //        sum += ships[i].GetPosition();
-    //    }
-    //    return sum / ships.Count;
-    //}
 
     void FindEnemies() {
         Profiler.BeginSample("FindingEnemies");
@@ -253,10 +245,6 @@ public class Fleet : ObjectGroup<Ship> {
                 return false;
         }
         return true;
-    }
-
-    public List<Ship> GetAllShips() {
-        return ships;
     }
 
     public void SelectFleet(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {

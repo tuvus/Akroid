@@ -507,8 +507,8 @@ public class ShipAI : MonoBehaviour {
     Ship GetClosestShipInTargetFleet(Fleet fleet) {
         Ship targetShip = null;
         float targetDistance = 0;
-        for (int i = 0; i < fleet.GetAllShips().Count; i++) {
-            Ship newTargetShip = fleet.GetAllShips()[i];
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            Ship newTargetShip = fleet.GetShips()[i];
             float newTargetDistance = Vector2.Distance(ship.GetPosition(), newTargetShip.GetPosition());
             if (newTargetDistance < targetDistance || targetShip == null) {
                 targetShip = newTargetShip;

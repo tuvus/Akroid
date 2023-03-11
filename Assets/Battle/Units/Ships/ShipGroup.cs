@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShipGroup : ObjectGroup<Ship> {
+public class ShipGroup : UnitGroup<Ship> {
     public List<Fleet> sentFleets;
+
 
     public void SetupTargetGroup(List<Ship> ships) {
         SetupObjectGroup(ships);
@@ -15,23 +16,15 @@ public class ShipGroup : ObjectGroup<Ship> {
         UpdateObjectGroup();
     }
 
-    public int GetTotalShipsHealth() {
-        int totalHealth = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            totalHealth += GetBattleObjects()[i].GetTotalHealth();
-        }
-        return totalHealth;
-    }
-
     public bool IsSentFleetsStronger() {
         int totalHealth = 0;
         for (int i = 0; i < sentFleets.Count; i++) {
             sentFleets[i].GetTotalFleetHealth();
         }
-        return totalHealth >= GetTotalShipsHealth();
+        return totalHealth >= GetTotalGroupHealth();
     }
 
-    public List<Ship> GetTargetShips() {
+    public List<Ship> GetShips() {
         return GetBattleObjects();
     }
 }

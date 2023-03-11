@@ -77,7 +77,7 @@ public class SimulationFactionAI : FactionAI {
                 attackFleets.RemoveAt(i);
         }
         for (int i = newThreats.Count - 1; i >= 0; i--) {
-            List<Ship> targetShips = newThreats[i].GetTargetShips();
+            List<Ship> targetShips = newThreats[i].GetShips();
             Fleet closestFleet = null;
             float distanceToThreat = 0;
             for (int f = 0; f < defenceFleets.Count; f++) {
@@ -101,8 +101,8 @@ public class SimulationFactionAI : FactionAI {
                     closestFleet.FleetAI.AddUnitAICommand(Command.CreateAttackFleetCommand(newThreatFleet), Command.CommandAction.Replace);
                 } else {
                     closestFleet.FleetAI.ClearCommands();
-                    for (int j = 0; j < newThreats[i].GetTargetShips().Count; j++) {
-                        closestFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(newThreats[i].GetTargetShips()[j]));
+                    for (int j = 0; j < newThreats[i].GetShips().Count; j++) {
+                        closestFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(newThreats[i].GetShips()[j]));
                     }
                 }
                 newThreats[i].sentFleets.Add(closestFleet);
@@ -135,8 +135,8 @@ public class SimulationFactionAI : FactionAI {
                     continue;
             }
             if (fleet.IsFleetIdle() && (faction.HasEnemy() || !fleet.IsDockedWithStation(fleetCommand))) {
-                if (fleet.GetAllShips().Count <= 2 || fleet.GetTotalFleetHealth() <= 1000) {
-                    List<Ship> shipsInFleet = new List<Ship>(fleet.GetAllShips());
+                if (fleet.GetShips().Count <= 2 || fleet.GetTotalFleetHealth() <= 1000) {
+                    List<Ship> shipsInFleet = new List<Ship>(fleet.GetShips());
                     fleet.DisbandFleet();
                     foreach (Ship ship in shipsInFleet) {
                         ship.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand));
