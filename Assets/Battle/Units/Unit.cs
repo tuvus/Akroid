@@ -87,16 +87,22 @@ public abstract class Unit : BattleObject, IParticleHolder {
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
         float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition());
-        for (int i = 0; i < faction.closeEnemyUnits.Count; i++) {
-            if (faction.closeEnemyUnitsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
+        for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
+            if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
                 break;
-            FindUnit(faction.closeEnemyUnits[i]);
+            FindEnemyGroup(faction.closeEnemyGroups[i]);
 
         }
         Profiler.EndSample();
     }
 
-    void FindUnit(Unit targetUnit) {
+    void FindEnemyGroup(UnitGroup<Unit> targetGroup) {
+        for (int i = 0; i < targetGroup.GetBattleObjects().Count; i++) {
+            FindEnemyUnit(targetGroup.GetBattleObjects()[i]);
+        }
+    }
+
+    void FindEnemyUnit(Unit targetUnit) {
         if (targetUnit == null || !targetUnit.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());

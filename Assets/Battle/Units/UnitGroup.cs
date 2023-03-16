@@ -42,6 +42,15 @@ public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
         base.RemoveBattleObject(battleObject);
     }
 
+    public bool IsTargetable() {
+        if (GetBattleObjects().Count == 0)
+            return false;
+        for (int i = 0; i < GetBattleObjects().Count; i++) {
+            if (GetBattleObjects()[i].IsTargetable())
+                return true;
+        }
+        return false;
+    }
 
     public List<T> GetUnits() {
         return GetBattleObjects();

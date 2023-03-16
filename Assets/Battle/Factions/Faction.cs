@@ -54,9 +54,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
-    public List<ObjectGroup<Unit>> groups { get; private set; }
-    public List<Unit> closeEnemyUnits { get; private set; }
-    public List<float> closeEnemyUnitsDistance { get; private set; }
+    public List<UnitGroup<Unit>> groups { get; private set; }
+    public List<UnitGroup<Unit>> closeEnemyGroups { get; private set; }
+    public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public struct FactionData {
         public Type factionAI;
@@ -123,8 +123,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
-        closeEnemyUnits = new List<Unit>(500);
-        closeEnemyUnitsDistance = new List<float>(500);
+        closeEnemyGroups = new List<UnitGroup<Unit>>(100);
+        closeEnemyGroupsDistance = new List<float>(100);
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
         factionAI.SetupFactionAI(this);
@@ -383,41 +383,33 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateNearbyEnemyUnits() {
-        closeEnemyUnits.Clear();
-        closeEnemyUnitsDistance.Clear();
+        closeEnemyGroups.Clear();
+        closeEnemyGroupsDistance.Clear();
         foreach (var enemyFaction in enemyFactions) {
             if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) >  GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
-            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
-                FindUnit(enemyFaction.units[i]);
-            }
-            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
-                Fleet targetFleet = enemyFaction.fleets[i];
-                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= GetSize() * 1.2 + targetFleet.GetSize() + 3000) {
-                    for (int f = 0; f < targetFleet.ships.Count; f++) {
-                        FindUnit(targetFleet.ships[f]);
-                    }
-                }
+            for (int i = 0; i < enemyFaction.groups.Count; i++) {
+                AddEnemyGroup(enemyFaction.groups[i]);
             }
         }
     }
 
-    void FindUnit(Unit targetUnit) {
-        if (targetUnit == null || !targetUnit.IsTargetable())
+    void AddEnemyGroup(UnitGroup<Unit> targetGroup) {
+        if (targetGroup == null || !targetGroup.IsTargetable())
             return;
-        float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
-        if (distance <= GetSize() * 1.2f + targetUnit.GetSize() + 3000) {
-            for (int f = 0; f < closeEnemyUnitsDistance.Count; f++) {
-                if (closeEnemyUnitsDistance[f] >= distance) {
-                    closeEnemyUnitsDistance.Insert(f, distance);
+        float distance = Vector2.Distance(GetPosition(), targetGroup.GetPosition());
+        if (distance <= GetSize() * 1.2f + targetGroup.GetSize() + 3000) {
+            for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
+                if (closeEnemyGroupsDistance[f] >= distance) {
+                    closeEnemyGroupsDistance.Insert(f, distance);
   
-                    closeEnemyUnits.Insert(f, targetUnit);
+                    closeEnemyGroups.Insert(f, targetGroup);
                     return;
                 }
             }
             //Has not been added yet
-            closeEnemyUnits.Add(targetUnit);
-            closeEnemyUnitsDistance.Add(distance);
+            closeEnemyGroups.Add(targetGroup);
+            closeEnemyGroupsDistance.Add(distance);
         }
     }
 
@@ -452,7 +444,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the ammount of asteroid fields that are not empty and do not have a freindly station nearby.
+    /// Gets the amount of asteroid fields that are not empty and do not have a friendly station nearby.
     /// </summary>
     /// <returns>the available asteroid field count</returns>
     public int GetAvailableAsteroidFieldsCount() {
@@ -461,22 +453,22 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             AsteroidField targetAsteroidField = BattleManager.Instance.GetAllAsteroidFields()[i];
             if (targetAsteroidField.totalResources <= 0)
                 continue;
-            bool hasFeindlyStation = false;
-            foreach (Station freindlyStation in stations) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
-                    hasFeindlyStation = true;
+            bool hasFriendlyStation = false;
+            foreach (Station friendlyStation in stations) {
+                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
+                    hasFriendlyStation = true;
                     break;
                 }
             }
-            if (hasFeindlyStation)
+            if (hasFriendlyStation)
                 continue;
-            foreach (Station freindlyStation in stationBlueprints) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
-                    hasFeindlyStation = true;
+            foreach (Station friendlyStation in stationBlueprints) {
+                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
+                    hasFriendlyStation = true;
                     break;
                 }
             }
-            if (hasFeindlyStation)
+            if (hasFriendlyStation)
                 continue;
             else
                 count++;
@@ -491,19 +483,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             AsteroidField targetAsteroidField = BattleManager.Instance.GetAllAsteroidFields()[i];
             if (targetAsteroidField.totalResources <= 0)
                 continue;
-            bool hasFeindlyStation = false;
-            foreach (Station freindlyStation in stations) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
-                    hasFeindlyStation = true;
+            bool hasFriendlyStation = false;
+            foreach (Station friendlyStation in stations) {
+                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
+                    hasFriendlyStation = true;
                 }
             }
 
-            foreach (Station freindlyStation in stationBlueprints) {
-                if (freindlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(freindlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)freindlyStation).GetMiningRange() + freindlyStation.GetSize() + targetAsteroidField.GetSize()) {
-                    hasFeindlyStation = true;
+            foreach (Station friendlyStation in stationBlueprints) {
+                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
+                    hasFriendlyStation = true;
                 }
             }
-            if (!hasFeindlyStation) {
+            if (!hasFriendlyStation) {
                 float distance = Vector2.Distance(position, targetAsteroidField.GetPosition());
                 for (int f = 0; f < eligibleAsteroidFields.Count + 1; f++) {
                     if (f == eligibleAsteroidFields.Count) {
@@ -523,7 +515,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest enemy station to the position or null if there isen't any.
+    /// Gets the closest enemy station to the position or null if there isn't any.
     /// </summary>
     /// <param name="position">the given position</param>
     /// <returns>the closest enemy station to the position</returns>
@@ -546,7 +538,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest enemy unit to the position or null if there isen't any.
+    /// Gets the closest enemy unit to the position or null if there isn't any.
     /// </summary>
     /// <param name="position">the given position</param>
     /// <returns>the closest enemy unit to the position</returns>
@@ -585,41 +577,41 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest minning station that wants transports to the position
+    /// Gets the closest mining station that wants transports to the position
     /// </summary>
     /// <param name="position">the given position</param>
-    /// <returns>the closest minning station</returns>
-    public MiningStation GetClosestMinningStationWantingTransport(Vector2 position) {
-        MiningStation minningStation = null;
+    /// <returns>the closest mining station</returns>
+    public MiningStation GetClosestMiningStationWantingTransport(Vector2 position) {
+        MiningStation miningStation = null;
         float distance = 0;
         int wantedTransportShips = int.MinValue;
         for (int i = 0; i < activeMiningStations.Count; i++) {
-            MiningStation targetMinningStation = activeMiningStations[i];
-            if (targetMinningStation == null || !targetMinningStation.IsSpawned() || !targetMinningStation.activelyMinning)
+            MiningStation targetMiningStation = activeMiningStations[i];
+            if (targetMiningStation == null || !targetMiningStation.IsSpawned() || !targetMiningStation.activelyMinning)
                 continue;
-            float targetDistance = Vector2.Distance(position, targetMinningStation.GetPosition());
-            int? targetWantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            float targetDistance = Vector2.Distance(position, targetMiningStation.GetPosition());
+            int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
             if (!targetWantedTransportShips.HasValue)
                 continue;
             if ((targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0)) || (targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips)) {
-                minningStation = targetMinningStation;
+                miningStation = targetMiningStation;
                 distance = targetDistance;
                 wantedTransportShips = targetWantedTransportShips.Value;
             }
         }
-        return minningStation;
+        return miningStation;
     }
 
     /// <summary>
-    /// Gets the total wanted transports of all the factions minning stations
+    /// Gets the total wanted transports of all the factions mining stations
     /// </summary>
     /// <returns>the total wanted transports throughout the faction</returns>
     public int GetTotalWantedTransports() {
         int count = 0;
         for (int i = 0; i < activeMiningStations.Count; i++) {
-            MiningStation targetMinningStation = activeMiningStations[i];
-            if (targetMinningStation != null && targetMinningStation.IsSpawned()) {
-                int? wantedTransportShips = targetMinningStation.GetMiningStationAI().GetWantedTransportShips();
+            MiningStation targetMiningStation = activeMiningStations[i];
+            if (targetMiningStation != null && targetMiningStation.IsSpawned()) {
+                int? wantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
                 if (wantedTransportShips.HasValue) {
                     count += wantedTransportShips.Value;
                 }
@@ -632,7 +624,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// gets all ships of the given ShipType
     /// </summary>
     /// <param name="shipType">the given ShipType</param>
-    /// <returns>all ships of the given ShipiType</returns>
+    /// <returns>all ships of the given ShipType</returns>
     public int GetShipsOfType(Ship.ShipType shipType) {
         int count = 0;
         for (int i = 0; i < ships.Count; i++) {
@@ -676,7 +668,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the improvement modifier alligned with the given improvement area
+    /// Gets the improvement modifier aligned with the given improvement area
     /// </summary>
     /// <param name="improvementArea">the given improvement area</param>
     /// <returns>the improvement modifier of the area</returns>

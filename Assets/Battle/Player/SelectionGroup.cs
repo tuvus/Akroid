@@ -169,7 +169,7 @@ public class SelectionGroup {
     /// <returns>the first ship in the group</returns>
     public Ship GetShip() {
         if (groupType == GroupType.Fleet)
-            return fleet.ships[0];
+            return fleet.GetBattleObjects()[0];
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip())
                 return (Ship)units[i];
