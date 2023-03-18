@@ -32,12 +32,12 @@ public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
         totalGroupHealth += health;
     }
 
-    protected override void AddBattleObject(T battleObject) {
+    public override void AddBattleObject(T battleObject) {
         battleObject.SetGroup(this);
         base.AddBattleObject(battleObject);
     }
 
-    protected override void RemoveBattleObject(T battleObject) {
+    public override void RemoveBattleObject(T battleObject) {
         battleObject.SetGroup(null);
         base.RemoveBattleObject(battleObject);
     }

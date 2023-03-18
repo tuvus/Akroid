@@ -3,12 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
+public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleObject {
     [SerializeField] List<T> battleObjects;
     [SerializeField] Vector2 position;
     [SerializeField] Vector2 averagePosition;
     [SerializeField] float size;
     //public Transform sizeIndicator { get; private set; }
+
+    public virtual void SetupObjectGroup() {
+        battleObjects = new List<T>(10);
+    }
 
     public virtual void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         battleObjects = objects;
@@ -56,12 +60,26 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
         return battleObjects;
     }
 
-    protected virtual void AddBattleObject(T battleObject) {
+    /// <summary>
+    /// Adds the BattleObject and calls AddGroup on it
+    /// </summary>
+    /// <param name="battleObject"></param>
+    public virtual void AddBattleObject(T battleObject) {
         battleObjects.Add(battleObject);
+        battleObject.AddGroup(this);
     }
 
-    protected virtual void RemoveBattleObject(T battleObject) {
+    public virtual void RemoveBattleObject(BattleObject battleObject) {
+        battleObjects.Remove((T)battleObject);
+    }
+
+    /// <summary>
+    /// Removes the BattleObject and calls RemoveGroup on it
+    /// </summary>
+    /// <param name="battleObject"></param>
+    public virtual void RemoveBattleObject(T battleObject) {
         battleObjects.Remove(battleObject);
+        battleObject.RemoveGroup(this);
     }
 
     public Vector2 GetPosition() { return position; }

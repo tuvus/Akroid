@@ -17,7 +17,7 @@ public class MiningStation : Station {
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMinningStationAsteroids();
         activelyMinning = true;
-        faction.AddMinningStation(this);
+        faction.AddMiningStation(this);
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -48,7 +48,7 @@ public class MiningStation : Station {
             }
             if (nearbyAsteroids.Count == 0 && GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
                 activelyMinning = false;
-                faction.RemoveMinningStation(this);
+                faction.RemoveMiningStation(this);
             }
         }
     }

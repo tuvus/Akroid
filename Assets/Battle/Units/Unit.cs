@@ -69,7 +69,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
     }
 
-     #region Update
+    #region Update
     public virtual void UpdateUnit(float deltaTime) {
         if (IsTargetable() && HasWeapons()) {
             FindEnemies();
@@ -238,7 +238,9 @@ public abstract class Unit : BattleObject, IParticleHolder {
         DestroyUnit();
     }
 
-    public abstract void DestroyUnit();
+    public virtual void DestroyUnit() {
+        RemoveFromAllGroups();
+    }
 
     public virtual bool IsSpawned() {
         return spawned;

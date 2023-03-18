@@ -34,14 +34,14 @@ public class Chapter1 : CampaingController {
         playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "PlayerFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
+            battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
         playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", playerFaction.GetPosition(), Random.Range(0, 360), false));
 
         otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "OtherMiningFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
+            battleManager.CreateNewAsteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
         otherMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMiningFaction.factionIndex, GetPathToChapterFolder() + "/MiningStation", "MiningStation", otherMiningFaction.GetPosition(), Random.Range(0, 360), true));
         otherMiningStation.BuildShip(Ship.ShipClass.Transport);
@@ -85,7 +85,7 @@ public class Chapter1 : CampaingController {
 
         int asteroidFieldCount = Random.Range(50, 80);
         for (int i = 0; i < asteroidFieldCount; i++) {
-            battleManager.CreateNewAteroidField(new PositionGiver(Vector2.zero, 1500, 100000, 20000, 300, 1), Random.Range(8, 10), 10);
+            battleManager.CreateNewAsteroidField(new PositionGiver(Vector2.zero, 1500, 100000, 20000, 300, 1), Random.Range(8, 10), 10);
         }
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
