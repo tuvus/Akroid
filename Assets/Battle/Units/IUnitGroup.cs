@@ -6,4 +6,8 @@ public interface IUnitGroup {
     public void UnitUpdated();
 
     public void ChangeGroupTotalHealth(int health);
+
+    public void AddUnit(Unit unit);
+
+    public void RemoveUnit(Unit unit);
 }

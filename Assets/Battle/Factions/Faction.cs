@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Profiling;
-using static System.Collections.Specialized.BitVector32;
 using Random = UnityEngine.Random;
 
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
@@ -46,7 +45,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public int factionIndex { get; private set; }
 
     public List<Unit> units { get; private set; }
-    public List<Unit> unitsNotInFleet { get; private set; }
     public List<Ship> ships { get; private set; }
     public List<Fleet> fleets { get; private set; }
     public List<Station> stations { get; private set; }
@@ -57,7 +55,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<Faction> enemyFactions { get; private set; }
     public List<UnitGroup<Unit>> unitGroups { get; private set; }
     public List<UnitGroup<Unit>> closeEnemyGroups { get; private set; }
-    private UnitGroup<Unit> baseGroup;
+    public UnitGroup<Unit> baseGroup { get; private set; }
     public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public struct FactionData {
@@ -118,7 +116,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             SetPosition(targetPosition.Value);
         else
             SetPosition(Vector2.zero);
-        unitsNotInFleet = new List<Unit>((factionData.ships + factionData.stations) * 5);
         ships = new List<Ship>(factionData.ships * 5);
         fleets = new List<Fleet>(10);
         stations = new List<Station>(factionData.stations * 5);
@@ -155,7 +152,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            baseGroup.AddBattleObject(BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360))));
+            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
                 UnitGroup<Unit> newMiningGroup = CreateNewUnitGroup("MiningGroup" + stations.Count);
@@ -170,14 +167,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (GetFleetCommand() != null) {
                 int randomNum = Random.Range(0, 3);
                 if (randomNum == 0) {
-                    baseGroup.AddBattleObject(GetFleetCommand().BuildShip(Ship.ShipClass.Aria));
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aria);
                 } else if (randomNum == 1) {
-                    baseGroup.AddBattleObject(GetFleetCommand().BuildShip(Ship.ShipClass.Lancer));
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
                 } else if (randomNum == 2) {
-                    baseGroup.AddBattleObject(GetFleetCommand().BuildShip(Ship.ShipClass.Aterna));
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
             } else
-                baseGroup.AddBattleObject(BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360))));
+                BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
     }
 
@@ -212,12 +209,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void AddUnit(Unit unit) {
         units.Add(unit);
-        unitsNotInFleet.Add(unit);
+        baseGroup.AddBattleObject(unit);
     }
 
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
-        unitsNotInFleet.Remove(unit);
+        baseGroup.RemoveBattleObject(unit);
     }
 
     public void AddShip(Ship ship) {
@@ -266,6 +263,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
         newFleet.SetupFleet(this, fleetName, ships);
         fleets.Add(newFleet);
+        //unitGroups.Add(newFleet);
         return newFleet;
     }
 
@@ -602,7 +600,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         int wantedTransportShips = int.MinValue;
         for (int i = 0; i < activeMiningStations.Count; i++) {
             MiningStation targetMiningStation = activeMiningStations[i];
-            if (targetMiningStation == null || !targetMiningStation.IsSpawned() || !targetMiningStation.activelyMinning)
+            if (targetMiningStation == null || !targetMiningStation.IsSpawned() || !targetMiningStation.activelyMining)
                 continue;
             float targetDistance = Vector2.Distance(position, targetMiningStation.GetPosition());
             int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();

@@ -32,14 +32,22 @@ public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
         totalGroupHealth += health;
     }
 
-    public override void AddBattleObject(T battleObject) {
-        battleObject.SetGroup(this);
+    public override void AddBattleObject(BattleObject battleObject) {
+        ((T)battleObject).SetGroup(this);
         base.AddBattleObject(battleObject);
     }
 
     public override void RemoveBattleObject(T battleObject) {
         battleObject.SetGroup(null);
         base.RemoveBattleObject(battleObject);
+    }
+
+    public void AddUnit(Unit unit) {
+        AddBattleObject(unit);
+    }
+
+    public void RemoveUnit(Unit unit) {
+        RemoveBattleObject(unit);
     }
 
     public bool IsTargetable() {

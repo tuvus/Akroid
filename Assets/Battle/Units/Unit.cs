@@ -227,7 +227,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
             destroyEffect.Explode();
         if (shieldGenerator != null)
             shieldGenerator.DestroyShield();
-        for(int i = 0; i < turrets.Count; i++) {
+        for (int i = 0; i < turrets.Count; i++) {
             turrets[i].StopFireing();
         }
         float value = Random.Range(0.2f, 0.6f);
@@ -257,6 +257,9 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     #region HelperMethods
     public void SetGroup(IUnitGroup newGroup) {
+        if (group != null) {
+            group.RemoveUnit(this);
+        }
         group = newGroup;
     }
 

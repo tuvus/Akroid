@@ -64,8 +64,8 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
     /// Adds the BattleObject and calls AddGroup on it
     /// </summary>
     /// <param name="battleObject"></param>
-    public virtual void AddBattleObject(T battleObject) {
-        battleObjects.Add(battleObject);
+    public virtual void AddBattleObject(BattleObject battleObject) {
+        battleObjects.Add((T)battleObject);
         battleObject.AddGroup(this);
     }
 

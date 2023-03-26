@@ -36,7 +36,6 @@ public class Fleet : ShipGroup {
             ship.SetIdle();
             ship.shipAI.ClearCommands();
             ship.fleet = null;
-            faction.unitsNotInFleet.Add(ship);
         }
         faction.RemoveFleet(this);
         Destroy(gameObject);
@@ -47,7 +46,6 @@ public class Fleet : ShipGroup {
         if (ship.fleet != null) {
             ship.fleet.RemoveShip(ship);
         }
-        faction.unitsNotInFleet.Remove(ship);
         ship.fleet = this;
         if (setMinSpeed)
             minFleetSpeed = GetMinShipSpeed();
@@ -58,7 +56,6 @@ public class Fleet : ShipGroup {
         GetBattleObjects().Remove(ship);
         RemoveBattleObject(ship);
         ship.fleet = null;
-        faction.unitsNotInFleet.Add(ship);
         if (GetBattleObjects().Count == 0) {
             DisbandFleet();
         } else {

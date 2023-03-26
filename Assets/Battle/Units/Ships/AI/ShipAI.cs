@@ -51,6 +51,8 @@ public class ShipAI : MonoBehaviour {
     public void ClearCommands() {
         commands.Clear();
         ship.SetIdle();
+        if (ship.fleet == null)
+            ship.faction.baseGroup.AddBattleObject(ship);
     }
 
     public void UpdateAI(float deltaTime) {
@@ -377,6 +379,8 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
+                    command.productionStation.GetGroup().AddUnit(ship);
+                    ship.SetGroup(command.productionStation.GetGroup());
                     newCommand = false;
                 }
                 if (ship.dockedStation == command.productionStation) {
@@ -423,6 +427,7 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
+                    command.productionStation.GetGroup().AddUnit(ship);
                     newCommand = false;
                 }
                 if (ship.dockedStation == command.productionStation) {
