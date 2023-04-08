@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -22,7 +23,10 @@ public class Fleet : ShipGroup {
     public void SetupFleet(Faction faction, string fleetName, List<Ship> ships) {
         this.faction = faction;
         this.fleetName = fleetName;
-        SetupObjectGroup(ships);
+        SetupObjectGroup(new List<Unit>(ships.Count));
+        for (int i = 0; i < ships.Count; i++) {
+            AddShip(ships[i]);
+        }
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
         minFleetSpeed = GetMinShipSpeed();
@@ -41,8 +45,12 @@ public class Fleet : ShipGroup {
         Destroy(gameObject);
     }
 
+    public override void AddShip(Ship ship) {
+        AddShip(ship, true);
+    }
+
     public void AddShip(Ship ship, bool setMinSpeed = true) {
-        AddBattleObject(ship);
+        base.AddShip(ship);
         if (ship.fleet != null) {
             ship.fleet.RemoveShip(ship);
         }
@@ -52,11 +60,10 @@ public class Fleet : ShipGroup {
         maxWeaponRange = GetMaxTurretRange();
     }
 
-    public void RemoveShip(Ship ship) {
-        GetBattleObjects().Remove(ship);
-        RemoveBattleObject(ship);
+    public override void RemoveShip(Ship ship) {
+        base.RemoveShip(ship);
         ship.fleet = null;
-        if (GetBattleObjects().Count == 0) {
+        if (ships.Count == 0) {
             DisbandFleet();
         } else {
             minFleetSpeed = GetMinShipSpeed();
@@ -65,8 +72,8 @@ public class Fleet : ShipGroup {
     }
 
     public void MergeIntoFleet(Fleet fleet) {
-        for (int i = GetBattleObjects().Count - 1; i >= 0; i--) {
-            fleet.AddShip(GetBattleObjects()[i]);
+        for (int i = ships.Count - 1; i >= 0; i--) {
+            fleet.AddShip(ships[i]);
         }
         fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
     }
@@ -94,7 +101,7 @@ public class Fleet : ShipGroup {
         Profiler.EndSample();
     }
 
-    void FindEnemyGroup(UnitGroup<Unit> targetGroup) {
+    void FindEnemyGroup(UnitGroup targetGroup) {
         for (int i = 0; i < targetGroup.GetBattleObjects().Count; i++) {
             FindEnemyUnit(targetGroup.GetBattleObjects()[i]);
         }
@@ -119,8 +126,8 @@ public class Fleet : ShipGroup {
     }
 
     public void NextShipsCommand() {
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            GetBattleObjects()[i].shipAI.NextCommand();
+        for (int i = 0; i < ships.Count; i++) {
+            ships[i].shipAI.NextCommand();
         }
     }
 
@@ -131,8 +138,8 @@ public class Fleet : ShipGroup {
     }
 
     public bool AreShipsIdle() {
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            if (!GetBattleObjects()[i].IsIdle())
+        for (int i = 0; i < ships.Count; i++) {
+            if (!ships[i].IsIdle())
                 return false;
         }
         return true;
@@ -140,24 +147,24 @@ public class Fleet : ShipGroup {
 
     public int GetTotalFleetHealth() {
         int totalHealth = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            totalHealth += GetBattleObjects()[i].GetTotalHealth();
+        for (int i = 0; i < ships.Count; i++) {
+            totalHealth += ships[i].GetTotalHealth();
         }
         return totalHealth;
     }
 
     public int GetFleetHealth() {
         int health = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            health += GetBattleObjects()[i].GetHealth();
+        for (int i = 0; i < ships.Count; i++) {
+            health += ships[i].GetHealth();
         }
         return health;
     }
 
     public int GetMaxFleetHealth() {
         int maxHealth = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            maxHealth += GetBattleObjects()[i].GetMaxHealth();
+        for (int i = 0; i < ships.Count; i++) {
+            maxHealth += ships[i].GetMaxHealth();
         }
         return maxHealth;
     }
@@ -165,16 +172,16 @@ public class Fleet : ShipGroup {
 
     public int GetFleetSheilds() {
         int shields = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            shields += GetBattleObjects()[i].GetShields();
+        for (int i = 0; i < ships.Count; i++) {
+            shields += ships[i].GetShields();
         }
         return shields;
     }
 
     public int GetMaxFleetShields() {
         int maxShields = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            maxShields += GetBattleObjects()[i].GetMaxShields();
+        for (int i = 0; i < ships.Count; i++) {
+            maxShields += ships[i].GetMaxShields();
         }
         return maxShields;
     }
@@ -216,38 +223,38 @@ public class Fleet : ShipGroup {
 
     public float GetMinShipSpeed() {
         float minSpeed = float.MaxValue;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            minSpeed = math.min(GetBattleObjects()[i].GetSpeed(), minSpeed);
+        for (int i = 0; i < ships.Count; i++) {
+            minSpeed = math.min(ships[i].GetSpeed(), minSpeed);
         }
         return minSpeed;
     }
 
     public float GetMaxShipSize() {
         float maxShipSize = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            maxShipSize = math.max(maxShipSize, GetBattleObjects()[i].GetSize());
+        for (int i = 0; i < ships.Count; i++) {
+            maxShipSize = math.max(maxShipSize, ships[i].GetSize());
         }
         return maxShipSize;
     }
 
     public float GetMaxTurretRange() {
         float maxTurretRange = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            maxTurretRange = math.max(maxTurretRange, GetBattleObjects()[i].GetMaxWeaponRange());
+        for (int i = 0; i < ships.Count; i++) {
+            maxTurretRange = math.max(maxTurretRange, ships[i].GetMaxWeaponRange());
         }
         return maxTurretRange;
     }
 
     public bool IsDockedWithStation(Station station) {
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            if (GetBattleObjects()[i].dockedStation != station)
+        for (int i = 0; i < ships.Count; i++) {
+            if (ships[i].dockedStation != station)
                 return false;
         }
         return true;
     }
 
     public void SelectFleet(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
-        foreach (Ship ship in GetBattleObjects()) {
+        foreach (Ship ship in ships) {
             ship.SelectUnit(strength);
         }
     }

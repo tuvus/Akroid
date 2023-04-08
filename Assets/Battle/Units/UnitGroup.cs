@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
+public class UnitGroup : ObjectGroup<Unit> {
     private int totalGroupHealth;
     private bool hasChanged;
 
-    public override void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public override void SetupObjectGroup(List<Unit> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         base.SetupObjectGroup(objects, setupGroupPositionAndSize, changeSizeIndicatorPosition);
         totalGroupHealth = CalculateTotalGroupHealth();
         hasChanged = false;
@@ -33,11 +33,11 @@ public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
     }
 
     public override void AddBattleObject(BattleObject battleObject) {
-        ((T)battleObject).SetGroup(this);
+        ((Unit)battleObject).SetGroup(this);
         base.AddBattleObject(battleObject);
     }
 
-    public override void RemoveBattleObject(T battleObject) {
+    public override void RemoveBattleObject(Unit battleObject) {
         battleObject.SetGroup(null);
         base.RemoveBattleObject(battleObject);
     }
@@ -60,7 +60,7 @@ public class UnitGroup<T> : ObjectGroup<T>, IUnitGroup where T : Unit {
         return false;
     }
 
-    public List<T> GetUnits() {
+    public List<Unit> GetUnits() {
         return GetBattleObjects();
     }
 }

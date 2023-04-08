@@ -1,19 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class ShipGroup : UnitGroup<Ship> {
+public class ShipGroup : UnitGroup {
+    protected List<Ship> ships;
     public List<Fleet> sentFleets;
 
+    public override void SetupObjectGroup(List<Unit> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+        ships = new List<Ship>();
+        sentFleets = new List<Fleet>();
+        base.SetupObjectGroup(objects, setupGroupPositionAndSize, changeSizeIndicatorPosition);
+    }
 
-    public void SetupTargetGroup(List<Ship> ships) {
+
+        public void SetupTargetGroup(List<Unit> ships) {
         SetupObjectGroup(ships);
         UpdateObjectGroup();
     }
 
-    public void AddShip(Ship ship) {
+    public virtual void AddShip(Ship ship) {
         AddBattleObject(ship);
-        UpdateObjectGroup();
+        UpdateObjectGroup(); 
+    }
+
+    public virtual void RemoveShip(Ship ship) {
+        RemoveBattleObject(ship);
+    } 
+
+    public override void AddBattleObject(BattleObject battleObject) {
+        base.AddBattleObject(battleObject);
+        ships.Add((Ship)battleObject);
+    }
+
+    public override void RemoveBattleObject(BattleObject battleObject) {
+        base.RemoveBattleObject(battleObject);
+        ships.Remove((Ship)battleObject);
     }
 
     public bool IsSentFleetsStronger() {
@@ -25,6 +47,6 @@ public class ShipGroup : UnitGroup<Ship> {
     }
 
     public List<Ship> GetShips() {
-        return GetBattleObjects();
+        return ships;
     }
 }

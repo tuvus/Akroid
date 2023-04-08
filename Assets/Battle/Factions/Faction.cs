@@ -53,9 +53,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<MiningStation> activeMiningStations { get; private set; }
 
     public List<Faction> enemyFactions { get; private set; }
-    public List<UnitGroup<Unit>> unitGroups { get; private set; }
-    public List<UnitGroup<Unit>> closeEnemyGroups { get; private set; }
-    public UnitGroup<Unit> baseGroup { get; private set; }
+    public List<UnitGroup> unitGroups { get; private set; }
+    public List<UnitGroup> closeEnemyGroups { get; private set; }
+    public UnitGroup baseGroup { get; private set; }
     public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public struct FactionData {
@@ -122,10 +122,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
-        unitGroups = new List<UnitGroup<Unit>>(100);
-        closeEnemyGroups = new List<UnitGroup<Unit>>(100);
+        unitGroups = new List<UnitGroup>(100);
+        closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
-        baseGroup = CreateNewUnitGroup("BaseGroup");
+        baseGroup = CreateNewUnitGroup("BaseGroup", new List<Unit>(100));
+        unitGroups.Add(baseGroup);
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
         factionAI.SetupFactionAI(this);
@@ -155,7 +156,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
-                UnitGroup<Unit> newMiningGroup = CreateNewUnitGroup("MiningGroup" + stations.Count);
+                UnitGroup newMiningGroup = CreateNewUnitGroup("MiningGroup" + stations.Count, new List<Unit>(10));
                 newMiningGroup.AddBattleObject(newStation);
                 if (shipCount > 0) {
                     newMiningGroup.AddBattleObject(newStation.BuildShip(Ship.ShipClass.Transport));
@@ -271,10 +272,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         fleets.Remove(fleetAI);
     }
 
-    public UnitGroup<Unit> CreateNewUnitGroup(string groupName) {
+    public UnitGroup CreateNewUnitGroup(string groupName, List<Unit> Units) {
         GameObject newGroupObject = new GameObject(groupName);
         newGroupObject.transform.SetParent(GetGroupTransform());
-        return newGroupObject.AddComponent<UnitGroup<Unit>>();
+        UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
+        newUnitGroup.SetupObjectGroup(units);
+        return newUnitGroup;
     }
 
     #endregion
@@ -407,7 +410,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
     }
 
-    void AddEnemyGroup(UnitGroup<Unit> targetGroup) {
+    void AddEnemyGroup(UnitGroup targetGroup) {
         if (targetGroup == null || !targetGroup.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetGroup.GetPosition());

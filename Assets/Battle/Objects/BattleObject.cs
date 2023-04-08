@@ -7,7 +7,7 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     [SerializeField] float size;
     protected Vector2 position;
     protected SpriteRenderer spriteRenderer;
-    private List<IObjectGroupLink> battleObjectInGroups;
+    private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     //Transform sizeIndicator;
 
     /// <summary>

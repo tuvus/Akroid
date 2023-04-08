@@ -40,7 +40,7 @@ public class Ship : Unit {
     [SerializeField] private ShipClass shipClass;
     [SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
-    private ResearchEquiptment researchEquiptment;
+    private ResearchEquiptment researchEquipment;
     private List<Thruster> thrusters;
     [SerializeField] private float turnSpeed;
     [SerializeField] private float combatRotation;
@@ -124,8 +124,8 @@ public class Ship : Unit {
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {
-            researchEquiptment = GetComponentInChildren<ResearchEquiptment>();
-            researchEquiptment.SetupResearchEquiptment(this);
+            researchEquipment = GetComponentInChildren<ResearchEquiptment>();
+            researchEquipment.SetupResearchEquiptment(this);
         }
         SetupThrusters();
         shipAI.SetupShipAI(this);
@@ -487,7 +487,7 @@ public class Ship : Unit {
     }
 
     public ResearchEquiptment GetResearchEquiptment() {
-        return researchEquiptment;
+        return researchEquipment;
     }
 
     public bool IsIdle() {

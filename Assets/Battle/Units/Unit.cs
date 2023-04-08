@@ -5,7 +5,7 @@ using UnityEngine.Profiling;
 
 public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
-    private IUnitGroup group;
+    private UnitGroup group;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected string unitName;
 
@@ -96,7 +96,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         Profiler.EndSample();
     }
 
-    void FindEnemyGroup(UnitGroup<Unit> targetGroup) {
+    void FindEnemyGroup(UnitGroup targetGroup) {
         for (int i = 0; i < targetGroup.GetBattleObjects().Count; i++) {
             FindEnemyUnit(targetGroup.GetBattleObjects()[i]);
         }
@@ -256,14 +256,16 @@ public abstract class Unit : BattleObject, IParticleHolder {
     #endregion
 
     #region HelperMethods
-    public void SetGroup(IUnitGroup newGroup) {
+    public void SetGroup(UnitGroup newGroup) {
         if (group != null) {
-            group.RemoveUnit(this);
+            UnitGroup oldGroup = group;
+            group = null;
+            oldGroup.RemoveUnit(this);
         }
         group = newGroup;
     }
 
-    public IUnitGroup GetGroup() {
+    public UnitGroup GetGroup() {
         return group;
     }
 
