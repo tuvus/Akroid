@@ -125,8 +125,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         unitGroups = new List<UnitGroup>(100);
         closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
-        baseGroup = CreateNewUnitGroup("BaseGroup", new List<Unit>(100));
-        unitGroups.Add(baseGroup);
+        baseGroup = CreateNewUnitGroup("BaseGroup", false, new List<Unit>(100));
         this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
         factionAI.SetupFactionAI(this);
@@ -156,10 +155,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
-                UnitGroup newMiningGroup = CreateNewUnitGroup("MiningGroup" + stations.Count, new List<Unit>(10));
-                newMiningGroup.AddBattleObject(newStation);
                 if (shipCount > 0) {
-                    newMiningGroup.AddBattleObject(newStation.BuildShip(Ship.ShipClass.Transport));
+                    newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
                 }
             }
@@ -272,11 +269,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         fleets.Remove(fleetAI);
     }
 
-    public UnitGroup CreateNewUnitGroup(string groupName, List<Unit> Units) {
+    public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, List<Unit> units) {
         GameObject newGroupObject = new GameObject(groupName);
         newGroupObject.transform.SetParent(GetGroupTransform());
         UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
-        newUnitGroup.SetupObjectGroup(units);
+        newUnitGroup.SetupObjectGroup(units, deleteWhenEmpty);
+        unitGroups.Add(newUnitGroup);
         return newUnitGroup;
     }
 
@@ -389,6 +387,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     #region Update
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
+        for(int i = unitGroups.Count - 1; i >= 0; i--) {
+            if (unitGroups[i] == null) {
+                unitGroups.RemoveAt(i);
+            }
+        }
     }
 
     public void UpdateFaction(float deltaTime) {
@@ -405,6 +408,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) >  GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
             for (int i = 0; i < enemyFaction.unitGroups.Count; i++) {
+                if (Vector2.Distance(enemyFaction.unitGroups[i].GetPosition(), Vector2.zero) < 10)
+                    print(enemyFaction.unitGroups[i].name);
                 AddEnemyGroup(enemyFaction.unitGroups[i]);
             }
         }

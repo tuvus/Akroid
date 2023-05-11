@@ -8,14 +8,16 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
     [SerializeField] Vector2 position;
     [SerializeField] Vector2 averagePosition;
     [SerializeField] float size;
+    bool deleteGroupWhenEmpty;
     //public Transform sizeIndicator { get; private set; }
 
     public virtual void SetupObjectGroup() {
         battleObjects = new List<T>(10);
     }
 
-    public virtual void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public virtual void SetupObjectGroup(List<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         battleObjects = objects;
+        this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
         if (setupGroupPositionAndSize)
             UpdateObjectGroup(changeSizeIndicatorPosition);
@@ -65,21 +67,20 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
     /// </summary>
     /// <param name="battleObject"></param>
     public virtual void AddBattleObject(BattleObject battleObject) {
-        battleObjects.Add((T)battleObject);
-        battleObject.AddGroup(this);
+        if (!battleObject.IsInGroup(this)) {
+            battleObjects.Add((T)battleObject);
+            battleObject.AddGroup(this);
+        }
     }
 
     public virtual void RemoveBattleObject(BattleObject battleObject) {
-        battleObjects.Remove((T)battleObject);
-    }
-
-    /// <summary>
-    /// Removes the BattleObject and calls RemoveGroup on it
-    /// </summary>
-    /// <param name="battleObject"></param>
-    public virtual void RemoveBattleObject(T battleObject) {
-        battleObjects.Remove(battleObject);
-        battleObject.RemoveGroup(this);
+        if (battleObject.IsInGroup(this)) {
+            battleObjects.Remove((T)battleObject);
+            battleObject.RemoveGroup(this);
+            if (battleObjects.Count == 0 && deleteGroupWhenEmpty) {
+                Destroy(gameObject);
+            }
+        }
     }
 
     public Vector2 GetPosition() { return position; }

@@ -91,7 +91,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
             if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
                 break;
             FindEnemyGroup(faction.closeEnemyGroups[i]);
-
         }
         Profiler.EndSample();
     }
@@ -260,9 +259,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
         if (group != null) {
             UnitGroup oldGroup = group;
             group = null;
-            oldGroup.RemoveUnit(this);
+            oldGroup.RemoveBattleObject(this);
         }
         group = newGroup;
+        if (newGroup != null)
+            group.AddBattleObject(this);
     }
 
     public UnitGroup GetGroup() {

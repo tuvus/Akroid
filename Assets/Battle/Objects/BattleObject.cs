@@ -36,6 +36,10 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         position = transform.position;
     }
 
+    public bool IsInGroup(IObjectGroupLink newGroup) {
+        return battleObjectInGroups.Contains(newGroup);
+    }
+
     public void AddGroup(IObjectGroupLink newGroup) {
         battleObjectInGroups.Add(newGroup);
     }
@@ -47,6 +51,12 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     public void RemoveFromAllGroups() {
         for (int i = 0; i < battleObjectInGroups.Count; i++) {
             battleObjectInGroups[i].RemoveBattleObject(this);
+        }
+    }
+
+    public void UpdateGroups() {
+        for (int i = 0; i < battleObjectInGroups.Count; i++) {
+            battleObjectInGroups[i].UpdateObjectGroup();
         }
     }
 

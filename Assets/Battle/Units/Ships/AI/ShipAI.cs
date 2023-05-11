@@ -43,12 +43,18 @@ public class ShipAI : MonoBehaviour {
 
     public void NextCommand() {
         if (commands.Count > 0) {
+            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
+                ship.SetGroup(ship.faction.baseGroup);
             commands.RemoveAt(0);
             newCommand = true;
         }
     }
 
     public void ClearCommands() {
+        if (commands.Count > 0) {
+            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
+                ship.SetGroup(ship.faction.baseGroup);
+        }
         commands.Clear();
         ship.SetIdle();
         if (ship.fleet == null)
@@ -379,7 +385,6 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
-                    command.productionStation.GetGroup().AddUnit(ship);
                     ship.SetGroup(command.productionStation.GetGroup());
                     newCommand = false;
                 }
@@ -427,7 +432,7 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
-                    command.productionStation.GetGroup().AddUnit(ship);
+                    ship.SetGroup(command.productionStation.GetGroup());
                     newCommand = false;
                 }
                 if (ship.dockedStation == command.productionStation) {

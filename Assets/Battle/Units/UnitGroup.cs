@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitGroup : ObjectGroup<Unit> {
+public class UnitGroup : ObjectGroup<Unit>{
     private int totalGroupHealth;
     private bool hasChanged;
-
-    public override void SetupObjectGroup(List<Unit> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
-        base.SetupObjectGroup(objects, setupGroupPositionAndSize, changeSizeIndicatorPosition);
+    public override void SetupObjectGroup(List<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+        base.SetupObjectGroup(objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
         totalGroupHealth = CalculateTotalGroupHealth();
         hasChanged = false;
     }
@@ -32,22 +31,12 @@ public class UnitGroup : ObjectGroup<Unit> {
         totalGroupHealth += health;
     }
 
-    public override void AddBattleObject(BattleObject battleObject) {
-        ((Unit)battleObject).SetGroup(this);
-        base.AddBattleObject(battleObject);
-    }
-
-    public override void RemoveBattleObject(Unit battleObject) {
-        battleObject.SetGroup(null);
-        base.RemoveBattleObject(battleObject);
-    }
-
     public void AddUnit(Unit unit) {
-        AddBattleObject(unit);
+        unit.SetGroup(this);
     }
 
     public void RemoveUnit(Unit unit) {
-        RemoveBattleObject(unit);
+        unit.SetGroup(null);
     }
 
     public bool IsTargetable() {

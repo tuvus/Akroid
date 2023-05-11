@@ -260,9 +260,9 @@ MonoBehaviour:
   stationType: 3
   repairAmmount: 10
   repairSpeed: 5
-  activelyMinning: 0
+  activelyMining: 0
   nearbyAsteroids: []
-  miningAmmount: 300
+  miningAmount: 300
   miningSpeed: 5
   miningRange: 500
 --- !u!114 &2119983916170409296

@@ -188,7 +188,7 @@ public class Station : Unit, IPositionConfirmer {
         return leftOver;
     }
 
-    public bool BuildStation() {
+    public virtual bool BuildStation() {
         if (!built) {
             BattleManager.Instance.BuildStationBlueprint(this);
             faction.RemoveStationBlueprint(this);

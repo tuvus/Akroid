@@ -23,7 +23,7 @@ public class Fleet : ShipGroup {
     public void SetupFleet(Faction faction, string fleetName, List<Ship> ships) {
         this.faction = faction;
         this.fleetName = fleetName;
-        SetupObjectGroup(new List<Unit>(ships.Count));
+        SetupObjectGroup(new List<Unit>(ships.Count), true);
         for (int i = 0; i < ships.Count; i++) {
             AddShip(ships[i]);
         }

@@ -9,4 +9,5 @@ public interface IObjectGroupLink {
     /// <param name="battleObject"></param>
     public void RemoveBattleObject(BattleObject battleObject);
 
+    public void UpdateObjectGroup(bool changeSizeIndicatorPosition = false);
 }

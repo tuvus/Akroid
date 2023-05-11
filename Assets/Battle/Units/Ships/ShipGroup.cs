@@ -7,25 +7,24 @@ public class ShipGroup : UnitGroup {
     protected List<Ship> ships;
     public List<Fleet> sentFleets;
 
-    public override void SetupObjectGroup(List<Unit> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public override void SetupObjectGroup(List<Unit> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         ships = new List<Ship>();
         sentFleets = new List<Fleet>();
-        base.SetupObjectGroup(objects, setupGroupPositionAndSize, changeSizeIndicatorPosition);
+        base.SetupObjectGroup(objects, deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
     }
 
-
-        public void SetupTargetGroup(List<Unit> ships) {
-        SetupObjectGroup(ships);
+    public void SetupTargetGroup(List<Unit> ships, bool deleteWhenEmpty) {
+        SetupObjectGroup(ships, deleteWhenEmpty);
         UpdateObjectGroup();
     }
 
     public virtual void AddShip(Ship ship) {
-        AddBattleObject(ship);
+        base.AddUnit(ship);
         UpdateObjectGroup(); 
     }
 
     public virtual void RemoveShip(Ship ship) {
-        RemoveBattleObject(ship);
+        base.RemoveUnit(ship);
     } 
 
     public override void AddBattleObject(BattleObject battleObject) {

@@ -18,6 +18,9 @@ public class MiningStation : Station {
         UpdateMiningStationAsteroids();
         activelyMining = true;
         faction.AddMiningStation(this);
+        if (this.built) {
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+        }
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -36,6 +39,13 @@ public class MiningStation : Station {
             return targetLocation.Value;
 
         return positionGiver.position;
+    }
+
+    public override bool BuildStation() {
+        if (!built) {
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+        }
+        return base.BuildStation();
     }
 
     public override void UpdateUnit(float deltaTime) {

@@ -148,6 +148,7 @@ public class Ship : Unit {
         if (IsSpawned()) {
             Profiler.BeginSample(shipAction.ToString());
             UpdateMovement(deltaTime);
+            UpdateGroups();
             Profiler.EndSample();
             shipAI.UpdateAI(deltaTime);
         }
