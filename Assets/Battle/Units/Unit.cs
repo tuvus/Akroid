@@ -239,6 +239,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual void DestroyUnit() {
         RemoveFromAllGroups();
+        group = null;
     }
 
     public virtual bool IsSpawned() {
@@ -370,12 +371,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public List<Turret> GetTurrets() {
-        List<Turret> turrets = new List<Turret>();
-        if (GetComponentsInChildren<Turret>() != null) {
-            foreach (var turret in GetComponentsInChildren<Turret>()) {
-                turrets.Add(turret);
-            }
-        }
         return turrets;
     }
 

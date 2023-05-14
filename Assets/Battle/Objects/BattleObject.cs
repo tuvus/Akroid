@@ -49,7 +49,7 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     }
 
     public void RemoveFromAllGroups() {
-        for (int i = 0; i < battleObjectInGroups.Count; i++) {
+        for (int i = battleObjectInGroups.Count - 1; i >= 0; i--) {
             battleObjectInGroups[i].RemoveBattleObject(this);
         }
     }

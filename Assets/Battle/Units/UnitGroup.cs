@@ -39,6 +39,11 @@ public class UnitGroup : ObjectGroup<Unit>{
         unit.SetGroup(null);
     }
 
+    public override void RemoveBattleObject(BattleObject battleObject) {
+        base.RemoveBattleObject(battleObject);
+        totalGroupHealth -= ((Unit)battleObject).GetTotalHealth();
+    }
+
     public bool IsTargetable() {
         if (GetBattleObjects().Count == 0)
             return false;

@@ -380,6 +380,7 @@ public class Ship : Unit {
 
     public override void DestroyUnit() {
         base.DestroyUnit();
+        fleet = null;
         if (shipAction == ShipAction.Idle)
             faction.GetFactionAI().RemoveIdleShip(this);
         BattleManager.Instance.DestroyShip(this);

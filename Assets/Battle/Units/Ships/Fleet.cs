@@ -85,15 +85,13 @@ public class Fleet : ShipGroup {
         transform.position = GetPosition();
     }
 
-
-
     void FindEnemies() {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
-        float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition());
+        float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition()) + maxWeaponRange * 2 + GetSize();
         for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
-            if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
+            if (faction.closeEnemyGroupsDistance[i]  > distanceFromFactionCenter + faction.closeEnemyGroups[i].GetSize())
                 break;
             FindEnemyGroup(faction.closeEnemyGroups[i]);
 

@@ -408,8 +408,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) >  GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
             for (int i = 0; i < enemyFaction.unitGroups.Count; i++) {
-                if (Vector2.Distance(enemyFaction.unitGroups[i].GetPosition(), Vector2.zero) < 10)
-                    print(enemyFaction.unitGroups[i].name);
                 AddEnemyGroup(enemyFaction.unitGroups[i]);
             }
         }
@@ -435,7 +433,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFleets(float deltaTime) {
-        for (int i = 0; i < fleets.Count; i++) {
+        for (int i = fleets.Count - 1; i >= 0; i--) {
+            if (fleets[i] == null) {
+                fleets.RemoveAt(i);
+                continue;
+            }
             Profiler.BeginSample("UpdateFleet");
             fleets[i].UpdateFleet(deltaTime);
             Profiler.EndSample();
