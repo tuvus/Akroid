@@ -390,6 +390,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         for(int i = unitGroups.Count - 1; i >= 0; i--) {
             if (unitGroups[i] == null) {
                 unitGroups.RemoveAt(i);
+            } else {
+                unitGroups[i].UpdateObjectGroup();
             }
         }
     }
