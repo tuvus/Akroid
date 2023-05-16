@@ -334,4 +334,8 @@ public class FleetAI : MonoBehaviour {
     public void AddFormationTowardsPositionCommand(Vector2 targetPosition, float distance, CommandAction commandAction = CommandAction.Replace) {
         AddFormationCommand(Vector2.MoveTowards(fleet.GetPosition(), targetPosition, distance), Calculator.GetAngleOutOfTwoPositions(fleet.GetPosition(), targetPosition));
     }
+
+    public Fleet GetFleet() {
+        return fleet;
+    }
 }

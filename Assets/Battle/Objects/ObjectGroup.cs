@@ -9,6 +9,7 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
     [SerializeField] Vector2 averagePosition;
     [SerializeField] float size;
     bool deleteGroupWhenEmpty;
+    bool alreadyDestroyed;
     //public Transform sizeIndicator { get; private set; }
 
     public virtual void SetupObjectGroup() {
@@ -21,6 +22,7 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
         if (setupGroupPositionAndSize)
             UpdateObjectGroup(changeSizeIndicatorPosition);
+        alreadyDestroyed = false;
     }
 
     public void SetPosition(Vector2 position) {
@@ -75,9 +77,15 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
 
     public virtual void RemoveBattleObject(BattleObject battleObject) {
         if (battleObject.IsInGroup(this)) {
+            if (battleObjects.Count == 0)
+                Debug.LogError("The group was already empty!");
             battleObjects.Remove((T)battleObject);
             battleObject.RemoveGroup(this);
             if (battleObjects.Count == 0 && deleteGroupWhenEmpty) {
+                if (gameObject == null)
+                    print("AlreadyDestroyed");
+                alreadyDestroyed = true;
+                deleteGroupWhenEmpty = false;
                 Destroy(gameObject);
             }
         }

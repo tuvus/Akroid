@@ -267,4 +267,10 @@ public class SimulationFactionAI : FactionAI {
             }
         }
     }
+
+    public override void RemoveFleet(Fleet fleet) {
+        base.RemoveFleet(fleet);
+        defenseFleets.Remove(fleet);
+        attackFleets.Remove(fleet);
+    }
 }

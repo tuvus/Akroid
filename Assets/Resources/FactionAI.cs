@@ -42,4 +42,8 @@ public class FactionAI : MonoBehaviour {
     public virtual void RemoveIdleShip(Ship ship) {
         idleShips.Remove(ship);
     }
+
+    public virtual void RemoveFleet(Fleet fleet) {
+
+    }
 }

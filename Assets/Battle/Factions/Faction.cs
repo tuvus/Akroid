@@ -265,8 +265,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         return newFleet;
     }
 
-    public void RemoveFleet(Fleet fleetAI) {
-        fleets.Remove(fleetAI);
+    public void RemoveFleet(Fleet fleet) {
+        fleets.Remove(fleet);
+        factionAI.RemoveFleet(fleet);
     }
 
     public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, List<Unit> units) {

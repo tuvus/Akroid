@@ -36,13 +36,14 @@ public class Fleet : ShipGroup {
     }
 
     public void DisbandFleet() {
-        foreach (Ship ship in GetShips()) {
+        faction.RemoveFleet(this);
+        for (int i = ships.Count - 1; i >= 0; i--) {
+            Ship ship = ships[i];
             ship.SetIdle();
             ship.shipAI.ClearCommands();
             ship.fleet = null;
+            RemoveBattleObject(ship);
         }
-        faction.RemoveFleet(this);
-        Destroy(gameObject);
     }
 
     public override void AddShip(Ship ship) {
