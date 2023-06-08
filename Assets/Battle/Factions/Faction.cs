@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
@@ -207,12 +208,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void AddUnit(Unit unit) {
         units.Add(unit);
-        baseGroup.AddBattleObject(unit);
+        unit.SetGroup(baseGroup);
     }
 
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
-        baseGroup.RemoveBattleObject(unit);
     }
 
     public void AddShip(Ship ship) {
@@ -251,17 +251,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         activeMiningStations.Remove(miningStation);
     }
 
-    public Fleet CreateNewFleet(string fleetName, Ship ship) {
-        Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
-        newFleet.SetupFleet(this, fleetName, ship);
-        return newFleet;
-    }
-
     public Fleet CreateNewFleet(string fleetName, List<Ship> ships) {
         Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
         newFleet.SetupFleet(this, fleetName, ships);
         fleets.Add(newFleet);
-        //unitGroups.Add(newFleet);
+        unitGroups.Add(newFleet);
         return newFleet;
     }
 
@@ -419,8 +413,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     void AddEnemyGroup(UnitGroup targetGroup) {
         if (targetGroup == null || !targetGroup.IsTargetable())
             return;
-        float distance = Vector2.Distance(GetPosition(), targetGroup.GetPosition());
-        if (distance <= GetSize() * 1.2f + targetGroup.GetSize() + 3000) {
+        float distance = math.max(0, Vector2.Distance(GetPosition(), targetGroup.GetPosition()) - targetGroup.GetSize());
+        if (distance <= GetSize() * 1.2f + 3000) {
             for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
                 if (closeEnemyGroupsDistance[f] >= distance) {
                     closeEnemyGroupsDistance.Insert(f, distance);

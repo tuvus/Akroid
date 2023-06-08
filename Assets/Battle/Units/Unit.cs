@@ -239,7 +239,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual void DestroyUnit() {
         RemoveFromAllGroups();
-        group = null;
+        SetGroup(null);
     }
 
     public virtual bool IsSpawned() {

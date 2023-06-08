@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class Fleet : ShipGroup {
-    Faction faction;
+    public Faction faction { get; private set; }
     public FleetAI FleetAI { get; private set; }
     string fleetName;
     public float minFleetSpeed { get; private set; }
@@ -92,7 +92,7 @@ public class Fleet : ShipGroup {
         enemyUnitsInRangeDistance.Clear();
         float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition()) + maxWeaponRange * 2 + GetSize();
         for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
-            if (faction.closeEnemyGroupsDistance[i]  > distanceFromFactionCenter + faction.closeEnemyGroups[i].GetSize())
+            if (faction.closeEnemyGroupsDistance[i]  > distanceFromFactionCenter)
                 break;
             FindEnemyGroup(faction.closeEnemyGroups[i]);
 
@@ -260,6 +260,10 @@ public class Fleet : ShipGroup {
 
     public void UnselectFleet() {
         SelectFleet(UnitSelection.SelectionStrength.Unselected);
+    }
+
+    public override bool IsFleet() {
+        return true;
     }
 
     public string GetFleetName() {

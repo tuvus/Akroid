@@ -20,12 +20,12 @@ public class ShipGroup : UnitGroup {
 
     public virtual void AddShip(Ship ship) {
         base.AddUnit(ship);
-        UpdateObjectGroup(); 
+        UpdateObjectGroup();
     }
 
     public virtual void RemoveShip(Ship ship) {
         base.RemoveUnit(ship);
-    } 
+    }
 
     public override void AddBattleObject(BattleObject battleObject) {
         base.AddBattleObject(battleObject);
@@ -37,10 +37,17 @@ public class ShipGroup : UnitGroup {
         ships.Remove((Ship)battleObject);
     }
 
-    public bool IsSentFleetsStronger() {
+    /// <summary>
+    /// Finds if the fleets sent by sentFaction is stronger than this fleet.
+    /// If sentFaction is null add up all fleets regardless of their faction.
+    /// </summary>
+    /// <param name="sentFaction">the fleets with faction ownership that should be counted</param>
+    /// <returns>true if the sent fleets has a strength greater than this fleet</returns>
+    public bool IsSentFleetsStronger(Faction sentFaction = null) {
         int totalHealth = 0;
         for (int i = 0; i < sentFleets.Count; i++) {
-            sentFleets[i].GetTotalFleetHealth();
+            if (sentFaction == null || sentFleets[i].faction == sentFaction)
+                totalHealth += sentFleets[i].GetTotalFleetHealth();
         }
         return totalHealth >= GetTotalGroupHealth();
     }

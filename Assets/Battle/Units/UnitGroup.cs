@@ -12,7 +12,7 @@ public class UnitGroup : ObjectGroup<Unit>{
     }
 
     public int GetTotalGroupHealth() {
-        return totalGroupHealth;
+        return CalculateTotalGroupHealth();
     }
 
     private int CalculateTotalGroupHealth() {
@@ -42,6 +42,10 @@ public class UnitGroup : ObjectGroup<Unit>{
     public override void RemoveBattleObject(BattleObject battleObject) {
         base.RemoveBattleObject(battleObject);
         totalGroupHealth -= ((Unit)battleObject).GetTotalHealth();
+    }
+
+    public virtual bool IsFleet() {
+        return false;
     }
 
     public bool IsTargetable() {
