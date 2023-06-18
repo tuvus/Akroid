@@ -5,14 +5,14 @@ using UnityEngine.InputSystem;
 
 public class PlayerGroupInput : LocalPlayerGameInput {
 
-    public List<UnitGroup> groups = new List<UnitGroup>();
+    public List<SelectionGroup> groups = new List<SelectionGroup>();
 
     int fleetNumber = 10;
 
     public override void Setup() {
         base.Setup();
         for (int i = 0; i < fleetNumber; i++) {
-            UnitGroup newGroup = new UnitGroup();
+            SelectionGroup newGroup = new SelectionGroup();
             groups.Add(newGroup);
         }
         GetPlayerInput().Player.ActionGroup1.started += context => GroupButtonPressed(context, 1);
@@ -48,7 +48,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             selectedUnits.ClearGroup();
             selectedUnits.CopyGroup(groups[buttonNumber]);
             selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
-            if (groups[buttonNumber].groupType == UnitGroup.GroupType.Fleet)
+            if (groups[buttonNumber].groupType == SelectionGroup.GroupType.Fleet)
                 SetDisplayedFleet(groups[buttonNumber].fleet);
             else
                 SetDisplayedUnit();
@@ -71,14 +71,14 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         return unitList;
     }
 
-    public void SetGroupToUnits(UnitGroup newGroup, int groupNumber) {
+    public void SetGroupToUnits(SelectionGroup newGroup, int groupNumber) {
         if (CheckGroupInt(groupNumber)) {
             groups[groupNumber].ClearGroup();
             groups[groupNumber].CopyGroup(newGroup);
         }
     }
 
-    public void AddUnitsToGroup(UnitGroup newGroup, int groupNumber) {
+    public void AddUnitsToGroup(SelectionGroup newGroup, int groupNumber) {
         if (CheckGroupInt(groupNumber)) {
             groups[groupNumber].AddUnits(newGroup);
         }

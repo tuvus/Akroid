@@ -3,17 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
+public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleObject {
     [SerializeField] List<T> battleObjects;
     [SerializeField] Vector2 position;
+    [SerializeField] Vector2 averagePosition;
     [SerializeField] float size;
+    bool deleteGroupWhenEmpty;
+    bool alreadyDestroyed;
     //public Transform sizeIndicator { get; private set; }
 
-    public void SetupObjectGroup(List<T> objects, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public virtual void SetupObjectGroup() {
+        battleObjects = new List<T>(10);
+    }
+
+    public virtual void SetupObjectGroup(List<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         battleObjects = objects;
+        this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
         if (setupGroupPositionAndSize)
             UpdateObjectGroup(changeSizeIndicatorPosition);
+        alreadyDestroyed = false;
     }
 
     public void SetPosition(Vector2 position) {
@@ -21,7 +30,7 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     }
 
     public void UpdateObjectGroup(bool changeSizeIndicatorPosition = false) {
-        position = CalculateObjectGroupCenter();
+        CalculateObjectGroupCenters();
         size = CalculateObjectGroupSize();
         //sizeIndicator.localScale = new Vector3(GetSize() / transform.localScale.x * 2, GetSize() / transform.localScale.y * 2, 1);
         //if (changeSizeIndicatorPosition)
@@ -29,21 +38,18 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
     }
 
 
-    public Vector2 CalculateObjectGroupCenter() {
+    void CalculateObjectGroupCenters() {
         Vector2 min = new Vector2(int.MaxValue, int.MaxValue);
         Vector2 max = new Vector2(int.MinValue, int.MinValue);
+        Vector2 sum = Vector2.zero;
         for (int i = 0; i < battleObjects.Count; i++) {
             Vector2 tempPos = battleObjects[i].GetPosition();
-            if (min.x > tempPos.x)
-                min = new Vector2(tempPos.x, min.y);
-            if (min.y > tempPos.y)
-                min = new Vector2(min.x, tempPos.y);
-            if (max.x < tempPos.x)
-                max = new Vector2(tempPos.x, max.y);
-            if (max.y < tempPos.y)
-                max = new Vector2(max.x, tempPos.y);
+            sum += tempPos;
+            min = Vector2.Min(min, tempPos);
+            max = Vector2.Max(max, tempPos);
         }
-        return (min + max) / 2;
+        position = (min + max) / 2;
+        averagePosition = sum / battleObjects.Count;
     }
 
     private float CalculateObjectGroupSize() {
@@ -54,17 +60,40 @@ public class ObjectGroup<T> : MonoBehaviour where T : BattleObject {
         return size;
     }
 
-    protected void AddBattleObject(T battleObject) {
-        battleObjects.Add(battleObject);
+    public List<T> GetBattleObjects() {
+        return battleObjects;
     }
 
-    protected void RemoveBattleObject(T battleObject) {
-        battleObjects.Remove(battleObject);
+    /// <summary>
+    /// Adds the BattleObject and calls AddGroup on it
+    /// </summary>
+    /// <param name="battleObject"></param>
+    public virtual void AddBattleObject(BattleObject battleObject) {
+        if (!battleObject.IsInGroup(this)) {
+            battleObjects.Add((T)battleObject);
+            battleObject.AddGroup(this);
+        }
     }
 
-    public Vector2 GetPosition() {
-        return position;
+    public virtual void RemoveBattleObject(BattleObject battleObject) {
+        if (battleObject.IsInGroup(this)) {
+            if (battleObjects.Count == 0)
+                Debug.LogError("The group was already empty!");
+            battleObjects.Remove((T)battleObject);
+            battleObject.RemoveGroup(this);
+            if (battleObjects.Count == 0 && deleteGroupWhenEmpty) {
+                if (gameObject == null)
+                    print("AlreadyDestroyed");
+                alreadyDestroyed = true;
+                deleteGroupWhenEmpty = false;
+                Destroy(gameObject);
+            }
+        }
     }
+
+    public Vector2 GetPosition() { return position; }
+
+    public Vector2 GetAveragePosition() { return averagePosition; }
 
     public float GetSize() {
         return size;

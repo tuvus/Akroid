@@ -32,6 +32,7 @@ public class Ship : Unit {
         Dock,
         DockMove,
         DockRotate,
+        MoveAndRotate,
     }
 
     public ShipAI shipAI { get; private set; }
@@ -39,7 +40,7 @@ public class Ship : Unit {
     [SerializeField] private ShipClass shipClass;
     [SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
-    private ResearchEquiptment researchEquiptment;
+    private ResearchEquiptment researchEquipment;
     private List<Thruster> thrusters;
     [SerializeField] private float turnSpeed;
     [SerializeField] private float combatRotation;
@@ -123,8 +124,8 @@ public class Ship : Unit {
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {
-            researchEquiptment = GetComponentInChildren<ResearchEquiptment>();
-            researchEquiptment.SetupResearchEquiptment(this);
+            researchEquipment = GetComponentInChildren<ResearchEquiptment>();
+            researchEquipment.SetupResearchEquiptment(this);
         }
         SetupThrusters();
         shipAI.SetupShipAI(this);
@@ -180,7 +181,7 @@ public class Ship : Unit {
                 timeUntilCheckRotation += checkRotationSpeed;
             }
         }
-        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate) {
+        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate || shipAction == ShipAction.MoveAndRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
             if (Mathf.Abs(localRotation) <= GetTurnSpeed() * deltaTime) {
                 SetRotation(targetRotation);
@@ -193,19 +194,25 @@ public class Ship : Unit {
                 } else if (shipAction == ShipAction.DockRotate) {
                     shipAction = ShipAction.DockMove;
                     SetThrusters(true);
+                } else if (shipAction == ShipAction.MoveAndRotate) {
+                    shipAction = ShipAction.Move;
                 }
             } else if (localRotation > 0) {
                 SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
-                SetThrusters(false);
-                return;
+                if (shipAction != ShipAction.MoveAndRotate) {
+                    SetThrusters(false);
+                    return;
+                }
             } else {
                 SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * deltaTime));
-                SetThrusters(false);
-                return;
+                if (shipAction == ShipAction.MoveAndRotate) {
+                    SetThrusters(false);
+                    return;
+                }
             }
         }
 
-        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove) {
+        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove || shipAction == ShipAction.MoveAndRotate) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
             float thrust = speed * deltaTime;
@@ -216,7 +223,7 @@ public class Ship : Unit {
             if (distance <= thrust + 2) {
                 transform.position = movePosition;
                 position = movePosition;
-                if (shipAction == ShipAction.Move) {
+                if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveAndRotate) {
                     SetIdle();
                 } else if (shipAction == ShipAction.DockMove) {
                     shipAction = ShipAction.Dock;
@@ -324,6 +331,12 @@ public class Ship : Unit {
         shipAction = ShipAction.DockRotate;
     }
 
+    public void SetMoveRotateTarget(Vector2 position) {
+        movePosition = position;
+        targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
+        shipAction = ShipAction.MoveAndRotate;
+    }
+
     public void SetMaxSpeed() {
         maxSetSpeed = GetSpeed();
     }
@@ -365,11 +378,10 @@ public class Ship : Unit {
     }
 
     public override void DestroyUnit() {
+        base.DestroyUnit();
+        fleet = null;
         if (shipAction == ShipAction.Idle)
             faction.GetFactionAI().RemoveIdleShip(this);
-        if (fleet != null) {
-            fleet.RemoveShip(this);
-        }
         BattleManager.Instance.DestroyShip(this);
     }
 
@@ -476,7 +488,7 @@ public class Ship : Unit {
     }
 
     public ResearchEquiptment GetResearchEquiptment() {
-        return researchEquiptment;
+        return researchEquipment;
     }
 
     public bool IsIdle() {

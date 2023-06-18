@@ -9,7 +9,7 @@ using static Station;
 
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
-    CampaingController campaignControler;
+    CampaingController campaignController;
 
     public float researchModifier { get; private set; }
     public float systemSizeModifier { get; private set; }
@@ -70,7 +70,7 @@ public class BattleManager : MonoBehaviour {
     #region Setup
     /// <summary>
     /// Sets up the battle with only two factions, used for debugging.
-    /// Two factions means better preformance for faster debugging.
+    /// Two factions means better performance for faster debugging.
     /// </summary>
     protected virtual void Start() {
         if (quickStart == true) {
@@ -79,7 +79,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
                 new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
             };
-            SetupBattle(1, 0, 1, 0.5f, 1.1f, tempFactions);
+            SetupBattle(1, 0, 1, 0.1f, 1.1f, tempFactions);
         }
     }
 
@@ -119,12 +119,12 @@ public class BattleManager : MonoBehaviour {
             CreateNewStar();
         }
         for (int i = 0; i < asteroidFieldCount; i++) {
-            CreateNewAteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
+            CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
         }
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
-            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 100000, 250, 2000, 10), 100);
+            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 250, 5000, 10), 100);
         }
 
         for (int i = 0; i < factions.Count; i++) {
@@ -147,17 +147,17 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets up the battle with a CampaignController, doesen't spawn any asteroids or stars.
-    /// Lets the CampaingController set the settings.
+    /// Sets up the battle with a CampaignController, doesn't spawn any asteroids or stars.
+    /// Lets the CampaignController set the settings.
     /// </summary>
-    /// <param name="campaignControler">the given CampaingController</param>
+    /// <param name="campaignControler">the given CampaignController</param>
     public void SetupBattle(CampaingController campaignControler) {
         if (Instance == null) {
             Instance = this;
         } else {
             Destroy(gameObject);
         }
-        this.campaignControler = campaignControler;
+        this.campaignController = campaignControler;
         systemSizeModifier = campaignControler.systemSizeModifier;
         researchModifier = campaignControler.researchModifier;
         factions = new List<Faction>(0);
@@ -190,7 +190,7 @@ public class BattleManager : MonoBehaviour {
     /// <param name="minDistanceFromStationOrAsteroid">The minimum distance to stations and asteroids</param>
     /// <param name="maxDistance">The maximum distance from the center location</param>
     /// <param name="isCenterObject">Is the centerLocation on a station or asteroid?</param>
-    /// <param name="tyCount">The ammount of times to try</param>
+    /// <param name="tyCount">The amount of times to try</param>
     /// <returns></returns>
     public Vector2? FindFreeLocation(PositionGiver positionGiver, IPositionConfirmer positionConfirmer, float minRange, float maxRange) {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
@@ -206,15 +206,15 @@ public class BattleManager : MonoBehaviour {
     /// <summary>
     /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
     /// If the center location is an asteroid or station isCenterObject should be true.
-    /// If the point cannot be found then it increaces the search distance.
+    /// If the point cannot be found then it increases the search distance.
     /// </summary>
     /// <param name="centerLocation">The position to be close to</param>
     /// <param name="minDistanceFromStationOrAsteroid">The minimum distance to stations and asteroids</param>
-    /// <param name="startingDistance">The startin distance to check</param>
-    /// <param name="maxDistance">The maximum ammount that the distance can be incramented</param>
-    /// <param name="incrementValue">The ammount to incrament by</param>
+    /// <param name="startingDistance">The starting distance to check</param>
+    /// <param name="maxDistance">The maximum amount that the distance can be incremented</param>
+    /// <param name="incrementValue">The amount to increment by</param>
     /// <param name="isCenterObject">Is the centerLocation on a station or asteroid?</param>
-    /// <param name="tyCount">The ammount of times to try for each incrament</param>
+    /// <param name="tyCount">The amount of times to try for each increment</param>
     /// <returns></returns>
     public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
         float distance = positionGiver.minDistance * systemSizeModifier;
@@ -278,11 +278,11 @@ public class BattleManager : MonoBehaviour {
         return newPlanet;
     }
 
-    public void CreateNewAteroidField(Vector2 center, int count, float resourceModifier = 1) {
-        CreateNewAteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2), count, resourceModifier);
+    public void CreateNewAsteroidField(Vector2 center, int count, float resourceModifier = 1) {
+        CreateNewAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2), count, resourceModifier);
     }
 
-    public void CreateNewAteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
+    public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
         AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
         for (int i = 0; i < count; i++) {
@@ -312,7 +312,6 @@ public class BattleManager : MonoBehaviour {
             ship.faction.RemoveShip(ship);
         destroyedUnits.Add(ship);
     }
-
 
     public void DestroyStation(Station station) {
         if (station.IsBuilt()) {
@@ -375,19 +374,24 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void PrespawnNewMissile() {
-        GameObject missilePrefabe = (GameObject)Resources.Load("Prefabs/HermesMissile");
-        Missile newMissile = Instantiate(missilePrefabe, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
+        GameObject missilePrefab = (GameObject)Resources.Load("Prefabs/HermesMissile");
+        Missile newMissile = Instantiate(missilePrefab, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
         newMissile.PrespawnMissile(missiles.Count, timeScale);
         missiles.Add(newMissile);
     }
     #endregion
 
     public virtual void FixedUpdate() {
-        if (campaignControler != null) {
-            campaignControler.UpdateControler();
+        if (campaignController != null) {
+            campaignController.UpdateControler();
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
+        for (int i = 0; i < factions.Count; i++) {
+            Profiler.BeginSample("EarlyFactionUpdate");
+            factions[i].EarlyUpdateFaction();
+            Profiler.EndSample();
+        }
         for (int i = 0; i < factions.Count; i++) {
             Profiler.BeginSample("FactionUpdate");
             factions[i].UpdateFaction(deltaTime);
@@ -480,7 +484,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Determines wether or not the effects will be shown or not.
+    /// Determines whether or not the effects will be shown or not.
     /// </summary>
     /// <param name="shown"></param>
     public void ShowEffects(bool shown) {
@@ -500,7 +504,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Determines wether or not the particles in the game are rendered or not.
+    /// Determines whether or not the particles in the game are rendered or not.
     /// Will not be called with the same shown value twice in a row.
     /// </summary>
     /// <param name="shown"></param>
@@ -524,9 +528,9 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// For particle emmiters to figure out if they should emit when begging their emissions.
+    /// For particle emitters to figure out if they should emit when begging their emissions.
     /// </summary>
-    /// <returns>wether or not the particles should be shown</returns>
+    /// <returns>whether or not the particles should be shown</returns>
     public bool GetParticlesShown() {
         return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
     }

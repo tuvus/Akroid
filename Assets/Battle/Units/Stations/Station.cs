@@ -163,6 +163,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public override void DestroyUnit() {
+         base.DestroyUnit();
         BattleManager.Instance.DestroyStation(this);
     }
 
@@ -188,7 +189,7 @@ public class Station : Unit, IPositionConfirmer {
         return leftOver;
     }
 
-    public bool BuildStation() {
+    public virtual bool BuildStation() {
         if (!built) {
             BattleManager.Instance.BuildStationBlueprint(this);
             faction.RemoveStationBlueprint(this);

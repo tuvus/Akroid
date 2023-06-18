@@ -7,6 +7,7 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     [SerializeField] float size;
     protected Vector2 position;
     protected SpriteRenderer spriteRenderer;
+    private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     //Transform sizeIndicator;
 
     /// <summary>
@@ -33,6 +34,30 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         SetSize(SetupSize());
         transform.position = GetSetupPosition(positionGiver);
         position = transform.position;
+    }
+
+    public bool IsInGroup(IObjectGroupLink newGroup) {
+        return battleObjectInGroups.Contains(newGroup);
+    }
+
+    public void AddGroup(IObjectGroupLink newGroup) {
+        battleObjectInGroups.Add(newGroup);
+    }
+
+    public void RemoveGroup(IObjectGroupLink removeGroup) {
+        battleObjectInGroups.Remove(removeGroup);
+    }
+
+    public void RemoveFromAllGroups() {
+        for (int i = battleObjectInGroups.Count - 1; i >= 0; i--) {
+            battleObjectInGroups[i].RemoveBattleObject(this);
+        }
+    }
+
+    public void UpdateGroups() {
+        for (int i = 0; i < battleObjectInGroups.Count; i++) {
+            battleObjectInGroups[i].UpdateObjectGroup();
+        }
     }
 
     protected virtual float SetupSize() {

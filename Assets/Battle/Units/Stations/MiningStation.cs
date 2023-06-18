@@ -5,19 +5,22 @@ using UnityEngine;
 
 public class MiningStation : Station {
 
-    public bool activelyMinning;
+    public bool activelyMining;
     public List<Asteroid> nearbyAsteroids;
-    [SerializeField] private int miningAmmount;
+    [SerializeField] private int miningAmount;
     [SerializeField] private float miningSpeed;
-    private float minningTime;
+    private float miningTime;
     [SerializeField] private int miningRange;
 
     public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale) {
         base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale);
         nearbyAsteroids = new List<Asteroid>(10);
-        UpdateMinningStationAsteroids();
-        activelyMinning = true;
-        faction.AddMinningStation(this);
+        UpdateMiningStationAsteroids();
+        activelyMining = true;
+        faction.AddMiningStation(this);
+        if (this.built) {
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+        }
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -38,34 +41,41 @@ public class MiningStation : Station {
         return positionGiver.position;
     }
 
+    public override bool BuildStation() {
+        if (!built) {
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+        }
+        return base.BuildStation();
+    }
+
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
-        if (activelyMinning) {
-            minningTime -= deltaTime;
-            if (minningTime <= 0) {
-                ManageStationMinning();
-                minningTime += GetMiningSpeed();
+        if (activelyMining) {
+            miningTime -= deltaTime;
+            if (miningTime <= 0) {
+                ManageStationMining();
+                miningTime += GetMiningSpeed();
             }
             if (nearbyAsteroids.Count == 0 && GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
-                activelyMinning = false;
-                faction.RemoveMinningStation(this);
+                activelyMining = false;
+                faction.RemoveMiningStation(this);
             }
         }
     }
 
-    public void ManageStationMinning() {
+    public void ManageStationMining() {
         if (nearbyAsteroids.Count == 0) {
-            UpdateMinningStationAsteroids();
+            UpdateMiningStationAsteroids();
         }
         if (nearbyAsteroids.Count > 0) {
-            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min((int)GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal), GetMiningAmmount())), CargoBay.CargoTypes.Metal);
+            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min((int)GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal), GetMiningAmount())), CargoBay.CargoTypes.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
             }
         }
     }
 
-    public void UpdateMinningStationAsteroids() {
+    public void UpdateMiningStationAsteroids() {
         List<Asteroid> tempAsteroids = new List<Asteroid>(10);
         foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
             if (asteroidField.totalResources <= 0)
@@ -92,8 +102,8 @@ public class MiningStation : Station {
         }
     }
 
-    public int GetMiningAmmount() {
-        return miningAmmount;
+    public int GetMiningAmount() {
+        return miningAmount;
     }
 
     public float GetMiningSpeed() {

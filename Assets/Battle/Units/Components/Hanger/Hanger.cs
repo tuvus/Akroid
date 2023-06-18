@@ -91,7 +91,7 @@ public class Hanger : MonoBehaviour {
     public List<Ship> GetAllUndamagedCombatShips() {
         List<Ship> combatShips = new List<Ship>(ships.Count);
         for (int i = 0; i < ships.Count; i++) {
-            if (ships[i].IsCombatShip() && !ships[i].IsDammaged()) {
+            if (ships[i].IsCombatShip() && !ships[i].IsDamaged()) {
                 combatShips.Add(ships[i]);
             }
         }

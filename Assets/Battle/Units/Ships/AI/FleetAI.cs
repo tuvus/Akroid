@@ -99,7 +99,7 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Rptates towards position, Stop until turned to angle, ContinueRemove once Finished.
+        //Rotates towards position, Stop until turned to angle, ContinueRemove once Finished.
         if (command.commandType == CommandType.TurnToPosition) {
             if (newCommand) {
                 currentCommandType = CommandType.TurnToPosition;
@@ -111,7 +111,7 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Rotates towards position then moves towards position, Stop until moved to postion, ContinueRemoveOnce Finished.
+        //Rotates towards position then moves towards position, Stop until moved to position, ContinueRemoveOnce Finished.
         if (command.commandType == CommandType.Move) {
             if (newCommand) {
                 currentCommandType = CommandType.TurnToPosition;
@@ -131,10 +131,20 @@ public class FleetAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-
-        //Follows closest enemy ship then goes to target position, Stop until all nearby enemy fleet.ships are removed and at target position, ContinueRemove once Finished.
-        //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
-        if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
+        if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
+            if (!newCommand) {
+                if (command.commandType == CommandType.AttackFleet) {
+                    if (Vector2.Distance(command.targetFleet.GetPosition(), command.targetPosition) > fleet.maxWeaponRange / 4) {
+                        newCommand = true;
+                    }
+                } else if (command.commandType == CommandType.AttackMoveUnit) {
+                    if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                        SetFleetIdle();
+                        return CommandResult.StopRemove;
+                    }
+                }
+            }
+            //Sets the target position of the command and tells all ships to attack move
             if (newCommand) {
                 if (command.commandType == CommandType.Protect) {
                     Vector2 fleetCenter = fleet.GetPosition();
@@ -142,23 +152,57 @@ public class FleetAI : MonoBehaviour {
                 } else if (command.commandType == CommandType.AttackMoveUnit) {
                     Vector2 fleetCenter = fleet.GetPosition();
                     command.targetPosition = Vector2.MoveTowards(fleetCenter, command.targetUnit.GetPosition(), Vector2.Distance(fleetCenter, command.targetUnit.GetPosition()) - (fleet.GetMaxShipSize() + command.targetUnit.GetSize()) * 2);
+                } else if (command.commandType == CommandType.AttackFleet) {
+                    command.targetPosition = command.targetFleet.GetPosition();
                 }
                 SetFleetAttackMovePosition(command.targetPosition);
                 currentCommandType = CommandType.Move;
                 newCommand = false;
                 return CommandResult.Stop;
             }
-            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0) {
+            //Checks if the command should stop or reapply itself
+            if (currentCommandType == CommandType.Move && fleet.enemyUnitsInRange.Count == 0 && command.targetFleet == null && (command.targetUnit == null || !command.targetUnit.IsSpawned()) && command.protectUnit == null) {
                 return CommandResult.ContinueRemove;
+            } else if (currentCommandType == CommandType.AttackFleet && command.targetFleet == null) {
+                if (command.commandType == CommandType.AttackFleet) {
+                    return CommandResult.StopRemove;
+                }
+                if (fleet.GetNearbyEnemyFleet() == null) {
+                    AddFormationTowardsPositionCommand(command.targetPosition, fleet.GetSize() / 2, CommandAction.AddToBegining);
+                    return CommandResult.Stop;
+                }
+                newCommand = true;
             }
+            //Finds a new target fleet if there is one, then orders ships to attack it.
+            if (command.targetFleet == null) {
+                Fleet targetFleet = fleet.GetNearbyEnemyFleet();
+                if (targetFleet != null && currentCommandType == CommandType.Move) {
+                    command.targetFleet = targetFleet;
+                    currentCommandType = CommandType.AttackFleet;
+                    for (int i = 0; i < fleet.GetShips().Count; i++) {
+                        Vector2 relativeVector = fleet.GetShips()[i].GetPosition() - fleet.GetPosition();
+                        Ship target = null;
+                        float relativeDistance = 0;
+                        for (int j = 0; j < targetFleet.GetShips().Count; j++) {
+                            float newRelativeDistance = Vector2.Distance(relativeVector, targetFleet.GetShips()[j].GetPosition() - targetFleet.GetPosition());
+                            if (target == null || newRelativeDistance < relativeDistance) {
+                                target = targetFleet.GetShips()[j];
+                                relativeDistance = newRelativeDistance;
+                            }
+                        }
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateSkirmishCommand(target, targetFleet), CommandAction.Replace);
+                    }
+                    return CommandResult.Stop;
+                }
+            }
+            //Sets all idle ships to attackMove to the commands targetPosition
             if (fleet.enemyUnitsInRange.Count > 0) {
-                for (int i = 0; i < fleet.ships.Count; i++) {
-                    if (fleet.ships[i].IsIdle()) {
+                for (int i = 0; i < fleet.GetShips().Count; i++) {
+                    if (fleet.GetShips()[i].IsIdle()) {
                         SetFleetAttackMovePosition(command.targetPosition);
                     }
                 }
             }
-
             return CommandResult.Stop;
         }
         if (command.commandType == CommandType.Dock) {
@@ -174,12 +218,17 @@ public class FleetAI : MonoBehaviour {
         if (command.commandType == CommandType.Formation) {
             if (newCommand) {
                 float size = fleet.GetMaxShipSize();
-                Vector2 fleetCenter = fleet.GetPosition();
-                Vector2 startPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.ships.Count * 2);
-                Vector2 endPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.ships.Count * 2);
-                for (int i = 0; i < fleet.ships.Count; i++) {
-                    fleet.ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.ships.Count - 1))), CommandAction.Replace);
-                    fleet.ships[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                if (fleet.GetShips().Count == 1) {
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateMoveCommand(fleet.GetShips()[0].GetPosition()), CommandAction.Replace);
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                } else {
+                    Vector2 fleetCenter = fleet.GetPosition();
+                    Vector2 startPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
+                    Vector2 endPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
+                    for (int i = 0; i < fleet.GetShips().Count; i++) {
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.GetShips().Count - 1))), CommandAction.Replace);
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                    }
                 }
                 currentCommandType = CommandType.Formation;
                 newCommand = false;
@@ -193,11 +242,16 @@ public class FleetAI : MonoBehaviour {
         if (command.commandType == CommandType.FormationLocation) {
             if (newCommand) {
                 float size = fleet.GetMaxShipSize();
-                Vector2 startPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.ships.Count * 2);
-                Vector2 endPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.ships.Count * 2);
-                for (int i = 0; i < fleet.ships.Count; i++) {
-                    fleet.ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.ships.Count - 1))), CommandAction.Replace);
-                    fleet.ships[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                if (fleet.GetShips().Count == 1) {
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateMoveCommand(command.targetPosition), CommandAction.Replace);
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                } else {
+                    Vector2 startPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
+                    Vector2 endPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
+                    for (int i = 0; i < fleet.GetShips().Count; i++) {
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.GetShips().Count - 1))), CommandAction.Replace);
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                    }
                 }
                 currentCommandType = CommandType.Formation;
                 newCommand = false;
@@ -215,20 +269,20 @@ public class FleetAI : MonoBehaviour {
     }
 
     public void SetFleetIdle() {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            fleet.ships[i].SetIdle();
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            fleet.GetShips()[i].SetIdle();
         }
     }
 
     public void SetFleetRotation(float rotation) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            fleet.ships[i].SetTargetRotate(rotation);
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            fleet.GetShips()[i].SetTargetRotate(rotation);
         }
     }
 
     public void SetFleetRotation(Vector2 targetPostion) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            fleet.ships[i].SetTargetRotate(targetPostion);
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            fleet.GetShips()[i].SetTargetRotate(targetPostion);
         }
     }
 
@@ -238,11 +292,11 @@ public class FleetAI : MonoBehaviour {
     /// </summary>
     /// <param name="movePosition">the position to move to</param>
     public void SetFleetMoveCommand(Vector2 movePosition) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateRotationCommand(movePosition - shipOffset), CommandAction.Replace);
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateIdleCommand());
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed));
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            Vector2 shipOffset = fleet.GetPosition() - fleet.GetShips()[i].GetPosition();
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(movePosition - shipOffset), CommandAction.Replace);
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateIdleCommand());
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed));
         }
     }
 
@@ -252,11 +306,11 @@ public class FleetAI : MonoBehaviour {
     /// </summary>
     /// <param name="movePosition">the position to move to</param>
     public void SetFleetMoveFormationCommand(Vector2 movePosition) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            Vector2 shipOffset = fleet.GetPosition() - fleet.GetShips()[i].GetPosition();
             AddFormationCommand(fleet.GetPosition(), Vector2.Angle(fleet.GetPosition(), movePosition));
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateIdleCommand());
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed));
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateIdleCommand());
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed));
         }
     }
 
@@ -265,8 +319,8 @@ public class FleetAI : MonoBehaviour {
     /// </summary>
     /// <param name="targetStation"></param>
     public void SetFleetDockTarget(Station targetStation) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateDockCommand(targetStation, fleet.minFleetSpeed), CommandAction.Replace);
         }
     }
 
@@ -275,25 +329,35 @@ public class FleetAI : MonoBehaviour {
     /// </summary>
     /// <param name="movePosition">the position to AttackMove to</param>
     public void SetFleetAttackMovePosition(Vector2 movePosition) {
-        for (int i = 0; i < fleet.ships.Count; i++) {
-            Vector2 shipOffset = fleet.GetPosition() - fleet.ships[i].GetPosition();
-            fleet.ships[i].shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed), CommandAction.Replace);
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            Vector2 shipOffset = fleet.GetPosition() - fleet.GetShips()[i].GetPosition();
+            fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, fleet.minFleetSpeed), CommandAction.Replace);
         }
     }
 
     public void AddFormationCommand(CommandAction commandAction = CommandAction.Replace) {
-        AddUnitAICommand(CreateFormationCommand(fleet.ships[0].GetRotation()), commandAction);
+        AddUnitAICommand(CreateFormationCommand(fleet.GetShips()[0].GetRotation()), commandAction);
     }
 
     public void AddFormationCommand(Vector2 position, CommandAction commandAction = CommandAction.Replace) {
-        AddUnitAICommand(CreateFormationCommand(position, fleet.ships[0].GetRotation()), commandAction);
+        AddUnitAICommand(CreateFormationCommand(position, fleet.GetShips()[0].GetRotation()), commandAction);
     }
 
     public void AddFormationCommand(Vector2 position, float rotation, CommandAction commandAction = CommandAction.Replace) {
         AddUnitAICommand(CreateFormationCommand(position, rotation), commandAction);
     }
 
+    /// <summary>
+    /// Adds a formation command distance towards targetPosition pointing towards targetPosition
+    /// </summary>
+    /// <param name="targetPosition">the position to point towards</param>
+    /// <param name="distance">the distance from the current fleet position</param>
+    /// <param name="commandAction">how the command should be added to the list</param>
     public void AddFormationTowardsPositionCommand(Vector2 targetPosition, float distance, CommandAction commandAction = CommandAction.Replace) {
         AddFormationCommand(Vector2.MoveTowards(fleet.GetPosition(), targetPosition, distance), Calculator.GetAngleOutOfTwoPositions(fleet.GetPosition(), targetPosition));
+    }
+
+    public Fleet GetFleet() {
+        return fleet;
     }
 }

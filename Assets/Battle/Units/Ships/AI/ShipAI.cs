@@ -43,14 +43,22 @@ public class ShipAI : MonoBehaviour {
 
     public void NextCommand() {
         if (commands.Count > 0) {
+            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
+                ship.SetGroup(ship.faction.baseGroup);
             commands.RemoveAt(0);
             newCommand = true;
         }
     }
 
     public void ClearCommands() {
+        if (commands.Count > 0) {
+            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
+                ship.SetGroup(ship.faction.baseGroup);
+        }
         commands.Clear();
         ship.SetIdle();
+        if (ship.fleet == null)
+            ship.faction.baseGroup.AddBattleObject(ship);
     }
 
     public void UpdateAI(float deltaTime) {
@@ -102,7 +110,7 @@ public class ShipAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Rptates towards position, Stop until turned to angle, ContinueRemove once Finished.
+        //Rotates towards position, Stop until turned to angle, ContinueRemove once Finished.
         if (command.commandType == CommandType.TurnToPosition) {
             if (newCommand) {
                 currentCommandType = CommandType.TurnToPosition;
@@ -114,7 +122,7 @@ public class ShipAI : MonoBehaviour {
             }
             return CommandResult.Stop;
         }
-        //Rotates towards position then moves towards position, Stop until moved to postion, ContinueRemoveOnce Finished.
+        //Rotates towards position then moves towards position, Stop until moved to position, ContinueRemoveOnce Finished.
         if (command.commandType == CommandType.Move) {
             if (newCommand) {
                 currentCommandType = CommandType.Move;
@@ -129,7 +137,7 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.Stop;
         }
         //Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished.
-        //Follows closest enemy ship then follows freindly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
+        //Follows closest enemy ship then follows friendly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed.
         if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.Protect) {
 
             if (command.commandType == CommandType.Protect && command.protectUnit == null) {
@@ -280,7 +288,7 @@ public class ShipAI : MonoBehaviour {
             transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
             return CommandResult.Continue;
         }
-        //Follows the friendly ship in a formation relative to thier rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
+        //Follows the friendly ship in a formation relative to their rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished.
         if (command.commandType == CommandType.FormationLocation) {
             if (command.targetUnit == null) {
                 return CommandResult.ContinueRemove;
@@ -326,7 +334,7 @@ public class ShipAI : MonoBehaviour {
                 ship.UndockShip(command.targetRotation);
             return CommandResult.StopRemove;
         }
-        //AttackMove to the star, do reasearch, then remove command.
+        //AttackMove to the star, do research, then remove command.
         if (command.commandType == CommandType.Research) {
             if (command.targetStar == null || command.destinationStation == null) {
                 return CommandResult.StopRemove;
@@ -377,6 +385,7 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
+                    ship.SetGroup(command.productionStation.GetGroup());
                     newCommand = false;
                 }
                 if (ship.dockedStation == command.productionStation) {
@@ -423,6 +432,7 @@ public class ShipAI : MonoBehaviour {
                 if (newCommand) {
                     currentCommandType = CommandType.Transport;
                     ship.SetMaxSpeed(command.maxSpeed);
+                    ship.SetGroup(command.productionStation.GetGroup());
                     newCommand = false;
                 }
                 if (ship.dockedStation == command.productionStation) {
@@ -460,6 +470,31 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             }
         }
+        if (command.commandType == CommandType.AttackFleet) {
+            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                command.targetUnit = GetClosestShipInTargetFleet(command.targetFleet);
+                newCommand = true;
+            }
+            if ((newCommand || ship.shipAction == Ship.ShipAction.Idle) && command.targetUnit != null && command.targetUnit.IsSpawned()) {
+                Vector2 targetPosition;
+                float targetAngle = Calculator.GetAngleOutOfTwoPositions(ship.GetPosition(), command.targetUnit.GetPosition());
+                if (targetAngle <= 0) {
+                    targetAngle = Calculator.ConvertTo360DegRotation(targetAngle + 120);
+                    targetPosition = command.targetUnit.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                } else {
+                    targetAngle = Calculator.ConvertTo360DegRotation(targetAngle - 120);
+                    targetPosition = command.targetUnit.GetPosition() - Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                }
+                ship.SetMoveRotateTarget(targetPosition);
+                ship.SetMaxSpeed(command.maxSpeed);
+                //newCommand = false;
+            }
+            if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+                ship.SetIdle();
+                return CommandResult.ContinueRemove;
+            }
+            return CommandResult.Stop;
+        }
         return CommandResult.Stop;
     }
 
@@ -477,6 +512,20 @@ public class ShipAI : MonoBehaviour {
             }
         }
         return targetUnit;
+    }
+
+    Ship GetClosestShipInTargetFleet(Fleet fleet) {
+        Ship targetShip = null;
+        float targetDistance = 0;
+        for (int i = 0; i < fleet.GetShips().Count; i++) {
+            Ship newTargetShip = fleet.GetShips()[i];
+            float newTargetDistance = Vector2.Distance(ship.GetPosition(), newTargetShip.GetPosition());
+            if (newTargetDistance < targetDistance || targetShip == null) {
+                targetShip = newTargetShip;
+                targetDistance = newTargetDistance;
+            }
+        }
+        return targetShip;
     }
 
 

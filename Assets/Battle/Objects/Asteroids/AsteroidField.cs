@@ -7,7 +7,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
 
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
-        SetupObjectGroup(asteroids);
+        SetupObjectGroup(asteroids, true);
         UpdateObjectGroup();
         for (int i = 0; i < asteroids.Count; i++) {
             asteroids[i].AdjustPosition(-GetPosition());

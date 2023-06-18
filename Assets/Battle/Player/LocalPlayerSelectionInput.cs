@@ -14,16 +14,16 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     Vector2 rightClickStartPosition;
     float maxRightClickDistance;
 
-    [SerializeField] protected UnitGroup selectedUnits;
-    private UnitGroup unitsInSelectionBox;
+    [SerializeField] protected SelectionGroup selectedUnits;
+    private SelectionGroup unitsInSelectionBox;
 
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
 
     public override void Setup() {
         base.Setup();
-        selectedUnits = new UnitGroup();
-        unitsInSelectionBox = new UnitGroup();
+        selectedUnits = new SelectionGroup();
+        unitsInSelectionBox = new SelectionGroup();
 
         GetPlayerInput().Player.SetModifier.started += context => SetButtonDown();
         GetPlayerInput().Player.SetModifier.canceled += context => SetButtonUp();
@@ -183,7 +183,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
             if (mouseOverUnit != null) {
                 selectedGroup = -1;
-                if (AdditiveButtonPressed) {
+                if (AdditiveButtonPressed && !(selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet == selectedUnits.fleet)) {
                     ToggleSelectedUnit(mouseOverUnit);
                 } else {
                     SelectUnits(mouseOverUnit);
@@ -256,7 +256,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     /// Check the unitGroup to see if it composed of only ships and if all ships belong to the same fleet
     /// </summary>
     /// <returns>true if all ships belong to the same fleet, otherswise returns false </returns>
-    bool AreUnitsInUnitGroupInOneFleet(UnitGroup unitGroup) {
+    bool AreUnitsInUnitGroupInOneFleet(SelectionGroup unitGroup) {
         List<Ship> allShips = unitGroup.GetAllShips();
         if (allShips.Count == 0 || allShips.Count < unitGroup.units.Count || allShips[0].fleet == null)
             return false;
@@ -325,7 +325,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         selectedUnits.RemoveUnit(unit);
     }
 
-    public UnitGroup GetSelectedUnits() {
+    public SelectionGroup GetSelectedUnits() {
         return selectedUnits;
     }
 }

@@ -20,7 +20,7 @@ public class MiningStationAI : StationAI {
 
     public void SetupWantedTrasports(Vector2 targetPosition) {
         float distance = Vector2.Distance(station.GetPosition(), targetPosition) * 2;
-        float miningAmount = GetMiningStation().GetMiningAmmount() / GetMiningStation().GetMiningSpeed();
+        float miningAmount = GetMiningStation().GetMiningAmount() / GetMiningStation().GetMiningSpeed();
         float cargoPerTransport = 4800;
         float transportSpeed = 20;
         wantedTransports = Mathf.RoundToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
@@ -32,11 +32,11 @@ public class MiningStationAI : StationAI {
     }
 
     private void UpdateMinningStation() {
-        if (GetMiningStation().activelyMinning) {
+        if (GetMiningStation().activelyMining) {
             if (cargoTime <= 0) {
                 ManageMinningStationCargo();
             }
-        } else if (!GetMiningStation().activelyMinning && transportShips.Count > 0) {
+        } else if (!GetMiningStation().activelyMining && transportShips.Count > 0) {
             for (int i = transportShips.Count - 1; i >= 0; i--) {
                 transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 transportShips.RemoveAt(i);
@@ -56,7 +56,7 @@ public class MiningStationAI : StationAI {
     }
 
     public void AddTransportShip(Ship ship) {
-        if (!GetMiningStation().activelyMinning)
+        if (!GetMiningStation().activelyMining)
             Debug.LogError("Trying to add to an inactive station");
         for (int i = 0; i < transportShips.Count; i++) {
             if (transportShips[i] == null) {
@@ -76,7 +76,7 @@ public class MiningStationAI : StationAI {
                 transportShips.RemoveAt(i);
             }
         }
-        if (!station.IsBuilt() || !GetMiningStation().activelyMinning)
+        if (!station.IsBuilt() || !GetMiningStation().activelyMining)
             return null;
         return wantedTransports - transportShips.Count;
     }

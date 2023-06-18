@@ -29,7 +29,7 @@ public class PlayerUnitStatusUI : MonoBehaviour {
         float sizeRatio = unitImage.rectTransform.sizeDelta.y / unitImage.rectTransform.sizeDelta.x;
         unitImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
         healthText.GetComponent<Text>().text = "Hull " + fleet.GetFleetHealth() + "/" + fleet.GetMaxFleetHealth();
-        shieldText.GetComponent<Text>().text = "Shields " + fleet.GetFleetSheilds() + "/" + fleet.GetMaxFleetShields();
+        shieldText.GetComponent<Text>().text = "Shields " + fleet.GetFleetShields() + "/" + fleet.GetMaxFleetShields();
         nameText.GetComponent<Text>().text = fleet.GetFleetName() + " (" + unitCount + ")";
         gameObject.SetActive(true);
     }

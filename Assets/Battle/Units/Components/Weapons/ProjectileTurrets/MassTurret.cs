@@ -25,13 +25,14 @@ public class MassTurret : Turret {
         flash.enabled = false;
     }
 
-    public override void Fire() {
+    public override bool Fire() {
         base.Fire();
         Projectile projectile = BattleManager.Instance.GetNewProjectile();
         projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-fireAccuracy, fireAccuracy), unit.GetVelocity(), fireVelocity, Mathf.RoundToInt(Random.Range(minDamage, maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
         flashTime = flashSpeed;
         flash.enabled = BattleManager.Instance.GetEffectsShown();
         flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
+        return reloadController.Empty();
     }
 
     public override void UpdateTurret(float deltaTime) {

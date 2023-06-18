@@ -24,7 +24,7 @@ public class StationAI : MonoBehaviour {
     }
 
     protected virtual void ManageStationRepair() {
-        if (station.IsDammaged())
+        if (station.IsDamaged())
             station.RepairUnit(station, station.GetRepairAmmount());
     }
 

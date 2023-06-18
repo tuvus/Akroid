@@ -5,12 +5,12 @@ using UnityEngine.Profiling;
 
 public abstract class Unit : BattleObject, IParticleHolder {
     private bool spawned;
+    private UnitGroup group;
     [SerializeField] protected int maxHealth;
     [SerializeField] protected string unitName;
 
     protected int health;
     [SerializeField] protected int followDist;
-
     public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
     protected List<Collider2D> colliders;
@@ -86,25 +86,22 @@ public abstract class Unit : BattleObject, IParticleHolder {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
-        foreach (var enemyFaction in faction.enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > maxWeaponRange * 2 + enemyFaction.GetSize())
-                continue;
-            for (int i = 0; i < enemyFaction.unitsNotInFleet.Count; i++) {
-                FindUnit(enemyFaction.units[i]);
-            }
-            for (int i = 0; i < enemyFaction.fleets.Count; i++) {
-                Fleet targetFleet = enemyFaction.fleets[i];
-                if (Vector2.Distance(GetPosition(), targetFleet.GetPosition()) <= maxWeaponRange * 2 + targetFleet.GetSize()) {
-                    for (int f = 0; f < targetFleet.ships.Count; f++) {
-                        FindUnit(targetFleet.ships[f]);
-                    }
-                }
-            }
+        float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition());
+        for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
+            if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter + maxWeaponRange * 2)
+                break;
+            FindEnemyGroup(faction.closeEnemyGroups[i]);
         }
         Profiler.EndSample();
     }
 
-    void FindUnit(Unit targetUnit) {
+    void FindEnemyGroup(UnitGroup targetGroup) {
+        for (int i = 0; i < targetGroup.GetBattleObjects().Count; i++) {
+            FindEnemyUnit(targetGroup.GetBattleObjects()[i]);
+        }
+    }
+
+    void FindEnemyUnit(Unit targetUnit) {
         if (targetUnit == null || !targetUnit.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
@@ -169,10 +166,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
             }
             return 0;
         }
-        Debug.LogWarning("Unit not spawned is taking damage");
+        Debug.LogWarning("Unit not spawned is taking damage" + unitName + " position:" + GetPosition());
         return 0;
     }
-
+    
     public void SelectUnit(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
         if (spawned)
             unitSelection.SetSelected(selectionStrength);
@@ -214,22 +211,25 @@ public abstract class Unit : BattleObject, IParticleHolder {
         spawned = true;
     }
 
-    protected void Despawn() {
+    protected void Despawn(bool removeImmediately) {
         spawned = false;
+        health = 0;
+        ActivateColliders(false);
+        unitSelection.ShowUnitSelection(false);
+        DestroyUnit();
+        if (removeImmediately) {
+            Destroy(gameObject);
+        }
     }
 
     public virtual void Explode() {
         if (!IsSpawned())
             return;
-        Despawn();
-        health = 0;
-        ActivateColliders(false);
-        unitSelection.ShowUnitSelection(false);
         if (BattleManager.Instance.GetParticlesShown())
             destroyEffect.Explode();
         if (shieldGenerator != null)
             shieldGenerator.DestroyShield();
-        for(int i = 0; i < turrets.Count; i++) {
+        for (int i = 0; i < turrets.Count; i++) {
             turrets[i].StopFireing();
         }
         float value = Random.Range(0.2f, 0.6f);
@@ -237,10 +237,13 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
         }
-        DestroyUnit();
+        Despawn(false);
     }
 
-    public abstract void DestroyUnit();
+    public virtual void DestroyUnit() {
+        SetGroup(null);
+        RemoveFromAllGroups();
+    }
 
     public virtual bool IsSpawned() {
         return spawned;
@@ -256,6 +259,21 @@ public abstract class Unit : BattleObject, IParticleHolder {
     #endregion
 
     #region HelperMethods
+    public void SetGroup(UnitGroup newGroup) {
+        if (group != null) {
+            UnitGroup oldGroup = group;
+            group = null;
+            oldGroup.RemoveBattleObject(this);
+        }
+        group = newGroup;
+        if (newGroup != null)
+            group.AddBattleObject(this);
+    }
+
+    public UnitGroup GetGroup() {
+        return group;
+    }
+
     public float GetMaxWeaponRange() {
         return maxWeaponRange;
     }
@@ -304,15 +322,15 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return GetHealth() + GetShields();
     }
 
-    public bool IsDammaged() {
+    public bool IsDamaged() {
         return health < GetMaxHealth();
     }
 
     /// <summary>
-    /// Repairs the unit and returns the extra ammount that was not used
+    /// Repairs the unit and returns the extra amount that was not used
     /// </summary>
-    /// <param name="ammount">the ammount to repair</param>
-    /// <returns>the extra ammount not used</returns>
+    /// <param name="ammount">the amount to repair</param>
+    /// <returns>the extra amount not used</returns>
     public int Repair(int ammount) {
         health += ammount;
         if (health > GetMaxHealth()) {
@@ -324,19 +342,15 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public int GetShields() {
-        int shields = 0;
-        foreach (var generator in GetShieldGenerators()) {
-            shields += generator.GetShieldStrength();
-        }
-        return shields;
+        if (shieldGenerator == null)
+            return 0;
+        return shieldGenerator.GetShieldStrength();
     }
 
     public int GetMaxShields() {
-        int shields = 0;
-        foreach (var generator in GetShieldGenerators()) {
-            shields += generator.GetMaxShieldStrenght();
-        }
-        return shields;
+        if (shieldGenerator == null)
+            return 0;
+        return shieldGenerator.GetMaxShieldStrenght();
     }
 
     public int GetFollowDistance() {
@@ -345,38 +359,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public abstract bool Destroyed();
 
-    public List<ShieldGenerator> GetShieldGenerators() {
-        List<ShieldGenerator> shieldGenerators = new List<ShieldGenerator>();
-        if (GetComponentsInChildren<ShieldGenerator>() != null) {
-            foreach (var shieldGenerator in GetComponentsInChildren<ShieldGenerator>()) {
-                shieldGenerators.Add(shieldGenerator);
-            }
-        }
-        return shieldGenerators;
-    }
-
     public List<Turret> GetTurrets() {
-        List<Turret> turrets = new List<Turret>();
-        if (GetComponentsInChildren<Turret>() != null) {
-            foreach (var turret in GetComponentsInChildren<Turret>()) {
-                turrets.Add(turret);
-            }
-        }
         return turrets;
     }
 
     public List<CargoBay> GetCargoBays() {
         return cargoBays;
-    }
-
-    public List<Hanger> GetHangers() {
-        List<Hanger> hangers = new List<Hanger>();
-        if (GetComponentsInChildren<Hanger>() != null) {
-            foreach (var hanger in GetComponentsInChildren<Hanger>()) {
-                hangers.Add(hanger);
-            }
-        }
-        return hangers;
     }
 
     public ShieldGenerator GetShieldGenerator() {
@@ -443,6 +431,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
             dps += missileLauncher.GetDamagePerSecond();
         }
         print(unitName + "Dps:" + dps);
+    }
+
+    [ContextMenu("ForceDestroy")]
+    public void EditorForceDestroy() {
+        TakeDamage(GetHealth());
     }
 
     public float GetUnitDamagePerSecond() {

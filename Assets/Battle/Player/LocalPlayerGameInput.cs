@@ -10,9 +10,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         base.Setup();
         GetPlayerInput().Player.ClearCommands.started += context => ClearCommands();
 
-        GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPerfomed();
-        GetPlayerInput().Player.SeccondaryCommand.performed += context => SeccondaryCommandButtonPerfomed();
-        GetPlayerInput().Player.TertiaryCommand.performed += context => TertiaryCommandButtonPerfomed();
+        GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPreformed();
+        GetPlayerInput().Player.SeccondaryCommand.performed += context => SecondaryCommandButtonPreformed();
+        GetPlayerInput().Player.TertiaryCommand.performed += context => TertiaryCommandButtonPreformed();
 
         GetPlayerInput().Player.CreateFleet.performed += context => CreateFleetCommand();
     }
@@ -73,7 +73,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             actionType = ActionType.None;
     }
 
-    void PrimaryCommandButtonPerfomed() {
+    void PrimaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
@@ -84,7 +84,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
     }
 
-    void SeccondaryCommandButtonPerfomed() {
+    void SecondaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
@@ -95,7 +95,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
     }
 
-    void TertiaryCommandButtonPerfomed() {
+    void TertiaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
@@ -154,6 +154,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             if (selectionType != UnitSelection.SelectionType.Enemy) {
                 GiveCommandToAllSelectedUnits(Command.CreateProtectCommand(mouseOverUnit), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
+            } else if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {
+                GiveCommandToAllSelectedUnits(Command.CreateAttackFleetCommand(((Ship)mouseOverUnit).fleet), GetCommandAction());
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             } else {
                 GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand(mouseOverUnit), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
@@ -219,7 +222,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     protected virtual void CreateFleetCommand() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        if (selectedUnits.groupType == UnitGroup.GroupType.Fleet) {
+        if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
             if (AdditiveButtonPressed)
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             else if (AltButtonPressed)
@@ -229,6 +232,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         } else {
             selectedUnits.RemoveAllNonCombatShips();
             selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+            selectedUnits.RemoveAnyNullUnits();
             List<Ship> ships = selectedUnits.GetAllShips();
             if (ships.Count > 0) {
                 selectedUnits.SetFleet(LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships));

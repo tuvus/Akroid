@@ -7,6 +7,7 @@ public class FactionAI : MonoBehaviour {
     public bool autoResearch;
 
     [SerializeField] protected List<Ship> idleShips;
+    [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
 
     public virtual void SetupFactionAI(Faction faction) {
         this.faction = faction;
@@ -40,5 +41,9 @@ public class FactionAI : MonoBehaviour {
 
     public virtual void RemoveIdleShip(Ship ship) {
         idleShips.Remove(ship);
+    }
+
+    public virtual void RemoveFleet(Fleet fleet) {
+
     }
 }

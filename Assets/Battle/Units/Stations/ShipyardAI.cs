@@ -32,11 +32,11 @@ public class ShipyardAI : StationAI {
             if (repairAmmount == 0)
                 return;
             Ship targetShip = station.GetHanger().GetShips()[i];
-            if (targetShip.IsDammaged()) {
+            if (targetShip.IsDamaged()) {
                 repairAmmount = station.RepairUnit(targetShip, repairAmmount);
             }
         }
-        if (repairAmmount > 0 && station.IsDammaged())
+        if (repairAmmount > 0 && station.IsDamaged())
             station.RepairUnit(station, repairAmmount);
     }
 

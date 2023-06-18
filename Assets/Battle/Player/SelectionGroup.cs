@@ -4,7 +4,7 @@ using System.Diagnostics.Tracing;
 using UnityEngine;
 
 [System.Serializable]
-public class UnitGroup {
+public class SelectionGroup {
     public enum GroupType {
         Station = -2,
         Ship = -1,
@@ -27,7 +27,7 @@ public class UnitGroup {
     public List<Unit> GetAllUnits() {
         if (groupType == GroupType.Fleet) {
             List<Unit> fleetUnits = new List<Unit>();
-            foreach (var ship in fleet.GetAllShips()) {
+            foreach (var ship in fleet.GetShips()) {
                 fleetUnits.Add(ship);
             }
             return fleetUnits;
@@ -72,7 +72,7 @@ public class UnitGroup {
     }
 
     public bool HasShip() {
-        if (groupType == GroupType.Fleet && fleet.GetAllShips().Count > 0)
+        if (groupType == GroupType.Fleet && fleet.GetShips().Count > 0)
             return true;
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip())
@@ -125,7 +125,7 @@ public class UnitGroup {
         groupType = GroupType.Units;
     }
 
-    public void CopyGroup(UnitGroup group) {
+    public void CopyGroup(SelectionGroup group) {
         this.groupType = group.groupType;
         foreach (var unit in group.units) {
             units.Add(unit);
@@ -138,7 +138,7 @@ public class UnitGroup {
         groupType = GroupType.Units;
     }
 
-    public void AddUnits(UnitGroup unitGroup) {
+    public void AddUnits(SelectionGroup unitGroup) {
         AddUnits(unitGroup.units);
     }
 
@@ -169,7 +169,7 @@ public class UnitGroup {
     /// <returns>the first ship in the group</returns>
     public Ship GetShip() {
         if (groupType == GroupType.Fleet)
-            return fleet.ships[0];
+            return fleet.GetShips()[0];
         for (int i = 0; i < units.Count; i++) {
             if (units[i].IsShip())
                 return (Ship)units[i];
@@ -228,7 +228,7 @@ public class UnitGroup {
 
     public int GetUnitCount() {
         if (groupType == GroupType.Fleet)
-            return fleet.GetAllShips().Count;
+            return fleet.GetShips().Count;
         return units.Count;
     }
 
@@ -281,5 +281,23 @@ public class UnitGroup {
                 units.RemoveAt(i);
             }
         }
+    }
+
+    public void RemoveAnyNullUnits() {
+        for (int i = units.Count - 1; i >= 0; i--) {
+            if (units[i] == null || !units[i].IsSpawned()) {
+                units.RemoveAt(i);
+            }
+        }
+    }
+
+    public int GetTotalUnitHealth() {
+        int totalHealth = 0;
+        if (groupType == GroupType.Fleet)
+            totalHealth += fleet.GetTotalFleetHealth();
+        for (int i = 0; i < units.Count; i++) {
+            totalHealth += units[i].GetTotalHealth();
+        }
+        return totalHealth;
     }
 }

@@ -90,8 +90,9 @@ public class Turret : BattleObject {
 
     protected virtual void UpdateTurretWeapon(float deltaTime) {
         if (aimed && targetUnit != null && ReadyToFire()) {
-            Fire();
-            ChangeTargetUnit(null);
+            if (Fire()) {
+                ChangeTargetUnit(null);
+            }
         }
     }
 
@@ -250,8 +251,14 @@ public class Turret : BattleObject {
         return reloadController.ReadyToFire();
     }
 
-    public virtual void Fire() {
+    /// <summary>
+    /// Fire the turret, returns true if a new unit should be targeted.
+    /// Returns false if a new unit should not be target.
+    /// </summary>
+    /// <returns>Should a new unit be targeted or not?</returns>
+    public virtual bool Fire() {
         reloadController.Fire();
+        return true;
     }
 
     public virtual float GetRange() {
