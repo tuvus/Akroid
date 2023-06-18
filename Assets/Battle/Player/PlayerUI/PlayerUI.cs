@@ -17,7 +17,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerMenueUI playerMenueUI;
     [SerializeField] private PlayerStationUI playerStationUI;
     [SerializeField] private PlayerShipUI playerShipUI;
-    [SerializeField] private PlayerResearchUI playerResearchUI;
+    [SerializeField] private PlayerFactionOverviewUI playerFactionOverviewUI;
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
     [SerializeField] private GameObject commandUI;
@@ -34,7 +34,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Text victoryRealTime;
     [SerializeField] private GameObject stationUI;
     [SerializeField] private GameObject shipUI;
-    [SerializeField] private GameObject researchUI;
+    [SerializeField] private GameObject factionOverviewUI;
 
 
     public bool showUnitZoomIndicators;
@@ -57,7 +57,7 @@ public class PlayerUI : MonoBehaviour {
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
         playerShipUI.SetupPlayerShipUI(this);
-        playerResearchUI.SetupResearchUI(this);
+        playerFactionOverviewUI.SetupFactionOverviewUI(this);
     }
 
     public void UpdatePlayerUI() {
@@ -88,8 +88,8 @@ public class PlayerUI : MonoBehaviour {
         if (shipUI.activeSelf) {
             playerShipUI.UpdateShipUI();
         }
-        if (researchUI.activeSelf) {
-            playerResearchUI.UpdateResearchUI(GetLocalPlayer().GetFaction());
+        if (factionOverviewUI.activeSelf) {
+            playerFactionOverviewUI.UpdateFactionOverviewUI(GetLocalPlayer().GetFaction());
         }
         Profiler.EndSample();
     }
@@ -184,7 +184,7 @@ public class PlayerUI : MonoBehaviour {
 
     public void ShowResearchUI(bool shown) {
         CloseAllMenues();
-        researchUI.SetActive(shown);
+        factionOverviewUI.SetActive(shown);
     }
 
     public void CloseAllMenues() {
@@ -197,8 +197,8 @@ public class PlayerUI : MonoBehaviour {
         if (shipUI.activeSelf) {
             shipUI.SetActive(false);
         }
-        if (researchUI.activeSelf) {
-            researchUI.SetActive(false);
+        if (factionOverviewUI.activeSelf) {
+            factionOverviewUI.SetActive(false);
         }
     }
 
@@ -243,7 +243,7 @@ public class PlayerUI : MonoBehaviour {
 
     #region HelperMethods
     public bool FreezeZoom() {
-        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
+        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || factionOverviewUI.activeSelf;
     }
 
     public bool GetShowUnitZoomIndicators() {
@@ -255,7 +255,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || researchUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || factionOverviewUI.activeSelf;
     }
 
     public LocalPlayer GetLocalPlayer() {

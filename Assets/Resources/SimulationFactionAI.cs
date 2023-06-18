@@ -13,11 +13,13 @@ public class SimulationFactionAI : FactionAI {
     public List<Fleet> threats;
     static float threatDistance = 1000;
     float updateTime;
+    public bool autoCommandFleets;
     public bool autoBuildShips;
 
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
         autoBuildShips = true;
+        autoCommandFleets = true;
         updateTime = Random.Range(0, 0.2f);
         defenseFleets = new List<Fleet>();
         attackFleets = new List<Fleet>();
@@ -39,10 +41,14 @@ public class SimulationFactionAI : FactionAI {
         if (fleetCommand != null) {
             updateTime -= deltaTime;
             if (updateTime <= 0) {
-                ManageThreats();
-                ManageFleets();
+                if (autoCommandFleets) {
+                    ManageThreats();
+                    ManageFleets();
+                }
                 ManageIdleShips();
-                ManageDockedShips();
+                if (autoCommandFleets) {
+                    ManageDockedShips();
+                }
                 if (autoBuildShips) {
                     ManageStationBuilding();
                     ManageShipBuilding();
@@ -122,7 +128,7 @@ public class SimulationFactionAI : FactionAI {
                         defenseFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(closestUnit), Command.CommandAction.AddToEnd);
                     }
                 }
-                
+
             }
 
         }
@@ -183,7 +189,7 @@ public class SimulationFactionAI : FactionAI {
     void ManageIdleShips() {
         for (int i = 0; i < idleShips.Count; i++) {
             if (idleShips[i].IsIdle() && idleShips[i].fleet == null) {
-                if (idleShips[i].IsCombatShip()) {
+                if (idleShips[i].IsCombatShip() && autoCommandFleets) {
                     if (idleShips[i].dockedStation == null) {
                         idleShips[i].shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.Replace);
                     }
