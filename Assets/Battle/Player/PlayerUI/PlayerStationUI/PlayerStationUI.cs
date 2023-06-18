@@ -11,6 +11,11 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] GameObject stationHangerUI;
     public Station displayedStation { get; private set; }
     [SerializeField] Text stationName;
+    [SerializeField] Text stationFaction;
+    [SerializeField] Text stationType;
+    [SerializeField] Text weaponsCount;
+    [SerializeField] Text stationTotalDPS;
+    [SerializeField] Text maxWeaponRange;
     [SerializeField] Text cargoBaysStatus;
     [SerializeField] Text cargoBayCapacity;
     [SerializeField] Text cargoHeader;
@@ -54,6 +59,18 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.BeginSample("StationDisplayUpdate");
         if (stationStatusUI.activeSelf) {
             stationName.text = displayedStation.GetUnitName();
+            stationFaction.text = "Faction: " + displayedStation.faction.name;
+            stationType.text = "Station Type: " + displayedStation.stationType;
+            weaponsCount.text = "Weapons: " + displayedStation.GetWeaponCount();
+            if (displayedStation.GetWeaponCount() > 0) {
+                stationTotalDPS.text = "Damage Per Second: " + ((int)(displayedStation.GetUnitDamagePerSecond() * 10) / 10f);
+                maxWeaponRange.text = "Weapon Range: " + displayedStation.GetMaxWeaponRange();
+                stationTotalDPS.gameObject.SetActive(true);
+                maxWeaponRange.gameObject.SetActive(true);
+            } else {
+                stationTotalDPS.gameObject.SetActive(false);
+                maxWeaponRange.gameObject.SetActive(false);
+            }
             UpdateCargoBayUI(displayedStation.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction));
         }
         if (stationConstructionUI.activeSelf) {

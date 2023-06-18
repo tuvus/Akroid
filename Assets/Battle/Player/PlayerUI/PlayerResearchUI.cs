@@ -29,7 +29,7 @@ public class PlayerResearchUI : MonoBehaviour {
         faction.GetFactionAI().autoResearch = autoResearch.isOn;
     }
 
-    public void DiscoverReaserchArea(int researchArea) {
+    public void DiscoverResearchArea(int researchArea) {
         faction.DiscoverResearchArea((Faction.ResearchAreas)researchArea);
     }
 }

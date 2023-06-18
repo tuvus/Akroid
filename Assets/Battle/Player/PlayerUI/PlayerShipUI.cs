@@ -67,7 +67,7 @@ public class PlayerShipUI : MonoBehaviour {
         }
         weaponsCount.text = "Weapons: " + displayedShip.GetWeaponCount();
         if (displayedShip.GetWeaponCount() > 0) {
-            shipTotalDPS.text = "Damage Per Seccond: " + ((int)(displayedShip.GetUnitDamagePerSecond() * 10) / 10f);
+            shipTotalDPS.text = "Damage Per Second: " + ((int)(displayedShip.GetUnitDamagePerSecond() * 10) / 10f);
             maxWeaponRange.text = "Weapon Range: " + displayedShip.GetMaxWeaponRange();
             shipTotalDPS.gameObject.SetActive(true);
             maxWeaponRange.gameObject.SetActive(true);
@@ -79,8 +79,8 @@ public class PlayerShipUI : MonoBehaviour {
         UpdateCargoBayUI(displayedShip.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedShip.faction));
     }
 
-    void UpdateCargoBayUI(CargoBay cargoBay, bool isFreindlyFaction) {
-        if (isFreindlyFaction && cargoBay != null) {
+    void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
+        if (isFriendlyFaction && cargoBay != null) {
             cargoHeader.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
             cargoBaysStatus.gameObject.SetActive(true);
