@@ -24,7 +24,7 @@ public class Fleet : ShipGroup {
         this.faction = faction;
         this.fleetName = fleetName;
         SetupObjectGroup(new List<Unit>(ships.Count), true);
-        for (int i = 0; i < ships.Count; i++) {
+        for (int i = ships.Count - 1; i >= 0; i--) {
             AddShip(ships[i]);
         }
         enemyUnitsInRange = new List<Unit>(20);
@@ -52,9 +52,6 @@ public class Fleet : ShipGroup {
 
     public void AddShip(Ship ship, bool setMinSpeed = true) {
         base.AddShip(ship);
-        if (ship.fleet != null) {
-            ship.fleet.RemoveShip(ship);
-        }
         ship.fleet = this;
         if (setMinSpeed)
             minFleetSpeed = GetMinShipSpeed();
@@ -73,6 +70,8 @@ public class Fleet : ShipGroup {
     }
 
     public void MergeIntoFleet(Fleet fleet) {
+        if (fleet == this)
+            Debug.LogError("Merging a fleet into itself");
         for (int i = ships.Count - 1; i >= 0; i--) {
             fleet.AddShip(ships[i]);
         }

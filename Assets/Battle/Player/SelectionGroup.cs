@@ -283,6 +283,14 @@ public class SelectionGroup {
         }
     }
 
+    public void RemoveAnyNullUnits() {
+        for (int i = units.Count - 1; i >= 0; i--) {
+            if (units[i] == null || !units[i].IsSpawned()) {
+                units.RemoveAt(i);
+            }
+        }
+    }
+
     public int GetTotalUnitHealth() {
         int totalHealth = 0;
         if (groupType == GroupType.Fleet)

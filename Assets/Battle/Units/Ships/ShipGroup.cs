@@ -20,11 +20,13 @@ public class ShipGroup : UnitGroup {
 
     public virtual void AddShip(Ship ship) {
         base.AddUnit(ship);
+        ships.Add(ship);
         UpdateObjectGroup();
     }
 
     public virtual void RemoveShip(Ship ship) {
         base.RemoveUnit(ship);
+        ships.Remove(ship);
     }
 
     public override void AddBattleObject(BattleObject battleObject) {

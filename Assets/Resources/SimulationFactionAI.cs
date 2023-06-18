@@ -112,14 +112,17 @@ public class SimulationFactionAI : FactionAI {
                 fleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(randomTargetPosition), Command.CommandAction.AddToEnd);
             }
         }
-        for (int i = 0; i < attackFleets.Count; i++) {
+        for (int i = attackFleets.Count - 1; i >= 0; i--) {
             Fleet fleet = attackFleets[i];
             if (fleet.IsFleetIdle() || !fleet.HasNearbyEnemyCombatShip()) {
                 bool merged = false;
-                for (int f = i + 1; f < attackFleets.Count; f++) {
+                for (int f = i - 1; f >= 0; f--) {
+                    if (fleet == attackFleets[f])
+                        continue;
                     if ((attackFleets[f].IsFleetIdle() || !attackFleets[f].HasNearbyEnemyCombatShip()) && Vector2.Distance(fleet.GetPosition(), attackFleets[f].GetPosition()) < 1000) {
                         fleet.MergeIntoFleet(attackFleets[f]);
                         merged = true;
+                        attackFleets.RemoveAt(i);
                         break;
                     }
                 }
