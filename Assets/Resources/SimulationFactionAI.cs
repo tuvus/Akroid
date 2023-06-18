@@ -107,9 +107,19 @@ public class SimulationFactionAI : FactionAI {
                 || (commands.Count > 1 && commands[0].commandType == Command.CommandType.FormationLocation && commands[1].commandType == Command.CommandType.AttackMoveUnit))
                     continue;
                 for (int f = 0; f < faction.closeEnemyGroupsDistance.Count; f++) {
-                    if (faction.closeEnemyGroupsDistance[f] < faction.GetSize() / 2) {
-                        defenseFleet.FleetAI.AddUnitAICommand(Command.CreateFormationCommand(defenseFleet.GetPosition(), Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), faction.closeEnemyGroups[f].GetPosition())), Command.CommandAction.Replace);
-                        defenseFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(faction.closeEnemyGroups[f].GetUnits()[0]), Command.CommandAction.AddToEnd);
+                    if (faction.closeEnemyGroupsDistance[f] < faction.GetSize() * .8f) {
+                        List<Unit> targetUnits = faction.closeEnemyGroups[f].GetUnits();
+                        Unit closestUnit = targetUnits[0];
+                        float closestUnitDistance = Vector2.Distance(defenseFleet.GetPosition(), closestUnit.GetPosition());
+                        for (int u = i; u < targetUnits.Count; u++) {
+                            float newUnitDistance = Vector2.Distance(defenseFleet.GetPosition(), targetUnits[u].GetPosition());
+                            if (newUnitDistance < closestUnitDistance) {
+                                closestUnit = targetUnits[u];
+                                closestUnitDistance = newUnitDistance;
+                            }
+                        }
+                        defenseFleet.FleetAI.AddUnitAICommand(Command.CreateFormationCommand(defenseFleet.GetPosition(), Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), closestUnit.GetPosition())), Command.CommandAction.Replace);
+                        defenseFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(closestUnit), Command.CommandAction.AddToEnd);
                     }
                 }
                 
