@@ -211,17 +211,20 @@ public abstract class Unit : BattleObject, IParticleHolder {
         spawned = true;
     }
 
-    protected void Despawn() {
+    protected void Despawn(bool removeImmediately) {
         spawned = false;
+        health = 0;
+        ActivateColliders(false);
+        unitSelection.ShowUnitSelection(false);
+        DestroyUnit();
+        if (removeImmediately) {
+            Destroy(gameObject);
+        }
     }
 
     public virtual void Explode() {
         if (!IsSpawned())
             return;
-        Despawn();
-        health = 0;
-        ActivateColliders(false);
-        unitSelection.ShowUnitSelection(false);
         if (BattleManager.Instance.GetParticlesShown())
             destroyEffect.Explode();
         if (shieldGenerator != null)
@@ -234,7 +237,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
         }
-        DestroyUnit();
+        Despawn(false);
     }
 
     public virtual void DestroyUnit() {

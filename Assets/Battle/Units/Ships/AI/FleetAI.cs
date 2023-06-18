@@ -132,6 +132,11 @@ public class FleetAI : MonoBehaviour {
             return CommandResult.Stop;
         }
         if (command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) {
+            if (!newCommand && command.commandType == CommandType.AttackFleet) {
+                if (Vector2.Distance(command.targetFleet.GetPosition(), command.targetPosition) > fleet.maxWeaponRange / 4) {
+                    newCommand = true;
+                }
+            }
             //Sets the target position of the command and tells all ships to attack move
             if (newCommand) {
                 if (command.commandType == CommandType.Protect) {
