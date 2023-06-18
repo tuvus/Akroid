@@ -210,9 +210,9 @@ public class FleetAI : MonoBehaviour {
                     fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateMoveCommand(fleet.GetShips()[0].GetPosition()), CommandAction.Replace);
                     fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
                 } else {
-                Vector2 fleetCenter = fleet.GetPosition();
-                Vector2 startPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
-                Vector2 endPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
+                    Vector2 fleetCenter = fleet.GetPosition();
+                    Vector2 startPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
+                    Vector2 endPosition = fleetCenter - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
                     for (int i = 0; i < fleet.GetShips().Count; i++) {
                         fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.GetShips().Count - 1))), CommandAction.Replace);
                         fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
@@ -230,11 +230,16 @@ public class FleetAI : MonoBehaviour {
         if (command.commandType == CommandType.FormationLocation) {
             if (newCommand) {
                 float size = fleet.GetMaxShipSize();
-                Vector2 startPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
-                Vector2 endPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
-                for (int i = 0; i < fleet.GetShips().Count; i++) {
-                    fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.GetShips().Count - 1))), CommandAction.Replace);
-                    fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                if (fleet.GetShips().Count == 1) {
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateMoveCommand(command.targetPosition), CommandAction.Replace);
+                    fleet.GetShips()[0].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                } else {
+                    Vector2 startPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation - 90, size * fleet.GetShips().Count * 2);
+                    Vector2 endPosition = command.targetPosition - Calculator.GetPositionOutOfAngleAndDistance(command.targetRotation + 90, size * fleet.GetShips().Count * 2);
+                    for (int i = 0; i < fleet.GetShips().Count; i++) {
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateMoveCommand(Vector2.Lerp(startPosition, endPosition, i / (float)(fleet.GetShips().Count - 1))), CommandAction.Replace);
+                        fleet.GetShips()[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
+                    }
                 }
                 currentCommandType = CommandType.Formation;
                 newCommand = false;
