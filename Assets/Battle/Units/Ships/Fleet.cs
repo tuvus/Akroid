@@ -168,9 +168,14 @@ public class Fleet : ShipGroup {
     }
 
 
-    public int GetFleetSheilds() {
+    public int GetFleetShields() {
         int shields = 0;
         for (int i = 0; i < ships.Count; i++) {
+            if (ships[i] == null)
+                print("ship is null");
+            if (!ships[i].IsSpawned()) {
+                print("ship is not spawned");
+            }
             shields += ships[i].GetShields();
         }
         return shields;

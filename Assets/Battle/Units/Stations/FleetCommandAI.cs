@@ -13,7 +13,7 @@ public class FleetCommandAI : ShipyardAI {
         Profiler.BeginSample("FleetCommandAI");
         if (waitTime <= 0) {
             Ship scienceShip = station.GetHanger().GetResearchShip();
-            if (scienceShip != null && !scienceShip.IsDammaged()) {
+            if (scienceShip != null && !scienceShip.IsDamaged()) {
                 station.faction.AddScience(scienceShip.GetResearchEquiptment().DownloadData());
             }
             waitTime += waitSpeed;

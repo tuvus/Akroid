@@ -218,6 +218,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public virtual void Explode() {
         if (!IsSpawned())
             return;
+        UnitGroup tempGroup = group;
         Despawn();
         health = 0;
         ActivateColliders(false);
@@ -235,11 +236,14 @@ public abstract class Unit : BattleObject, IParticleHolder {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
         }
         DestroyUnit();
+        if (tempGroup != null && tempGroup.IsFleet() && ((Fleet)tempGroup).GetShips().Contains((Ship)this)) {
+            print("didnotremove");
+        }
     }
 
     public virtual void DestroyUnit() {
-        RemoveFromAllGroups();
         SetGroup(null);
+        RemoveFromAllGroups();
     }
 
     public virtual bool IsSpawned() {
@@ -319,15 +323,15 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return GetHealth() + GetShields();
     }
 
-    public bool IsDammaged() {
+    public bool IsDamaged() {
         return health < GetMaxHealth();
     }
 
     /// <summary>
-    /// Repairs the unit and returns the extra ammount that was not used
+    /// Repairs the unit and returns the extra amount that was not used
     /// </summary>
-    /// <param name="ammount">the ammount to repair</param>
-    /// <returns>the extra ammount not used</returns>
+    /// <param name="ammount">the amount to repair</param>
+    /// <returns>the extra amount not used</returns>
     public int Repair(int ammount) {
         health += ammount;
         if (health > GetMaxHealth()) {
@@ -339,19 +343,15 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public int GetShields() {
-        int shields = 0;
-        foreach (var generator in GetShieldGenerators()) {
-            shields += generator.GetShieldStrength();
-        }
-        return shields;
+        if (shieldGenerator == null)
+            return 0;
+        return shieldGenerator.GetShieldStrength();
     }
 
     public int GetMaxShields() {
-        int shields = 0;
-        foreach (var generator in GetShieldGenerators()) {
-            shields += generator.GetMaxShieldStrenght();
-        }
-        return shields;
+        if (shieldGenerator == null)
+            return 0;
+        return shieldGenerator.GetMaxShieldStrenght();
     }
 
     public int GetFollowDistance() {
@@ -360,32 +360,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public abstract bool Destroyed();
 
-    public List<ShieldGenerator> GetShieldGenerators() {
-        List<ShieldGenerator> shieldGenerators = new List<ShieldGenerator>();
-        if (GetComponentsInChildren<ShieldGenerator>() != null) {
-            foreach (var shieldGenerator in GetComponentsInChildren<ShieldGenerator>()) {
-                shieldGenerators.Add(shieldGenerator);
-            }
-        }
-        return shieldGenerators;
-    }
-
     public List<Turret> GetTurrets() {
         return turrets;
     }
 
     public List<CargoBay> GetCargoBays() {
         return cargoBays;
-    }
-
-    public List<Hanger> GetHangers() {
-        List<Hanger> hangers = new List<Hanger>();
-        if (GetComponentsInChildren<Hanger>() != null) {
-            foreach (var hanger in GetComponentsInChildren<Hanger>()) {
-                hangers.Add(hanger);
-            }
-        }
-        return hangers;
     }
 
     public ShieldGenerator GetShieldGenerator() {
