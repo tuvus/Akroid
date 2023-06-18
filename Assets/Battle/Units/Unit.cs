@@ -166,10 +166,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
             }
             return 0;
         }
-        Debug.LogWarning("Unit not spawned is taking damage");
+        Debug.LogWarning("Unit not spawned is taking damage" + unitName + " position:" + GetPosition());
         return 0;
     }
-
+    
     public void SelectUnit(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
         if (spawned)
             unitSelection.SetSelected(selectionStrength);
@@ -218,7 +218,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public virtual void Explode() {
         if (!IsSpawned())
             return;
-        UnitGroup tempGroup = group;
         Despawn();
         health = 0;
         ActivateColliders(false);
@@ -236,9 +235,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
         }
         DestroyUnit();
-        if (tempGroup != null && tempGroup.IsFleet() && ((Fleet)tempGroup).GetShips().Contains((Ship)this)) {
-            print("didnotremove");
-        }
     }
 
     public virtual void DestroyUnit() {
@@ -432,6 +428,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
             dps += missileLauncher.GetDamagePerSecond();
         }
         print(unitName + "Dps:" + dps);
+    }
+
+    [ContextMenu("ForceDestroy")]
+    public void EditorForceDestroy() {
+        TakeDamage(GetHealth());
     }
 
     public float GetUnitDamagePerSecond() {

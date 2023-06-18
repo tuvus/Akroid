@@ -163,6 +163,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public override void DestroyUnit() {
+         base.DestroyUnit();
         BattleManager.Instance.DestroyStation(this);
     }
 
