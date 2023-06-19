@@ -5,6 +5,14 @@ using UnityEngine;
 public class ConstructionShip : Ship {
     public Station targetStationBlueprint;
 
+    public Station CreateStation(Vector2 position) {
+        if (targetStationBlueprint != null) {
+            targetStationBlueprint.Explode();
+        }
+        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, Station.StationType.MiningStation, "MiningStation", position, Random.Range(0, 360), false));
+        return targetStationBlueprint;
+    }
+
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
         if (targetStationBlueprint != null && Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {

@@ -60,6 +60,17 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 if (!AdditiveButtonPressed)
                     actionType = ActionType.None;
                 break;
+            case ActionType.StationBuilderCommand:
+                SelectOnlyControllableUnits();
+                GenerateStationBuilderCommand();
+                if (!AdditiveButtonPressed)
+                    actionType = ActionType.None;
+                break;
+            case ActionType.ResearchCommand:
+                SelectOnlyControllableUnits();
+                GenerateResearchCommand();
+                actionType = ActionType.None;
+                break;
         }
     }
 
@@ -103,7 +114,13 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             actionType = ActionType.UndockAllCombatCommand;
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
-            actionType = ActionType.FormationCommand;
+            if (selectedUnits.ContainsOnlyConstructionShips()) {
+                actionType = ActionType.StationBuilderCommand;
+            } else if (selectedUnits.ContainsOnlyScienceShips()) {
+                actionType = ActionType.ResearchCommand;
+            } else {
+                actionType = ActionType.FormationCommand;
+            }
         }
     }
 
@@ -208,6 +225,46 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     ship.shipAI.AddUnitAICommand(Command.CreateMoveCommand(GetMouseWorldPosition()), GetCommandAction());
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.green);
                 }
+            }
+        }
+    }
+
+    void GenerateStationBuilderCommand() {
+        List<Ship> allShips = selectedUnits.GetAllShips();
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsConstructionShip() && ((ConstructionShip)allShips[i]).targetStationBlueprint == null) {
+                Station newMiningStation = ((ConstructionShip)allShips[i]).CreateStation(GetMouseWorldPosition());
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()), Command.CommandAction.Replace);
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+                return;
+            }
+        }
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsConstructionShip()) {
+                Station newMiningStation = ((ConstructionShip)allShips[i]).CreateStation(GetMouseWorldPosition());
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()), Command.CommandAction.Replace);
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+                return;
+            }
+        }
+    }
+
+    void GenerateResearchCommand() {
+        Vector2 mousePos = GetMouseWorldPosition();
+        Star closestStar = null;
+        float closestStarDistance = 0;
+        foreach (Star star in BattleManager.Instance.stars) {
+            float newStarDistance = Vector2.Distance(mousePos, star.GetPosition());
+            if (closestStar == null || newStarDistance < closestStarDistance) {
+                closestStar = star;
+                closestStarDistance = newStarDistance;
+            }
+        }
+        List<Ship> allShips = selectedUnits.GetAllShips();
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsScienceShip()) {
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateResearchCommand(closestStar, LocalPlayer.Instance.faction.GetFleetCommand()), GetCommandAction());
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }
     }

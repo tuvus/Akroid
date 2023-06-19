@@ -300,4 +300,20 @@ public class SelectionGroup {
         }
         return totalHealth;
     }
+
+    public bool ContainsOnlyConstructionShips() {
+        for(int i = 0;i < units.Count;i++) {
+            if (!units[i].IsShip() || !((Ship)units[i]).IsConstructionShip())
+                return false;
+        }
+        return true;
+    }
+
+    public bool ContainsOnlyScienceShips() {
+        for (int i = 0; i < units.Count; i++) {
+            if (!units[i].IsShip() || !((Ship)units[i]).IsScienceShip())
+                return false;
+        }
+        return true;
+    }
 }

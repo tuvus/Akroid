@@ -203,8 +203,7 @@ public class SimulationFactionAI : FactionAI {
                 } else if (idleShips[i].IsScienceShip()) {
                     idleShips[i].shipAI.AddUnitAICommand(Command.CreateResearchCommand(faction.GetClosestStar(idleShips[i].GetPosition()), fleetCommand), Command.CommandAction.Replace);
                 } else if (idleShips[i].IsConstructionShip()) {
-                    MiningStation newMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, Station.StationType.MiningStation, "MiningStation", faction.GetPosition(), Random.Range(0, 360), false));
-                    ((ConstructionShip)idleShips[i]).targetStationBlueprint = newMiningStation;
+                    Station newMiningStation = ((ConstructionShip)idleShips[i]).CreateStation(faction.GetPosition());
                     idleShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()), Command.CommandAction.AddToEnd);
                     return;
                 }

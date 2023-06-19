@@ -17,6 +17,8 @@ public class LocalPlayerInput : MonoBehaviour {
         UndockTransportAtCommand,
         FormationCommand,
         UndockAllCombatCommand,
+        StationBuilderCommand,
+        ResearchCommand,
     }
     [SerializeField] protected ActionType actionType;
 
@@ -96,8 +98,8 @@ public class LocalPlayerInput : MonoBehaviour {
             return;
         float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor));
         if (!AltButtonPressed) {
-            float diference = mainCamera.orthographicSize - targetSize;
-            MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * diference / mainCamera.orthographicSize);
+            float difference = mainCamera.orthographicSize - targetSize;
+            MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * difference / mainCamera.orthographicSize);
         }
         mainCamera.orthographicSize = targetSize;
 
