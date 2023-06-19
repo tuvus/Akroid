@@ -15,6 +15,12 @@ public class PlayerFactionOverviewUI : MonoBehaviour {
     [SerializeField] Text nextDiscoveryCost;
     [SerializeField] Text totalDiscoveries;
     [SerializeField] Transform improvementList;
+
+    GameObject pastCharacterPortrait;
+    GameObject characterPortrait;
+    [SerializeField] Text leaderName;
+    [SerializeField] Transform characterPortraitFrame;
+
     public void SetupFactionOverviewUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
     }
@@ -31,6 +37,16 @@ public class PlayerFactionOverviewUI : MonoBehaviour {
             autoCommandFleets.onValueChanged.AddListener((autoBuildShips) => SetAutoCommandFleets(autoBuildShips));
         }
         UpdateResearchUI();
+
+        if (pastCharacterPortrait == null || pastCharacterPortrait != faction.GetFactionCommManager().GetPortrait()) {
+            if (characterPortrait != null) {
+                DestroyImmediate(characterPortrait);
+            }
+            leaderName.text = faction.GetFactionCommManager().GetSenderName();
+            pastCharacterPortrait = faction.GetFactionCommManager().GetPortrait();
+            characterPortrait = Instantiate(faction.GetFactionCommManager().GetPortrait(), characterPortraitFrame);
+        }
+
     }
 
     void UpdateResearchUI() {
