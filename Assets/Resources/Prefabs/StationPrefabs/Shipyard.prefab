@@ -453,8 +453,9 @@ MonoBehaviour:
   unitName: Shipyard
   followDist: 0
   stationType: 4
-  repairAmmount: 100
+  repairAmount: 500
   repairSpeed: 5
+  rotationSpeed: 0.1
 --- !u!114 &-4755380862419528990
 MonoBehaviour:
   m_ObjectHideFlags: 0

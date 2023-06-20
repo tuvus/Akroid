@@ -258,8 +258,9 @@ MonoBehaviour:
   unitName: ResearchStation
   followDist: 0
   stationType: 6
-  repairAmmount: 10
+  repairAmount: 0
   repairSpeed: 5
+  rotationSpeed: 0.1
 --- !u!114 &-7032057860321366728
 MonoBehaviour:
   m_ObjectHideFlags: 0

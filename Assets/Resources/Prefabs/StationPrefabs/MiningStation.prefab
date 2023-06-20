@@ -258,8 +258,9 @@ MonoBehaviour:
   unitName: MiningStation
   followDist: 50
   stationType: 3
-  repairAmmount: 10
+  repairAmount: 100
   repairSpeed: 5
+  rotationSpeed: 0.1
   activelyMining: 0
   nearbyAsteroids: []
   miningAmount: 300

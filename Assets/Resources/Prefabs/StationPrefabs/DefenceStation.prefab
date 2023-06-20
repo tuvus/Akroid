@@ -401,8 +401,9 @@ MonoBehaviour:
   unitName: DefenceStation
   followDist: 30
   stationType: 2
-  repairAmmount: 0
+  repairAmount: 0
   repairSpeed: 0
+  rotationSpeed: 0.1
 --- !u!114 &6248176320533745593
 MonoBehaviour:
   m_ObjectHideFlags: 0

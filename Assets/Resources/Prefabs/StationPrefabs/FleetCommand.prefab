@@ -453,8 +453,9 @@ MonoBehaviour:
   unitName: FleetCommand
   followDist: 0
   stationType: 1
-  repairAmmount: 500
+  repairAmount: 1000
   repairSpeed: 10
+  rotationSpeed: 0.1
 --- !u!114 &5492600290469838407
 MonoBehaviour:
   m_ObjectHideFlags: 0

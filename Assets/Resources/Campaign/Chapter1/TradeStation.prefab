@@ -453,8 +453,9 @@ MonoBehaviour:
   unitName: TradeStation
   followDist: 90
   stationType: 5
-  repairAmmount: 10
+  repairAmount: 0
   repairSpeed: 5
+  rotationSpeed: 0.1
 --- !u!114 &891628441915010327
 MonoBehaviour:
   m_ObjectHideFlags: 0

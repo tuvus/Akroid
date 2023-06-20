@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Station : Unit, IPositionConfirmer {
     public enum StationType {
@@ -45,8 +47,9 @@ public class Station : Unit, IPositionConfirmer {
     public StationAI stationAI { get; protected set; }
     private Hanger hanger;
     private CargoBay cargoBay;
-    public int repairAmmount;
+    public int repairAmount;
     public float repairSpeed;
+    public float rotationSpeed;
     public float repairTime { get; protected set; }
     protected bool built;
 
@@ -70,6 +73,10 @@ public class Station : Unit, IPositionConfirmer {
             faction.AddStation(this);
             Spawn();
             faction.GetFactionAI().OnStationBuilt(this);
+        }
+        rotationSpeed *= Random.Range(.5f, 1.5f);
+        if (Random.Range(-1,1) < 0) {
+            rotationSpeed *= -1;
         }
     }
 
@@ -128,6 +135,7 @@ public class Station : Unit, IPositionConfirmer {
             base.UpdateUnit(deltaTime);
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
+            SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
                 repairTime += repairSpeed;
@@ -185,7 +193,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public int RepairUnit(Unit unit, int amount) {
         int leftOver = unit.Repair(amount);
-        repairTime += repairSpeed * (amount - leftOver) / repairAmmount;
+        repairTime += repairSpeed * (amount - leftOver) / repairAmount;
         return leftOver;
     }
 
@@ -232,7 +240,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public int GetRepairAmmount() {
-        return (int)(repairAmmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return (int)(repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
     #endregion
 
