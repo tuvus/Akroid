@@ -56,6 +56,16 @@ public class BattleManager : MonoBehaviour {
             numberOfTries = 0;
         }
 
+        public PositionGiver(Vector2 position, PositionGiver oldPositionGiver) {
+            this.position = position;
+            this.isExactPosition = false;
+            this.minDistance = oldPositionGiver.minDistance;
+            this.maxDistance = oldPositionGiver.maxDistance;
+            this.incrementDistance = oldPositionGiver.incrementDistance;
+            this.distanceFromObject = oldPositionGiver.distanceFromObject;
+            this.numberOfTries = oldPositionGiver.numberOfTries;
+        }
+
         public PositionGiver(Vector2 position, float minDistance, float maxDistance, float incrementDistance, float distanceFromObject, int numberOfTries) {
             this.position = position;
             this.isExactPosition = false;
@@ -124,7 +134,7 @@ public class BattleManager : MonoBehaviour {
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
-            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 250, 5000, 10), 100);
+            CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
         }
 
         for (int i = 0; i < factions.Count; i++) {
@@ -247,7 +257,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Station CreateNewStation(StationData stationData) {
-        return CreateNewStation(stationData, new PositionGiver(stationData.wantedPosition, 0, 1000, 200, 100, 2));
+        return CreateNewStation(stationData, new PositionGiver(stationData.wantedPosition, 0, 1000, 20, 100, 2));
     }
 
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
@@ -266,7 +276,7 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewStar() {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
         Star newStar = Instantiate(starPrefab, GetStarTransform()).GetComponent<Star>();
-        newStar.SetupStar(new PositionGiver(Vector2.zero, 1000, 100000, 100, 2000, 4));
+        newStar.SetupStar(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
     }
 
@@ -289,7 +299,7 @@ public class BattleManager : MonoBehaviour {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(8f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 20), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
+            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.asteroids.Add(newAsteroid);
         }
         asteroidFields.Add(newAsteroidField);

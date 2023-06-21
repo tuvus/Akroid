@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   constructionSpeed: 5
-  constructionAmmount: 100
+  constructionAmount: 200
   constructionBays: 3
   buildQueue: []
 --- !u!1 &2758705053638396394

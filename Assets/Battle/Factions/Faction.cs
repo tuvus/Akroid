@@ -179,7 +179,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in BattleManager.Instance.GetAllStars()) {
-            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + star.GetSize()) {
+            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject * 2 + star.GetSize() + 1000) {
                 return false;
             }
         }
@@ -191,7 +191,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         foreach (var faction in BattleManager.Instance.GetAllFactions()) {
             if (faction == this)
                 continue;
-            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject + 1000) {
+            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject * 5 + 1000) {
                 return false;
             }
         }
@@ -505,17 +505,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 continue;
             bool hasFriendlyStation = false;
             foreach (Station friendlyStation in stations) {
-                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
+                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize() + 100 * BattleManager.Instance.systemSizeModifier) {
                     hasFriendlyStation = true;
+                    break;
                 }
             }
 
-            foreach (Station friendlyStation in stationBlueprints) {
-                if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize()) {
-                    hasFriendlyStation = true;
-                }
-            }
             if (!hasFriendlyStation) {
+                foreach (Station friendlyStation in stationBlueprints) {
+                    if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), targetAsteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + targetAsteroidField.GetSize() + 100 * BattleManager.Instance.systemSizeModifier) {
+                        hasFriendlyStation = true;
+                        break;
+                    }
+                }
                 float distance = Vector2.Distance(position, targetAsteroidField.GetPosition());
                 for (int f = 0; f < eligibleAsteroidFields.Count + 1; f++) {
                     if (f == eligibleAsteroidFields.Count) {

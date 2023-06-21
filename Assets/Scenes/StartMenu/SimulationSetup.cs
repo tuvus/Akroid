@@ -37,7 +37,7 @@ public class SimulationSetup : MonoBehaviour {
         StartMenu.Instance.HideAllMenues();
         factions = new List<FactionData>();
         starCount = 3;
-        asteroidFieldCount = 40;
+        asteroidFieldCount = 60;
         asteroidCountModifier = 1;
         systemSizeModifier = 1;
         researchModifier = 1.01f;
@@ -51,7 +51,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void SetupDefaultSimulation() {
         gameObject.SetActive(true);
-        asteroidFieldCount = 40;
+        asteroidFieldCount = 80;
         starCount = 3;
         asteroidCountModifier = 1.2f;
         systemSizeModifier = 1;

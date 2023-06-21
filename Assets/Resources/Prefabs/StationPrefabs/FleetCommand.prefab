@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6c3c6f7b603314a8fdd7261e41a641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  constructionSpeed: 5
-  constructionAmmount: 200
+  constructionSpeed: 3
+  constructionAmount: 300
   constructionBays: 3
   buildQueue: []
 --- !u!1 &2758705053638396394
