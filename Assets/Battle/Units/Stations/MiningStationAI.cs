@@ -28,10 +28,11 @@ public class MiningStationAI : StationAI {
 
     public override void UpdateAI(float deltaTime) {
         base.UpdateAI(deltaTime);
-        UpdateMinningStation();
+        UpdateMiningStation();
     }
 
-    private void UpdateMinningStation() {
+    private void UpdateMiningStation() {
+        Profiler.BeginSample("UpdateMiningStationAI");
         if (GetMiningStation().activelyMining) {
             if (cargoTime <= 0) {
                 ManageMinningStationCargo();
@@ -42,6 +43,7 @@ public class MiningStationAI : StationAI {
                 transportShips.RemoveAt(i);
             }
         }
+        Profiler.EndSample();
     }
 
     void ManageMinningStationCargo() {

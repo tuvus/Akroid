@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class Station : Unit, IPositionConfirmer {
@@ -135,7 +136,9 @@ public class Station : Unit, IPositionConfirmer {
             base.UpdateUnit(deltaTime);
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
+            Profiler.BeginSample("UpdateRotation");
             SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
+            Profiler.EndSample();
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
                 repairTime += repairSpeed;

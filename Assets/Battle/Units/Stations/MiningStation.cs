@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class MiningStation : Station {
 
@@ -51,6 +52,7 @@ public class MiningStation : Station {
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
         if (activelyMining) {
+            Profiler.BeginSample("UpdateMining");
             miningTime -= deltaTime;
             if (miningTime <= 0) {
                 ManageStationMining();
@@ -60,6 +62,7 @@ public class MiningStation : Station {
                 activelyMining = false;
                 faction.RemoveMiningStation(this);
             }
+            Profiler.EndSample();
         }
     }
 

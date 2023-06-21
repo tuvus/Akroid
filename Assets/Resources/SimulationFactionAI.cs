@@ -41,7 +41,7 @@ public class SimulationFactionAI : FactionAI {
         if (fleetCommand != null) {
             updateTime -= deltaTime;
             if (updateTime <= 0) {
-                if (autoCommandFleets) {
+                if (autoCommandFleets && defenseFleets.Count + attackFleets.Count > 0) {
                     ManageThreats();
                     ManageFleets();
                 }
@@ -67,7 +67,9 @@ public class SimulationFactionAI : FactionAI {
         }
         threats.Clear();
         for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
-            if (!faction.closeEnemyGroups[i].IsFleet() || faction.closeEnemyGroupsDistance[i] > farthestStationDistance * 1.4f)
+            if (faction.closeEnemyGroupsDistance[i] > farthestStationDistance * 1.4f)
+                break;
+            if (!faction.closeEnemyGroups[i].IsFleet())
                 continue;
             Fleet targetFleet = (Fleet)faction.closeEnemyGroups[i];
             if (targetFleet.IsSentFleetsStronger(faction))
@@ -130,7 +132,6 @@ public class SimulationFactionAI : FactionAI {
                 }
 
             }
-
         }
         for (int i = 0; i < defenseFleets.Count; i++) {
             Fleet fleet = defenseFleets[i];
