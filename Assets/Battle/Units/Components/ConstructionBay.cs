@@ -6,7 +6,7 @@ public class ConstructionBay : MonoBehaviour {
     private Shipyard shipyard;
 
     public float constructionSpeed;
-    public long constructionAmmount;
+    public long constructionAmount;
     public int constructionBays;
 
     private float constructionTime;
@@ -48,7 +48,7 @@ public class ConstructionBay : MonoBehaviour {
             Ship.ShipBlueprint shipBlueprint = buildQueue[i];
             if (!shipBlueprint.IsFinished()) {
                 availableConstructionBays--;
-                long buildAmmount = constructionAmmount * ammountMultiplier;
+                long buildAmmount = constructionAmount * ammountMultiplier;
                 for (int f = 0; f < shipBlueprint.resources.Count; f++) {
                     if (buildAmmount <= 0)
                         break;

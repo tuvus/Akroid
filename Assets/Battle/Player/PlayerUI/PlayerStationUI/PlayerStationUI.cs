@@ -28,13 +28,17 @@ public class PlayerStationUI : MonoBehaviour {
     float updateSpeed;
     float updateTime;
     [SerializeField] Toggle autoBuildShips;
+    [SerializeField] Button shipYardSelection;
+    [SerializeField] Button upgradeSelection;
+    bool shipYardOrUpgrade;
     [SerializeField] GameObject shipBlueprintButtonPrefab;
-    [SerializeField] Transform buildShipsList;
+    [SerializeField] Transform blueprintList;
     [SerializeField] Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
     public void SetupPlayerStationUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
-        UpdateShipBlueprintUI();
+        shipYardOrUpgrade = true;
+        ShipYardButtonSelected();
     }
 
     public void UpdateStationUI() {
@@ -82,8 +86,8 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-    void UpdateCargoBayUI(CargoBay cargoBay, bool isFreindlyFaction) {
-        if (isFreindlyFaction && cargoBay != null) {
+    void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
+        if (isFriendlyFaction && cargoBay != null) {
             cargoHeader.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
             cargoBaysStatus.gameObject.SetActive(true);
@@ -111,12 +115,34 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
+    public void SetAutoBuildShips(bool autoBuildShips) {
+        ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
+    }
+
+    public void ShipYardButtonSelected() {
+        if (shipYardOrUpgrade) {
+            shipYardOrUpgrade = false;
+            UpdateShipBlueprintUI();
+            shipYardSelection.image.color = new Color(1,1,1,1);
+            upgradeSelection.image.color = new Color(.8f,.8f,.8f,1);
+        }
+    }
+
+    public void UpgradeButtonSelected() {
+        if (!shipYardOrUpgrade) {
+            shipYardOrUpgrade = true;
+            UpdateUpgradeBlueprintUI();
+            upgradeSelection.image.color = new Color(1, 1, 1, 1);
+            shipYardSelection.image.color = new Color(.8f, .8f, .8f, 1);
+        }
+    }
+
     void UpdateShipBlueprintUI() {
         for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count; i++) {
-            if (buildShipsList.childCount <= i) {
-                Instantiate(shipBlueprintButtonPrefab, buildShipsList);
+            if (blueprintList.childCount <= i) {
+                Instantiate(shipBlueprintButtonPrefab, blueprintList);
             }
-            Transform cargoBayButton = buildShipsList.GetChild(i);
+            Transform cargoBayButton = blueprintList.GetChild(i);
             Ship.ShipBlueprint blueprint = BattleManager.Instance.shipBlueprints[i];
             cargoBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
             int f = i;
@@ -125,8 +151,27 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.shipName;
             cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + blueprint.shipCost.ToString();
         }
-        for (int i = BattleManager.Instance.shipBlueprints.Count; i < buildShipsList.childCount; i++) {
-            buildShipsList.GetChild(i).gameObject.SetActive(false);
+        for (int i = BattleManager.Instance.shipBlueprints.Count; i < blueprintList.childCount; i++) {
+            blueprintList.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
+    void UpdateUpgradeBlueprintUI() {
+        for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count - 2; i++) {
+            if (blueprintList.childCount <= i) {
+                Instantiate(shipBlueprintButtonPrefab, blueprintList);
+            }
+            Transform cargoBayButton = blueprintList.GetChild(i);
+            Ship.ShipBlueprint blueprint = BattleManager.Instance.shipBlueprints[i];
+            cargoBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            int f = i;
+            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => ShipBlueprintButtonPressed(f)));
+            cargoBayButton.gameObject.SetActive(true);
+            cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.shipName;
+            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + blueprint.shipCost.ToString();
+        }
+        for (int i = BattleManager.Instance.shipBlueprints.Count - 2; i < blueprintList.childCount; i++) {
+            blueprintList.GetChild(i).gameObject.SetActive(false);
         }
     }
 
@@ -162,10 +207,6 @@ public class PlayerStationUI : MonoBehaviour {
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
             constructionBayList.GetChild(i).gameObject.SetActive(false);
         }
-    }
-
-    public void SetAutoBuildShips(bool autoBuildShips) {
-        ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
     }
 
     public void ConstructionButtonPressed(int index) {
