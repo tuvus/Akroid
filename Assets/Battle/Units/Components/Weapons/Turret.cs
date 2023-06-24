@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
-public class Turret : BattleObject {
+public class Turret : ModuleComponent {
     public enum TargetingBehaviors {
         closest = 1,
         strongest = 2,

@@ -11,11 +11,25 @@ public class Module : MonoBehaviour {
     [field: SerializeField] public float minRotate { get; private set; }
     [field: SerializeField] public float maxRotate { get; private set; }
     [field: SerializeField] public int size { get; private set; }
+    public ModuleComponent moduleComponent;
 
 
-
-    public void SetupModule(ModuleSystem moduleSystem, int system) {
+    public void SetupModule(ModuleSystem moduleSystem, int system, int size) {
         this.moduleSystem = moduleSystem;
         this.system = system;
+        this.size = size;
+    }
+
+    public void SetupModule(ModuleSystem moduleSystem, int system, float rotation, float minRotate, float maxRotate, int size) {
+        this.moduleSystem = moduleSystem;
+        this.system = system;
+        this.rotation = rotation;
+        this.minRotate = minRotate;
+        this.maxRotate = maxRotate;
+        this.size = size;
+    }
+
+    public void DecrementSystemIndex() {
+        system--;
     }
 }
