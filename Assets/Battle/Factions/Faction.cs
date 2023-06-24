@@ -11,9 +11,9 @@ using Random = UnityEngine.Random;
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
-    [SerializeField] public new string name { get; private set; }
-    [SerializeField] public long credits { get; private set; }
-    [SerializeField] public long science { get; private set; }
+    [field:SerializeField] public new string name { get; private set; }
+    [field:SerializeField] public long credits { get; private set; }
+    [field:SerializeField] public long science { get; private set; }
     public long researchCost { get; private set; }
     private double researchCostExtra;
     public int Discoveries { get; private set; }
@@ -55,9 +55,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public List<Faction> enemyFactions { get; private set; }
     public List<UnitGroup> unitGroups { get; private set; }
-    public List<UnitGroup> closeEnemyGroups { get; private set; }
+    [field: SerializeField] public List<UnitGroup> closeEnemyGroups { get; private set; }
     public UnitGroup baseGroup { get; private set; }
-    public List<float> closeEnemyGroupsDistance { get; private set; }
+    [field: SerializeField] public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public struct FactionData {
         public Type factionAI;

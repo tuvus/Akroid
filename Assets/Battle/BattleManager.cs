@@ -11,8 +11,8 @@ public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
     CampaingController campaignController;
 
-    public float researchModifier { get; private set; }
-    public float systemSizeModifier { get; private set; }
+    [field: SerializeField] public float researchModifier { get; private set; }
+    [field: SerializeField] public float systemSizeModifier { get; private set; }
     public List<ShipBlueprint> shipBlueprints;
 
     public List<Faction> factions;

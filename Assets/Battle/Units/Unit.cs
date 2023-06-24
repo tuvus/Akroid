@@ -11,7 +11,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     protected int health;
     [SerializeField] protected int followDist;
-    public Faction faction { get; protected set; }
+    [field: SerializeField] public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
@@ -23,8 +23,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
     protected Vector2 velocity;
     private DestroyEffect destroyEffect;
 
-    public List<Unit> enemyUnitsInRange { get; protected set; }
-    public List<float> enemyUnitsInRangeDistance { get; protected set; }
+    [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
+    [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
     public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed) {
         this.faction = faction;
