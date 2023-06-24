@@ -34,7 +34,7 @@ public class Turret : ModuleComponent {
     public Unit targetUnit;
     private bool aimed;
     private bool hibernating;
-    private static float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
     public virtual void SetupTurret(Unit unit) {
@@ -299,7 +299,29 @@ public class Turret : ModuleComponent {
 
     public virtual void ShowEffects(bool shown) { }
 
-    public virtual void StopFireing() {
+    public virtual void StopFiring() {
 
+    }
+
+    protected class TurretScriptableObject : ScriptableObject {
+        public float DPS;
+        public Sprite turretSprite;
+        public float turretOffset;
+
+        public float range;
+        public float rotateSpeed;
+        public TargetingBehaviors targeting;
+        private float findNewTargetUpdateSpeed;
+        public float fireSpeed;
+        public float reloadSpeed;
+        public int maxAmmo;
+
+        public virtual float GetDamagePerSecond() {
+            return 0;
+        }
+
+        public void OnValidate() {
+            DPS = GetDamagePerSecond();
+        }
     }
 }

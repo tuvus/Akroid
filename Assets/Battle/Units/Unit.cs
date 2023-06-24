@@ -230,7 +230,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         if (shieldGenerator != null)
             shieldGenerator.DestroyShield();
         for (int i = 0; i < turrets.Count; i++) {
-            turrets[i].StopFireing();
+            turrets[i].StopFiring();
         }
         float value = Random.Range(0.2f, 0.6f);
         spriteRenderer.color = new Color(value, value, value, 1);

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: LightProjectileTurretMKI
+  m_EditorClassIdentifier: Assembly-CSharp::MassTurret/MassTurretScriptableObject
+  DPS: 2.3148148
+  turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
+  turretOffset: 1.5
+  range: 270
+  rotateSpeed: 76
+  targeting: 1
+  fireSpeed: 0.2
+  reloadSpeed: 4.4
+  maxAmmo: 5
+  fireVelocity: 64
+  fireAccuracy: 1.8
+  minDamage: 2
+  maxDamage: 3
+  projectileRange: 320
+  projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
+    type: 3}

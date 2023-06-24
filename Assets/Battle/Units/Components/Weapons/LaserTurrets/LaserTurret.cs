@@ -61,8 +61,8 @@ public class LaserTurret : Turret {
         return damage / time;
     }
 
-    public override void StopFireing() {
-        base.StopFireing();
+    public override void StopFiring() {
+        base.StopFiring();
         Destroy(laser.gameObject);
     }
     public override void ShowEffects(bool shown) {
