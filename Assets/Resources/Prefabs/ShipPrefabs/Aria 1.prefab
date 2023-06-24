@@ -97,102 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ceb155800aad3e54cbe63b95f2067b6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1720315319733761026
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8844865615721113234}
-  - component: {fileID: 4531939862591031345}
-  m_Layer: 0
-  m_Name: Turret
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8844865615721113234
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720315319733761026}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4630675845762834500}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4531939862591031345
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720315319733761026}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2e1f4f07b4031d4c8b6486bd02a0520, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <system>k__BackingField: 0
-  <rotation>k__BackingField: 0
-  <minRotate>k__BackingField: 0
-  <maxRotate>k__BackingField: 0
---- !u!1 &3830123364042039272
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 298140963512131413}
-  - component: {fileID: 6930343070308883647}
-  m_Layer: 0
-  m_Name: Turret
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &298140963512131413
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3830123364042039272}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.95, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4630675845762834500}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6930343070308883647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3830123364042039272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2e1f4f07b4031d4c8b6486bd02a0520, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <system>k__BackingField: 0
-  <rotation>k__BackingField: 0
-  <minRotate>k__BackingField: 0
-  <maxRotate>k__BackingField: 0
 --- !u!1 &4630675845207748543
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,11 +207,10 @@ GameObject:
   - component: {fileID: 4630675845762834491}
   - component: {fileID: 4630675845762834498}
   - component: {fileID: 4863482194110404218}
-  - component: {fileID: -4415673513833916498}
   - component: {fileID: 9175764632370358692}
   - component: {fileID: -7254274651240941414}
   m_Layer: 7
-  m_Name: Aria
+  m_Name: Aria 1
   m_TagString: Units/Ship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -333,8 +236,6 @@ Transform:
   - {fileID: 5432883350487021421}
   - {fileID: 7509364016401035437}
   - {fileID: 915515608206951654}
-  - {fileID: 8844865615721113234}
-  - {fileID: 298140963512131413}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -406,9 +307,6 @@ MonoBehaviour:
   maxHealth: 224
   unitName: Aria
   followDist: 12
-  <faction>k__BackingField: {fileID: 0}
-  <enemyUnitsInRange>k__BackingField: []
-  <enemyUnitsInRangeDistance>k__BackingField: []
   fleet: {fileID: 0}
   shipClass: 2
   shipType: 3
@@ -434,24 +332,6 @@ MonoBehaviour:
   commands: []
   newCommand: 0
   currentCommandType: 0
---- !u!114 &-4415673513833916498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4630675845762834490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: Turret
-    type: 2
-  <modules>k__BackingField:
-  - {fileID: 4531939862591031345}
-  - {fileID: 6930343070308883647}
 --- !u!61 &9175764632370358692
 BoxCollider2D:
   m_ObjectHideFlags: 0
