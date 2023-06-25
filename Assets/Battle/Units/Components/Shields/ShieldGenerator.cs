@@ -5,8 +5,6 @@ using UnityEngine;
 public class ShieldGenerator : ModuleComponent {
 	ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
 	private Unit unit;
-	public Vector2 shieldSize;
-
 	//RuntimeStats
 	private float timeTillShieldCount;
 	private Shield shield;
@@ -19,7 +17,7 @@ public class ShieldGenerator : ModuleComponent {
 	public void SetupShieldGenerator(Unit unit) {
 		this.unit = unit;
 		shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
-		shield.transform.localScale = new Vector2(shieldSize.x, shieldSize.y);
+		shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().size.x * 1.6f, unit.GetSpriteRenderer().size.x * 1.4f);
 		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
 		CreateShield(true);
 	}
