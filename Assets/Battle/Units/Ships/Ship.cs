@@ -138,7 +138,7 @@ public class Ship : Unit {
         thrusting = false;
         thrust = 0;
         for (int i = 0; i < thrusters.Count; i++) {
-            thrust += thrusters[i].thrustSpeed * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
+            thrust += thrusters[i].GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
         }
     }
 
@@ -524,7 +524,7 @@ public class Ship : Unit {
         float thrust = 0;
         spriteRenderer = GetComponent<SpriteRenderer>();
         foreach (var thruster in GetComponentsInChildren<Thruster>()) {
-            thrust += thruster.thrustSpeed;
+            thrust += thruster.GetThrust();
         }
 
         mass = SetupSize() * 100;

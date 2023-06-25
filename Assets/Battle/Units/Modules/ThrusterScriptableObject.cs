@@ -7,6 +7,7 @@ class ThrusterScriptableObject : ComponentScriptableObject {
     public Color color;
     public Color startThrustColor;
     public Color endThrustColor;
+    public GameObject thrustEffect;
 
     public override Type GetComponentType() {
         return typeof(Thruster);
