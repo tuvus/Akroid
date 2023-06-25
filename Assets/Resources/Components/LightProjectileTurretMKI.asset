@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
-  m_Name: LightProjectileTurretMKI
+  m_Name: LightProjectileTurretMkI
   m_EditorClassIdentifier: Assembly-CSharp::MassTurret/MassTurretScriptableObject
   DPS: 2.3148148
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}

@@ -76,4 +76,15 @@ public class ShieldGenerator : MonoBehaviour {
 	public void ShowShield(bool show) {
 		shield.ShowSield(show);
     }
+
+    [CreateAssetMenu(fileName = "Resources/Components/ShieldGenerator", menuName = "Components/ShieldGenerator", order = 2)]
+    protected class MassTurretScriptableObject : ScriptableObject {
+        //ShieldGenStats
+        public float shieldRegenRate;
+        public float shieldRecreateSpeed;
+        public int shieldRegenHealth;
+        //ShieldStats
+        public Shield shieldPrefab;
+        public int maxShieldHealth;
+    }
 }
