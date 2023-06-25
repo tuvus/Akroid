@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserTurret : Turret {
-    public float fireDuration;
-    public float fadeDuration;
-    public float laserDamagePerSecond;
-    public float laserRange;
-    public float laserSize;
-
+    LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
-    public GameObject laserPrefab;
+
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+        laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
+    }
 
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
-        laser = Instantiate(laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
-        laser.SetLaser(this, GetTurretOffSet(), laserSize);
+        laser = Instantiate(laserTurretScriptableObject.laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
+        laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
         turretOffset *= transform.localScale.y;
     }
 
@@ -51,13 +50,30 @@ public class LaserTurret : Turret {
         return unit.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload);
     }
 
+    public float GetFireDuration() {
+        return laserTurretScriptableObject.fireDuration;
+    }
+
+    public float GetFadeDuration() {
+        return laserTurretScriptableObject.fadeDuration;
+    }
+
+    public float GetLaserRange() {
+        return laserTurretScriptableObject.laserRange;
+    }
+
+    public float GetLaserDamagePerSecond() {
+        return laserTurretScriptableObject.laserDamagePerSecond;
+    }
+
+
     public override float GetDamagePerSecond() {
         reloadController = GetComponent<ReloadController>();
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = laserDamagePerSecond * (fireDuration + fadeDuration / 2) * reloadController.maxAmmo;
+        float damage = laserTurretScriptableObject.laserDamagePerSecond * (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) * reloadController.maxAmmo;
         return damage / time;
     }
 

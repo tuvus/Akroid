@@ -89,7 +89,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
                 new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
             };
-            SetupBattle(1, 0, 1, 0.1f, 1.1f, tempFactions);
+            SetupBattle(0, 0, 1, 0.1f, 1.1f, tempFactions);
         }
     }
 

@@ -45,10 +45,10 @@ public class ModuleSystem : MonoBehaviour {
 
     public void AddSystemAndReplace(SystemType newSystemType) {
         if (newSystemType == SystemType.Any) {
-            AddSystemAndReplace(SystemType.Weapon);
+            AddSystemAndReplace(SystemType.Turret);
             if (systems[systems.Count - 1].count == 0)
                 RemoveSystem(systems.Count - 1);
-            AddSystemAndReplace(SystemType.Turret);
+            AddSystemAndReplace(SystemType.Weapon);
             if (systems[systems.Count - 1].count == 0)
                 RemoveSystem(systems.Count - 1);
             AddSystemAndReplace(SystemType.Utility);

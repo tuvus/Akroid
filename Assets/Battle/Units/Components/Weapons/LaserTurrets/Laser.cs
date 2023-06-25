@@ -38,8 +38,8 @@ public class Laser : MonoBehaviour {
 
     public void FireLaser() {
         fireing = true;
-        fireTime = laserTurret.fireDuration;
-        fadeTime = laserTurret.fadeDuration;
+        fireTime = laserTurret.GetFireDuration();
+        fadeTime = laserTurret.GetFadeDuration();
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, 1);
         startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, 1);
         endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
@@ -82,9 +82,9 @@ public class Laser : MonoBehaviour {
         if (fadeTime <= 0) {
             ExpireLaser();
         } else {
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, fadeTime / laserTurret.fadeDuration);
-            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, fadeTime / laserTurret.fadeDuration);
-            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, fadeTime / laserTurret.fadeDuration);
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, fadeTime / laserTurret.GetFireDuration());
+            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, fadeTime / laserTurret.GetFadeDuration());
+            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, fadeTime / laserTurret.GetFadeDuration());
         }
     }
 
@@ -133,12 +133,12 @@ public class Laser : MonoBehaviour {
     }
 
     int GetDamage(float deltaTime, bool hitShield) {
-        float damage = laserTurret.laserDamagePerSecond * deltaTime * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
+        float damage = laserTurret.GetLaserDamagePerSecond() * deltaTime * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;
         if (fireTime <= 0)
-            damage *= fadeTime / laserTurret.fadeDuration;
+            damage *= fadeTime / laserTurret.GetFadeDuration();
         damage += extraDamage;
         extraDamage = damage - (int)damage;
         return (int)damage;
@@ -163,7 +163,7 @@ public class Laser : MonoBehaviour {
     }
 
     public float GetLaserRange() {
-        return laserTurret.laserRange * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
+        return laserTurret.GetLaserRange() * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 
     public void ShowEffects(bool shown) { 

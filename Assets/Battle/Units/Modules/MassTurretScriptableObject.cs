@@ -4,6 +4,7 @@ using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/MassTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
 class MassTurretScriptableObject : TurretScriptableObject {
+    [Tooltip("Max at around 150")]
     public float fireVelocity;
     public float fireAccuracy;
     public int minDamage;

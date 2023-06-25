@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
-public class MissileLauncher : MonoBehaviour {
+public class MissileLauncher : ModuleComponent {
     public enum TargetingBehaviors {
         closest = 1,
         strongest = 2,
@@ -13,16 +13,10 @@ public class MissileLauncher : MonoBehaviour {
         smallest = 5,
         biggest = 6,
     }
+    MissileLauncherScriptableObject missileLauncherScriptableObject;
+
     protected Unit unit;
     private ReloadController reloadController;
-    public float range;
-    public TargetingBehaviors targeting;
-
-    public int missileDamage;
-    public float missileThrust;
-    public float missileTurnSpeed;
-    public float missileFuelRange;
-    public bool missileRetarget;
 
     public Unit targetUnit;
     private bool hibernating;
@@ -30,10 +24,15 @@ public class MissileLauncher : MonoBehaviour {
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+        missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
+    }
+
     public void SetupMissileLauncher(Unit unit) {
         this.unit = unit;
         reloadController = GetComponent<ReloadController>();
-        reloadController.SetupReloadController();
+        reloadController.SetupReloadController(missileLauncherScriptableObject.fireSpeed,missileLauncherScriptableObject.reloadSpeed,missileLauncherScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -92,27 +91,27 @@ public class MissileLauncher : MonoBehaviour {
             return true;
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
-            if (targeting == TargetingBehaviors.closest) {
+            if (missileLauncherScriptableObject.targeting== TargetingBehaviors.closest) {
                 if (Vector2.Distance(newTarget.transform.position, transform.position) <= Vector2.Distance(oldTarget.transform.position, transform.position)) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.strongest) {
+            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.strongest) {
                 if (newTarget.GetTotalHealth() > oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.weakest) {
+            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.weakest) {
                 if (newTarget.GetTotalHealth() < oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.slowest) {
+            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.slowest) {
                 if (newTarget.GetVelocity().magnitude < oldTarget.GetVelocity().magnitude) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.biggest) {
+            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.biggest) {
                 if (newTarget.GetSize() > oldTarget.GetSize()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.smallest) {
+            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.smallest) {
                 if (newTarget.GetSize() < oldTarget.GetSize()) {
                     return true;
                 }
@@ -124,19 +123,19 @@ public class MissileLauncher : MonoBehaviour {
     public void Fire() {
         reloadController.Fire();
         Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileThrust, missileTurnSpeed, GetFuelRange(), missileRetarget);
+        missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
     }
 
     public int GetDamage() {
-        return Mathf.RoundToInt(missileDamage * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
+        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
     }
 
     public float GetRange() {
-        return range * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.range * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetFuelRange() {
-        return missileFuelRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.missileFuelRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetDamagePerSecond() {
@@ -145,7 +144,7 @@ public class MissileLauncher : MonoBehaviour {
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = missileDamage / 2f * reloadController.maxAmmo;
+        float damage = missileLauncherScriptableObject.missileDamage / 2f * reloadController.maxAmmo;
         return damage / time;
     }
 

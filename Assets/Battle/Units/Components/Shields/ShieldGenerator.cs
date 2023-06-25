@@ -17,7 +17,7 @@ public class ShieldGenerator : ModuleComponent {
 	public void SetupShieldGenerator(Unit unit) {
 		this.unit = unit;
 		shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
-		shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().size.x * 1.6f, unit.GetSpriteRenderer().size.x * 1.4f);
+		shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 5f);
 		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
 		CreateShield(true);
 	}

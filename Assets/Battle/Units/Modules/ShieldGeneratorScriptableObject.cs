@@ -11,6 +11,11 @@ class ShieldGeneratorScriptableObject : ComponentScriptableObject {
     public Shield shieldPrefab;
     public int maxShieldHealth;
 
+    public void Awake() {
+        if (shieldPrefab == null)
+            shieldPrefab = Resources.Load<GameObject>("Prefabs/Shield").GetComponent<Shield>();
+    }
+
     public override Type GetComponentType() {
         return typeof(ShieldGenerator);
     }

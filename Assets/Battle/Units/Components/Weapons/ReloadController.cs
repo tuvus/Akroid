@@ -10,7 +10,10 @@ public class ReloadController : MonoBehaviour {
     float reloadTime;
     int ammo;
 
-    public void SetupReloadController() {
+    public void SetupReloadController(float fireSpeed, float reloadSpeed, int maxAmmo) {
+        this.fireSpeed = fireSpeed;
+        this.reloadSpeed = reloadSpeed;
+        this.maxAmmo = maxAmmo;
         firetime = 0;
         reloadTime = 0;
         ammo = maxAmmo;

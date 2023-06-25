@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: AternaMkI
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/ShipPrefabs/Aterna
+  unitName: Aterna
+  maxHealth: 3400
+  sprite: {fileID: -1913859534, guid: 70aef500846276d47b1c2fbc712ca58a, type: 3}
+  components:
+  - name: CenterTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: TopLeftTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: CenterLeftTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: BottomLeftTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: TopRightTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: CenterRightTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: BottomRightTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: Weapon
+    component: {fileID: 11400000, guid: 5db735c1674eb8b4ba96b1edbe0cc39b, type: 2}
+  - name: Weapon
+    component: {fileID: 11400000, guid: 5db735c1674eb8b4ba96b1edbe0cc39b, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: fb74cab9fca85664493e46d62dcf0b2a, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  shipClass: 4
+  shipType: 6
+  turnSpeed: 45
+  combatRotation: 90

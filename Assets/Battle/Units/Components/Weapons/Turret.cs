@@ -44,6 +44,7 @@ public class Turret : ModuleComponent {
         turretScriptableObject = (TurretScriptableObject)ComponentScriptableObject;
         GetComponent<SpriteRenderer>().sprite = turretScriptableObject.turretSprite;
         GetComponent<SpriteRenderer>().enabled = true;
+
     }
 
     public virtual void SetupTurret(Unit unit) {
@@ -51,7 +52,7 @@ public class Turret : ModuleComponent {
         this.unit = unit;
         targetRotation = startRotation;
         reloadController = GetComponent<ReloadController>();
-        reloadController.SetupReloadController();
+        reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
