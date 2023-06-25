@@ -355,7 +355,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public int GetMaxShields() {
         if (shieldGenerator == null)
             return 0;
-        return shieldGenerator.GetMaxShieldStrenght();
+        return shieldGenerator.GetMaxShieldStrength();
     }
 
     public int GetFollowDistance() {

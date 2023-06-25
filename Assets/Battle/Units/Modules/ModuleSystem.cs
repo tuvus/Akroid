@@ -159,9 +159,15 @@ public class ModuleSystem : MonoBehaviour {
 
     public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
-        Object[] components = unitScriptableObject.GetComponents(); 
+        ComponentScriptableObject[] components = unitScriptableObject.GetComponents(); 
         for (int i = 0; i < components.Length; i++) {
-
+            ;
+            ModuleComponent newComponent = modules[i].gameObject.AddComponent(components[i].GetComponentType()).GetComponent<ModuleComponent>();
+            if (newComponent == null) {
+                print(components[i].GetComponentType());
+                continue;
+            }
+            newComponent.SetupComponent(modules[i], components[i]);
         }
     }
 }

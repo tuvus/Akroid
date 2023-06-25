@@ -29,10 +29,6 @@ public class Module : MonoBehaviour {
         this.size = size;
     }
 
-    public void SetupModule() {
-
-    }
-
     public void DecrementSystemIndex() {
         system--;
     }

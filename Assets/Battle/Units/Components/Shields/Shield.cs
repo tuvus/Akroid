@@ -19,8 +19,8 @@ public class Shield : MonoBehaviour {
 
     public void RegenShield(int regenAmount) {
         health += regenAmount;
-        if (health > shieldGenerator.GetMaxShieldStrenght())
-            health = shieldGenerator.GetMaxShieldStrenght();
+        if (health > shieldGenerator.GetMaxShieldStrength())
+            health = shieldGenerator.GetMaxShieldStrength();
         RefreshSheild();
     }
 
@@ -38,7 +38,7 @@ public class Shield : MonoBehaviour {
     }
 
     public void RefreshSheild() {
-        float shieldPercent = (float)health / shieldGenerator.GetMaxShieldStrenght();
+        float shieldPercent = (float)health / shieldGenerator.GetMaxShieldStrength();
         spriteRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
     }
 

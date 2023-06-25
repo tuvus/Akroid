@@ -13,6 +13,8 @@ public class Turret : ModuleComponent {
         smallest = 5,
         biggest = 6,
     }
+
+    TurretScriptableObject turretScriptableObject;
     //the time between checks
     public float targetRotation;
     public float startRotation;
@@ -36,6 +38,13 @@ public class Turret : ModuleComponent {
     private bool hibernating;
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
+
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+        turretScriptableObject = (TurretScriptableObject)ComponentScriptableObject;
+        GetComponent<SpriteRenderer>().sprite = turretScriptableObject.turretSprite;
+        GetComponent<SpriteRenderer>().enabled = true;
+    }
 
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject();

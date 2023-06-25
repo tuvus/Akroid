@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class UnitScriptableObject : ScriptableObject {
     public string prefabPath;
@@ -15,9 +14,9 @@ public class UnitScriptableObject : ScriptableObject {
     private class ComponentData {
         [HideInInspector]
         public string name;
-        public Object component;
+        public ComponentScriptableObject component;
 
-        public ComponentData(string name, Object component) {
+        public ComponentData(string name, ComponentScriptableObject component) {
             this.name = name;
             this.component = component;
         }
@@ -45,8 +44,8 @@ public class UnitScriptableObject : ScriptableObject {
         }
     }
 
-    public Object[] GetComponents() {
-        Object[] newComponents = new Object[components.Length];
+    public ComponentScriptableObject[] GetComponents() {
+        ComponentScriptableObject[] newComponents = new ComponentScriptableObject[components.Length];
         for (int i = 0; i < components.Length; i++) {
             newComponents[i] = components[i].component;
         }

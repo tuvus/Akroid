@@ -151,6 +151,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         for (int i = 0; i < improvementDiscoveryCount.Length; i++) {
             improvementDiscoveryCount[i] = 0;
         }
+        return;
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
             BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Thruster : MonoBehaviour, IParticleHolder {
+public class Thruster : ModuleComponent, IParticleHolder {
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
     float targetBrightness;
