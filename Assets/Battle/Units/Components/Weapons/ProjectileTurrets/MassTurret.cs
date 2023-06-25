@@ -89,30 +89,4 @@ public class MassTurret : Turret {
     public void PrintDamagePerSecond() {
         print(GetDamagePerSecond());
     }
-
-    [CreateAssetMenu(fileName = "Resources/Components/ProjectileTurret", menuName = "Components/ProjectileTurret", order = 1)]
-    protected class MassTurretScriptableObject : TurretScriptableObject {
-        public float fireVelocity;
-        public float fireAccuracy;
-        public int minDamage;
-        public int maxDamage;
-        public float projectileRange;
-        public GameObject projectilePrefab;
-
-        public override float GetDamagePerSecond() {
-            float time = reloadSpeed;
-            if (maxAmmo > 1) {
-                time += maxAmmo * fireSpeed;
-            }
-            float damage = (minDamage + maxDamage) / 2f * maxAmmo;
-            return damage / time;
-        }
-
-        public void Awake() {
-            targeting = TargetingBehaviors.closest;
-            if (projectilePrefab == null)
-                projectilePrefab = Resources.Load<GameObject>("Prefabs/Projectile");
-            print(projectilePrefab);
-        }
-    }
 }

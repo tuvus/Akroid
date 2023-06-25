@@ -169,7 +169,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         Debug.LogWarning("Unit not spawned is taking damage" + unitName + " position:" + GetPosition());
         return 0;
     }
-    
+
     public void SelectUnit(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
         if (spawned)
             unitSelection.SetSelected(selectionStrength);
@@ -232,7 +232,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].StopFiring();
         }
-        float value = Random.Range(0.2f, 0.6f);
+        float value = UnityEngine.Random.Range(0.2f, 0.6f);
         spriteRenderer.color = new Color(value, value, value, 1);
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);

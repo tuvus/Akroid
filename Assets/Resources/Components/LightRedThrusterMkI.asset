@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: d1a4dc295f981b646b62533ac9bfb628, type: 3}
   m_Name: LightRedThrusterMkI
-  m_EditorClassIdentifier: Assembly-CSharp::Thruster/MassTurretScriptableObject
-  thrustSpeed: 0
-  color: {r: 0, g: 0, b: 0, a: 0}
-  startThrustColor: {r: 0, g: 0, b: 0, a: 0}
-  endThrustColor: {r: 0, g: 0, b: 0, a: 0}
+  m_EditorClassIdentifier: 
+  thrustSpeed: 3420
+  color: {r: 1, g: 0.39607844, b: 0, a: 0}
+  startThrustColor: {r: 0.50980395, g: 0.078431375, b: 0, a: 0}
+  endThrustColor: {r: 1, g: 0.9372549, b: 0.3647059, a: 0}

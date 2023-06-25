@@ -302,26 +302,4 @@ public class Turret : ModuleComponent {
     public virtual void StopFiring() {
 
     }
-
-    protected class TurretScriptableObject : ScriptableObject {
-        public float DPS;
-        public Sprite turretSprite;
-        public float turretOffset;
-
-        public float range;
-        public float rotateSpeed;
-        public TargetingBehaviors targeting;
-        private float findNewTargetUpdateSpeed;
-        public float fireSpeed;
-        public float reloadSpeed;
-        public int maxAmmo;
-
-        public virtual float GetDamagePerSecond() {
-            return 0;
-        }
-
-        public void OnValidate() {
-            DPS = GetDamagePerSecond();
-        }
-    }
 }

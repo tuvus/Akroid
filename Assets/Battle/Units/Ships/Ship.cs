@@ -143,6 +143,7 @@ public class Ship : Unit {
         }
     }
 
+    #region Update
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
         if (IsSpawned()) {
@@ -254,6 +255,7 @@ public class Ship : Unit {
             }
         }
     }
+    #endregion
 
     #region ShipControlls
     public void SetIdle() {

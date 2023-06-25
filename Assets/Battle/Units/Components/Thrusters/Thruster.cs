@@ -46,12 +46,4 @@ public class Thruster : MonoBehaviour, IParticleHolder {
             particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
-
-    [CreateAssetMenu(fileName = "Resources/Components/Thruster", menuName = "Components/Thruster", order = 3)]
-    protected class MassTurretScriptableObject : ScriptableObject {
-        public float thrustSpeed;
-        public Color color;
-        public Color startThrustColor;
-        public Color endThrustColor;
-    }
 }
