@@ -11,10 +11,10 @@ public class DecoyUnit : Unit {
         faction = tempFaction;
         enemyUnitsInRange = new List<Unit>() { target };
         Spawn();
-        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0, 1);
+        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0, 1, null);
     }
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale) {
+    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale, UnitScriptableObject unitScriptableObject) {
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         foreach (var turret in turrets) {
             turret.SetupTurret(this);
@@ -47,7 +47,7 @@ public class DecoyUnit : Unit {
     public override int TakeDamage(int damage) {
         //print(damage);
         health -= damage;
-        maxHealth -= damage;
+        UnitScriptableObject.maxHealth -= damage;
         return 0;
     }
 

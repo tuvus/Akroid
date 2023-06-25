@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 [Serializable]
 public class ModuleSystem : MonoBehaviour {
@@ -37,6 +38,7 @@ public class ModuleSystem : MonoBehaviour {
     [field: SerializeField] public List<System> systems { get; private set; } = new List<System>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
+    #region SystemsAndModules
     public void AddSystem() {
         systems.Add(new System("New System", SystemType.Any));
     }
@@ -133,7 +135,7 @@ public class ModuleSystem : MonoBehaviour {
         Module newModule = ((GameObject)PrefabUtility.InstantiatePrefab(Resources.Load<GameObject>("Prefabs/Module"), transform)).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
-        newModule.SetupModule(this, system, 0);
+        newModule.CreateModule(this, system, 0);
         return newModule;
     }
 
@@ -144,7 +146,7 @@ public class ModuleSystem : MonoBehaviour {
         Module newModule = ((GameObject)PrefabUtility.InstantiatePrefab(Resources.Load<GameObject>("Prefabs/Module"), transform)).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
-        newModule.SetupModule(this, system, rotation, minRotate, maxRotate, 0);
+        newModule.CreateModule(this, system, rotation, minRotate, maxRotate, 0);
         return newModule;
     }
 
@@ -153,8 +155,13 @@ public class ModuleSystem : MonoBehaviour {
         DestroyImmediate(removeModule.gameObject);
         modules.Remove(removeModule);
     }
+    #endregion
 
-    public void SetupModuleSystem(Unit unit) {
+    public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
+        Object[] components = unitScriptableObject.GetComponents(); 
+        for (int i = 0; i < components.Length; i++) {
+
+        }
     }
 }

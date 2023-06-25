@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
+[RequireComponent(typeof(ModuleSystem))]
 public abstract class Unit : BattleObject, IParticleHolder {
+    public UnitScriptableObject UnitScriptableObject { get; private set; }
+    [SerializeField] protected string unitName;
+    [field: SerializeField] public ModuleSystem moduleSystem { get; private set; }
+    [field: SerializeField] public Faction faction { get; protected set; }
     private bool spawned;
     private UnitGroup group;
-    [SerializeField] protected int maxHealth;
-    [SerializeField] protected string unitName;
 
     protected int health;
     [SerializeField] protected int followDist;
-    [field: SerializeField] public Faction faction { get; protected set; }
     private UnitSelection unitSelection;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
@@ -26,9 +28,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed) {
+    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
+        this.UnitScriptableObject = unitScriptableObject;
         this.faction = faction;
         base.SetupBattleObject(positionGiver, rotation);
+        moduleSystem = GetComponent<ModuleSystem>();
+        moduleSystem.SetupModuleSystem(this,unitScriptableObject);
         this.unitName = name;
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
@@ -315,7 +320,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return health;
     }
     public int GetMaxHealth() {
-        return Mathf.RoundToInt(maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return Mathf.RoundToInt(UnitScriptableObject.maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public int GetTotalHealth() {

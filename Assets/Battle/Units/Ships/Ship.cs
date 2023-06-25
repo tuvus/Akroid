@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class Ship : Unit {
+    public ShipScriptableObject ShipScriptableObject { get; private set; }
+
     public enum ShipClass {
         Transport,
         HeavyTransport,
@@ -37,13 +39,9 @@ public class Ship : Unit {
 
     public ShipAI shipAI { get; private set; }
     public Fleet fleet;
-    [SerializeField] private ShipClass shipClass;
-    [SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
     private ResearchEquiptment researchEquipment;
     private List<Thruster> thrusters;
-    [SerializeField] private float turnSpeed;
-    [SerializeField] private float combatRotation;
     public Station dockedStation;
     private float mass;
     private float thrust;
@@ -114,13 +112,14 @@ public class Ship : Unit {
         }
     }
 
-    public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed) {
+    public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
+        this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
         faction.AddShip(this);
         thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
         foreach (var thruster in thrusters) {
             thruster.SetupThruster();
         }
-        base.SetupUnit(shipName, faction, positionGiver, rotation, particleSpeed);
+        base.SetupUnit(shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {
@@ -421,11 +420,11 @@ public class Ship : Unit {
 
     #region GetMethods
     public float GetTurnSpeed() {
-        return turnSpeed;
+        return ShipScriptableObject.turnSpeed;
     }
 
     public float GetCombatRotation() {
-        return combatRotation;
+        return ShipScriptableObject.combatRotation;
     }
     public Vector2 GetTargetMovePosition() {
         return movePosition;
@@ -436,11 +435,11 @@ public class Ship : Unit {
     }
 
     public ShipClass GetShipClass() {
-        return shipClass;
+        return ShipScriptableObject.shipClass;
     }
 
     public ShipType GetShipType() {
-        return shipType;
+        return ShipScriptableObject.shipType;
     }
 
     public override bool IsSelectable() {
@@ -452,19 +451,19 @@ public class Ship : Unit {
     }
 
     public bool IsCombatShip() {
-        return shipType == ShipType.Fighter || shipType == ShipType.Cruiser || shipType == ShipType.Frigate || shipType == ShipType.Dreadnaught;
+        return ShipScriptableObject.shipType == ShipType.Fighter || ShipScriptableObject.shipType == ShipType.Cruiser || ShipScriptableObject.shipType == ShipType.Frigate || ShipScriptableObject.shipType == ShipType.Dreadnaught;
     }
 
     public bool IsTransportShip() {
-        return shipType == ShipType.Transport;
+        return ShipScriptableObject.shipType == ShipType.Transport;
     }
 
     public bool IsConstructionShip() {
-        return shipType == ShipType.Construction;
+        return ShipScriptableObject.shipType == ShipType.Construction;
     }
 
     public bool IsScienceShip() {
-        return shipType == ShipType.Research;
+        return ShipScriptableObject.shipType == ShipType.Research;
     }
 
     public float GetMass() {

@@ -14,19 +14,23 @@ public class Module : MonoBehaviour {
     public ModuleComponent moduleComponent;
 
 
-    public void SetupModule(ModuleSystem moduleSystem, int system, int size) {
+    public void CreateModule(ModuleSystem moduleSystem, int system, int size) {
         this.moduleSystem = moduleSystem;
         this.system = system;
         this.size = size;
     }
 
-    public void SetupModule(ModuleSystem moduleSystem, int system, float rotation, float minRotate, float maxRotate, int size) {
+    public void CreateModule(ModuleSystem moduleSystem, int system, float rotation, float minRotate, float maxRotate, int size) {
         this.moduleSystem = moduleSystem;
         this.system = system;
         this.rotation = rotation;
         this.minRotate = minRotate;
         this.maxRotate = maxRotate;
         this.size = size;
+    }
+
+    public void SetupModule() {
+
     }
 
     public void DecrementSystemIndex() {

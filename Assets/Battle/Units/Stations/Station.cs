@@ -54,8 +54,8 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime { get; protected set; }
     protected bool built;
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale) {
-        base.SetupUnit(name, faction, positionGiver, rotation, timeScale);
+    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+        base.SetupUnit(name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
         stationAI = GetComponent<StationAI>();
         hanger = GetComponentInChildren<Hanger>();
         cargoBay = GetComponentInChildren<CargoBay>();
