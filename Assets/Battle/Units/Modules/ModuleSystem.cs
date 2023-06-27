@@ -100,6 +100,7 @@ public class ModuleSystem : MonoBehaviour {
                 }
                 newModule.transform.position = targetTransform.position;
                 newModule.transform.rotation = targetTransform.rotation;
+                newModule.transform.localScale = targetTransform.localScale;
                 if (targetTransform.GetComponent<SpriteRenderer>() != null) {
                     newModule.GetComponent<SpriteRenderer>().sortingOrder = targetTransform.GetComponent<SpriteRenderer>().sortingOrder;
                 }

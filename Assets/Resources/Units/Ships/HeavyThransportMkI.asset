@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: HeavyThransportMkI
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/ShipPrefabs/HeavyTransport
+  unitName: Heavy Transport
+  maxHealth: 1650
+  sprite: {fileID: -990215070, guid: 2af62a375a8f1e74481182a65dad00d4, type: 3}
+  components:
+  - name: LeftTopCenterTurret
+    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
+  - name: RightTopCenterTurret
+    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
+  - name: LeftTopTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: LeftBottomTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: RightTopTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: RightBottomTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: MainThruster
+    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
+  - name: LeftSubThruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  - name: RightSubThruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  shipClass: 1
+  shipType: 0
+  turnSpeed: 30
+  combatRotation: 0

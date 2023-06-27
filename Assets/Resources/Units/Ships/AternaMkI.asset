@@ -38,7 +38,7 @@ MonoBehaviour:
   - name: Utility
     component: {fileID: 11400000, guid: fb74cab9fca85664493e46d62dcf0b2a, type: 2}
   - name: Thruster
-    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
   - name: Thruster
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
   - name: Thruster
