@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 0
+  Module: {fileID: 0}
   targetRotation: 0
   startRotation: 0
   turretOffset: 1.5

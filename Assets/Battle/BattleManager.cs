@@ -89,7 +89,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 14, 1),
                 new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 14, 1)
             };
-            SetupBattle(1, 0, 1, 0.1f, 1.1f, tempFactions);
+            SetupBattle(0, 0, 1, 0.1f, 1.1f, tempFactions);
         }
     }
 
@@ -248,11 +248,12 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Ship CreateNewShip(ShipData shipData) {
-        GameObject shipPrefab = (GameObject)Resources.Load("Prefabs/ShipPrefabs/" + shipData.shipClass.ToString());
-        Ship newShip = Instantiate(shipPrefab, factions[shipData.faction].GetShipTransform()).GetComponent<Ship>();
+        ShipScriptableObject shipScriptableObject = Resources.Load<ShipScriptableObject>("Prefabs/Units/Ships/" + shipData.shipClass.ToString() + "MkI");
+        Ship shipPrefab = Resources.Load<Ship>(shipScriptableObject.prefabPath);
+        Ship newShip = Instantiate(shipPrefab.gameObject, factions[shipData.faction].GetShipTransform()).GetComponent<Ship>();
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale);
+        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale, shipScriptableObject);
         return newShip;
     }
 
@@ -263,7 +264,7 @@ public class BattleManager : MonoBehaviour {
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationData.path);
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale);
+        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale, null);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);

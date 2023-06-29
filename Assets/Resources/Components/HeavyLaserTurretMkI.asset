@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396a28e365f47994182c196908c55114, type: 3}
+  m_Name: HeavyLaserTurretMkI
+  m_EditorClassIdentifier: 
+  DPS: 34.909092
+  turretSprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
+  turretOffset: 3.4
+  range: 640
+  rotateSpeed: 42
+  targeting: 1
+  fireSpeed: 1
+  reloadSpeed: 7
+  maxAmmo: 4
+  laserDamagePerSecond: 120
+  fireDuration: 0.7
+  fadeDuration: 0.2
+  laserRange: 760
+  laserSize: 1
+  laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
+    type: 3}

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShieldGenerator : MonoBehaviour {
+public class ShieldGenerator : ModuleComponent {
+	ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
 	private Unit unit;
     //ShieldGenStats
     [field: SerializeField] public float shieldRegenRate { get; private set; }
@@ -17,12 +18,16 @@ public class ShieldGenerator : MonoBehaviour {
     private float timeTillShieldCount;
 	private Shield shield;
 
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+		shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
+	}
 
 	public void SetupShieldGenerator(Unit unit) {
 		this.unit = unit;
-		shield = Instantiate(shieldPrefab, transform);
-		shield.transform.localScale = new Vector2(shieldSize.x, shieldSize.y);
-		shield.SetShield(maxShieldHealth, this, unit);
+		shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
+		shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
+		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
 		CreateShield(true);
 	}
 
@@ -40,22 +45,22 @@ public class ShieldGenerator : MonoBehaviour {
 	}
 
 	public void RegenerateShields() {
-		shield.RegenShield(shieldRegenHealth);
-		timeTillShieldCount += shieldRegenRate;
+		shield.RegenShield(shieldGeneratorScriptableObject.shieldRegenHealth);
+		timeTillShieldCount += shieldGeneratorScriptableObject.shieldRegenRate;
 	}
 
 	public void CreateShield(bool fullHealth) {
 		ShowShield(true);
 		if (fullHealth) {
-			shield.SetShield(maxShieldHealth, this, unit);
+			shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
 		} else {
-			shield.SetShield(maxShieldHealth / 5, this, unit);
+			shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth / 5, this, unit);
 		}
 	}
 
 	public void DestroyShield() {
 		ShowShield(false);
-		timeTillShieldCount = shieldRecreateSpeed;
+		timeTillShieldCount = shieldGeneratorScriptableObject.shieldRecreateSpeed;
 	}
 
 	public int GetShieldStrength() {
@@ -65,8 +70,8 @@ public class ShieldGenerator : MonoBehaviour {
 		return shieldHealth;
 	}
 
-	public int GetMaxShieldStrenght() {
-		return Mathf.RoundToInt(maxShieldHealth * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
+	public int GetMaxShieldStrength() {
+		return Mathf.RoundToInt(shieldGeneratorScriptableObject.maxShieldHealth * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
 	}
 
 	public Shield GetShield() {

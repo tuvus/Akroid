@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
+  m_Name: HeavyProjectileTurretMkI
+  m_EditorClassIdentifier: 
+  DPS: 14.999999
+  turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
+  turretOffset: 1.5
+  range: 380
+  rotateSpeed: 78
+  targeting: 1
+  fireSpeed: 0.6
+  reloadSpeed: 3
+  maxAmmo: 9
+  fireVelocity: 110
+  fireAccuracy: 0.6
+  minDamage: 12
+  maxDamage: 16
+  projectileRange: 430
+  projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
+    type: 3}

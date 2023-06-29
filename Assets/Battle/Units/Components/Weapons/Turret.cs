@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
-public class Turret : BattleObject {
+public class Turret : ModuleComponent {
     public enum TargetingBehaviors {
         closest = 1,
         strongest = 2,
@@ -13,6 +13,8 @@ public class Turret : BattleObject {
         smallest = 5,
         biggest = 6,
     }
+
+    TurretScriptableObject turretScriptableObject;
     //the time between checks
     public float targetRotation;
     public float startRotation;
@@ -34,15 +36,23 @@ public class Turret : BattleObject {
     public Unit targetUnit;
     private bool aimed;
     private bool hibernating;
-    private static float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
+
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+        turretScriptableObject = (TurretScriptableObject)ComponentScriptableObject;
+        GetComponent<SpriteRenderer>().sprite = turretScriptableObject.turretSprite;
+        GetComponent<SpriteRenderer>().enabled = true;
+
+    }
 
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject();
         this.unit = unit;
         targetRotation = startRotation;
         reloadController = GetComponent<ReloadController>();
-        reloadController.SetupReloadController();
+        reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -299,7 +309,7 @@ public class Turret : BattleObject {
 
     public virtual void ShowEffects(bool shown) { }
 
-    public virtual void StopFireing() {
+    public virtual void StopFiring() {
 
     }
 }

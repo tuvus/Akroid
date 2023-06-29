@@ -13,8 +13,8 @@ public class MiningStation : Station {
     private float miningTime;
     [SerializeField] private int miningRange;
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale) {
-        base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale);
+    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+        base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();
         activelyMining = true;

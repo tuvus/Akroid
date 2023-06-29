@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Thruster : MonoBehaviour, IParticleHolder {
+public class Thruster : ModuleComponent, IParticleHolder {
+    ThrusterScriptableObject thrusterScriptableObject;
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
     [field: SerializeField] public float thrustSpeed { get; private set; }
     float targetBrightness;
 
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
+        thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
+        Instantiate(thrusterScriptableObject.thrustEffect, transform);
+        particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
+        thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
 
+    }
 
     public void SetupThruster() {
         targetBrightness = thrusterFlare.brightness;
@@ -47,5 +55,9 @@ public class Thruster : MonoBehaviour, IParticleHolder {
         } else {
             particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
+    }
+
+    public float GetThrust() {
+        return thrusterScriptableObject.thrustSpeed;
     }
 }
