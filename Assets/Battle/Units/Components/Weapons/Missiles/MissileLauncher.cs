@@ -15,14 +15,14 @@ public class MissileLauncher : MonoBehaviour {
     }
     protected Unit unit;
     private ReloadController reloadController;
-    public float range;
+    [field: SerializeField] public float range { get; private set; }
     public TargetingBehaviors targeting;
 
-    public int missileDamage;
-    public float missileThrust;
-    public float missileTurnSpeed;
-    public float missileFuelRange;
-    public bool missileRetarget;
+    [field: SerializeField] public int missileDamage { get; private set; }
+    [field: SerializeField] public float missileThrust { get; private set; }
+    [field: SerializeField] public float missileTurnSpeed { get; private set; }
+    [field: SerializeField] public float missileFuelRange { get; private set; }
+    [field: SerializeField] public bool missileRetarget { get; private set; }
 
     public Unit targetUnit;
     private bool hibernating;

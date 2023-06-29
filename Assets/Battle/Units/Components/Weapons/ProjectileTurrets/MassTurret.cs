@@ -8,13 +8,13 @@ public class MassTurret : Turret {
     private float flashTime;
     //The Projectiles's start variables
     [Tooltip("Max at around 150")]
-    public float fireVelocity;
-    public float fireAccuracy;
+    [field: SerializeField] public float fireVelocity { get; private set; }
+    [field: SerializeField] public float fireAccuracy { get; private set; }
 
     //The Projectile's Stats
-    public int minDamage;
-    public int maxDamage;
-    public float projectileRange;
+    [field: SerializeField] public int minDamage { get; private set; }
+    [field: SerializeField] public int maxDamage { get; private set; }
+    [field: SerializeField] public float projectileRange { get; private set; }
 
     public GameObject projectilePrefab;
 

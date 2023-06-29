@@ -5,9 +5,11 @@ using UnityEngine;
 public class Thruster : MonoBehaviour, IParticleHolder {
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
+    [field: SerializeField] public float thrustSpeed { get; private set; }
     float targetBrightness;
 
-    public float thrustSpeed;
+
+
     public void SetupThruster() {
         targetBrightness = thrusterFlare.brightness;
         thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();

@@ -37,13 +37,13 @@ public class Ship : Unit {
 
     public ShipAI shipAI { get; private set; }
     public Fleet fleet;
-    [SerializeField] private ShipClass shipClass;
-    [SerializeField] private ShipType shipType;
+    [field: SerializeField] private ShipClass shipClass;
+    [field: SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
     private ResearchEquiptment researchEquipment;
     private List<Thruster> thrusters;
-    [SerializeField] private float turnSpeed;
-    [SerializeField] private float combatRotation;
+    [field:SerializeField] public float turnSpeed { get; private set; }
+    [field: SerializeField] public float combatRotation { get; private set; }
     public Station dockedStation;
     private float mass;
     private float thrust;

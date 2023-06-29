@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class ShieldGenerator : MonoBehaviour {
 	private Unit unit;
-	//ShieldGenStats
-	public float shieldRegenRate;
-	public float shieldRecreateSpeed;
-	public int shieldRegenHealth;
-	//ShieldStats
-	public Shield shieldPrefab;
+    //ShieldGenStats
+    [field: SerializeField] public float shieldRegenRate { get; private set; }
+    [field: SerializeField] public float shieldRecreateSpeed { get; private set; }
+    [field: SerializeField] public int shieldRegenHealth { get; private set; }
+    //ShieldStats
+    public Shield shieldPrefab;
 	public Vector2 shieldSize;
-	public int maxShieldHealth;
+    [field: SerializeField] public int maxShieldHealth { get; private set; }
 
-	//RuntimeStats
-	private float timeTillShieldCount;
+    //RuntimeStats
+    private float timeTillShieldCount;
 	private Shield shield;
 
 
