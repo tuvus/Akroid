@@ -6,13 +6,13 @@ public class ShieldGenerator : ModuleComponent {
 	ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
 	private Unit unit;
     //ShieldGenStats
-    [field: SerializeField] public float shieldRegenRate { get; private set; }
-    [field: SerializeField] public float shieldRecreateSpeed { get; private set; }
-    [field: SerializeField] public int shieldRegenHealth { get; private set; }
+    public float shieldRegenRate;
+    public float shieldRecreateSpeed;
+    public int shieldRegenHealth;
     //ShieldStats
     public Shield shieldPrefab;
 	public Vector2 shieldSize;
-    [field: SerializeField] public int maxShieldHealth { get; private set; }
+    public int maxShieldHealth;
 
     //RuntimeStats
     private float timeTillShieldCount;

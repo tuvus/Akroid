@@ -17,14 +17,14 @@ public class MissileLauncher : ModuleComponent {
 
     protected Unit unit;
     private ReloadController reloadController;
-    [field: SerializeField] public float range { get; private set; }
+     public float range;
     public TargetingBehaviors targeting;
 
-    [field: SerializeField] public int missileDamage { get; private set; }
-    [field: SerializeField] public float missileThrust { get; private set; }
-    [field: SerializeField] public float missileTurnSpeed { get; private set; }
-    [field: SerializeField] public float missileFuelRange { get; private set; }
-    [field: SerializeField] public bool missileRetarget { get; private set; }
+     public int missileDamage;
+     public float missileThrust;
+     public float missileTurnSpeed;
+     public float missileFuelRange;
+     public bool missileRetarget;
 
     public Unit targetUnit;
     private bool hibernating;

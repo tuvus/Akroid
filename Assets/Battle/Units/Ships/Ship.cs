@@ -44,8 +44,8 @@ public class Ship : Unit {
     private CargoBay cargoBay;
     private ResearchEquiptment researchEquipment;
     private List<Thruster> thrusters;
-    [field:SerializeField] public float turnSpeed { get; private set; }
-    [field: SerializeField] public float combatRotation { get; private set; }
+    public float turnSpeed;
+    public float combatRotation;
     public Station dockedStation;
     private float mass;
     private float thrust;

@@ -6,7 +6,7 @@ public class Thruster : ModuleComponent, IParticleHolder {
     ThrusterScriptableObject thrusterScriptableObject;
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
-    [field: SerializeField] public float thrustSpeed { get; private set; }
+    public float thrustSpeed;
     float targetBrightness;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {

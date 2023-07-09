@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserTurret : Turret {
-    [field: SerializeField] public float fireDuration { get; private set; }
-    [field: SerializeField] public float fadeDuration { get; private set; }
-    [field: SerializeField] public float laserDamagePerSecond { get; private set; }
-    [field: SerializeField] public float laserRange { get; private set; }
-    [field: SerializeField] public float laserSize { get; private set; }
+    public float fireDuration;
+    public float fadeDuration;
+    public float laserDamagePerSecond;
+    public float laserRange;
+    public float laserSize;
     LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
 
