@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hanger : MonoBehaviour {
+public class Hanger : ModuleComponent {
+    HangerScriptableObject hangerScriptableObject;
     Station station;
     public List<Ship> ships { get; private set; }
     [SerializeField] int maxDockSpace;
     [SerializeField] int dockSpace;
+
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        hangerScriptableObject = (HangerScriptableObject)componentScriptableObject;
+    }
 
     public void SetupHanger(Station station) {
         ships = new List<Ship>(maxDockSpace);

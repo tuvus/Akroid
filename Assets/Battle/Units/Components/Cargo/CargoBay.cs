@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CargoBay : MonoBehaviour {
+public class CargoBay : ModuleComponent {
     public enum CargoTypes {
         Empty = 0,
         Metal = 1,
-
     }
+
+    CargoBayScriptableObject cargoBayScriptableObject;
+
     [SerializeField] int maxCargoBays;
     [SerializeField] long cargoBaySize;
     public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
     public List<long> cargoBays = new List<long>();
+
+    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
+    }
 
     /// <summary>
     /// Returns Cargo that was not loaded.

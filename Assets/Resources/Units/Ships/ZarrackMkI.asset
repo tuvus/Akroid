@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: ZarrackMkI
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/ShipPrefabs/Zarrack
+  unitName: Zarrack
+  maxHealth: 850
+  sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
+  components:
+  - name: TopLeftTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: TopRightTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: BottomLeftTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: BottomRightTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 224954adaa671324fbea934b4c985cd6, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: bff627ab4b0122543bfcc1aa044257ad, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+  shipClass: 6
+  shipType: 2
+  turnSpeed: 25
+  combatRotation: 0

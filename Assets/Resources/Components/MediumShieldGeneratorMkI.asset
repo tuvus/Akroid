@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bcb422cf85b663f468d34e4f8eae333e, type: 3}
-  m_Name: HeavyShieldGeneratorMkI
+  m_Name: MediumShieldGeneratorMkI
   m_EditorClassIdentifier: 
-  shieldRegenRate: 4.7
-  shieldRecreateSpeed: 16
-  shieldRegenHealth: 30
+  shieldRegenRate: 4
+  shieldRecreateSpeed: 8
+  shieldRegenHealth: 10
   shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}
-  maxShieldHealth: 825
+  maxShieldHealth: 226

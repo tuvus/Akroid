@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: LancerMkI
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/ShipPrefabs/Lancer
+  unitName: Lancer
+  maxHealth: 580
+  sprite: {fileID: -603366875, guid: 5a11f1cbb331c0a419e3f6fe5d003231, type: 3}
+  components:
+  - name: CenterTurret
+    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
+  - name: LeftTopTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: LeftBottomTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: RightTopTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: RightBottomTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: Weapon
+    component: {fileID: 11400000, guid: 25438419514bf3a41887042280c4c1b3, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 406328309328359499ecd4de8f81c776, type: 2}
+  - name: LeftMainThruster
+    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+  - name: RightMainThruster
+    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+  - name: LeftSubThruster
+    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+  - name: RightSubThruster
+    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+  shipClass: 3
+  shipType: 5
+  turnSpeed: 40
+  combatRotation: 0

@@ -42,7 +42,7 @@ public class Ship : Unit {
     [field: SerializeField] private ShipClass shipClass;
     [field: SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
-    private ResearchEquiptment researchEquipment;
+    private ResearchEquipment researchEquipment;
     private List<Thruster> thrusters;
     public float turnSpeed;
     public float combatRotation;
@@ -127,8 +127,8 @@ public class Ship : Unit {
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {
-            researchEquipment = GetComponentInChildren<ResearchEquiptment>();
-            researchEquipment.SetupResearchEquiptment(this);
+            researchEquipment = GetComponentInChildren<ResearchEquipment>();
+            researchEquipment.SetupResearchEquipment(this);
         }
         SetupThrusters();
         shipAI.SetupShipAI(this);
@@ -492,7 +492,7 @@ public class Ship : Unit {
         return base.GetEnemyUnitsInRangeDistance();
     }
 
-    public ResearchEquiptment GetResearchEquiptment() {
+    public ResearchEquipment GetResearchEquiptment() {
         return researchEquipment;
     }
 

@@ -74,7 +74,7 @@ public class MassTurret : Turret {
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = (massTurretScriptableObject.minDamage + massTurretScriptableObject.maxDamage) / 2f * reloadController.maxAmmo;
+        float damage = (minDamage + maxDamage) / 2f * reloadController.maxAmmo;
         return damage / time;
     }
 

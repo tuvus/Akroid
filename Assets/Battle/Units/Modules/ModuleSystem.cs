@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -86,7 +87,7 @@ public class ModuleSystem : MonoBehaviour {
                     break;
             }
 
-            if (targetTransform.name.Contains(targetName) && !targetTransform.GetComponent<Module>()) {
+            if ((targetTransform.name.Contains(targetName) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("CargoBay")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("ResearchEquipment")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("Hanger"))) && !targetTransform.GetComponent<Module>()) {
                 Module newModule;
                 if (systems[systemIndex].type == SystemType.Turret && targetTransform.GetComponent<Turret>() != null) {
                     Turret turret = targetTransform.GetComponent<Turret>();

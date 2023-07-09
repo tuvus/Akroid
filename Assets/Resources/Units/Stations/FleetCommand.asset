@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
+  m_Name: FleetCommand
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/StationPrefabs/FleetCommand
+  unitName: FleetCommand
+  maxHealth: 13000
+  sprite: {fileID: 48152505, guid: a0a783ed409c02147832d0f5edb5d4d5, type: 3}
+  components:
+  - name: LowerBottomTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: LowerLeftTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: LowerRightTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: UpperTopTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: UpperLeftTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: UpperRightTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
+  stationType: 1
+  repairAmount: 1000
+  repairSpeed: 10
+  rotationSpeed: 0.1

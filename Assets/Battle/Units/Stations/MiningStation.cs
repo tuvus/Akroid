@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class MiningStation : Station {
+    public MiningStationScriptableObject MiningStationScriptableObject { get; private set; }
 
     public bool activelyMining;
     public List<Asteroid> nearbyAsteroids;
@@ -12,8 +13,9 @@ public class MiningStation : Station {
     [SerializeField] private float miningSpeed;
     private float miningTime;
     [SerializeField] private int miningRange;
-
+        
     public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+        MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
         base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();

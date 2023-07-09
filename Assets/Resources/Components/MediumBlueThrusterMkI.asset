@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1a4dc295f981b646b62533ac9bfb628, type: 3}
+  m_Name: MediumBlueThrusterMkI
+  m_EditorClassIdentifier: 
+  thrustSpeed: 6900
+  color: {r: 0, g: 0.96862745, b: 1, a: 0}
+  startThrustColor: {r: 0.003921569, g: 0.5921569, b: 0.6784314, a: 0}
+  endThrustColor: {r: 0, g: 0.27450982, b: 0.7058824, a: 1}
+  thrustEffect: {fileID: 1613586205140506355, guid: 374d73192a08ec94992701665767fd24,
+    type: 3}
