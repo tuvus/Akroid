@@ -236,54 +236,79 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb57881e4b6e1648a194659709ec7ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <researchModifier>k__BackingField: 0
+  <systemSizeModifier>k__BackingField: 0
   shipBlueprints:
   - factionIndex: 0
-    shipClass: 0
+    shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
+      type: 2}
     shipName: Tranport
     shipCost: 1000
     resourcesTypes: 01000000
     resources: 7805000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
-    shipClass: 5
+    shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
+      type: 2}
     shipName: StationBuilder
     shipCost: 3000
     resourcesTypes: 01000000
     resources: a00f000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
-    shipClass: 6
+    shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
+      type: 2}
     shipName: Zarrack
     shipCost: 2100
     resourcesTypes: 01000000
     resources: 8813000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
-    shipClass: 2
+    shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
+      type: 2}
     shipName: Aria
     shipCost: 1300
     resourcesTypes: 01000000
     resources: 2003000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
-    shipClass: 3
+    shipScriptableObject: {fileID: 11400000, guid: 861654087bb19d64596b1dd3e9e603a7,
+      type: 2}
     shipName: Lancer
     shipCost: 5000
     resourcesTypes: 01000000
     resources: 0807000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
-    shipClass: 4
+    shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
+      type: 2}
     shipName: Aterna
     shipCost: 30000
     resourcesTypes: 01000000
     resources: 2823000000000000
     totalResourcesRequired: 0
+  stationBlueprints:
+  - factionIndex: 0
+    stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
+      type: 2}
+    stationName: FleetCommand
+    stationCost: 0
+    resourcesTypes: 
+    resources: 
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    stationScriptableObject: {fileID: 11400000, guid: 93acbaa08c4a46e4ca8eaa8ed55b04b3,
+      type: 2}
+    stationName: MiningStation
+    stationCost: 3000
+    resourcesTypes: 01000000
+    resources: a00f000000000000
+    totalResourcesRequired: 0
   factions: []
   units: []
   ships: []
   stations: []
-  stationBlueprints: []
+  stationsInProgress: []
   projectiles: []
   missiles: []
   stars: []

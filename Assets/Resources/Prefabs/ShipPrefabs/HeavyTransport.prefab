@@ -214,10 +214,15 @@ MonoBehaviour:
   unitName: HeavyTransport
   <moduleSystem>k__BackingField: {fileID: 0}
   <faction>k__BackingField: {fileID: 0}
+  maxHealth: 0
   followDist: 30
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
   fleet: {fileID: 0}
+  shipClass: 0
+  shipType: 0
+  turnSpeed: 0
+  combatRotation: 0
   dockedStation: {fileID: 0}
   shipAction: 0
   targetRotation: 0
@@ -302,6 +307,8 @@ MonoBehaviour:
     type: 3
   - name: Thrusters
     type: 4
+  - name: New System
+    type: 0
   <modules>k__BackingField:
   - {fileID: 3627654876002232859}
   - {fileID: 9126261858479124748}

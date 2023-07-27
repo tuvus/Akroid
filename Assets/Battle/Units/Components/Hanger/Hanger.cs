@@ -6,7 +6,6 @@ public class Hanger : ModuleComponent {
     HangerScriptableObject hangerScriptableObject;
     Station station;
     public List<Ship> ships { get; private set; }
-    [SerializeField] int maxDockSpace;
     [SerializeField] int dockSpace;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
@@ -14,12 +13,12 @@ public class Hanger : ModuleComponent {
     }
 
     public void SetupHanger(Station station) {
-        ships = new List<Ship>(maxDockSpace);
+        ships = new List<Ship>(hangerScriptableObject.maxDockSpace);
         this.station = station;
     }
 
     public bool DockShip(Ship ship) {
-        if (dockSpace < maxDockSpace) {
+        if (dockSpace < hangerScriptableObject.maxDockSpace) {
             ships.Add(ship);
             dockSpace++;
             return true;
@@ -113,6 +112,6 @@ public class Hanger : ModuleComponent {
     }
 
     public int GetMaxDockSpace() {
-        return maxDockSpace;
+        return hangerScriptableObject.maxDockSpace;
     }
 }

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30835f7d1dce3764398c8ce86d70f164, type: 3}
   m_Name: MediumMissileLauncher
   m_EditorClassIdentifier: 
-  DPS: 0
-  range: 0
+  DPS: 7.6923075
+  range: 400
   targeting: 1
-  missileDamage: 0
-  missileThrust: 0
-  missileTurnSpeed: 0
-  missileFuelRange: 0
+  missileDamage: 40
+  missileThrust: 160
+  missileTurnSpeed: 20
+  missileFuelRange: 600
   missileRetarget: 0
-  fireSpeed: 0
-  reloadSpeed: 0
-  maxAmmo: 0
+  fireSpeed: 1
+  reloadSpeed: 8
+  maxAmmo: 5

@@ -7,17 +7,7 @@ public class MassTurret : Turret {
     private SpriteRenderer flash;
     static float flashSpeed = 0.5f;
     private float flashTime;
-    //The Projectiles's start variables
-    [Tooltip("Max at around 150")]
-    public float fireVelocity;
-    public float fireAccuracy;
 
-    //The Projectile's Stats
-    public int minDamage;
-    public int maxDamage;
-    public float projectileRange;
-
-    public GameObject projectilePrefab;
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
         massTurretScriptableObject = (MassTurretScriptableObject)componentScriptableObject;
@@ -26,7 +16,7 @@ public class MassTurret : Turret {
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
         flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
-        flash.transform.localPosition = new Vector2(0, turretOffset);
+        flash.transform.localPosition = new Vector2(0, massTurretScriptableObject.turretOffset);
         flash.enabled = false;
     }
 
@@ -74,7 +64,7 @@ public class MassTurret : Turret {
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = (minDamage + maxDamage) / 2f * reloadController.maxAmmo;
+        float damage = (massTurretScriptableObject.minDamage + massTurretScriptableObject.maxDamage) / 2f * reloadController.maxAmmo;
         return damage / time;
     }
 

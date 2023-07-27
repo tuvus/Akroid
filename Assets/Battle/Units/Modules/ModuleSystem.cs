@@ -91,7 +91,7 @@ public class ModuleSystem : MonoBehaviour {
                 Module newModule;
                 if (systems[systemIndex].type == SystemType.Turret && targetTransform.GetComponent<Turret>() != null) {
                     Turret turret = targetTransform.GetComponent<Turret>();
-                    newModule = AddModule(systemIndex, turret.startRotation, turret.minRotate, turret.maxRotate);
+                    newModule = AddModule(systemIndex, 0, 0, 0);
                     newModule.name = targetTransform.name;
                 } else {
                     newModule = AddModule(systemIndex);

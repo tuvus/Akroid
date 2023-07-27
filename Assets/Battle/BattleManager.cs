@@ -14,12 +14,13 @@ public class BattleManager : MonoBehaviour {
     [field: SerializeField] public float researchModifier { get; private set; }
     [field: SerializeField] public float systemSizeModifier { get; private set; }
     public List<ShipBlueprint> shipBlueprints;
+    public List<StationBlueprint> stationBlueprints;
 
     public List<Faction> factions;
     public List<Unit> units;
     public List<Ship> ships;
     public List<Station> stations;
-    public List<Station> stationBlueprints;
+    public List<Station> stationsInProgress;
     public List<Projectile> projectiles;
     public List<Missile> missiles;
     public List<Star> stars;
@@ -248,12 +249,11 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Ship CreateNewShip(ShipData shipData) {
-        ShipScriptableObject shipScriptableObject = Resources.Load<ShipScriptableObject>("Prefabs/Units/Ships/" + shipData.shipClass.ToString() + "MkI");
-        Ship shipPrefab = Resources.Load<Ship>(shipScriptableObject.prefabPath);
+        Ship shipPrefab = Resources.Load<Ship>(shipData.shipScriptableObject.prefabPath);
         Ship newShip = Instantiate(shipPrefab.gameObject, factions[shipData.faction].GetShipTransform()).GetComponent<Ship>();
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale, shipScriptableObject);
+        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
         return newShip;
     }
 
@@ -262,14 +262,14 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
-        GameObject stationPrefab = (GameObject)Resources.Load(stationData.path);
+        GameObject stationPrefab = (GameObject)Resources.Load(stationData.stationScriptableObject.prefabPath);
         Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale, null);
+        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);
         } else {
-            stationBlueprints.Add(newStation);
+            stationsInProgress.Add(newStation);
         }
         return newStation;
     }
@@ -311,7 +311,7 @@ public class BattleManager : MonoBehaviour {
 
     #region ObjectLists
     public void BuildStationBlueprint(Station station) {
-        stationBlueprints.Remove(station);
+        stationsInProgress.Remove(station);
         units.Add(station);
         stations.Add(station);
     }
@@ -331,7 +331,7 @@ public class BattleManager : MonoBehaviour {
             if (station.faction != null)
                 station.faction.RemoveStation(station);
         } else {
-            stationBlueprints.Remove(station);
+            stationsInProgress.Remove(station);
             if (station.faction != null)
                 station.faction.RemoveStationBlueprint(station);
 
@@ -552,8 +552,17 @@ public class BattleManager : MonoBehaviour {
 
     public ShipBlueprint GetShipBlueprint(ShipClass shipClass) {
         for (int i = 0; i < shipBlueprints.Count; i++) {
-            if (shipBlueprints[i].shipClass == shipClass) {
+            if (shipBlueprints[i].shipScriptableObject.shipClass == shipClass) {
                 return shipBlueprints[i];
+            }
+        }
+        return null;
+    }
+
+    public StationBlueprint GetStationBlueprint (StationType stationType) {
+        for (int i = 0; i < stationBlueprints.Count; i++) {
+            if (stationBlueprints[i].stationScriptableObject.stationType == stationType) {
+                return stationBlueprints[i];
             }
         }
         return null;

@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserTurret : Turret {
-    public float fireDuration;
-    public float fadeDuration;
-    public float laserDamagePerSecond;
-    public float laserRange;
-    public float laserSize;
     LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
 
@@ -20,7 +15,6 @@ public class LaserTurret : Turret {
         base.SetupTurret(unit);
         laser = Instantiate(laserTurretScriptableObject.laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
         laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
-        turretOffset *= transform.localScale.y;
     }
 
     protected override void UpdateTurretReload(float deltaTime) {

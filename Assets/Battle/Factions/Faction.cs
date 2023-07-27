@@ -11,9 +11,9 @@ using Random = UnityEngine.Random;
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
-    [field:SerializeField] public new string name { get; private set; }
-    [field:SerializeField] public long credits { get; private set; }
-    [field:SerializeField] public long science { get; private set; }
+    [field: SerializeField] public new string name { get; private set; }
+    [field: SerializeField] public long credits { get; private set; }
+    [field: SerializeField] public long science { get; private set; }
     public long researchCost { get; private set; }
     private double researchCostExtra;
     public int Discoveries { get; private set; }
@@ -151,12 +151,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         for (int i = 0; i < improvementDiscoveryCount.Length; i++) {
             improvementDiscoveryCount[i] = 0;
         }
-        return;
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.FleetCommand, "FleetCommand", GetPosition(), Random.Range(0, 360)));
+            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, BattleManager.Instance.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, Station.StationType.MiningStation, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
+                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -174,7 +173,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
             } else
-                BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, Ship.ShipClass.Aria, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
+                BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
     }
 
@@ -383,7 +382,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     #region Update
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
-        for(int i = unitGroups.Count - 1; i >= 0; i--) {
+        for (int i = unitGroups.Count - 1; i >= 0; i--) {
             if (unitGroups[i] == null) {
                 unitGroups.RemoveAt(i);
             } else {
@@ -403,7 +402,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroups.Clear();
         closeEnemyGroupsDistance.Clear();
         foreach (var enemyFaction in enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) >  GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
+            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
             for (int i = 0; i < enemyFaction.unitGroups.Count; i++) {
                 AddEnemyGroup(enemyFaction.unitGroups[i]);
@@ -419,7 +418,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
                 if (closeEnemyGroupsDistance[f] >= distance) {
                     closeEnemyGroupsDistance.Insert(f, distance);
-  
+
                     closeEnemyGroups.Insert(f, targetGroup);
                     return;
                 }

@@ -61,14 +61,14 @@ public class Ship : Unit {
 
     public struct ShipData {
         public int faction;
-        public ShipClass shipClass;
+        public ShipScriptableObject shipScriptableObject;
         public string shipName;
         public Vector2 position;
         public float rotation;
 
-        public ShipData(int faction, ShipClass shipClass, string shipName, Vector2 position, float rotation) {
+        public ShipData(int faction, ShipScriptableObject shipScriptableObject, string shipName, Vector2 position, float rotation) {
             this.faction = faction;
-            this.shipClass = shipClass;
+            this.shipScriptableObject = shipScriptableObject;
             this.shipName = shipName;
             this.position = position;
             this.rotation = rotation;
@@ -78,16 +78,16 @@ public class Ship : Unit {
     [System.Serializable]
     public class ShipBlueprint {
         public int factionIndex;
-        public ShipClass shipClass;
+        public ShipScriptableObject shipScriptableObject;
         public string shipName;
         public long shipCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<long> resources;
         public long totalResourcesRequired;
 
-        private ShipBlueprint(int factionIndex, ShipClass shipClass, string shipName, long shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
+        private ShipBlueprint(int factionIndex, ShipScriptableObject shipScriptableObject, string shipName, long shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
             this.factionIndex = factionIndex;
-            this.shipClass = shipClass;
+            this.shipScriptableObject = shipScriptableObject;
             this.shipName = shipName;
             this.shipCost = shipCost;
             this.resourcesTypes = resourcesTypes;
@@ -100,7 +100,7 @@ public class Ship : Unit {
         public ShipBlueprint CreateShipBlueprint(int factionIndex, string shipName = null) {
             if (shipName == null)
                 shipName = this.shipName;
-            return new ShipBlueprint(factionIndex, shipClass, shipName, shipCost, new List<CargoBay.CargoTypes>(resourcesTypes), new List<long>(resources));
+            return new ShipBlueprint(factionIndex, shipScriptableObject, shipName, shipCost, new List<CargoBay.CargoTypes>(resourcesTypes), new List<long>(resources));
         }
 
         public long GetTotalResourcesPutIn() {
@@ -119,10 +119,7 @@ public class Ship : Unit {
     public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
         faction.AddShip(this);
-        thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
-        foreach (var thruster in thrusters) {
-            thruster.SetupThruster();
-        }
+        thrusters = new List<Thruster>();
         base.SetupUnit(shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
@@ -130,6 +127,11 @@ public class Ship : Unit {
             researchEquipment = GetComponentInChildren<ResearchEquipment>();
             researchEquipment.SetupResearchEquipment(this);
         }
+        thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
+        foreach (var thruster in thrusters) {
+            thruster.SetupThruster();
+        }
+        SetParticleSpeed(particleSpeed);
         SetupThrusters();
         shipAI.SetupShipAI(this);
         mass = GetSize() * 100;

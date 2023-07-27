@@ -6,7 +6,6 @@ public class Thruster : ModuleComponent, IParticleHolder {
     ThrusterScriptableObject thrusterScriptableObject;
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
-    public float thrustSpeed;
     float targetBrightness;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
@@ -15,7 +14,6 @@ public class Thruster : ModuleComponent, IParticleHolder {
         Instantiate(thrusterScriptableObject.thrustEffect, transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
-
     }
 
     public void SetupThruster() {

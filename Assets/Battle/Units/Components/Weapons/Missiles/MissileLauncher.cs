@@ -20,12 +20,6 @@ public class MissileLauncher : ModuleComponent {
      public float range;
     public TargetingBehaviors targeting;
 
-     public int missileDamage;
-     public float missileThrust;
-     public float missileTurnSpeed;
-     public float missileFuelRange;
-     public bool missileRetarget;
-
     public Unit targetUnit;
     private bool hibernating;
 

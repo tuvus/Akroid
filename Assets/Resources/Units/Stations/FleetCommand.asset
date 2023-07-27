@@ -33,6 +33,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
   - name: Utility
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
   stationType: 1
   repairAmount: 1000
   repairSpeed: 10

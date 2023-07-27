@@ -71,7 +71,7 @@ public class ConstructionBay : MonoBehaviour {
     }
 
     bool BuildBlueprint(Ship.ShipBlueprint shipBlueprint) {
-        Ship ship = shipyard.BuildShip(shipBlueprint.factionIndex,shipBlueprint.shipClass, shipBlueprint.shipCost);
+        Ship ship = shipyard.BuildShip(shipBlueprint.factionIndex, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.shipCost);
         if (ship == null)
             return false;
         shipyard.stationAI.OnShipBuilt(ship);
@@ -81,7 +81,7 @@ public class ConstructionBay : MonoBehaviour {
     public int GetNumberOfShipsOfClass(Ship.ShipClass shipClass) {
         int count = 0;
         for (int i = 0; i < buildQueue.Count; i++) {
-            if (buildQueue[i].shipClass == shipClass) {
+            if (buildQueue[i].shipScriptableObject.shipClass == shipClass) {
                 count++;
             }
         }
@@ -91,7 +91,7 @@ public class ConstructionBay : MonoBehaviour {
     public int GetNumberOfShipsOfClassFaction(Ship.ShipClass shipClass, int factionIndex) {
         int count = 0;
         for (int i = 0; i < buildQueue.Count; i++) {
-            if (buildQueue[i].shipClass == shipClass && buildQueue[i].factionIndex == factionIndex) {
+            if (buildQueue[i].shipScriptableObject.shipClass == shipClass && buildQueue[i].factionIndex == factionIndex) {
                 count++;
             }
         }

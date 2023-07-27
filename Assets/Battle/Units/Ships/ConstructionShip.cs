@@ -9,7 +9,8 @@ public class ConstructionShip : Ship {
         if (targetStationBlueprint != null) {
             targetStationBlueprint.Explode();
         }
-        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, Station.StationType.MiningStation, "MiningStation", position, Random.Range(0, 360), false));
+        //TODO: Add stationscriptableobject here!
+        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction.factionIndex, null, "MiningStation", position, Random.Range(0, 360), false));
         return targetStationBlueprint;
     }
 

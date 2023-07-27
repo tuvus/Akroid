@@ -15,23 +15,11 @@ public class Turret : ModuleComponent {
     }
 
     TurretScriptableObject turretScriptableObject;
-    //the time between checks
-    public float targetRotation;
-    public float startRotation;
-    public float turretOffset;
-
-    public float range;
-    public float rotateSpeed;
-    public TargetingBehaviors targeting;
-
-    //if minRotate is bigger then maxRotate the turret can point forwards
-    //if minRotate is equal to maxRotate then it is a 360Turret
-    public float minRotate;
-    public float maxRotate;
 
     protected Unit unit;
     protected ReloadController reloadController;
 
+    public float targetRotation;
     public Vector2 targetVector;
     public Unit targetUnit;
     private bool aimed;
@@ -50,7 +38,6 @@ public class Turret : ModuleComponent {
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject();
         this.unit = unit;
-        targetRotation = startRotation;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
@@ -87,7 +74,7 @@ public class Turret : ModuleComponent {
             SetTargetRotation(localShipAngle);
         } else {
             ChangeTargetUnit(null);
-            SetTargetRotation(startRotation);
+            SetTargetRotation(module.rotation);
             if (findNewTargetUpdateTime <= 0) {
                 FindNewTarget(range, unit.faction);
                 findNewTargetUpdateTime += findNewTargetUpdateSpeed;
@@ -116,12 +103,12 @@ public class Turret : ModuleComponent {
         targetLocation = GetTargetPosition(targetUnit);
         float realAngle = Calculator.GetAngleOutOfTwoPositions(transform.position, targetLocation);
         localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.transform.localRotation.eulerAngles.z);
-        if (minRotate < maxRotate) {
-            if (localShipAngle <= maxRotate && localShipAngle >= minRotate) {
+        if (module.minRotate < module.maxRotate) {
+            if (localShipAngle <= module.maxRotate && localShipAngle >= module.minRotate) {
                 return true;
             }
-        } else if (minRotate > maxRotate) {
-            if (localShipAngle <= maxRotate || localShipAngle >= minRotate) {
+        } else if (module.minRotate > module.maxRotate) {
+            if (localShipAngle <= module.maxRotate || localShipAngle >= module.minRotate) {
                 return true;
             }
         } else {
@@ -143,13 +130,13 @@ public class Turret : ModuleComponent {
                     targetVector = targetLocation;
                     SetTargetRotation(localShipAngle);
                     newTarget = targetUnit;
-                    if (targeting == TargetingBehaviors.closest)
+                    if (turretScriptableObject.targeting == TargetingBehaviors.closest)
                         break;
                 }
             }
         }
         if (newTarget == null) {
-            SetTargetRotation(startRotation);
+            SetTargetRotation(module.rotation);
         }
         ChangeTargetUnit(newTarget);
     }
@@ -159,27 +146,27 @@ public class Turret : ModuleComponent {
             return true;
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
-            if (targeting == TargetingBehaviors.closest) {
+            if (turretScriptableObject.targeting == TargetingBehaviors.closest) {
                 if (Vector2.Distance(newTarget.transform.position, transform.position) <= Vector2.Distance(oldTarget.transform.position, transform.position)) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.strongest) {
+            } else if (turretScriptableObject.targeting == TargetingBehaviors.strongest) {
                 if (newTarget.GetTotalHealth() >= oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.weakest) {
+            } else if (turretScriptableObject.targeting == TargetingBehaviors.weakest) {
                 if (newTarget.GetTotalHealth() <= oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.slowest) {
+            } else if (turretScriptableObject.targeting == TargetingBehaviors.slowest) {
                 if (newTarget.GetVelocity().magnitude <= oldTarget.GetVelocity().magnitude) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.biggest) {
+            } else if (turretScriptableObject.targeting == TargetingBehaviors.biggest) {
                 if (newTarget.GetSize() >= oldTarget.GetSize()) {
                     return true;
                 }
-            } else if (targeting == TargetingBehaviors.smallest) {
+            } else if (turretScriptableObject.targeting == TargetingBehaviors.smallest) {
                 if (newTarget.GetSize() <= oldTarget.GetSize()) {
                     return true;
                 }
@@ -201,17 +188,17 @@ public class Turret : ModuleComponent {
     }
 
     void RotateTowards(float deltaTime) {
-        float localRotateSpeed = rotateSpeed * deltaTime;
+        float localRotateSpeed = turretScriptableObject.rotateSpeed * deltaTime;
 
         float rotation = transform.localRotation.eulerAngles.z;
         float target = Calculator.ConvertTo180DegRotation(targetRotation - rotation);
         rotation = Calculator.ConvertTo180DegRotation(rotation);
 
-        float localMin = Calculator.ConvertTo180DegRotation(maxRotate - rotation);
-        float localMax = Calculator.ConvertTo180DegRotation(minRotate - rotation);
+        float localMin = Calculator.ConvertTo180DegRotation(module.maxRotate - rotation);
+        float localMax = Calculator.ConvertTo180DegRotation(module.minRotate - rotation);
 
         //Changes the path towards the target if the target is on the other side of the deadzone.
-        if (minRotate < maxRotate) {
+        if (module.minRotate < module.maxRotate) {
             if (localMax > 0 && localMin > 0) {
                 if (localMax < target && target > 0) {
                     target = -180 + (-target - 180);
@@ -222,7 +209,7 @@ public class Turret : ModuleComponent {
                     target = 180 + (-target + 180);
                 }
             }
-        } else if (minRotate > maxRotate) {
+        } else if (module.minRotate > module.maxRotate) {
             if (localMax > 0 && localMin > 0) {
                 if (localMin < target && target > 0) {
                     target = -180 + (-target - 180);
@@ -272,7 +259,7 @@ public class Turret : ModuleComponent {
     }
 
     public virtual float GetRange() {
-        return range;
+        return turretScriptableObject.range;
     }
 
     public virtual Vector2 GetTargetPosition(Unit target) {
@@ -296,7 +283,7 @@ public class Turret : ModuleComponent {
     }
 
     public float GetTurretOffSet() {
-        return turretOffset * GetUnitScale();
+        return turretScriptableObject.turretOffset * GetUnitScale();
     }
 
     public virtual float GetReloadTimeModifier() {

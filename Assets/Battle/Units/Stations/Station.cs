@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
+using static Ship;
 using Random = UnityEngine.Random;
 
 public class Station : Unit, IPositionConfirmer {
@@ -20,30 +21,51 @@ public class Station : Unit, IPositionConfirmer {
 
     public struct StationData {
         public int faction;
-        public string path;
+        public StationScriptableObject stationScriptableObject;
         public string stationName;
         public Vector2 wantedPosition;
         public float rotation;
         public bool built;
 
-        public StationData(int faction, StationType stationType, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
+        public StationData(int faction, StationScriptableObject stationScriptableObject, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
             this.faction = faction;
-            this.path = "Prefabs/StationPrefabs/" + stationType.ToString();
-            this.stationName = stationName;
-            this.wantedPosition = wantedPosition;
-            this.rotation = rotation;
-            this.built = built;
-        }
-
-        public StationData(int faction, string path, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
-            this.faction = faction;
-            this.path = path;
+            this.stationScriptableObject = stationScriptableObject;
             this.stationName = stationName;
             this.wantedPosition = wantedPosition;
             this.rotation = rotation;
             this.built = built;
         }
     }
+
+    [System.Serializable]
+    public class StationBlueprint {
+        public int factionIndex;
+        public StationScriptableObject stationScriptableObject;
+        public string stationName;
+        public long stationCost;
+        public List<CargoBay.CargoTypes> resourcesTypes;
+        public List<long> resources;
+        public long totalResourcesRequired;
+
+        private StationBlueprint(int factionIndex, StationScriptableObject stationScriptableObject, string stationName, long stationCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
+            this.factionIndex = factionIndex;
+            this.stationScriptableObject = stationScriptableObject;
+            this.stationName = stationName;
+            this.stationCost = stationCost;
+            this.resourcesTypes = resourcesTypes;
+            this.resources = resources;
+            for (int i = 0; i < resources.Count; i++) {
+                totalResourcesRequired += resources[i];
+            }
+        }
+
+        public StationBlueprint CreateStationBlueprint(int factionIndex, string stationName = null) {
+            if (stationName == null)
+                stationName = this.stationName;
+            return new StationBlueprint(factionIndex, stationScriptableObject, stationName, stationCost, new List<CargoBay.CargoTypes>(resourcesTypes), new List<long>(resources));
+        }
+    }
+
 
     public StationAI stationAI { get; protected set; }
     private Hanger hanger;
@@ -120,7 +142,7 @@ public class Station : Unit, IPositionConfirmer {
             }
         }
 
-        foreach (var stationBlueprint in BattleManager.Instance.stationBlueprints) {
+        foreach (var stationBlueprint in BattleManager.Instance.stationsInProgress) {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(stationBlueprint.faction))
                 enemyBonus = GetMaxWeaponRange() * 2;
@@ -154,7 +176,7 @@ public class Station : Unit, IPositionConfirmer {
     public virtual Ship BuildShip(int factionIndex, Ship.ShipClass shipClass, long cost = 0, bool undock = false) {
         if (BattleManager.Instance.factions[factionIndex].TransferCredits(cost,faction)) {
             faction.UseCredits(cost);
-            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, shipClass, shipClass.ToString(), transform.position, Random.Range(0, 360)));
+            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipClass.ToString(), transform.position, Random.Range(0, 360)));
             if (undock) {
                 newShip.DockShip(this);
                 newShip.UndockShip();

@@ -5,14 +5,8 @@ using UnityEngine;
 public class ShieldGenerator : ModuleComponent {
 	ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
 	private Unit unit;
-    //ShieldGenStats
-    public float shieldRegenRate;
-    public float shieldRecreateSpeed;
-    public int shieldRegenHealth;
     //ShieldStats
     public Shield shieldPrefab;
-	public Vector2 shieldSize;
-    public int maxShieldHealth;
 
     //RuntimeStats
     private float timeTillShieldCount;
