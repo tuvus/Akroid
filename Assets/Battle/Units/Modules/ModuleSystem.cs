@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Playables;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -134,7 +132,7 @@ public class ModuleSystem : MonoBehaviour {
         if (system >= systems.Count)
             return null;
         systems[system] = new System(systems[system], 1);
-        Module newModule = ((GameObject)PrefabUtility.InstantiatePrefab(Resources.Load<GameObject>("Prefabs/Module"), transform)).GetComponent<Module>();
+        Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
         newModule.CreateModule(this, system, 0);
@@ -145,7 +143,7 @@ public class ModuleSystem : MonoBehaviour {
         if (system >= systems.Count)
             return null;
         systems[system] = new System(systems[system], 1);
-        Module newModule = ((GameObject)PrefabUtility.InstantiatePrefab(Resources.Load<GameObject>("Prefabs/Module"), transform)).GetComponent<Module>();
+        Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
         newModule.CreateModule(this, system, rotation, minRotate, maxRotate, 0);
