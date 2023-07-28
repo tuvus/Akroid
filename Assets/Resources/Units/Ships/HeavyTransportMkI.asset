@@ -29,6 +29,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
   - name: RightBottomTurret
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
   - name: MainThruster
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
   - name: LeftSubThruster

@@ -261,7 +261,7 @@ MonoBehaviour:
     shipName: Zarrack
     shipCost: 2100
     resourcesTypes: 01000000
-    resources: 8813000000000000
+    resources: 9808000000000000
     totalResourcesRequired: 0
   - factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
@@ -286,6 +286,14 @@ MonoBehaviour:
     shipCost: 30000
     resourcesTypes: 01000000
     resources: 2823000000000000
+    totalResourcesRequired: 0
+  - factionIndex: 0
+    shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
+      type: 2}
+    shipName: HeavyTransport
+    shipCost: 4200
+    resourcesTypes: 01000000
+    resources: b888000000000000
     totalResourcesRequired: 0
   stationBlueprints:
   - factionIndex: 0

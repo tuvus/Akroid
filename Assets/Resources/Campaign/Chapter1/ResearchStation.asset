@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
+  m_Name: ResearchStation
+  m_EditorClassIdentifier: 
+  prefabPath: Prefabs/StationPrefabs/DefenceStation
+  unitName: ResearchStation
+  maxHealth: 2300
+  sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
+  components:
+  - name: TopTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: LeftTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: RightTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
+  stationType: 2
+  repairAmount: 200
+  repairSpeed: 5
+  rotationSpeed: 0.3
