@@ -187,7 +187,7 @@ public class PlayerStationUI : MonoBehaviour {
             autoBuildShips.onValueChanged.RemoveAllListeners();
             autoBuildShips.onValueChanged.AddListener((autoBuildShips) => SetAutoBuildShips(autoBuildShips));
         }
-        constructionBayStatus.text = "Construction bays in use " + Mathf.Min(constructionBay.buildQueue.Count, constructionBay.constructionBays) + "/" + constructionBay.constructionBays;
+        constructionBayStatus.text = "Construction bays in use " + Mathf.Min(constructionBay.buildQueue.Count, constructionBay.GetConstructionBays()) + "/" + constructionBay.GetConstructionBays();
         for (int i = 0; i < constructionBay.buildQueue.Count; i++) {
             if (constructionBayList.childCount <= i) {
                 Instantiate(shipButtonPrefab, constructionBayList);

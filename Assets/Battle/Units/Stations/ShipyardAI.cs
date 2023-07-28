@@ -12,7 +12,7 @@ public class ShipyardAI : StationAI {
         if (cargoTime <= 0) {
             int count = 0;
             Ship ship = station.GetHanger().GetTransportShip(count);
-            while (ship != null) {
+            while (ship != null && ship.GetCargoBay() != null) {
                 if (!ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal)) {
                     station.GetCargoBay().LoadCargoFromBay(ship.GetCargoBay(), CargoBay.CargoTypes.Metal, cargoAmmount);
                     cargoTime += cargoSpeed;

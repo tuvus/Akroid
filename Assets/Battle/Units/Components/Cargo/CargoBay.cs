@@ -10,8 +10,6 @@ public class CargoBay : ModuleComponent {
 
     CargoBayScriptableObject cargoBayScriptableObject;
 
-    [SerializeField] int maxCargoBays;
-    [SerializeField] long cargoBaySize;
     public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
     public List<long> cargoBays = new List<long>();
 
@@ -44,12 +42,12 @@ public class CargoBay : ModuleComponent {
     long AddCargoToBay(long cargoToAdd, CargoTypes cargoType, int cargoBayNumber) {
         if (cargoBayTypes[cargoBayNumber] != cargoType)
             return cargoToAdd;
-        if (cargoBays[cargoBayNumber] + cargoToAdd <= cargoBaySize) {
+        if (cargoBays[cargoBayNumber] + cargoToAdd <= cargoBayScriptableObject.cargoBaySize) {
             cargoBays[cargoBayNumber] += cargoToAdd;
             return 0;
         }
-        long returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBaySize;
-        cargoBays[cargoBayNumber] = cargoBaySize;
+        long returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBayScriptableObject.cargoBaySize;
+        cargoBays[cargoBayNumber] = cargoBayScriptableObject.cargoBaySize;
         return returnValue;
     }
 
@@ -57,22 +55,22 @@ public class CargoBay : ModuleComponent {
     /// Returns Unadded Cargo
     /// </summary>
     long AddNewCargoBay(long cargoAmount, CargoTypes cargoType) {
-        if (cargoBays.Count < maxCargoBays) {
-            if (cargoAmount <= cargoBaySize) {
+        if (cargoBays.Count < cargoBayScriptableObject.maxCargoBays) {
+            if (cargoAmount <= cargoBayScriptableObject.cargoBaySize) {
                 cargoBays.Add(cargoAmount);
                 cargoBayTypes.Add(cargoType);
                 return 0;
             } else {
-                cargoBays.Add(cargoBaySize);
+                cargoBays.Add(cargoBayScriptableObject.cargoBaySize);
                 cargoBayTypes.Add(cargoType);
-                return cargoAmount - cargoBaySize;
+                return cargoAmount - cargoBayScriptableObject.cargoBaySize;
             }
         }
         return cargoAmount;
     }
 
     int GetOpenCargoBays() {
-        return maxCargoBays - cargoBays.Count;
+        return cargoBayScriptableObject.maxCargoBays - cargoBays.Count;
     }
 
     /// <summary>
@@ -119,10 +117,10 @@ public class CargoBay : ModuleComponent {
         long totalCargoCapacity = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
             if (cargoBayTypes[i] == cargoType) {
-                totalCargoCapacity += cargoBaySize - cargoBays[i];
+                totalCargoCapacity += cargoBayScriptableObject.cargoBaySize - cargoBays[i];
             }
         }
-        return totalCargoCapacity + (GetOpenCargoBays() * cargoBaySize);
+        return totalCargoCapacity + (GetOpenCargoBays() * cargoBayScriptableObject.cargoBaySize);
     }
 
     public bool IsCargoFullOfType(CargoTypes cargoTypes) {
@@ -133,10 +131,10 @@ public class CargoBay : ModuleComponent {
         return GetAllCargo(cargoTypes) <= 0;
     }
 
-    public long GetAllCargo(CargoTypes cargotype) {
+    public long GetAllCargo(CargoTypes cargoType) {
         long totalCargo = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
-            if (cargoBayTypes[i] == cargotype) {
+            if (cargoBayTypes[i] == cargoType) {
                 totalCargo += cargoBays[i];
             }
         }
@@ -148,10 +146,10 @@ public class CargoBay : ModuleComponent {
     }
 
     public int GetMaxCargoBays() {
-        return maxCargoBays;
+        return cargoBayScriptableObject.maxCargoBays;
     }
 
     public long GetCargoBayCapacity() {
-        return cargoBaySize;
+        return cargoBayScriptableObject.cargoBaySize;
     }
 }
