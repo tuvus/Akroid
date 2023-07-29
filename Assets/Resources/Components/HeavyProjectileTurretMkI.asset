@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
   m_Name: HeavyProjectileTurretMkI
   m_EditorClassIdentifier: 
+  cost: 269
+  resourceTypes: 01000000
+  resourceCosts: d100000000000000
   DPS: 14.999999
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   turretOffset: 1.5

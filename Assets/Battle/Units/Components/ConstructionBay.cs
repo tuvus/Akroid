@@ -9,7 +9,7 @@ public class ConstructionBay : ModuleComponent {
     private float constructionTime;
 
     [SerializeField]
-    public List<Ship.ShipBlueprint> buildQueue;
+    public List<Ship.ShipConstructionBlueprint> buildQueue;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
@@ -18,14 +18,14 @@ public class ConstructionBay : ModuleComponent {
 
     public void SetupConstructionBay(Shipyard fleetCommand) {
         this.shipyard = fleetCommand;
-        buildQueue = new List<Ship.ShipBlueprint>(10);
+        buildQueue = new List<Ship.ShipConstructionBlueprint>(10);
     }
 
-    public void AddConstructionToQueue(Ship.ShipBlueprint shipBlueprint) {
+    public void AddConstructionToQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
         buildQueue.Add(shipBlueprint);
     }
 
-    public void AddConstructionToBeginningQueue(Ship.ShipBlueprint shipBlueprint) {
+    public void AddConstructionToBeginningQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
         buildQueue.Insert(0, shipBlueprint);
     }
 
@@ -47,18 +47,18 @@ public class ConstructionBay : ModuleComponent {
         for (int i = 0; i < buildQueue.Count; i++) {
             if (availableConstructionBays == 0)
                 return;
-            Ship.ShipBlueprint shipBlueprint = buildQueue[i];
+            Ship.ShipConstructionBlueprint shipBlueprint = buildQueue[i];
             if (!shipBlueprint.IsFinished()) {
                 availableConstructionBays--;
                 long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
-                for (int f = 0; f < shipBlueprint.resources.Count; f++) {
+                for (int f = 0; f < shipBlueprint.resourceCosts.Count; f++) {
                     if (buildAmount <= 0)
                         break;
-                    long amountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmount, shipBlueprint.resources[f]));
-                    shipBlueprint.resources[f] -= amountToUse;
+                    long amountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmount, shipBlueprint.resourceCosts[f]));
+                    shipBlueprint.resourceCosts[f] -= amountToUse;
                     shipyard.GetCargoBay().UseCargo(amountToUse, shipBlueprint.resourcesTypes[f]);
-                    if (shipBlueprint.resources[f] <= 0) {
-                        shipBlueprint.resources.RemoveAt(f);
+                    if (shipBlueprint.resourceCosts[f] <= 0) {
+                        shipBlueprint.resourceCosts.RemoveAt(f);
                         shipBlueprint.resourcesTypes.RemoveAt(f);
                         f--;
                         if (shipBlueprint.IsFinished() && BuildBlueprint(shipBlueprint)) {
@@ -72,8 +72,8 @@ public class ConstructionBay : ModuleComponent {
         }
     }
 
-    bool BuildBlueprint(Ship.ShipBlueprint shipBlueprint) {
-        Ship ship = shipyard.BuildShip(shipBlueprint.factionIndex, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.shipCost);
+    bool BuildBlueprint(Ship.ShipConstructionBlueprint shipBlueprint) {
+        Ship ship = shipyard.BuildShip(shipBlueprint.factionIndex, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.cost);
         if (ship == null)
             return false;
         shipyard.stationAI.OnShipBuilt(ship);

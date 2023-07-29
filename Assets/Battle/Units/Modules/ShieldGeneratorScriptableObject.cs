@@ -19,4 +19,10 @@ class ShieldGeneratorScriptableObject : ComponentScriptableObject {
     public override Type GetComponentType() {
         return typeof(ShieldGenerator);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(shieldRegenRate * shieldRegenHealth * 4);
+        AddResourceCost(CargoBay.CargoTypes.Metal, maxShieldHealth / 2);
+    }
 }

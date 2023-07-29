@@ -12,4 +12,10 @@ class ThrusterScriptableObject : ComponentScriptableObject {
     public override Type GetComponentType() {
         return typeof(Thruster);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(thrustSpeed / 20);
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(thrustSpeed / 100));
+    }
 }

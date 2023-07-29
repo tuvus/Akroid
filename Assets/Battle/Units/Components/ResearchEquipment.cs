@@ -5,10 +5,7 @@ using UnityEngine;
 public class ResearchEquipment : ModuleComponent {
     Ship ship;
     ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
-    public int maxData;
     [SerializeField] int data;
-    public int researchAmount;
-    public float researchSpeed;
     float researchTime;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
@@ -17,19 +14,19 @@ public class ResearchEquipment : ModuleComponent {
 
     public void SetupResearchEquipment(Ship ship) {
         this.ship = ship;
-        researchTime = researchSpeed;
+        researchTime = researchEquipmentScriptableObject.researchSpeed;
         data = 0;
     }
 
     public bool GatherData(Star star, float time) {
         researchTime -= time;
         if (researchTime <= 0) {
-            data = Mathf.Min(maxData, data + researchAmount);
-            if (data == maxData) {
-                researchTime = researchSpeed;
+            data = Mathf.Min(researchEquipmentScriptableObject.maxData, data + researchEquipmentScriptableObject.researchAmount);
+            if (data == researchEquipmentScriptableObject.maxData) {
+                researchTime = researchEquipmentScriptableObject.researchSpeed;
                 return true;
             }
-            researchTime += researchSpeed;
+            researchTime += researchEquipmentScriptableObject.researchSpeed;
         }
         return false;
     }
@@ -41,6 +38,6 @@ public class ResearchEquipment : ModuleComponent {
     }
 
     public bool WantMoreData() {
-        return data != maxData;
+        return data != researchEquipmentScriptableObject.maxData;
     }
 }

@@ -32,4 +32,10 @@ class LaserTurretScriptableObject : TurretScriptableObject {
     public override Type GetComponentType() {
         return typeof(LaserTurret);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(GetDamagePerSecond() * 26);
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 8));
+    }
 }

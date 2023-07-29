@@ -39,30 +39,30 @@ public class Station : Unit, IPositionConfirmer {
 
     [System.Serializable]
     public class StationBlueprint {
+        public string name;
         public int factionIndex;
         public StationScriptableObject stationScriptableObject;
-        public string stationName;
         public long stationCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<long> resources;
         public long totalResourcesRequired;
 
-        private StationBlueprint(int factionIndex, StationScriptableObject stationScriptableObject, string stationName, long stationCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
+        private StationBlueprint(int factionIndex, StationScriptableObject stationScriptableObject, string name) {
             this.factionIndex = factionIndex;
             this.stationScriptableObject = stationScriptableObject;
-            this.stationName = stationName;
-            this.stationCost = stationCost;
-            this.resourcesTypes = resourcesTypes;
-            this.resources = resources;
+            this.name = name;
+            this.stationCost = stationScriptableObject.cost;
+            this.resourcesTypes = new List<CargoBay.CargoTypes>(stationScriptableObject.resourceTypes);
+            this.resources = new List<long>(stationScriptableObject.resourceCosts);
             for (int i = 0; i < resources.Count; i++) {
                 totalResourcesRequired += resources[i];
             }
         }
 
-        public StationBlueprint CreateStationBlueprint(int factionIndex, string stationName = null) {
-            if (stationName == null)
-                stationName = this.stationName;
-            return new StationBlueprint(factionIndex, stationScriptableObject, stationName, stationCost, new List<CargoBay.CargoTypes>(resourcesTypes), new List<long>(resources));
+        public StationBlueprint CreateStationBlueprint(int factionIndex, string name = null) {
+            if (name == null)
+                name = this.name;
+            return new StationBlueprint(factionIndex, stationScriptableObject, name);
         }
     }
 

@@ -9,4 +9,10 @@ public class ConstructionBayScriptableObject : ComponentScriptableObject {
     public override Type GetComponentType() {
         return typeof(ConstructionBay);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(constructionBays / constructionSpeed * constructionAmount * 10);
+        AddResourceCost(CargoBay.CargoTypes.Metal, constructionBays * 300);
+    }
 }

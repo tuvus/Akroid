@@ -9,10 +9,7 @@ public class MiningStation : Station {
 
     public bool activelyMining;
     public List<Asteroid> nearbyAsteroids;
-    [SerializeField] private int miningAmount;
-    [SerializeField] private float miningSpeed;
     private float miningTime;
-    [SerializeField] private int miningRange;
         
     public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
         MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
@@ -108,15 +105,15 @@ public class MiningStation : Station {
     }
 
     public int GetMiningAmount() {
-        return miningAmount;
+        return MiningStationScriptableObject.miningAmount;
     }
 
     public float GetMiningSpeed() {
-        return miningSpeed;
+        return MiningStationScriptableObject.miningSpeed;
     }
 
     public int GetMiningRange() {
-        return miningRange;
+        return MiningStationScriptableObject.miningRange;
     }
 
     public MiningStationAI GetMiningStationAI() {

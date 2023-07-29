@@ -30,8 +30,9 @@ class MissileLauncherScriptableObject : ComponentScriptableObject {
         return damage / time;
     }
 
-    public void OnValidate() {
+    public override void OnValidate() {
         DPS = GetDamagePerSecond();
+        base.OnValidate();
     }
 
     public void Awake() {
@@ -40,5 +41,11 @@ class MissileLauncherScriptableObject : ComponentScriptableObject {
 
     public override Type GetComponentType() {
         return typeof(MissileLauncher);
+    }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(GetDamagePerSecond() * 22);
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 26));
     }
 }

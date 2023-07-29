@@ -12,4 +12,10 @@ public class ResearchEquipmentScriptableObject : ComponentScriptableObject {
     public override Type GetComponentType() {
         return typeof(ResearchEquipment);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(researchAmount / researchSpeed * 50);
+        AddResourceCost(CargoBay.CargoTypes.Metal, maxData * 3);
+    }
 }

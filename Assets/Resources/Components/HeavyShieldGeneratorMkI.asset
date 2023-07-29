@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb422cf85b663f468d34e4f8eae333e, type: 3}
   m_Name: HeavyShieldGeneratorMkI
   m_EditorClassIdentifier: 
+  cost: 563
+  resourceTypes: 01000000
+  resourceCosts: 9c01000000000000
   shieldRegenRate: 4.7
   shieldRecreateSpeed: 16
   shieldRegenHealth: 30

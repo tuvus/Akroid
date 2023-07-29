@@ -50,7 +50,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, 9800)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer).CreateShipBlueprint(faction.factionIndex));
+                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
             }
         }
     }
@@ -60,7 +60,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, transportMetalCost)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport).CreateShipBlueprint(faction.factionIndex));
+                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport)));
             }
         }
     }

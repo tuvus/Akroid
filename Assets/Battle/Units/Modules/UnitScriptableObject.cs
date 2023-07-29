@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static CargoBay;
 
 public class UnitScriptableObject : ScriptableObject {
+    public long cost;
+    public List<CargoTypes> resourceTypes;
+    public List<long> resourceCosts;
+
     public string prefabPath;
     public string unitName;
     public int maxHealth;
@@ -43,8 +48,34 @@ public class UnitScriptableObject : ScriptableObject {
                 }
             }
         }
-    }
+
+        UpdateCosts();
 #pragma warning restore CS0414
+    }
+
+    protected virtual void UpdateCosts() {
+        cost = maxHealth * 10;
+        resourceTypes.Clear();
+        resourceCosts.Clear();
+        AddResourceCost(CargoTypes.Metal, maxHealth);
+
+        for (int i = 0; i < components.Length; i++) {
+            for (int f = 0; f < components[i].component.resourceTypes.Count; f++) {
+                cost += components[i].component.cost;
+                AddResourceCost(components[i].component.resourceTypes[f], components[i].component.resourceCosts[f]);
+            }
+        }
+    }
+
+    protected void AddResourceCost(CargoTypes type, long cost) {
+        int metalIndex = resourceTypes.IndexOf(type);
+        if (metalIndex == -1) {
+            resourceTypes.Add(type);
+            resourceCosts.Add(0);
+            metalIndex = resourceTypes.Count - 1;
+        }
+        resourceCosts[metalIndex] += cost;
+    }
 
     public ComponentScriptableObject[] GetComponents() {
         ComponentScriptableObject[] newComponents = new ComponentScriptableObject[components.Length];

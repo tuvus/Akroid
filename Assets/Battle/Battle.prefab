@@ -23,13 +23,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2503832312828348619}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3808289214082883730
 GameObject:
@@ -54,13 +54,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3808289214082883730}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5435824181123611080
 GameObject:
@@ -85,13 +85,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5435824181123611080}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8116926416976879410
 GameObject:
@@ -116,13 +116,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8116926416976879410}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8781443084429103635
 GameObject:
@@ -147,13 +147,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8781443084429103635}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9046208289032798733
 GameObject:
@@ -178,13 +178,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9046208289032798733}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9046208289571305099}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9046208289571305109
 GameObject:
@@ -210,6 +210,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9046208289571305109}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -222,7 +223,6 @@ Transform:
   - {fileID: 8305398053432012074}
   - {fileID: 6046443670760355205}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9046208289571305098
 MonoBehaviour:
@@ -239,75 +239,47 @@ MonoBehaviour:
   <researchModifier>k__BackingField: 0
   <systemSizeModifier>k__BackingField: 0
   shipBlueprints:
-  - factionIndex: 0
+  - name: Transport
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
       type: 2}
-    shipName: Tranport
-    shipCost: 1000
-    resourcesTypes: 01000000
-    resources: 7805000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Station Builder
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
       type: 2}
-    shipName: StationBuilder
-    shipCost: 3000
-    resourcesTypes: 01000000
-    resources: a00f000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Science Ship
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
       type: 2}
-    shipName: Zarrack
-    shipCost: 2100
-    resourcesTypes: 01000000
-    resources: 9808000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Aria
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
       type: 2}
-    shipName: Aria
-    shipCost: 1300
-    resourcesTypes: 01000000
-    resources: 2003000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Lancer
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: 861654087bb19d64596b1dd3e9e603a7,
       type: 2}
-    shipName: Lancer
-    shipCost: 5000
-    resourcesTypes: 01000000
-    resources: 0807000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Aterna
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
       type: 2}
-    shipName: Aterna
-    shipCost: 30000
-    resourcesTypes: 01000000
-    resources: 2823000000000000
-    totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: Heavy Transport
+    factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
       type: 2}
-    shipName: HeavyTransport
-    shipCost: 4200
-    resourcesTypes: 01000000
-    resources: b888000000000000
-    totalResourcesRequired: 0
   stationBlueprints:
-  - factionIndex: 0
+  - name: Fleet Command
+    factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
       type: 2}
-    stationName: FleetCommand
     stationCost: 0
     resourcesTypes: 
     resources: 
     totalResourcesRequired: 0
-  - factionIndex: 0
+  - name: MiningStation
+    factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 93acbaa08c4a46e4ca8eaa8ed55b04b3,
       type: 2}
-    stationName: MiningStation
     stationCost: 3000
     resourcesTypes: 01000000
     resources: a00f000000000000
@@ -327,4 +299,5 @@ MonoBehaviour:
   unusedProjectiles: 
   usedMissiles: 
   unusedMissiles: 
+  instantHit: 0
   timeScale: 1

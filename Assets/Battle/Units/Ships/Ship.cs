@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -77,45 +79,48 @@ public class Ship : Unit {
 
     [System.Serializable]
     public class ShipBlueprint {
+        public string name;
         public int factionIndex;
         public ShipScriptableObject shipScriptableObject;
-        public string shipName;
-        public long shipCost;
-        public List<CargoBay.CargoTypes> resourcesTypes;
-        public List<long> resources;
-        public long totalResourcesRequired;
 
-        private ShipBlueprint(int factionIndex, ShipScriptableObject shipScriptableObject, string shipName, long shipCost, List<CargoBay.CargoTypes> resourcesTypes, List<long> resources) {
+        protected ShipBlueprint(int factionIndex, ShipScriptableObject shipScriptableObject, string name = null) {
+            if (name == null)
+                this.name = shipScriptableObject.name;
+            else
+                this.name = name;
             this.factionIndex = factionIndex;
             this.shipScriptableObject = shipScriptableObject;
-            this.shipName = shipName;
-            this.shipCost = shipCost;
-            this.resourcesTypes = resourcesTypes;
-            this.resources = resources;
-            for (int i = 0; i < resources.Count; i++) {
-                totalResourcesRequired += resources[i];
-            }
         }
+    }
 
-        public ShipBlueprint CreateShipBlueprint(int factionIndex, string shipName = null) {
-            if (shipName == null)
-                shipName = this.shipName;
-            return new ShipBlueprint(factionIndex, shipScriptableObject, shipName, shipCost, new List<CargoBay.CargoTypes>(resourcesTypes), new List<long>(resources));
+    [System.Serializable]
+    public class ShipConstructionBlueprint : ShipBlueprint {
+        public long cost;
+        public List<CargoBay.CargoTypes> resourcesTypes;
+        public List<long> resourceCosts;
+        public long totalResourcesRequired;
+
+        public ShipConstructionBlueprint (int factionIndex, ShipBlueprint shipBlueprint, String name = null) : base (factionIndex, shipBlueprint.shipScriptableObject, name) {
+            cost = shipScriptableObject.cost;
+            resourcesTypes = new List<CargoBay.CargoTypes>(shipScriptableObject.resourceTypes);
+            resourceCosts = new List<long>(shipScriptableObject.resourceCosts);
+            for (int i = 0; i < resourceCosts.Count; i++) {
+                totalResourcesRequired += resourceCosts[i];
+            }
         }
 
         public long GetTotalResourcesPutIn() {
             long totalResources = 0;
-            for (int i = 0; i < resources.Count; i++) {
-                totalResources += resources[i];
+            for (int i = 0; i < resourceCosts.Count; i++) {
+                totalResources += resourceCosts[i];
             }
             return totalResources;
         }
 
         public bool IsFinished() {
-            return resources.Count == 0;
+            return resourceCosts.Count == 0;
         }
     }
-
     public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
         faction.AddShip(this);

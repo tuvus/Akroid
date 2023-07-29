@@ -18,7 +18,8 @@ abstract class TurretScriptableObject : ComponentScriptableObject {
         return 0;
     }
 
-    public void OnValidate() {
+    public override void OnValidate() {
         DPS = GetDamagePerSecond();
+        base.OnValidate();
     }
 }

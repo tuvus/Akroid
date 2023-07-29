@@ -30,4 +30,10 @@ class MassTurretScriptableObject : TurretScriptableObject {
     public override Type GetComponentType() {
         return typeof(MassTurret);
     }
+
+    protected override void UpdateCosts() {
+        base.UpdateCosts();
+        cost += (long)(GetDamagePerSecond() * 18);
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 14));
+    }
 }
