@@ -31,7 +31,6 @@ public class UnitScriptableObject : ScriptableObject {
         if (components == null) {
             components = new ComponentData[0];
         }
-#pragma warning disable CS0414
         GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
         if (targetPrefab != null) {
             ComponentData[] oldComponents = components;
@@ -50,7 +49,6 @@ public class UnitScriptableObject : ScriptableObject {
         }
 
         UpdateCosts();
-#pragma warning restore CS0414
     }
 
     protected virtual void UpdateCosts() {

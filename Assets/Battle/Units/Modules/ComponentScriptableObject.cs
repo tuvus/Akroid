@@ -11,11 +11,9 @@ public abstract class ComponentScriptableObject : ScriptableObject {
 
     public abstract Type GetComponentType();
 
-#pragma warning disable CS0414
     public virtual void OnValidate() {
         UpdateCosts();
     }
-#pragma warning restore CS0414
 
     protected virtual void UpdateCosts() {
         cost = 0;
