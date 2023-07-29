@@ -26,6 +26,7 @@ public class UnitScriptableObject : ScriptableObject {
         if (components == null) {
             components = new ComponentData[0];
         }
+#pragma warning disable CS0414
         GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
         if (targetPrefab != null) {
             ComponentData[] oldComponents = components;
@@ -43,6 +44,7 @@ public class UnitScriptableObject : ScriptableObject {
             }
         }
     }
+#pragma warning restore CS0414
 
     public ComponentScriptableObject[] GetComponents() {
         ComponentScriptableObject[] newComponents = new ComponentScriptableObject[components.Length];
