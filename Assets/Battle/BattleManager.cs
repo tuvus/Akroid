@@ -32,6 +32,8 @@ public class BattleManager : MonoBehaviour {
     public List<int> unusedProjectiles;
     public List<int> usedMissiles;
     public List<int> unusedMissiles;
+
+    public bool instantHit;
     public float timeScale;
     public static bool quickStart = true;
 
@@ -492,6 +494,7 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < missiles.Count; i++) {
             missiles[i].SetParticleSpeed(time);
         }
+        instantHit = time > 10;
     }
 
     /// <summary>

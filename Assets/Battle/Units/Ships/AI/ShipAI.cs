@@ -370,6 +370,8 @@ public class ShipAI : MonoBehaviour {
                         currentCommandType = CommandType.Move;
                     }
                     return CommandResult.Stop;
+                } else if (currentCommandType == CommandType.Idle) {
+                    newCommand = true;
                 }
             }
             return CommandResult.Stop;

@@ -22,11 +22,15 @@ public class MassTurret : Turret {
 
     public override bool Fire() {
         base.Fire();
-        Projectile projectile = BattleManager.Instance.GetNewProjectile();
-        projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-massTurretScriptableObject.fireAccuracy, massTurretScriptableObject.fireAccuracy), unit.GetVelocity(), massTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(massTurretScriptableObject.minDamage, massTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), massTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
-        flashTime = flashSpeed;
-        flash.enabled = BattleManager.Instance.GetEffectsShown();
-        flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
+        if (!BattleManager.Instance.instantHit) {
+            Projectile projectile = BattleManager.Instance.GetNewProjectile();
+            projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-massTurretScriptableObject.fireAccuracy, massTurretScriptableObject.fireAccuracy), unit.GetVelocity(), massTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(massTurretScriptableObject.minDamage, massTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), massTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+            flashTime = flashSpeed;
+            flash.enabled = BattleManager.Instance.GetEffectsShown();
+            flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
+        } else {
+            targetUnit.TakeDamage(Mathf.RoundToInt(Random.Range(massTurretScriptableObject.minDamage, massTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
+        }
         return reloadController.Empty();
     }
 

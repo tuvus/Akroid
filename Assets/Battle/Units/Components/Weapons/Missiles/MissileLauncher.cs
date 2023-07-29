@@ -17,7 +17,7 @@ public class MissileLauncher : ModuleComponent {
 
     protected Unit unit;
     private ReloadController reloadController;
-     public float range;
+    public float range;
     public TargetingBehaviors targeting;
 
     public Unit targetUnit;
@@ -34,7 +34,7 @@ public class MissileLauncher : ModuleComponent {
     public void SetupMissileLauncher(Unit unit) {
         this.unit = unit;
         reloadController = GetComponent<ReloadController>();
-        reloadController.SetupReloadController(missileLauncherScriptableObject.fireSpeed,missileLauncherScriptableObject.reloadSpeed,missileLauncherScriptableObject.maxAmmo);
+        reloadController.SetupReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed, missileLauncherScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -93,27 +93,27 @@ public class MissileLauncher : ModuleComponent {
             return true;
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
-            if (missileLauncherScriptableObject.targeting== TargetingBehaviors.closest) {
+            if (missileLauncherScriptableObject.targeting == TargetingBehaviors.closest) {
                 if (Vector2.Distance(newTarget.transform.position, transform.position) <= Vector2.Distance(oldTarget.transform.position, transform.position)) {
                     return true;
                 }
-            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.strongest) {
+            } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.strongest) {
                 if (newTarget.GetTotalHealth() > oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.weakest) {
+            } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.weakest) {
                 if (newTarget.GetTotalHealth() < oldTarget.GetTotalHealth()) {
                     return true;
                 }
-            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.slowest) {
+            } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.slowest) {
                 if (newTarget.GetVelocity().magnitude < oldTarget.GetVelocity().magnitude) {
                     return true;
                 }
-            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.biggest) {
+            } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.biggest) {
                 if (newTarget.GetSize() > oldTarget.GetSize()) {
                     return true;
                 }
-            } else if (missileLauncherScriptableObject.targeting== TargetingBehaviors.smallest) {
+            } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.smallest) {
                 if (newTarget.GetSize() < oldTarget.GetSize()) {
                     return true;
                 }
@@ -124,8 +124,12 @@ public class MissileLauncher : ModuleComponent {
 
     public void Fire() {
         reloadController.Fire();
-        Missile missile = BattleManager.Instance.GetNewMissile();
-        missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
+        if (!BattleManager.Instance.instantHit) {
+            Missile missile = BattleManager.Instance.GetNewMissile();
+            missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
+        } else {
+            targetUnit.TakeDamage(GetDamage());
+        }
     }
 
     public int GetDamage() {
