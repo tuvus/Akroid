@@ -10,17 +10,13 @@ public class ShipyardAI : StationAI {
 
     void UpdateShipyard() {
         if (cargoTime <= 0) {
-            int count = 0;
-            Ship ship = station.GetHanger().GetTransportShip(count);
-            while (ship != null && ship.GetCargoBay() != null) {
-                if (!ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal)) {
+            for (int i = 0; i < station.GetHanger().ships.Count; i++) {
+                Ship ship = station.GetHanger().ships[i];
+                if (ship.GetCargoBay() != null && !ship.GetCargoBay().IsCargoEmptyOfType(CargoBay.CargoTypes.Metal)) {
                     station.GetCargoBay().LoadCargoFromBay(ship.GetCargoBay(), CargoBay.CargoTypes.Metal, cargoAmmount);
-                    cargoTime += cargoSpeed;
-                    break;
                 }
-                count++;
-                ship = station.GetHanger().GetTransportShip(count);
             }
+            cargoTime += cargoSpeed;
         }
     }
 

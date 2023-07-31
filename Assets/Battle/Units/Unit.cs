@@ -11,7 +11,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
     [field: SerializeField] public Faction faction { get; protected set; }
     private bool spawned;
     private UnitGroup group;
-    [SerializeField] protected int maxHealth;
 
     protected int health;
     [SerializeField] protected int followDist;
