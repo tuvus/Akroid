@@ -270,6 +270,9 @@ public abstract class Unit : BattleObject, IParticleHolder {
             group = null;
             oldGroup.RemoveBattleObject(this);
         }
+        if (newGroup == null) {
+            newGroup = faction.baseGroup;
+        }
         group = newGroup;
         if (newGroup != null)
             group.AddBattleObject(this);

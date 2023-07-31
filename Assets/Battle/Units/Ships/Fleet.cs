@@ -42,7 +42,7 @@ public class Fleet : ShipGroup {
             ship.SetIdle();
             ship.shipAI.ClearCommands();
             ship.fleet = null;
-            RemoveBattleObject(ship);
+            RemoveUnit(ship);
         }
     }
 
@@ -193,20 +193,7 @@ public class Fleet : ShipGroup {
         }
         return maxShields;
     }
-    Unit GetClosestEnemyUnitInRadius(float radius) {
-        Unit targetUnit = null;
-        float distance = 0;
-        //for (int i = 0; i < ship.enemyUnitsInRange.Count; i++) {
-        //    Unit tempUnit = ship.enemyUnitsInRange[i];
-        //    float tempDistance = Vector2.Distance(ship.transform.position, tempUnit.transform.position);
-        //    if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
-        //        targetUnit = tempUnit;
-        //        distance = tempDistance;
-        //    }
-        //}
-        return targetUnit;
-    }
-
+   
     /// <summary>
     /// Returns the fleet of the closest enemy ship with a fleet.
     /// </summary>
