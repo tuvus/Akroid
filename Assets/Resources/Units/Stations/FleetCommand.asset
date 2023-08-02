@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: FleetCommand
   m_EditorClassIdentifier: 
+  cost: 141968
+  resourceTypes: 01000000
+  resourceCosts: cc55000000000000
   prefabPath: Prefabs/StationPrefabs/FleetCommand
   unitName: FleetCommand
   maxHealth: 13000
@@ -28,6 +31,17 @@ MonoBehaviour:
   - name: UpperLeftTurret
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
   - name: UpperRightTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
+  systems:
+  - name: LowerBottomTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: UpperTopTurret
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
   - name: Utility
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}

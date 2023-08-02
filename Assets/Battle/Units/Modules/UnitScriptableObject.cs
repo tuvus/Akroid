@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using static CargoBay;
 
@@ -14,6 +17,7 @@ public class UnitScriptableObject : ScriptableObject {
     public Sprite sprite;
 
     [SerializeField] private ComponentData[] components;
+    [SerializeField] private SystemData[] systems;
 
     [Serializable]
     private class ComponentData {
@@ -22,6 +26,18 @@ public class UnitScriptableObject : ScriptableObject {
         public ComponentScriptableObject component;
 
         public ComponentData(string name, ComponentScriptableObject component) {
+            this.name = name;
+            this.component = component;
+        }
+    }
+
+    [Serializable]
+    private class SystemData {
+        [HideInInspector]
+        public string name;
+        public ComponentScriptableObject component;
+
+        public SystemData(string name, ComponentScriptableObject component) {
             this.name = name;
             this.component = component;
         }
@@ -75,11 +91,35 @@ public class UnitScriptableObject : ScriptableObject {
         resourceCosts[metalIndex] += cost;
     }
 
-    public ComponentScriptableObject[] GetComponents() {
-        ComponentScriptableObject[] newComponents = new ComponentScriptableObject[components.Length];
-        for (int i = 0; i < components.Length; i++) {
-            newComponents[i] = components[i].component;
+    public void ApplyComponentsToSystems(List<ModuleSystem.System> moduleSystems) {
+        for (int i = 0; i < moduleSystems.Count; i++) {
+            moduleSystems[i] = new ModuleSystem.System(moduleSystems[i], systems[i].component);
         }
-        return newComponents;
+    }
+
+
+    [ContextMenu("ConvertUnitComponents")]
+    public void ConvertUnitComponents() {
+        Unit unit = Resources.Load<Unit>(prefabPath);
+        ModuleSystem moduleSystem = unit.GetComponent<ModuleSystem>();
+        List<ModuleSystem.System > oldSystems = new List<ModuleSystem.System>(moduleSystem.systems);
+        moduleSystem.systems.Clear();
+        List<SystemData> newSystems = new List<SystemData>();
+        for (int i = 0; i < components.Length;) {
+            moduleSystem.AddSystem(GenerateName(components[i].name), oldSystems[moduleSystem.modules[i].system].type);
+            newSystems.Add(new SystemData(moduleSystem.systems.Last().name, components[i].component));
+            do {
+                moduleSystem.modules[i].SetSystem(moduleSystem.systems.Count - 1);
+                i++;
+            } while (i < components.Length && components[i].component == newSystems.Last().component);
+        }
+        systems = newSystems.ToArray();
+    }
+
+    string GenerateName(string name) {
+        if (name.StartsWith("Left")) {
+            return name.Substring(4) + "s";
+        }
+        return name;
     }
 }

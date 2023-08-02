@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
+  cost: 18078
+  resourceTypes: 01000000
+  resourceCosts: 940e000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   unitName: Heavy Transport
   maxHealth: 1650
@@ -24,6 +27,13 @@ MonoBehaviour:
   - name: LeftSubThruster
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   - name: RightSubThruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  systems:
+  - name: Utility
+    component: {fileID: 11400000, guid: 5e2601f20f399754c93fef5990ff8038, type: 2}
+  - name: MainThruster
+    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
+  - name: LeftSubThruster
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   shipClass: 5
   shipType: 1

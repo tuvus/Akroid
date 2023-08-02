@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4978584708729885314}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8113073671352550727}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7378400813658053502
 SpriteRenderer:
@@ -126,6 +126,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8113073670915643603}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -138,7 +139,6 @@ Transform:
   - {fileID: 1490648254300294009}
   - {fileID: 611904234341944730}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8113073670915643597
 SpriteRenderer:
@@ -208,7 +208,6 @@ MonoBehaviour:
   unitName: StationBuilder
   <moduleSystem>k__BackingField: {fileID: 0}
   <faction>k__BackingField: {fileID: 0}
-  maxHealth: 1840
   followDist: 30
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -248,6 +247,25 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -281,6 +299,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -298,10 +322,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
-  - name: Utilities
+  - name: Utility
     type: 1
-  - name: Thrusters
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThruster
     type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: SubThrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
   <modules>k__BackingField:
   - {fileID: 6186396870660440489}
   - {fileID: 7401110993754742268}
@@ -332,6 +364,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8113073671352550726}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -339,7 +372,6 @@ Transform:
   m_Children:
   - {fileID: 9089884805892375353}
   m_Father: {fileID: 8113073670915643598}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8113073671352550721
 SpriteRenderer:
@@ -410,12 +442,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8113073670915643598}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: MainThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -473,6 +511,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &7401110993754742268 stripped
 MonoBehaviour:
@@ -497,6 +538,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8113073670915643598}
     m_Modifications:
     - target: {fileID: 168101334060160762, guid: 101b7af4909279d4680b9c9be40ba8b0,
@@ -560,6 +602,9 @@ PrefabInstance:
       value: DestroyParticle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 101b7af4909279d4680b9c9be40ba8b0, type: 3}
 --- !u!4 &2293066803806564658 stripped
 Transform:
@@ -572,6 +617,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8113073670915643598}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
@@ -635,6 +681,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &6186396870660440489 stripped
 MonoBehaviour:
@@ -659,12 +708,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8113073670915643598}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: RightSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -722,6 +777,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &405282082469805427 stripped
 MonoBehaviour:
@@ -746,12 +804,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 8113073670915643598}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: LeftSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -809,6 +873,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &1490648254300294009 stripped
 Transform:

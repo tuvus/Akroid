@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AriaMkI
   m_EditorClassIdentifier: 
+  cost: 3070
+  resourceTypes: 01000000
+  resourceCosts: db01000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   unitName: Aria
   maxHealth: 224
@@ -23,11 +26,22 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
   - name: Utility
     component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
-  - name: LeftSubThruster
-    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   - name: MainThruster
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+  - name: LeftSubThruster
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   - name: RightSubThruster
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+  systems:
+  - name: TopTurret
+    component: {fileID: 11400000, guid: 9213ba3d053c29e40bb1aca601dbf6dc, type: 2}
+  - name: BottomTurret
+    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
+  - name: MainThruster
+    component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+  - name: LeftSubThruster
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   shipClass: 2
   shipType: 3

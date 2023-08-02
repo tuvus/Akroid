@@ -25,6 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4268936985613125732}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   m_Children:
   - {fileID: 5204684877867769593}
   m_Father: {fileID: 4268936986182817260}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4268936985613125731
 SpriteRenderer:
@@ -127,6 +127,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4268936986182817265}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -145,7 +146,6 @@ Transform:
   - {fileID: 8894879738930372759}
   - {fileID: 8384334486325330502}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4268936986182817263
 SpriteRenderer:
@@ -215,7 +215,6 @@ MonoBehaviour:
   unitName: HeavyTransport
   <moduleSystem>k__BackingField: {fileID: 0}
   <faction>k__BackingField: {fileID: 0}
-  maxHealth: 0
   followDist: 30
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -254,6 +253,25 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -287,6 +305,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -304,12 +328,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
-  - name: Turrets
+  - name: TopCenterTurrets
     type: 3
-  - name: Thrusters
-    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: TopTurrets
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
   - name: Utility
     type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThruster
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: SubThrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
   <modules>k__BackingField:
   - {fileID: 3627654876002232859}
   - {fileID: 9126261858479124748}
@@ -346,13 +384,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5882679849120031814}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4268936985613125733}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7719146366267110473
 SpriteRenderer:
@@ -423,12 +461,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: LeftSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -486,6 +530,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &8544111063899082878 stripped
 MonoBehaviour:
@@ -510,6 +557,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -598,6 +646,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &8305988523206050277 stripped
 Transform:
@@ -622,12 +673,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: RightSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -685,6 +742,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &8384334486325330502 stripped
 Transform:
@@ -709,12 +769,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: Utility
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -772,6 +838,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &4936781228382177290 stripped
 MonoBehaviour:
@@ -796,6 +865,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -807,6 +877,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeftBottomTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -889,6 +964,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &2625676321650531100 stripped
 Transform:
@@ -913,6 +991,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -924,6 +1003,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeftTopTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -1006,6 +1090,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &2603919519272212112 stripped
 Transform:
@@ -1030,6 +1117,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -1041,6 +1129,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RightBottomTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -1123,6 +1216,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &3985181926350415214 stripped
 MonoBehaviour:
@@ -1147,6 +1243,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: 168101334060160762, guid: 101b7af4909279d4680b9c9be40ba8b0,
@@ -1210,6 +1307,9 @@ PrefabInstance:
       value: DestroyParticle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 101b7af4909279d4680b9c9be40ba8b0, type: 3}
 --- !u!4 &5885777695659481313 stripped
 Transform:
@@ -1222,6 +1322,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -1310,6 +1411,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &3627654876002232859 stripped
 MonoBehaviour:
@@ -1334,12 +1438,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: MainThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -1397,6 +1507,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &234094519969203278 stripped
 MonoBehaviour:
@@ -1421,6 +1534,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4268936986182817260}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -1432,6 +1546,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RightTopTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -1514,6 +1633,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &135571325586800036 stripped
 MonoBehaviour:

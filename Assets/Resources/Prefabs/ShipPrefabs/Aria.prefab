@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424261961782915897}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4630675845207748536}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8801935873949062220
 SpriteRenderer:
@@ -122,6 +122,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4630675845207748543}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -129,7 +130,6 @@ Transform:
   m_Children:
   - {fileID: 3383298880247217194}
   m_Father: {fileID: 4630675845762834500}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4630675845207748537
 SpriteRenderer:
@@ -224,6 +224,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4630675845762834490}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -234,11 +235,10 @@ Transform:
   - {fileID: 4040433569501780667}
   - {fileID: 2054752353123922826}
   - {fileID: 110409665918170404}
-  - {fileID: 6316684407988991921}
   - {fileID: 8882694786224328236}
+  - {fileID: 6316684407988991921}
   - {fileID: 2898441279396620696}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4630675845762834491
 SpriteRenderer:
@@ -312,6 +312,10 @@ MonoBehaviour:
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
   fleet: {fileID: 0}
+  shipClass: 0
+  shipType: 0
+  turnSpeed: 0
+  combatRotation: 0
   dockedStation: {fileID: 0}
   shipAction: 0
   targetRotation: 0
@@ -345,18 +349,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
-  - name: Turrets
-    type: 3
-  - name: Utilities
-    type: 1
-  - name: Thrusters
-    type: 4
+  - name: TopTurret
+    type: 0
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: BottomTurret
+    type: 0
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 0
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThruster
+    type: 0
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: LeftSubThruster
+    type: 0
+    component: {fileID: 0}
+    moduleSize: 0
   <modules>k__BackingField:
   - {fileID: 3886802930279688786}
   - {fileID: 1252493416376976227}
   - {fileID: 894654199921460685}
-  - {fileID: 6506414211996682072}
   - {fileID: 8549971299306225349}
+  - {fileID: 6506414211996682072}
   - {fileID: 2727886957197695345}
 --- !u!61 &9175764632370358692
 BoxCollider2D:
@@ -368,6 +386,25 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -401,6 +438,12 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -410,6 +453,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: 168101334060160762, guid: 101b7af4909279d4680b9c9be40ba8b0,
@@ -473,6 +517,9 @@ PrefabInstance:
       value: DestroyParticle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 101b7af4909279d4680b9c9be40ba8b0, type: 3}
 --- !u!4 &915515608206951654 stripped
 Transform:
@@ -485,12 +532,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: MainThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -548,6 +601,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &8549971299306225349 stripped
 MonoBehaviour:
@@ -572,12 +628,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: LeftSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -635,6 +697,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &6316684407988991921 stripped
 Transform:
@@ -659,12 +724,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: RightSubThruster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -722,6 +793,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &2727886957197695345 stripped
 MonoBehaviour:
@@ -746,6 +820,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -824,6 +899,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &3886802930279688786 stripped
 MonoBehaviour:
@@ -848,12 +926,18 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: 1815911310495799230, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: m_Name
       value: Utility
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -911,6 +995,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!4 &110409665918170404 stripped
 Transform:
@@ -935,6 +1022,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 4630675845762834500}
     m_Modifications:
     - target: {fileID: -6685255547933660383, guid: bb315faa175b2d14590da39083987088,
@@ -1003,6 +1091,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb315faa175b2d14590da39083987088, type: 3}
 --- !u!114 &1252493416376976227 stripped
 MonoBehaviour:

@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: TransportMkI
   m_EditorClassIdentifier: 
+  cost: 8423
+  resourceTypes: 01000000
+  resourceCosts: 7704000000000000
   prefabPath: Prefabs/ShipPrefabs/Transport
   unitName: Transport
   maxHealth: 762
@@ -24,6 +27,13 @@ MonoBehaviour:
   - name: LeftSubThruster
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   - name: RightSubThruster
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+  systems:
+  - name: Utility
+    component: {fileID: 11400000, guid: a7c57986cc84479488bde523e2323a5f, type: 2}
+  - name: MainThruster
+    component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+  - name: LeftSubThruster
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   shipClass: 0
   shipType: 0

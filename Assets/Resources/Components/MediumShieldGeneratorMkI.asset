@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb422cf85b663f468d34e4f8eae333e, type: 3}
   m_Name: MediumShieldGeneratorMkI
   m_EditorClassIdentifier: 
+  cost: 160
+  resourceTypes: 01000000
+  resourceCosts: 7100000000000000
+  upgrade: {fileID: 11400000, guid: 224954adaa671324fbea934b4c985cd6, type: 2}
   shieldRegenRate: 4
   shieldRecreateSpeed: 8
   shieldRegenHealth: 10

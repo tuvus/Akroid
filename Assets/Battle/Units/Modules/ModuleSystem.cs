@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,18 +19,32 @@ public class ModuleSystem : MonoBehaviour {
     public struct System {
         public string name;
         public SystemType type;
+        public ComponentScriptableObject component;
+        public int moduleSize;
         public int count { get; private set; }
 
         public System(string name, SystemType type) {
             this.name = name;
             this.type = type;
             count = 0;
+            moduleSize = 0;
+            component = null;
         }
 
         public System(System system, int moduleChange) {
             this.name = system.name;
             this.type = system.type;
             this.count = system.count + moduleChange;
+            moduleSize = 0;
+            component = null;
+        }
+
+        public System(System system, ComponentScriptableObject component) {
+            this.name = system.name;
+            this.type = system.type;
+            this.count = system.count;
+            this.moduleSize = system.moduleSize;
+            this.component = component;
         }
     }
 
@@ -40,6 +55,10 @@ public class ModuleSystem : MonoBehaviour {
     #region SystemsAndModules
     public void AddSystem() {
         systems.Add(new System("New System", SystemType.Any));
+    }
+
+    public void AddSystem(string name, SystemType type) {
+        systems.Add(new System(name, type));
     }
 
     public void AddSystemAndReplace(SystemType newSystemType) {
@@ -107,16 +126,19 @@ public class ModuleSystem : MonoBehaviour {
         }
     }
 
-    public void RemoveSystem(int system) {
+    public void RemoveSystem(int system, bool destroyModules = false) {
         if (system >= systems.Count)
             return;
-        for (int i = modules.Count - 1; i >= 0; i--) {
-            if (modules[i].system == system) {
-                if (modules[i] != null)
-                    DestroyImmediate(modules[i].gameObject);
-                modules.RemoveAt(i);
-            } else if (modules[i].system > system) {
-                modules[i].DecrementSystemIndex();
+        if (destroyModules) {
+            for (int i = modules.Count - 1; i >= 0; i--) {
+                Debug.Log("1");
+                if (modules[i].system == system) {
+                    if (modules[i] != null)
+                        DestroyImmediate(modules[i].gameObject);
+                    modules.RemoveAt(i);
+                } else if (modules[i].system > system) {
+                    modules[i].DecrementSystemIndex();
+                }
             }
         }
         systems.RemoveAt(system);
@@ -135,7 +157,7 @@ public class ModuleSystem : MonoBehaviour {
         Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
-        newModule.CreateModule(this, system, 0);
+        newModule.CreateModule(this, system);
         return newModule;
     }
 
@@ -146,7 +168,7 @@ public class ModuleSystem : MonoBehaviour {
         Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
-        newModule.CreateModule(this, system, rotation, minRotate, maxRotate, 0);
+        newModule.CreateModule(this, system, rotation, minRotate, maxRotate);
         return newModule;
     }
 
@@ -159,15 +181,14 @@ public class ModuleSystem : MonoBehaviour {
 
     public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
-        ComponentScriptableObject[] components = unitScriptableObject.GetComponents(); 
-        for (int i = 0; i < components.Length; i++) {
-            ;
-            ModuleComponent newComponent = modules[i].gameObject.AddComponent(components[i].GetComponentType()).GetComponent<ModuleComponent>();
+        unitScriptableObject.ApplyComponentsToSystems(systems);
+        for (int i = 0; i < modules.Count; i++) {
+            ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[modules[i].system].component.GetComponentType()).GetComponent<ModuleComponent>();
             if (newComponent == null) {
-                print(components[i].GetComponentType());
+                print(systems[modules[i].system].component.GetComponentType());
                 continue;
             }
-            newComponent.SetupComponent(modules[i], components[i]);
+            newComponent.SetupComponent(modules[i], systems[modules[i].system].component);
         }
     }
 }

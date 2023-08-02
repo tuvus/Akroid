@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
   m_Name: LightProjectileTurretMkII
   m_EditorClassIdentifier: 
+  cost: 54
+  resourceTypes: 01000000
+  resourceCosts: 2a00000000000000
+  upgrade: {fileID: 11400000, guid: 7d645bd4bff988049a4598a934e6f890, type: 2}
   DPS: 3
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   turretOffset: 1.5

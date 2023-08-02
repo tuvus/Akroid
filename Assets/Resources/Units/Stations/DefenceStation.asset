@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: DefenceStation
   m_EditorClassIdentifier: 
+  cost: 42100
+  resourceTypes: 01000000
+  resourceCosts: 3620000000000000
   prefabPath: Prefabs/StationPrefabs/DefenceStation
   unitName: DefenceStation
   maxHealth: 4046
@@ -22,6 +25,13 @@ MonoBehaviour:
   - name: LeftTurret
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
   - name: RightTurret
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
+  systems:
+  - name: TopTurret
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
   - name: Utility
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}

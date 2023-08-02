@@ -8,6 +8,7 @@ public abstract class ComponentScriptableObject : ScriptableObject {
     public long cost;
     public List<CargoTypes> resourceTypes;
     public List<long> resourceCosts;
+    public ComponentScriptableObject upgrade;
 
     public abstract Type GetComponentType();
 

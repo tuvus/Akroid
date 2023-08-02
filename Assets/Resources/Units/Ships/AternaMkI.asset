@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AternaMkI
   m_EditorClassIdentifier: 
+  cost: 38950
+  resourceTypes: 01000000
+  resourceCosts: a918000000000000
   prefabPath: Prefabs/ShipPrefabs/Aterna
   unitName: Aterna
   maxHealth: 3400
@@ -43,6 +46,19 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
   - name: Thruster
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+  systems:
+  - name: CenterTurret
+    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+  - name: TopLeftTurret
+    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+  - name: Weapon
+    component: {fileID: 11400000, guid: 5db735c1674eb8b4ba96b1edbe0cc39b, type: 2}
+  - name: Utility
+    component: {fileID: 11400000, guid: fb74cab9fca85664493e46d62dcf0b2a, type: 2}
+  - name: Thruster
+    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
   - name: Thruster
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   shipClass: 4
