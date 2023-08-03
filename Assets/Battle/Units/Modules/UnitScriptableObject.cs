@@ -35,31 +35,35 @@ public class UnitScriptableObject : ScriptableObject {
     private class SystemData {
         [HideInInspector]
         public string name;
+        public int moduleCount;
         public ComponentScriptableObject component;
 
-        public SystemData(string name, ComponentScriptableObject component) {
+        public SystemData(string name, int moduleCount, ComponentScriptableObject component) {
             this.name = name;
+            this.moduleCount = moduleCount;
             this.component = component;
         }
     }
 
     public void OnValidate() {
-        if (components == null) {
-            components = new ComponentData[0];
+        if (systems == null) {
+            systems = new SystemData[0];
         }
         GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
         if (targetPrefab != null) {
-            ComponentData[] oldComponents = components;
+            SystemData[] oldSystems = systems;
             ModuleSystem moduleSystem = targetPrefab.GetComponent<ModuleSystem>();
-            components = new ComponentData[moduleSystem.modules.Count];
-            for (int i = 0; i < Mathf.Min(oldComponents.Length, components.Length); i++) {
-                components[i] = oldComponents[i];
+            systems = new SystemData[moduleSystem.systems.Count];
+            for (int i = 0; i < Mathf.Min(oldSystems.Length, systems.Length); i++) {
+                systems[i] = oldSystems[i];
             }
-            for (int i = 0; i < moduleSystem.modules.Count; i++) {
-                if (components[i] != null) {
-                    components[i].name = moduleSystem.modules[i].name;
+            for (int i = 0; i < moduleSystem.systems.Count; i++) {
+                if (systems[i] != null) {
+                    systems[i].name = moduleSystem.systems[i].name;
                 } else {
-                    components[i] = new ComponentData(moduleSystem.modules[i].name, null);
+                    int systemModuleCount = moduleSystem.modules.Count(t => t.system == i);
+
+                    systems[i] = new SystemData(moduleSystem.systems[i].name, systemModuleCount, null);
                 }
             }
         }
@@ -72,13 +76,15 @@ public class UnitScriptableObject : ScriptableObject {
         resourceTypes.Clear();
         resourceCosts.Clear();
         AddResourceCost(CargoTypes.Metal, maxHealth);
-
-        for (int i = 0; i < components.Length; i++) {
-            for (int f = 0; f < components[i].component.resourceTypes.Count; f++) {
-                cost += components[i].component.cost;
-                AddResourceCost(components[i].component.resourceTypes[f], components[i].component.resourceCosts[f]);
+        systems.ToList().ForEach(t => {
+            if (t.component == null) {
+                return;
             }
-        }
+            cost += t.component.cost * t.moduleCount;
+            for (int f = 0; f < t.component.resourceTypes.Count; f++) {
+                AddResourceCost(t.component.resourceTypes[f], t.component.resourceCosts[f] * t.moduleCount);
+            }
+        });
     }
 
     protected void AddResourceCost(CargoTypes type, long cost) {
@@ -107,7 +113,7 @@ public class UnitScriptableObject : ScriptableObject {
         List<SystemData> newSystems = new List<SystemData>();
         for (int i = 0; i < components.Length;) {
             moduleSystem.AddSystem(GenerateName(components[i].name), oldSystems[moduleSystem.modules[i].system].type);
-            newSystems.Add(new SystemData(moduleSystem.systems.Last().name, components[i].component));
+            newSystems.Add(new SystemData(moduleSystem.systems.Last().name, -1, components[i].component));
             do {
                 moduleSystem.modules[i].SetSystem(moduleSystem.systems.Count - 1);
                 i++;

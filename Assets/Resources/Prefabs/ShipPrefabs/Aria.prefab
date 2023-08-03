@@ -361,11 +361,11 @@ MonoBehaviour:
     type: 0
     component: {fileID: 0}
     moduleSize: 0
-  - name: MainThruster
+  - name: MainThrusters
     type: 0
     component: {fileID: 0}
     moduleSize: 0
-  - name: LeftSubThruster
+  - name: SubThrusters
     type: 0
     component: {fileID: 0}
     moduleSize: 0

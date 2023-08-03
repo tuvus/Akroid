@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -190,5 +191,11 @@ public class ModuleSystem : MonoBehaviour {
             }
             newComponent.SetupComponent(modules[i], systems[modules[i].system].component);
         }
+    }
+
+    public List<Module> GetModulesOfSystem(int system) {
+        List<Module> systemModules = new List<Module>();
+        systemModules.AddRange(systemModules.FindAll(a => a.system == system));
+        return systemModules;
     }
 }
