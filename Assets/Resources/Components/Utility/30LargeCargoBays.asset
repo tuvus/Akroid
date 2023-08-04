@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4662a42be8b0b40469520c18b0bdf98d, type: 3}
-  m_Name: 30MediumCargoBays
+  m_Name: 30LargeCargoBays
   m_EditorClassIdentifier: 
-  cost: 1440
+  cost: 2880
   resourceTypes: 01000000
-  resourceCosts: 100e000000000000
-  upgrade: {fileID: 11400000, guid: 4d05dceee13211e48ba1eac70c1f88f9, type: 2}
+  resourceCosts: 201c000000000000
+  upgrade: {fileID: 0}
   maxCargoBays: 30
-  cargoBaySize: 2400
+  cargoBaySize: 4800

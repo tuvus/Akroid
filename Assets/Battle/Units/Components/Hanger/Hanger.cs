@@ -9,6 +9,7 @@ public class Hanger : ModuleComponent {
     [SerializeField] int dockSpace;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
         hangerScriptableObject = (HangerScriptableObject)componentScriptableObject;
     }
 

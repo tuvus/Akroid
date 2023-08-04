@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -156,28 +158,35 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
+    public void ShipBlueprintButtonPressed(int index) {
+        ((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(LocalPlayer.Instance.GetFaction().factionIndex, BattleManager.Instance.shipBlueprints[index]));
+        UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
+    }
+
     void UpdateUpgradeBlueprintUI() {
-        for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count - 2; i++) {
+        List<ModuleSystem.System> upgradeableSystems = displayedStation.moduleSystem.systems.FindAll(a => a.component != null && a.component.upgrade != null).ToList();
+        for (int i = 0; i < upgradeableSystems.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
             }
             Transform cargoBayButton = blueprintList.GetChild(i);
-            Ship.ShipBlueprint blueprint = BattleManager.Instance.shipBlueprints[i];
+            ModuleSystem.System system = upgradeableSystems[i];
+            ComponentScriptableObject upgradeComponent = system.component.upgrade;
             cargoBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
             int f = i;
-            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => ShipBlueprintButtonPressed(f)));
+            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => UpgradeBlueprintButtonPressed(system)));
             cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.name;
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + blueprint.shipScriptableObject.cost.ToString();
+            cargoBayButton.GetChild(0).GetComponent<Text>().text = upgradeComponent.name;
+            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + ((upgradeComponent.cost - system.component.cost) * system.moduleCount);
         }
-        for (int i = BattleManager.Instance.shipBlueprints.Count - 2; i < blueprintList.childCount; i++) {
+        for (int i = upgradeableSystems.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
         }
     }
 
-    public void ShipBlueprintButtonPressed(int index) {
-        ((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(LocalPlayer.Instance.GetFaction().factionIndex, BattleManager.Instance.shipBlueprints[index]));
-        UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
+    public void UpgradeBlueprintButtonPressed(ModuleSystem.System system) {
+        displayedStation.moduleSystem.UpgradeSystem(displayedStation.moduleSystem.systems.IndexOf(system), displayedStation);
+        UpdateUpgradeBlueprintUI();
     }
 
     void UpdateConstructionUI(ConstructionBay constructionBay) {

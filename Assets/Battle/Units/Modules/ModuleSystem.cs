@@ -22,28 +22,28 @@ public class ModuleSystem : MonoBehaviour {
         public SystemType type;
         public ComponentScriptableObject component;
         public int moduleSize;
-        public int count { get; private set; }
+        public int moduleCount { get; private set; }
 
         public System(string name, SystemType type) {
             this.name = name;
             this.type = type;
-            count = 0;
+            moduleCount = 0;
             moduleSize = 0;
             component = null;
         }
 
-        public System(System system, int moduleChange) {
+        public System(System system, int moduleCount) {
             this.name = system.name;
             this.type = system.type;
-            this.count = system.count + moduleChange;
+            this.moduleCount = moduleCount;
             moduleSize = 0;
-            component = null;
+            component = system.component;
         }
 
         public System(System system, ComponentScriptableObject component) {
             this.name = system.name;
             this.type = system.type;
-            this.count = system.count;
+            this.moduleCount = system.moduleCount;
             this.moduleSize = system.moduleSize;
             this.component = component;
         }
@@ -52,6 +52,26 @@ public class ModuleSystem : MonoBehaviour {
     private Unit unit;
     [field: SerializeField] public List<System> systems { get; private set; } = new List<System>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
+
+    public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
+        this.unit = unit;
+        List<ComponentScriptableObject> systemComponents = unitScriptableObject.GetSystemComponents();
+        for (int i = 0; i < systems.Count; i++) {
+            systems[i] = new System(systems[i], systemComponents[i]);
+        }
+        unitScriptableObject.ApplyComponentsToSystems(systems);
+
+        for (int i = 0; i < modules.Count; i++) {
+            ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[modules[i].system].component.GetComponentType()).GetComponent<ModuleComponent>();
+            if (newComponent == null) {
+                print(systems[modules[i].system].component.GetComponentType());
+                continue;
+            }
+            newComponent.SetupComponent(modules[i], systems[modules[i].system].component);
+        }
+        RefreshSystemCounts();
+
+    }
 
     #region SystemsAndModules
     public void AddSystem() {
@@ -65,16 +85,16 @@ public class ModuleSystem : MonoBehaviour {
     public void AddSystemAndReplace(SystemType newSystemType) {
         if (newSystemType == SystemType.Any) {
             AddSystemAndReplace(SystemType.Turret);
-            if (systems[systems.Count - 1].count == 0)
+            if (systems[systems.Count - 1].moduleCount == 0)
                 RemoveSystem(systems.Count - 1);
             AddSystemAndReplace(SystemType.Weapon);
-            if (systems[systems.Count - 1].count == 0)
+            if (systems[systems.Count - 1].moduleCount == 0)
                 RemoveSystem(systems.Count - 1);
             AddSystemAndReplace(SystemType.Utility);
-            if (systems[systems.Count - 1].count == 0)
+            if (systems[systems.Count - 1].moduleCount == 0)
                 RemoveSystem(systems.Count - 1);
             AddSystemAndReplace(SystemType.Thruster);
-            if (systems[systems.Count - 1].count == 0)
+            if (systems[systems.Count - 1].moduleCount == 0)
                 RemoveSystem(systems.Count - 1);
             return;
         }
@@ -125,6 +145,7 @@ public class ModuleSystem : MonoBehaviour {
                 }
             }
         }
+        RefreshSystemCounts();
     }
 
     public void RemoveSystem(int system, bool destroyModules = false) {
@@ -151,51 +172,74 @@ public class ModuleSystem : MonoBehaviour {
         }
     }
 
-    public Module AddModule(int system) {
-        if (system >= systems.Count)
-            return null;
-        systems[system] = new System(systems[system], 1);
-        Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
-        modules.Add(newModule);
-        newModule.name = systems[system].type.ToString();
-        newModule.CreateModule(this, system);
-        return newModule;
-    }
+    public Module AddModule(int system) => AddModule(system, 0, 0, 0);
 
     public Module AddModule(int system, float rotation, float minRotate, float maxRotate) {
         if (system >= systems.Count)
             return null;
-        systems[system] = new System(systems[system], 1);
+        systems[system] = new System(systems[system], systems[system].moduleCount + 1);
         Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
         newModule.CreateModule(this, system, rotation, minRotate, maxRotate);
+        RefreshSystemCounts();
         return newModule;
     }
 
     public void RemoveModule(Module removeModule) {
-        systems[removeModule.system] = new System(systems[removeModule.system], -1);
+        systems[removeModule.system] = new System(systems[removeModule.system], systems[removeModule.system].moduleCount - 1);
         DestroyImmediate(removeModule.gameObject);
         modules.Remove(removeModule);
+        RefreshSystemCounts();
     }
-    #endregion
 
-    public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
-        this.unit = unit;
-        unitScriptableObject.ApplyComponentsToSystems(systems);
-        for (int i = 0; i < modules.Count; i++) {
-            ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[modules[i].system].component.GetComponentType()).GetComponent<ModuleComponent>();
-            if (newComponent == null) {
-                print(systems[modules[i].system].component.GetComponentType());
-                continue;
-            }
-            newComponent.SetupComponent(modules[i], systems[modules[i].system].component);
+    [ContextMenu("RefreshSystems")]
+    public void RefreshSystemCounts() {
+        for (int i = 0; i < systems.Count; i++) {
+            systems[i] = new System(systems[i], modules.Count(t => t.system == i));
         }
     }
 
-    public List<Module> GetModulesOfSystem(int system) {
-        List<Module> systemModules = new List<Module>();
-        systemModules.AddRange(systemModules.FindAll(a => a.system == system));
-        return systemModules;
+    public List<Module> GetModulesOfSystem(int system) => modules.FindAll(a => a.system == system);
+    #endregion
+
+    #region SystemUpgrades
+    public ComponentScriptableObject GetSystemUpgrade(int system) => systems[system].component.upgrade;
+
+    public bool CanUpgradeSystem(int systemIndex, Unit upgrader) {
+        System system = systems[systemIndex];
+        ComponentScriptableObject current = system.component;
+        ComponentScriptableObject upgrade = current.upgrade;
+        if (upgrade == null) return false;
+        if (upgrader.faction.credits >= (upgrade.cost - current.cost) * system.moduleCount) {
+            for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
+                long currentAmount = 0;
+                int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
+                if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
+                if (upgrader.GetAllCargo(upgrade.resourceTypes[i]) < upgrade.resourceCosts[i] - currentAmount) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
+
+    public void UpgradeSystem(int systemIndex, Unit upgrader) {
+        System system = systems[systemIndex];
+        ComponentScriptableObject current = system.component;
+        ComponentScriptableObject upgrade = current.upgrade;
+        if (CanUpgradeSystem(systemIndex, upgrader)) {
+            //Pay for the upgrade cost
+            upgrader.faction.UseCredits((upgrade.cost - current.cost) * system.moduleCount);
+            for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
+                long currentAmount = 0;
+                int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
+                upgrader.UseCargo(upgrade.resourceCosts[i] - currentAmount, upgrade.resourceTypes[i]);
+            }
+            //Upgrade the moduleComponents
+            systems[systemIndex] = new System(system, system.component.upgrade);
+            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, systems[systemIndex].component));
+        }
+    }
+    #endregion
 }

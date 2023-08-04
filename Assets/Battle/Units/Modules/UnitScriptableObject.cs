@@ -122,6 +122,10 @@ public class UnitScriptableObject : ScriptableObject {
         systems = newSystems.ToArray();
     }
 
+    public List<ComponentScriptableObject> GetSystemComponents() {
+        return systems.Select(a => a.component).ToList();
+    }
+
     string GenerateName(string name) {
         if (name.StartsWith("Left")) {
             return name.Substring(4) + "s";

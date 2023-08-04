@@ -14,6 +14,7 @@ public class CargoBay : ModuleComponent {
     public List<long> cargoBays = new List<long>();
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
     }
 
