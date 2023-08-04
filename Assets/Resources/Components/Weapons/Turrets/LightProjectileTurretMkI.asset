@@ -15,7 +15,7 @@ MonoBehaviour:
   cost: 41
   resourceTypes: 01000000
   resourceCosts: 2000000000000000
-  upgrade: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+  upgrade: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
   DPS: 2.3148148
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   turretOffset: 1.5

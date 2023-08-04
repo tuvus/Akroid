@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: HeavyTransportMkI
   m_EditorClassIdentifier: 
-  cost: 20676
+  cost: 19927
   resourceTypes: 01000000
-  resourceCosts: 6c19000000000000
+  resourceCosts: ff12000000000000
   prefabPath: Prefabs/ShipPrefabs/HeavyTransport
   unitName: Heavy Transport
   maxHealth: 1650
@@ -42,15 +42,20 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   systems:
   - name: TopCenterTurrets
+    moduleCount: 2
     component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
   - name: TopTurrets
-    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+    moduleCount: 4
+    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
   - name: Utility
-    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+    moduleCount: 1
+    component: {fileID: 11400000, guid: 5e2601f20f399754c93fef5990ff8038, type: 2}
   - name: MainThruster
-    component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
+    moduleCount: 1
+    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
   - name: SubThrusters
-    component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
+    moduleCount: 2
+    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
   shipClass: 1
   shipType: 0
   turnSpeed: 30

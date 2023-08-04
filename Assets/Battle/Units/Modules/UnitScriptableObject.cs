@@ -60,10 +60,8 @@ public class UnitScriptableObject : ScriptableObject {
             for (int i = 0; i < moduleSystem.systems.Count; i++) {
                 if (systems[i] != null) {
                     systems[i].name = moduleSystem.systems[i].name;
-                } else {
                     int systemModuleCount = moduleSystem.modules.Count(t => t.system == i);
-
-                    systems[i] = new SystemData(moduleSystem.systems[i].name, systemModuleCount, null);
+                    systems[i] = new SystemData(moduleSystem.systems[i].name, systemModuleCount, systems[i].component);
                 }
             }
         }
@@ -77,9 +75,11 @@ public class UnitScriptableObject : ScriptableObject {
         resourceCosts.Clear();
         AddResourceCost(CargoTypes.Metal, maxHealth);
         systems.ToList().ForEach(t => {
-            if (t.component == null) {
+            if (t == null || t.component == null) {
+                Debug.Log("Null Component " + unitName);
                 return;
             }
+            if (t.moduleCount == 0) Debug.Log("Error");
             cost += t.component.cost * t.moduleCount;
             for (int f = 0; f < t.component.resourceTypes.Count; f++) {
                 AddResourceCost(t.component.resourceTypes[f], t.component.resourceCosts[f] * t.moduleCount);

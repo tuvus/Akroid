@@ -50,16 +50,22 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   systems:
   - name: CenterTurret
+    moduleCount: 1
     component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
-  - name: TopLeftTurret
+  - name: SideTurrets
+    moduleCount: 6
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
   - name: Weapon
+    moduleCount: 2
     component: {fileID: 11400000, guid: 5db735c1674eb8b4ba96b1edbe0cc39b, type: 2}
   - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: fb74cab9fca85664493e46d62dcf0b2a, type: 2}
-  - name: Thruster
+  - name: MainThrusters
+    moduleCount: 2
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
-  - name: Thruster
+  - name: SubThrusters
+    moduleCount: 2
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   shipClass: 4
   shipType: 6

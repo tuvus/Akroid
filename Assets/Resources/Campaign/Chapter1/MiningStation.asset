@@ -12,21 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d21f91b94093424e9925688a4c0db5b, type: 3}
   m_Name: MiningStation
   m_EditorClassIdentifier: 
+  cost: 23523
+  resourceTypes: 01000000
+  resourceCosts: a80d000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   unitName: MiningStation
   maxHealth: 2300
   sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
   components:
   - name: TopTurret
-    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+    component: {fileID: 0}
   - name: LeftTurret
-    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+    component: {fileID: 0}
   - name: RightTurret
-    component: {fileID: 11400000, guid: d2af8b85fa98f824f8337a0780875011, type: 2}
+    component: {fileID: 0}
   - name: Utility
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
   - name: Utility
     component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+  systems:
+  - name: Turrets
+    moduleCount: 3
+    component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
   stationType: 3
   repairAmount: 100
   repairSpeed: 5

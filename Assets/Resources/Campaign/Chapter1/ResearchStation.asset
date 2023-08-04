@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: ResearchStation
   m_EditorClassIdentifier: 
+  cost: 23523
+  resourceTypes: 01000000
+  resourceCosts: a80d000000000000
   prefabPath: Prefabs/StationPrefabs/DefenceStation
   unitName: ResearchStation
   maxHealth: 2300
@@ -26,6 +29,16 @@ MonoBehaviour:
   - name: Utility
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
   - name: Utility
+    component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
+  systems:
+  - name: Turrets
+    moduleCount: 3
+    component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+  - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
   stationType: 2
   repairAmount: 200

@@ -350,23 +350,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
   - name: TopTurret
-    type: 0
+    type: 3
     component: {fileID: 0}
     moduleSize: 0
   - name: BottomTurret
-    type: 0
+    type: 3
     component: {fileID: 0}
     moduleSize: 0
   - name: Utility
-    type: 0
+    type: 1
     component: {fileID: 0}
     moduleSize: 0
   - name: MainThrusters
-    type: 0
+    type: 4
     component: {fileID: 0}
     moduleSize: 0
   - name: SubThrusters
-    type: 0
+    type: 4
     component: {fileID: 0}
     moduleSize: 0
   <modules>k__BackingField:
@@ -543,7 +543,7 @@ PrefabInstance:
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: <system>k__BackingField
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -639,7 +639,7 @@ PrefabInstance:
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: <system>k__BackingField
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -735,7 +735,7 @@ PrefabInstance:
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: <system>k__BackingField
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -937,7 +937,7 @@ PrefabInstance:
     - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
         type: 3}
       propertyPath: <system>k__BackingField
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}
@@ -1034,6 +1034,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BottomTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 7402492157390451701, guid: bb315faa175b2d14590da39083987088,
+        type: 3}
+      propertyPath: <system>k__BackingField
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7735175511095919388, guid: bb315faa175b2d14590da39083987088,
         type: 3}

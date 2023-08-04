@@ -30,10 +30,13 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   systems:
   - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: 5e2601f20f399754c93fef5990ff8038, type: 2}
   - name: MainThruster
+    moduleCount: 1
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
-  - name: LeftSubThruster
+  - name: SubThrusters
+    moduleCount: 2
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   shipClass: 5
   shipType: 1
