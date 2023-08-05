@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134b8b1fe31645448f971a0e5677516, type: 3}
   m_Name: ConstructionBayMkIII
   m_EditorClassIdentifier: 
-  constructionSpeed: 0.8
+  cost: 7499
+  resourceTypes: 01000000
+  resourceCosts: 6009000000000000
+  upgrade: {fileID: 0}
+  constructionSpeed: 1.6
   constructionAmount: 150
   constructionBays: 8

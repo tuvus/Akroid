@@ -35,6 +35,7 @@ public class PlayerStationUI : MonoBehaviour {
     bool shipYardOrUpgrade;
     [SerializeField] GameObject shipBlueprintButtonPrefab;
     [SerializeField] Transform blueprintList;
+    Unit upgradeDisplayUnit;
     [SerializeField] Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
     public void SetupPlayerStationUI(PlayerUI playerUI) {
@@ -79,6 +80,10 @@ public class PlayerStationUI : MonoBehaviour {
             }
             UpdateCargoBayUI(displayedStation.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction));
         }
+        if (shipYardOrUpgrade && blueprintList.gameObject.activeSelf &&
+            !((LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() == upgradeDisplayUnit && upgradeDisplayUnit != null && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))
+            || LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() == displayedStation))
+            UpdateUpgradeBlueprintUI();
         if (stationConstructionUI.activeSelf) {
             UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
         }
@@ -125,8 +130,8 @@ public class PlayerStationUI : MonoBehaviour {
         if (shipYardOrUpgrade) {
             shipYardOrUpgrade = false;
             UpdateShipBlueprintUI();
-            shipYardSelection.image.color = new Color(1,1,1,1);
-            upgradeSelection.image.color = new Color(.8f,.8f,.8f,1);
+            shipYardSelection.image.color = new Color(1, 1, 1, 1);
+            upgradeSelection.image.color = new Color(.8f, .8f, .8f, 1);
         }
     }
 
@@ -164,7 +169,13 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     void UpdateUpgradeBlueprintUI() {
-        List<ModuleSystem.System> upgradeableSystems = displayedStation.moduleSystem.systems.FindAll(a => a.component != null && a.component.upgrade != null).ToList();
+        if (LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() != null && LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit().IsShip() && ((Ship)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit()).dockedStation == displayedStation)
+            upgradeDisplayUnit = LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit();
+        else
+            upgradeDisplayUnit = null;
+        if (upgradeDisplayUnit == null)
+            upgradeDisplayUnit = displayedStation;
+        List<ModuleSystem.System> upgradeableSystems = upgradeDisplayUnit.moduleSystem.systems.FindAll(a => a.component != null && a.component.upgrade != null).ToList();
         for (int i = 0; i < upgradeableSystems.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
@@ -174,7 +185,7 @@ public class PlayerStationUI : MonoBehaviour {
             ComponentScriptableObject upgradeComponent = system.component.upgrade;
             cargoBayButton.GetComponent<Button>().onClick.RemoveAllListeners();
             int f = i;
-            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => UpgradeBlueprintButtonPressed(system)));
+            cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => UpgradeBlueprintButtonPressed(upgradeDisplayUnit, system)));
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = upgradeComponent.name;
             cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + ((upgradeComponent.cost - system.component.cost) * system.moduleCount);
@@ -184,8 +195,9 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
-    public void UpgradeBlueprintButtonPressed(ModuleSystem.System system) {
-        displayedStation.moduleSystem.UpgradeSystem(displayedStation.moduleSystem.systems.IndexOf(system), displayedStation);
+    public void UpgradeBlueprintButtonPressed(Unit unit, ModuleSystem.System system) {
+        if (unit == null || !unit.IsSpawned()) return;
+        unit.moduleSystem.UpgradeSystem(unit.moduleSystem.systems.IndexOf(system), displayedStation);
         UpdateUpgradeBlueprintUI();
     }
 
