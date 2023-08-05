@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 396a28e365f47994182c196908c55114, type: 3}
-  m_Name: HeavyLaserTurretMkII
+  m_Name: MediumLaserMkII
   m_EditorClassIdentifier: 
-  cost: 957
+  cost: 487
   resourceTypes: 01000000
-  resourceCosts: 2601000000000000
+  resourceCosts: 9600000000000000
   upgrade: {fileID: 0}
-  DPS: 36.81818
+  DPS: 18.75
   turretSprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
   turretOffset: 3.4
-  range: 670
-  rotateSpeed: 38
+  range: 400
+  rotateSpeed: 76
   targeting: 1
-  fireSpeed: 0.8
-  reloadSpeed: 5.3
-  maxAmmo: 3
-  laserDamagePerSecond: 70
-  fireDuration: 1.2
-  fadeDuration: 0.3
-  laserRange: 760
+  fireSpeed: 0.2
+  reloadSpeed: 2
+  maxAmmo: 5
+  laserDamagePerSecond: 90
+  fireDuration: 0.1
+  fadeDuration: 0.05
+  laserRange: 440
   laserSize: 1
   laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
     type: 3}

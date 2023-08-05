@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b370d85f3339e004c8f16da4e46c4b99, type: 3}
-  m_Name: ResearchEquipmentMkI
+  m_Name: ResearchEquipmentMkII
   m_EditorClassIdentifier: 
-  cost: 416
+  cost: 535
   resourceTypes: 01000000
-  resourceCosts: ee02000000000000
-  upgrade: {fileID: 11400000, guid: c1aa5f19643567f4fa0f3cd3104730f1, type: 2}
-  maxData: 250
-  researchAmount: 25
-  researchSpeed: 3
+  resourceCosts: 1a04000000000000
+  upgrade: {fileID: 0}
+  maxData: 350
+  researchAmount: 30
+  researchSpeed: 2.8

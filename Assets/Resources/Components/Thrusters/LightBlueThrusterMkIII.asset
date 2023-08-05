@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1a4dc295f981b646b62533ac9bfb628, type: 3}
-  m_Name: HeavyBlueThrusterMkI
+  m_Name: LightBlueThrusterMkIII
   m_EditorClassIdentifier: 
-  cost: 910
+  cost: 460
   resourceTypes: 01000000
-  resourceCosts: b600000000000000
-  upgrade: {fileID: 11400000, guid: 707aff314c188bd468a2bb9f923cdf7b, type: 2}
-  thrustSpeed: 9100
+  resourceCosts: 5c00000000000000
+  upgrade: {fileID: 0}
+  thrustSpeed: 4600
   color: {r: 0, g: 0.96862745, b: 1, a: 0}
   startThrustColor: {r: 0.003921569, g: 0.5921569, b: 0.6784314, a: 0}
   endThrustColor: {r: 0, g: 0.27450982, b: 0.7058824, a: 0}

@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
-  m_Name: MediumProjectileTurretMkI
+  m_Name: MediumProjectileTurretMkII
   m_EditorClassIdentifier: 
-  cost: 137
+  cost: 186
   resourceTypes: 01000000
-  resourceCosts: 6b00000000000000
-  upgrade: {fileID: 11400000, guid: 72d96165e47ea4548a9335c78cbbf5b6, type: 2}
-  DPS: 7.6666665
+  resourceCosts: 9000000000000000
+  upgrade: {fileID: 0}
+  DPS: 10.344828
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   turretOffset: 1.5
-  range: 350
-  rotateSpeed: 88
+  range: 330
+  rotateSpeed: 74
   targeting: 1
-  fireSpeed: 1
-  reloadSpeed: 4
-  maxAmmo: 8
-  fireVelocity: 92
-  fireAccuracy: 0.2
-  minDamage: 10
-  maxDamage: 13
-  projectileRange: 400
+  fireSpeed: 0.3
+  reloadSpeed: 2
+  maxAmmo: 3
+  fireVelocity: 84
+  fireAccuracy: 0.3
+  minDamage: 8
+  maxDamage: 12
+  projectileRange: 380
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}

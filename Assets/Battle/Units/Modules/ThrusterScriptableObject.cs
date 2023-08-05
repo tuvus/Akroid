@@ -15,7 +15,7 @@ class ThrusterScriptableObject : ComponentScriptableObject {
 
     protected override void UpdateCosts() {
         base.UpdateCosts();
-        cost += (long)(thrustSpeed / 20);
-        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(thrustSpeed / 100));
+        cost += (long)(thrustSpeed / 10);
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(thrustSpeed / 50));
     }
 }
