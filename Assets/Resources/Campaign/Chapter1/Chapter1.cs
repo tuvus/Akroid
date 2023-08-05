@@ -94,8 +94,8 @@ public class Chapter1 : CampaingController {
     }
 
 
-    public override void UpdateControler() {
-        base.UpdateControler();
+    public override void UpdateController() {
+        base.UpdateController();
     }
 
     public float GetMetalCost() {

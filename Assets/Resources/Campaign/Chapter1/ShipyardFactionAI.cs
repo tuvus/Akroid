@@ -17,8 +17,14 @@ public class ShipyardFactionAI : FactionAI {
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
-        faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Undocking procedure succesfull! \n You are now on route to the designated minning location. As we planned, you will construct the minning station at the designated point (" +
-            Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin opperations.\nGood luck!");
+        faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction,
+            "Undocking procedure successful! \n You are now on route to the designated mining location. As we planned, you will construct the mining station at the designated point (" +
+            Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!",
+            (communicationEvent) => {
+                chapter1.playerFaction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "test", (communicationEvent) => {
+                    faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Test2", 3);
+                }, 5); 
+            }), 5 * GetTimeScale());
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -38,7 +44,7 @@ public class ShipyardFactionAI : FactionAI {
         timeUntilNextCommunication -= deltaTime;
         if (timeUntilNextCommunication <= 0) {
             if (chapter1.playerFaction.credits > Mathf.Min(GetTransportTotalCost() * 1.2f, GetLancerTotalCost() * 1.2f)) {
-                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "You have enough money to order a ship from us, click our shipyard to open the build menue.");
+                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "You have enough money to order a ship from us, click our shipyard to open the build menu.");
             }
 
             timeUntilNextCommunication += Random.Range(1200, 5000);

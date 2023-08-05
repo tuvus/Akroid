@@ -9,7 +9,7 @@ public abstract class CampaingController : MonoBehaviour {
     public virtual void SetupBattle() {
     }
 
-    public virtual void UpdateControler() {
+    public virtual void UpdateController() {
 
     }
 

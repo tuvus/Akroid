@@ -31,16 +31,16 @@ public class PlayerFactionAI : FactionAI {
     void UpdateFactionState() {
         if (state == AIState.SettingUp && playerMiningStation.IsBuilt()) {
             state = AIState.Normal;
-            faction.GetFactionCommManager().SendCommunication(chapter1.shipyardFaction, new CommunicationEvent("We have arrived safetly at the destination and are setting up our opperations.",
+            faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.shipyardFaction, "We have arrived safely at the destination and are setting up our operations.",
                 new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; }, 
                 (communicationEvent) => {
                     if (!communicationEvent.isActive)
                         return false;
                     AddTradeRouteToStation(chapter1.shipyard); 
                     communicationEvent.DeactivateEvent();
-                    chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.");
+                    chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.", 3 * GetTimeScale());
                     return true; 
-                }) }, true));
+                }) }, true), 2 * GetTimeScale());
         }
     }
 

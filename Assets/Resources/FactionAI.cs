@@ -46,4 +46,8 @@ public class FactionAI : MonoBehaviour {
     public virtual void RemoveFleet(Fleet fleet) {
 
     }
+
+    protected float GetTimeScale() {
+        return BattleManager.Instance.timeScale;
+    }
 }

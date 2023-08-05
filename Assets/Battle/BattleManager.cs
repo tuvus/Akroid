@@ -396,7 +396,7 @@ public class BattleManager : MonoBehaviour {
 
     public virtual void FixedUpdate() {
         if (campaignController != null) {
-            campaignController.UpdateControler();
+            campaignController.UpdateController();
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;

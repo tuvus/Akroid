@@ -392,6 +392,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void UpdateFaction(float deltaTime) {
         Profiler.BeginSample("FindingEnemies");
+        commManager.UpdateCommunications();
         UpdateNearbyEnemyUnits();
         Profiler.EndSample();
         factionAI.UpdateFactionAI(deltaTime);
