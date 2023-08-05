@@ -113,7 +113,7 @@ public class MiningStation : Station {
     }
 
     public int GetMiningRange() {
-        return MiningStationScriptableObject.miningRange;
+        return (int)(MiningStationScriptableObject.miningRange * BattleManager.Instance.systemSizeModifier);
     }
 
     public MiningStationAI GetMiningStationAI() {
