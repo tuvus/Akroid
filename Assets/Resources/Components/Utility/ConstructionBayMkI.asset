@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134b8b1fe31645448f971a0e5677516, type: 3}
   m_Name: ConstructionBayMkI
   m_EditorClassIdentifier: 
-  cost: 3000
+  cost: 1500
   resourceTypes: 01000000
   resourceCosts: 8403000000000000
   upgrade: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
   constructionSpeed: 1
-  constructionAmount: 100
+  constructionAmount: 50
   constructionBays: 3

@@ -15,7 +15,7 @@ MonoBehaviour:
   cost: 32
   resourceTypes: 01000000
   resourceCosts: 2000000000000000
-  upgrade: {fileID: 0}
+  upgrade: {fileID: 11400000, guid: 1b5486a3a6e5e694bb17d98ed8878da2, type: 2}
   shieldRegenRate: 1
   shieldRecreateSpeed: 3
   shieldRegenHealth: 8
