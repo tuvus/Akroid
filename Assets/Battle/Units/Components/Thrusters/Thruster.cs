@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Thruster : ModuleComponent, IParticleHolder {
+    Unit unit;
     ThrusterScriptableObject thrusterScriptableObject;
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
@@ -16,7 +17,9 @@ public class Thruster : ModuleComponent, IParticleHolder {
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
     }
 
-    public void SetupThruster() {
+    public void SetupThruster(Unit unit) {
+        this.unit = unit;
+        thrusterFlare.brightness = 5 * unit.GetSpriteSize();
         targetBrightness = thrusterFlare.brightness;
         thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();
         EndThrust();

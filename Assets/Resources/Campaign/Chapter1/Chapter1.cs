@@ -25,7 +25,7 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle() {
         base.SetupBattle();
         battleManager = BattleManager.Instance;
-        battleManager.SetSimulationTimeScale(10);
+        battleManager.SetSimulationTimeScale(1);
         metalCost = 2.4f;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
@@ -66,11 +66,13 @@ public class Chapter1 : CampaingController {
         shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
         ((ConstructionShip)shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
         shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
-        Fleet minningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
-        minningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4);
-        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(minningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
-        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
-        minningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDisbandFleetCommand());
+        Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * BattleManager.Instance.timeScale),Command.CommandAction.Replace);
+        miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(3 * BattleManager.Instance.timeScale));
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDisbandFleetCommand());
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBegining);
@@ -91,6 +93,8 @@ public class Chapter1 : CampaingController {
         LocalPlayer.Instance.lockedOwnedUnits = true;
         LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
         LocalPlayer.Instance.SetupFaction(playerFaction);
+        LocalPlayer.Instance.GetLocalPlayerInput().SetZoom(400);
+        LocalPlayer.Instance.GetLocalPlayerInput().StartFollowingUnit(playerFaction.ships[1]);
     }
 
 

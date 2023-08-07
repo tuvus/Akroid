@@ -109,6 +109,16 @@ public class LocalPlayerInput : MonoBehaviour {
         background.UpdateBackground(mainCamera.orthographicSize / 5, 10 / Mathf.Sqrt(mainCamera.orthographicSize));
     }
 
+    public void SetZoom(float zoom) {
+        mainCamera.orthographicSize = Mathf.Min(50000, Mathf.Max(1, zoom));
+
+        scrollFactor = mainCamera.orthographicSize / -130;
+
+        mainCamera.transform.GetChild(0).localScale = new Vector3(mainCamera.orthographicSize / 3.8f, mainCamera.orthographicSize / 3.8f, 10);
+        background.UpdateBackground(mainCamera.orthographicSize / 5, 10 / Mathf.Sqrt(mainCamera.orthographicSize));
+
+    }
+
     protected void MoveCamera(Vector2 movement) {
         SetCameraPosition(new Vector2(mainCamera.transform.position.x + movement.x, mainCamera.transform.position.y + movement.y));
     }

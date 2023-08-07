@@ -134,7 +134,7 @@ public class Ship : Unit {
         }
         thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
         foreach (var thruster in thrusters) {
-            thruster.SetupThruster();
+            thruster.SetupThruster(this);
         }
         SetParticleSpeed(particleSpeed);
         SetupThrusters();

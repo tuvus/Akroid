@@ -17,10 +17,10 @@ public class PlanetFactionAI : FactionAI {
     float timeUntilNextCommunication;
     State planetFactionState;
     enum State {
-        Begining,
+        Beginning,
         AskedForMetal,
         RejectedMetal,
-        RecievingMetal,
+        ReceivingMetal,
         AttackingPlayer,
     }
     public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard) {
@@ -29,7 +29,7 @@ public class PlanetFactionAI : FactionAI {
         this.planet = planet;
         this.tradeStation = tradeStation;
         this.shipyard = shipyard;
-        planetFactionState = State.Begining;
+        planetFactionState = State.Beginning;
         timeUntilNextCommunication = Random.Range(30, 60);
     }
 
@@ -46,7 +46,7 @@ public class PlanetFactionAI : FactionAI {
         if (chapter1.playerMiningStation.IsBuilt())
             timeUntilNextCommunication -= deltaTime;
         if (timeUntilNextCommunication <= 0) {
-            if (planetFactionState == State.Begining) {
+            if (planetFactionState == State.Beginning) {
                 planetFactionState = State.AskedForMetal;
                 faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction,
                 "War has broken out on our planet! We require your metal in order to survive the war. Prices are high because of the war so you should be eager to sell your metal.",
@@ -56,7 +56,7 @@ public class PlanetFactionAI : FactionAI {
                             return false;
                         communicationEvent.DeactivateEvent();
                         chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
-                        planetFactionState = State.RecievingMetal;
+                        planetFactionState = State.ReceivingMetal;
                         return true; }),
                     new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
                         if (!communicationEvent.isActive)
@@ -77,7 +77,7 @@ public class PlanetFactionAI : FactionAI {
                                 return false;
                         communicationEvent.DeactivateEvent();
                             chapter1.playerFactionAI.AddTradeRouteToStation(tradeStation);
-                            planetFactionState = State.RecievingMetal;
+                            planetFactionState = State.ReceivingMetal;
                             return true; }),
                         new CommunicationEventOption("Ignore", (communicationEvent) => { return true; }, (communicationEvent) => {
                             if (!communicationEvent.isActive)
@@ -99,7 +99,7 @@ public class PlanetFactionAI : FactionAI {
                             return true; })
                     }, true), 3 * GetTimeScale());
                 timeUntilNextCommunication = Random.Range(400, 800);
-            } else if (planetFactionState == State.RecievingMetal) {
+            } else if (planetFactionState == State.ReceivingMetal) {
                 faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "Thank you so much for trading your metal with us.");
                 timeUntilNextCommunication = Random.Range(4000, 8000);
                 chapter1.ChangeMetalCost(.98f);

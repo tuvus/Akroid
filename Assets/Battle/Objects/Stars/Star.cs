@@ -11,7 +11,7 @@ public class Star : BattleObject, IPositionConfirmer {
     float brightnessSpeed;
 
     public void SetupStar(BattleManager.PositionGiver positionGiver) {
-        float scale = UnityEngine.Random.Range(10, 50);
+        float scale = UnityEngine.Random.Range(30, 100);
         transform.localScale = new Vector2(scale, scale);
         base.SetupBattleObject(positionGiver, UnityEngine.Random.Range(0, 360));
         glareRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
