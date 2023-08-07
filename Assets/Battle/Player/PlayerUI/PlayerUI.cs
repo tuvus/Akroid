@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -27,6 +28,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Text factionCredits;
     [SerializeField] private Text factionScience;
     [SerializeField] private Text command;
+    [SerializeField] private TMP_Text timeSpeed;
     [SerializeField] private CommandClick commandClick;
     [SerializeField] private GameObject victoryUI;
     [SerializeField] private Text victoryTitle;
@@ -91,6 +93,7 @@ public class PlayerUI : MonoBehaviour {
         if (factionOverviewUI.activeSelf) {
             playerFactionOverviewUI.UpdateFactionOverviewUI(GetLocalPlayer().GetFaction());
         }
+        timeSpeed.text = "Time: " + Time.timeScale;
         Profiler.EndSample();
     }
 

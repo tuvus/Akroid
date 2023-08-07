@@ -205,12 +205,12 @@ public class LocalPlayerInput : MonoBehaviour {
         }
     }
 
-    void SlowdownSimulationButtonPressed() {
+    public void SlowdownSimulationButtonPressed() {
         timeStepIndex = Mathf.Max(0, timeStepIndex - 1);
         Time.timeScale = timeSteps[timeStepIndex];
     }
 
-    void SpeedupSimulationButtonPressed() {
+    public void SpeedupSimulationButtonPressed() {
         timeStepIndex = Mathf.Min(timeSteps.Length - 1, timeStepIndex + 1);
         Time.timeScale = timeSteps[timeStepIndex];
     }
