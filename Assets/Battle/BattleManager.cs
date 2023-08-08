@@ -562,6 +562,16 @@ public class BattleManager : MonoBehaviour {
         return null;
     }
 
+    public ShipBlueprint GetShipBlueprint(ShipType shipType) {
+        for (int i = 0; i < shipBlueprints.Count; i++) {
+            if (shipBlueprints[i].shipScriptableObject.shipType == shipType) {
+                return shipBlueprints[i];
+            }
+        }
+        return null;
+    }
+
+
     public StationBlueprint GetStationBlueprint (StationType stationType) {
         for (int i = 0; i < stationBlueprints.Count; i++) {
             if (stationBlueprints[i].stationScriptableObject.stationType == stationType) {

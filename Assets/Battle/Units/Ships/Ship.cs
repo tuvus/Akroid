@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -19,6 +18,7 @@ public class Ship : Unit {
         Zarrack,
     }
     public enum ShipType {
+        Civilian,
         Transport,
         Construction,
         Research,
@@ -74,6 +74,14 @@ public class Ship : Unit {
             this.shipName = shipName;
             this.position = position;
             this.rotation = rotation;
+        }
+
+        public ShipData(int faction, ShipData shipData) {
+            this.faction = faction;
+            this.shipScriptableObject = shipData.shipScriptableObject;
+            this.shipName = shipData.shipName;
+            this.position = shipData.position;
+            this.rotation = shipData.rotation;
         }
     }
 
@@ -475,6 +483,10 @@ public class Ship : Unit {
 
     public bool IsScienceShip() {
         return ShipScriptableObject.shipType == ShipType.Research;
+    }
+
+    public bool IsCivilianShip() {
+        return ShipScriptableObject.shipType == ShipType.Civilian;
     }
 
     public float GetMass() {

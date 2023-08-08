@@ -62,6 +62,7 @@ public class ModuleSystem : MonoBehaviour {
         unitScriptableObject.ApplyComponentsToSystems(systems);
 
         for (int i = 0; i < modules.Count; i++) {
+            if (systems[modules[i].system].component == null) continue;
             ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[modules[i].system].component.GetComponentType()).GetComponent<ModuleComponent>();
             if (newComponent == null) {
                 print(systems[modules[i].system].component.GetComponentType());

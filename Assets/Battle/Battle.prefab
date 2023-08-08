@@ -267,6 +267,10 @@ MonoBehaviour:
     factionIndex: 0
     shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
       type: 2}
+  - name: Civilian Ship
+    factionIndex: 0
+    shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
+      type: 2}
   stationBlueprints:
   - name: Fleet Command
     factionIndex: 0

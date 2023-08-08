@@ -67,7 +67,7 @@ public class Chapter1 : CampaingController {
         ((ConstructionShip)shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
         shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * BattleManager.Instance.timeScale),Command.CommandAction.Replace);
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * BattleManager.Instance.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(3 * BattleManager.Instance.timeScale));
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
@@ -80,10 +80,19 @@ public class Chapter1 : CampaingController {
         planetFaction.GetTransportShip(0).shipAI.AddUnitAICommand(Command.CreateTransportDelayCommand(tradeStation, shipyard, 1000), Command.CommandAction.AddToEnd);
         planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(Command.CreateTransportDelayCommand(tradeStation, shipyard, 1000), Command.CommandAction.AddToEnd);
 
+        List<Ship> civilianShips = new List<Ship>();
+        for (int i = 0; i < Random.Range(2, 5); i++) {
+            civilianShips.Add(tradeStation.BuildShip(new Ship.ShipData(-1, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian", new Vector2(Random.Range(-50000, 50000), Random.Range(-50000, 50000)), Random.Range(0, 360)), 0, null));
+        }
+        for (int i = 0; i < Random.Range(5, 15); i++) {
+            civilianShips.Add(BattleManager.Instance.stations[Random.Range(0, BattleManager.Instance.stations.Count)].BuildShip(planetFaction.factionIndex, Ship.ShipType.Civilian));
+            civilianShips[i].shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 30)));
+        }
         playerFactionAI.SetupPlayerFactionAI(this, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation, tradeStation);
-        planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation, shipyard);
+        planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips);
         shipyardFactionAI.SetupShipyardFactionAI(this, planetFactionAI, shipyard);
+
 
         int asteroidFieldCount = Random.Range(50, 80);
         for (int i = 0; i < asteroidFieldCount; i++) {

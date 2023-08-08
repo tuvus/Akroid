@@ -11,6 +11,8 @@ public class PlanetFactionAI : FactionAI {
     Planet planet;
     Station tradeStation;
     Shipyard shipyard;
+    List<Ship> civilianShips;
+    List<Station> friendlyStations;
 
     float updateTime;
     long metalOrder;
@@ -23,14 +25,16 @@ public class PlanetFactionAI : FactionAI {
         ReceivingMetal,
         AttackingPlayer,
     }
-    public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard) {
+    public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard, List<Ship> civilianShips) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;
         this.tradeStation = tradeStation;
         this.shipyard = shipyard;
+        this.civilianShips = civilianShips;
         planetFactionState = State.Beginning;
         timeUntilNextCommunication = Random.Range(30, 60);
+        friendlyStations = new List<Station>();
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -136,10 +140,27 @@ public class PlanetFactionAI : FactionAI {
     }
 
     void ManageIdleShips() {
+        friendlyStations.Clear();
+        for (int i = 0; i < BattleManager.Instance.stations.Count; i++) {
+            if (!faction.IsAtWarWithFaction(BattleManager.Instance.stations[i].faction)) friendlyStations.Add(BattleManager.Instance.stations[i]);
+        }
         for (int i = 0; i < idleShips.Count; i++) {
-            if (idleShips[i].IsIdle()) {
-                if (idleShips[i].IsTransportShip()) {
-                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(tradeStation, shipyard), Command.CommandAction.AddToEnd);
+            Ship idleShip = idleShips[i];
+            if (idleShip.IsIdle()) {
+                if (idleShip.IsTransportShip()) {
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTransportCommand(tradeStation, shipyard), Command.CommandAction.AddToEnd);
+                } else if (idleShip.IsCivilianShip()) {
+                    int randomNumber = Random.Range(0, 100);
+                    if (friendlyStations.Count > 0 && (idleShip.dockedStation != null && randomNumber > 30) || (idleShip.dockedStation == null && randomNumber > 80)) {
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0,10f)));
+                    } else {
+                        if (idleShip.dockedStation != null)
+                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(1000, 3000))));
+                        else
+                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(300, 1000))));
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0,3f)));
+                    }
                 }
             }
         }

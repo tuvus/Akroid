@@ -169,15 +169,50 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     #region StationControlls
-    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool undock = false) {
+    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool? undock = false) {
         return BuildShip(faction.factionIndex, shipClass, cost, undock);
     }
 
-    public virtual Ship BuildShip(int factionIndex, Ship.ShipClass shipClass, long cost = 0, bool undock = false) {
-        if (BattleManager.Instance.factions[factionIndex].TransferCredits(cost,faction)) {
+    public virtual Ship BuildShip(ShipType shipType, long cost = 0, bool? undock = false) {
+        return BuildShip(faction.factionIndex, shipType, cost, undock);
+    }
+
+    public virtual Ship BuildShip(int factionIndex, ShipClass shipClass, long cost = 0, bool? undock = false) {
+        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
+        return BuildShip(factionIndex, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+    }
+
+    public virtual Ship BuildShip(int factionIndex, ShipType shipType, long cost = 0, bool? undock = false) {
+        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
+        return BuildShip(factionIndex, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+    }
+
+    public virtual Ship BuildShip(int factionIndex, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {
+        return BuildShip(factionIndex, new Ship.ShipData(factionIndex, shipScriptableObject, shipName, transform.position, Random.Range(0, 360)), cost, undock);
+    }
+
+    public virtual Ship BuildShip(ShipData shipData, long cost = 0, bool? undock = false) {
+        return BuildShip(faction.factionIndex, shipData, cost, undock);
+    }
+
+    /// <summary>
+    /// Builds a ship from this station and adds it to the faction at factionIndex.
+    /// Charges the faction cost amount of credits.
+    /// If Undock is true, docks then undocks the ship
+    /// If undock is false, docks the ship
+    /// If undock is null, it doesn't dock the ship at all.
+    /// </summary>
+    /// <param name="factionIndex"></param>
+    /// <param name="shipData"></param>
+    /// <param name="cost"></param>
+    /// <param name="undock"></param>
+    /// <returns></returns>
+    public virtual Ship BuildShip(int factionIndex, ShipData shipData, long cost = 0, bool? undock = false) {
+        if (BattleManager.Instance.factions[factionIndex].TransferCredits(cost, faction)) {
             faction.UseCredits(cost);
-            Ship newShip = BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipClass.ToString(), transform.position, Random.Range(0, 360)));
-            if (undock) {
+            Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(factionIndex,shipData));
+            if (undock == null) { 
+            } else if ((bool)undock) {
                 newShip.DockShip(this);
                 newShip.UndockShip();
             } else {
