@@ -17,10 +17,6 @@ public class ShipyardFactionAI : FactionAI {
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
-        faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction,
-            "Undocking procedure successful! \n You are now on route to the designated mining location. As we planned, you will construct the mining station at the designated point (" +
-            Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!",
-            (communicationEvent) => { chapter1.playerFactionAI.state = PlayerFactionAI.AIState.Deploying; }), 5 * GetTimeScale());
     }
 
     public override void UpdateFactionAI(float deltaTime) {

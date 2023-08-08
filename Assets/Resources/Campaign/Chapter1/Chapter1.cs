@@ -63,9 +63,9 @@ public class Chapter1 : CampaingController {
         researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), "ResearchStation", researchFaction.GetPosition(), Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
-        ((ConstructionShip)shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
-        shipyard.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
+        tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
+        ((ConstructionShip)tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
+        tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * BattleManager.Instance.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);

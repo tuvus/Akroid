@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
-  cost: 18078
+  cost: 19098
   resourceTypes: 01000000
-  resourceCosts: 940e000000000000
+  resourceCosts: 600f000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   unitName: Heavy Transport
   maxHealth: 1650
@@ -39,6 +39,6 @@ MonoBehaviour:
     moduleCount: 2
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   shipClass: 5
-  shipType: 1
+  shipType: 2
   turnSpeed: 30
   combatRotation: 0
