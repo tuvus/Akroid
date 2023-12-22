@@ -5,7 +5,7 @@ using UnityEngine;
 using static FactionCommManager.CommunicationEvent;
 
 public class FactionCommManager : MonoBehaviour {
-    private Faction faction;
+    public Faction faction { get; private set; }
     public List<CommunicationEvent> communicationLog;
     public List<DelayCommunication> delayedCommunications;
     [SerializeField] private Character character;

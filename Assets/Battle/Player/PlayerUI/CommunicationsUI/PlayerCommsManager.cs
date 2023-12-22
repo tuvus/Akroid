@@ -13,6 +13,7 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private GameObject characterPortraitPanel;
     [SerializeField] private Transform characterPortraitFrame;
     [SerializeField] private Text characterName;
+    [SerializeField] private Text factionName;
     private GameObject characterPortrait;
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
@@ -110,6 +111,7 @@ public class PlayerCommsManager : MonoBehaviour {
             characterPortrait = Instantiate(factionCommManager.GetPortrait(), characterPortraitFrame);
             characterPortraitPanel.SetActive(true);
             characterName.text = factionCommManager.GetSenderName();
+            factionName.text = factionCommManager.faction.name;
             portraitTime = 10;
         }
     }
