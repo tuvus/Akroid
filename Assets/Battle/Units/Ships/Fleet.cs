@@ -10,7 +10,7 @@ public class Fleet : ShipGroup {
     public Faction faction { get; private set; }
     public FleetAI FleetAI { get; private set; }
     string fleetName;
-    public float minFleetSpeed { get; private set; }
+    public float minShipSpeed { get; private set; }
     public float maxWeaponRange { get; private set; }
 
     public List<Unit> enemyUnitsInRange { get; protected set; }
@@ -29,7 +29,7 @@ public class Fleet : ShipGroup {
         }
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
-        minFleetSpeed = GetMinShipSpeed();
+        minShipSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
         FleetAI = GetComponent<FleetAI>();
         FleetAI.SetupFleetAI(this);
@@ -54,7 +54,7 @@ public class Fleet : ShipGroup {
         base.AddShip(ship);
         ship.fleet = this;
         if (setMinSpeed)
-            minFleetSpeed = GetMinShipSpeed();
+            minShipSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
     }
 
@@ -64,7 +64,7 @@ public class Fleet : ShipGroup {
         if (ships.Count == 0) {
             DisbandFleet();
         } else {
-            minFleetSpeed = GetMinShipSpeed();
+            minShipSpeed = GetMinShipSpeed();
             maxWeaponRange = GetMaxTurretRange();
         }
     }

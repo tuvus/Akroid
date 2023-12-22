@@ -43,47 +43,50 @@ public class PlayerFactionAI : FactionAI {
             // TODO: Put message about time controls here so the player can read at their own pace.
             commManager.SendCommunication(chapter1.planetFactionAI.faction, "Thanks for the goodbye! We will send you some resources soon.", 5);
             commManager.SendCommunication(faction,
-                "We have started heading for the new mining site. \n Right click and scroll to move the camera. Our ships will appear with a green icon, meaning that we own them but can't control them. Neutral units will appear grey and hostile units will appear red.", (communicationEvent) => {
+            "We have started heading for the new mining site. \n If I am talking too fast for you press the \"?\" key to pause and un-pause the game. The [<, >] keys can also change how quickly the game time passes.", (communicationEvent) => {
+                commManager.SendCommunication(faction,
+                "Right click and scroll to move the camera. Our ships will appear with a green icon, meaning that we own them but can't control them. Neutral units will appear grey and hostile units will appear red.", (communicationEvent) => {
                     commManager.SendCommunication(faction,
-                        "Now left click on ships and drag the mouse to select one or multiple ships. Our ships are in a fleet, which means if you select one, by default you will select all. Hold alt to select just one ship in a fleet. You can also press B to follow and unfollow a ship.", (communicationEvent) => {
+                    "Now left click on ships and drag the mouse to select one or multiple ships. Our ships are in a fleet, which means if you select one, by default you will select all. Hold alt to select just one ship in a fleet. You can also press B to follow and unfollow a ship.", (communicationEvent) => {
+                        commManager.SendCommunication(faction,
+                        "Right click on a ship or station to view its stats, cargo or construction bay. Right click again to close the panel. Try right clicking on each of your ships.", (communicationEvent) => {
                             commManager.SendCommunication(faction,
-                                "Right click on a ship or station to view its stats, cargo or construction bay. Right click again to close the panel. Try right clicking on each of your ships.", (communicationEvent) => {
-                                    commManager.SendCommunication(faction,
-                                    "This solar system has more stations than just the shipyard we just left. Zoom out and right click on all of the stations to view their unique menus.", (communicationEvent) => {
-                                        commManager.SendCommunication(faction,
-                                        "Now press G to toggle all of the unit icons while zoomed out. You can barely see the stations, planet and many asteroid fields. We are currently heading to a particularly dense asteroid field to mine.", (communicationEvent) => {
-                                            commManager.SendCommunication(new CommunicationEvent(faction,
-                                            "What difficulty would you like to play at? Harder difficulties will have a faster intro scene."
-                                            , new CommunicationEventOption[] {
-                                                new CommunicationEventOption("Easy", (communicationEvent) => { return true; }, (communicationEvent) => {
-                                                    if (!communicationEvent.isActive)
-                                                        return false;
-                                                    communicationEvent.DeactivateEvent();
-                                                    chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Easy);
-                                                    SetState(AIState.Background);
-                                                    return true; }),
-                                                new CommunicationEventOption("Normal", (communicationEvent) => { return true; }, (communicationEvent) => {
-                                                    if (!communicationEvent.isActive)
-                                                        return false;
-                                                    communicationEvent.DeactivateEvent();
-                                                    chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Normal);
-                                                    SetState(AIState.Background);
-                                                    return true; }),
-                                                new CommunicationEventOption("Hard", (communicationEvent) => { return true; }, (communicationEvent) => {
-                                                    if (!communicationEvent.isActive)
-                                                        return false;
-                                                    communicationEvent.DeactivateEvent();
-                                                    chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Hard);
-                                                    SetState(AIState.Background);
-                                                    return true; })
-                                            }, true), 30 * GetTimeScale());
-                                        }, 30 * GetTimeScale());
-                                    }, 35 * GetTimeScale());
-                                }, 35 * GetTimeScale());
-                        }, 25 * GetTimeScale());
+                            "This solar system has more stations than just the shipyard we just left. Zoom out and right click on all of the stations to view their unique menus.", (communicationEvent) => {
+                                commManager.SendCommunication(faction,
+                                "Now press G to toggle all of the unit icons while zoomed out. You can barely see the stations, planet and many asteroid fields. We are currently heading to a particularly dense asteroid field to mine.", (communicationEvent) => {
+                                    commManager.SendCommunication(new CommunicationEvent(faction,
+                                    "What difficulty would you like to play at? Harder difficulties will have a faster intro scene."
+                                    , new CommunicationEventOption[] {
+                                        new CommunicationEventOption("Easy", (communicationEvent) => { return true; }, (communicationEvent) => {
+                                            if (!communicationEvent.isActive)
+                                                return false;
+                                            communicationEvent.DeactivateEvent();
+                                            chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Easy);
+                                            SetState(AIState.Background);
+                                            return true; }),
+                                        new CommunicationEventOption("Normal", (communicationEvent) => { return true; }, (communicationEvent) => {
+                                            if (!communicationEvent.isActive)
+                                                return false;
+                                            communicationEvent.DeactivateEvent();
+                                            chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Normal);
+                                            SetState(AIState.Background);
+                                            return true; }),
+                                        new CommunicationEventOption("Hard", (communicationEvent) => { return true; }, (communicationEvent) => {
+                                            if (!communicationEvent.isActive)
+                                                return false;
+                                            communicationEvent.DeactivateEvent();
+                                            chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Hard);
+                                            SetState(AIState.Background);
+                                            return true; })
+                                    }, true), 30 * GetTimeScale());
+                                }, 30 * GetTimeScale());
+                            }, 35 * GetTimeScale());
+                         }, 35 * GetTimeScale());
+                     }, 25 * GetTimeScale());
                 }, 25 * GetTimeScale());
+             }, 25 * GetTimeScale());
         } else if (state == AIState.Background) {
-            chapter1.GetBattleManager().SetSimulationTimeScale(10);
+            chapter1.GetBattleManager().SetSimulationTimeScale(faction.ships[0].fleet.FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
             commManager.SendCommunication(faction,
             "See if you can locate and zoom in on the planet with the station, this is our home. \n Due to the slow development of resource reusing policy and climate change, resources are getting sparse, which is building tension between the major nations. Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.", (communicationEvent) => {
                 commManager.SendCommunication(faction,
@@ -96,11 +99,14 @@ public class PlayerFactionAI : FactionAI {
                             "There was a big boom in civilian space travel once a general purpose space ship came into production in our first designated shipyard.", (communicationEvent) => {
                                 commManager.SendCommunication(faction,
                                 "AI technology is also on the rise and may aid space exploration, but like all things, recent research has been limited by the resource crisis.", (communicationEvent) => {
-                                    if (!playerMiningStation.IsBuilt()) {
-                                        commManager.SendCommunication(faction,
-                                        "Now we have nothing to do but wait until we reach the mining site. \n Press the [<, >, ?] keys to change how quickly the game time passes. \n In the mean time feel free to click the \"Controls help\" button and read the controls.", (communicationEvent) => {
-                                        }, 15 * GetTimeScale());
-                                    }
+                                    commManager.SendCommunication(chapter1.planetFactionAI.faction,
+                                    "We are about to arrive at our destination!", (communicationEvent) => {
+                                        if (!playerMiningStation.IsBuilt()) {
+                                            commManager.SendCommunication(faction,
+                                            "Now we have nothing to do but wait until we reach the mining site. \n Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n In the mean time feel free to click the \"Controls help\" button and read the controls.", (communicationEvent) => {
+                                            });
+                                        }
+                                    }, 15 * GetTimeScale());
                                 }, 15 * GetTimeScale());
                             }, 15 * GetTimeScale());
                         }, 15 * GetTimeScale());
@@ -109,7 +115,7 @@ public class PlayerFactionAI : FactionAI {
             }, 5 * GetTimeScale());
         } else if (state == AIState.SettingUp) {
             commManager.SendCommunication(new CommunicationEvent(chapter1.shipyardFaction, "We have arrived safely at the destination and are setting up our operations.",
-                new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
+            new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
                 (communicationEvent) => {
                     if (!communicationEvent.isActive)
                         return false;
@@ -118,7 +124,8 @@ public class PlayerFactionAI : FactionAI {
                     communicationEvent.DeactivateEvent();
                     chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.", 3 * GetTimeScale());
                     return true;
-                }) }, true), 5 * GetTimeScale());
+                }) 
+            }, true), 5 * GetTimeScale());
         }
     }
 

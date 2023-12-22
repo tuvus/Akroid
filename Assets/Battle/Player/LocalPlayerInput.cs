@@ -216,8 +216,13 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     public void StopSimulationButtonPressed() {
-        timeStepIndex = 0;
-        Time.timeScale = timeSteps[timeStepIndex];
+        if (timeStepIndex != 0) {
+            timeStepIndex = 0;
+            Time.timeScale = timeSteps[timeStepIndex];
+        } else {
+            timeStepIndex = 1;
+            Time.timeScale = timeSteps[timeStepIndex];
+        }
     }
 
     void AltButtonDown() {
