@@ -160,7 +160,8 @@ public class PlayerStationUI : MonoBehaviour {
             button.onClick.AddListener(new UnityEngine.Events.UnityAction(() => ShipBlueprintButtonPressed(f)));
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.name;
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + blueprint.shipScriptableObject.cost.ToString();
+            cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
+            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + blueprint.shipScriptableObject.cost.ToString();
             if (LocalPlayer.Instance.GetFaction() != null) {
                 button.interactable = LocalPlayer.Instance.GetFaction().credits >= blueprint.shipScriptableObject.cost;
             } else {
@@ -200,7 +201,8 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => UpgradeBlueprintButtonPressed(upgradeDisplayUnit, system)));
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = upgradeComponent.name;
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = "Cost: " + ((upgradeComponent.cost - system.component.cost) * system.moduleCount);
+            cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
+            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + ((upgradeComponent.cost - system.component.cost) * system.moduleCount);
         }
         for (int i = upgradeableSystems.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
@@ -233,7 +235,7 @@ public class PlayerStationUI : MonoBehaviour {
             constructionBayButtonTransform.gameObject.SetActive(true);
             Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
             constructionBayButtonTransform.GetChild(0).GetComponent<Text>().text = blueprint.name.ToString();
-            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].name;
+            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].abbreviatedName;
             constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
             constructionBayButton.GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(blueprint.GetFaction()));
         }
@@ -272,7 +274,7 @@ public class PlayerStationUI : MonoBehaviour {
             hangerBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerButtonPressed(f)));
             hangerBayButtonTransform.gameObject.SetActive(true);
             hangerBayButtonTransform.GetChild(0).GetComponent<Text>().text = ship.GetUnitName();
-            hangerBayButtonTransform.GetChild(1).GetComponent<Text>().text = ship.faction.name;
+            hangerBayButtonTransform.GetChild(1).GetComponent<Text>().text = ship.faction.abbreviatedName;
             hangerBayButtonTransform.GetChild(2).GetComponent<Text>().text = ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
             hangerBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
         }

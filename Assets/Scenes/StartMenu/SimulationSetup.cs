@@ -16,6 +16,7 @@ public class SimulationSetup : MonoBehaviour {
     [SerializeField] private Transform factionList;
     [SerializeField] private GameObject editFactionPanel;
     [SerializeField] private InputField editFactionName;
+    [SerializeField] private InputField editFactionAbbreviation;
     [SerializeField] private InputField editFactionCredits;
     [SerializeField] private InputField editFactionScience;
     [SerializeField] private InputField editFactionShips;
@@ -56,10 +57,10 @@ public class SimulationSetup : MonoBehaviour {
         asteroidCountModifier = 1.2f;
         systemSizeModifier = 1;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", Random.Range(10000000, 100000000), 0, 4, 5));
-        factions.Add(new FactionData("Faction2", Random.Range(10000000, 100000000), 0, 4, 5));
-        factions.Add(new FactionData("Faction3", Random.Range(10000000, 100000000), 0, 4, 5));
-        factions.Add(new FactionData("Faction4", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction1", "F1", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction2", "F2", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction3", "F3", Random.Range(10000000, 100000000), 0, 4, 5));
+        factions.Add(new FactionData("Faction4", "F4", Random.Range(10000000, 100000000), 0, 4, 5));
         StartSimulation();
     }
 
@@ -100,9 +101,9 @@ public class SimulationSetup : MonoBehaviour {
             } else {
                 newName = newName + 1;
             }
-            factions.Add(new FactionData(newName, factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
+            factions.Add(new FactionData(newName, "F" + factions.Count.ToString(), factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
         } else {
-            factions.Add(new FactionData("New Faction", 1000000, 0, 1, 2));
+            factions.Add(new FactionData("New Faction", "F" + factions.Count.ToString(), 1000000, 0, 1, 2));
         }
         GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
         newFactionPrefab.name = factions[factions.Count - 1].name;
@@ -133,6 +134,7 @@ public class SimulationSetup : MonoBehaviour {
             selectedFaction = factionIndex;
             editFactionPanel.SetActive(true);
             editFactionName.SetTextWithoutNotify(factions[factionIndex].name);
+            editFactionAbbreviation.SetTextWithoutNotify(factions[factionIndex].abbreviatedName);
             editFactionCredits.SetTextWithoutNotify(factions[factionIndex].credits.ToString());
             editFactionScience.SetTextWithoutNotify(factions[factionIndex].science.ToString());
             editFactionShips.SetTextWithoutNotify(factions[factionIndex].ships.ToString());
@@ -142,7 +144,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void UpdateSelectedFaction() {
         try {
-            factions[selectedFaction] = new FactionData(editFactionName.text, long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
+            factions[selectedFaction] = new FactionData(editFactionName.text, editFactionAbbreviation.text, long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
         } catch {
 
         }

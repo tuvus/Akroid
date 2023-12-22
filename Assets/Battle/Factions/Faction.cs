@@ -11,6 +11,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [field: SerializeField] public new string name { get; private set; }
+    [field: SerializeField] public new string abbreviatedName { get; private set; }
     [field: SerializeField] public long credits { get; private set; }
     [field: SerializeField] public long science { get; private set; }
     public long researchCost { get; private set; }
@@ -61,15 +62,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public struct FactionData {
         public Type factionAI;
         public string name;
+        public string abbreviatedName;
         public Character leader;
         public long credits;
         public long science;
         public int ships;
         public int stations;
 
-        public FactionData(Type factionAI, string name, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, Character leader, long credits, long science, int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
+            this.abbreviatedName = abbreviatedName;
             this.leader = leader;
             this.credits = credits;
             this.science = science;
@@ -77,9 +80,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(string name, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(string name, string abbreviatedName, Character leader, long credits, long science, int ships, int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
+            this.abbreviatedName = abbreviatedName;
             this.leader = leader;
             this.credits = credits;
             this.science = science;
@@ -87,9 +91,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(Type factionAI, string name, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, long credits, long science, int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
+            this.abbreviatedName = abbreviatedName;
             this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
@@ -97,9 +102,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(string name, long credits, long science, int ships, int stations) {
+        public FactionData(string name, string abbreviatedName, long credits, long science, int ships, int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
+            this.abbreviatedName = abbreviatedName;
             this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
@@ -137,6 +143,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
         name = factionData.name;
+        abbreviatedName = factionData.abbreviatedName;
         credits = factionData.credits;
         science = factionData.science;
         researchCost = startingResearchCost;
