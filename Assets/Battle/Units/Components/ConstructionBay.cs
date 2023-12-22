@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Ship;
 
 public class ConstructionBay : ModuleComponent {
     ConstructionBayScriptableObject constructionBayScriptableObject;
@@ -21,8 +22,13 @@ public class ConstructionBay : ModuleComponent {
         buildQueue = new List<Ship.ShipConstructionBlueprint>(10);
     }
 
-    public void AddConstructionToQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
-        buildQueue.Add(shipBlueprint);
+    public bool AddConstructionToQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
+        if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, shipyard.faction)) {
+                shipyard.faction.UseCredits(shipBlueprint.cost);
+            buildQueue.Add(shipBlueprint);
+            return true;
+        }
+        return false;
     }
 
     public void AddConstructionToBeginningQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
@@ -30,6 +36,9 @@ public class ConstructionBay : ModuleComponent {
     }
 
     public void RemoveBlueprintFromQueue(int index) {
+        ShipConstructionBlueprint shipBlueprint = buildQueue[index];
+        shipyard.faction.AddCredits(shipBlueprint.cost);
+        shipyard.faction.TransferCredits(shipBlueprint.cost, shipBlueprint.GetFaction());
         buildQueue.RemoveAt(index);
     }
 

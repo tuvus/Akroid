@@ -158,12 +158,12 @@ public class PlanetFactionAI : FactionAI {
                     int randomNumber = Random.Range(0, 100);
                     if (friendlyStations.Count > 0 && (idleShip.dockedStation != null && randomNumber > 30) || (idleShip.dockedStation == null && randomNumber > 80)) {
                         idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 10f)));
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(2, 10f)));
                     } else {
                         if (idleShip.dockedStation != null)
-                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(1000, 3000))));
+                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(3000, 12000))));
                         else
-                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(300, 1000))));
+                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(1000, 5000))));
                         idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 3f)));
                     }
                 }

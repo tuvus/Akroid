@@ -128,6 +128,10 @@ public class Ship : Unit {
         public bool IsFinished() {
             return resourceCosts.Count == 0;
         }
+
+        public Faction GetFaction() {
+            return BattleManager.Instance.factions[factionIndex];
+        }
     }
     public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;

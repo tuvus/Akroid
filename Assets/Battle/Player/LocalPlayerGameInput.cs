@@ -126,8 +126,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateMoveCommand() {
         if (mouseOverUnit != null) {
-            UnitSelection.SelectionType selectionType = mouseOverUnit.GetSelectionTypeOfUnit();
-            if (selectionType != UnitSelection.SelectionType.Enemy) {
+            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit(mouseOverUnit);
+            if (relationType != LocalPlayer.RelationType.Enemy) {
                 if (mouseOverUnit.IsStation()) {
                     GiveCommandToAllSelectedUnits(Command.CreateDockCommand((Station)mouseOverUnit), GetCommandAction());
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
@@ -167,8 +167,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateAttackCommand() {
         if (mouseOverUnit != null) {
-            UnitSelection.SelectionType selectionType = mouseOverUnit.GetSelectionTypeOfUnit();
-            if (selectionType != UnitSelection.SelectionType.Enemy) {
+            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit(mouseOverUnit);
+            if (relationType != LocalPlayer.RelationType.Enemy) {
                 GiveCommandToAllSelectedUnits(Command.CreateProtectCommand(mouseOverUnit), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
             } else if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet != null) {

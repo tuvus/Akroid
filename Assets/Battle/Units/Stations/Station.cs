@@ -197,7 +197,6 @@ public class Station : Unit, IPositionConfirmer {
 
     /// <summary>
     /// Builds a ship from this station and adds it to the faction at factionIndex.
-    /// Charges the faction cost amount of credits.
     /// If Undock is true, docks then undocks the ship
     /// If undock is false, docks the ship
     /// If undock is null, it doesn't dock the ship at all.
@@ -208,19 +207,15 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="undock"></param>
     /// <returns></returns>
     public virtual Ship BuildShip(int factionIndex, ShipData shipData, long cost = 0, bool? undock = false) {
-        if (BattleManager.Instance.factions[factionIndex].TransferCredits(cost, faction)) {
-            faction.UseCredits(cost);
-            Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(factionIndex,shipData));
-            if (undock == null) { 
-            } else if ((bool)undock) {
-                newShip.DockShip(this);
-                newShip.UndockShip();
-            } else {
-                newShip.DockShip(this);
-            }
-            return newShip;
+        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(factionIndex,shipData));
+        if (undock == null) { 
+        } else if ((bool)undock) {
+            newShip.DockShip(this);
+            newShip.UndockShip();
+        } else {
+            newShip.DockShip(this);
         }
-        return null;
+        return newShip;
     }
 
     public override void Explode() {

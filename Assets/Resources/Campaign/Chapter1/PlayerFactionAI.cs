@@ -114,6 +114,7 @@ public class PlayerFactionAI : FactionAI {
                 }, 35 * GetTimeScale());
             }, 5 * GetTimeScale());
         } else if (state == AIState.SettingUp) {
+            chapter1.GetBattleManager().SetSimulationTimeScale(10);
             commManager.SendCommunication(new CommunicationEvent(chapter1.shipyardFaction, "We have arrived safely at the destination and are setting up our operations.",
             new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
                 (communicationEvent) => {

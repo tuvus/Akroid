@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitSelection : MonoBehaviour {
-    public enum SelectionType {
-        Neutral = 0,
-        Enemy = 1,
-        Friendly = 2,
-        Owned = 3,
-    }
     public enum SelectionStrength {
         Unselected = 0,
         Selected = 1,
@@ -37,20 +31,7 @@ public class UnitSelection : MonoBehaviour {
 
     public void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
-        switch (unit.GetSelectionTypeOfUnit()) {
-            case SelectionType.Neutral:
-                spriteRenderer.color = neutralColor;
-                break;
-            case SelectionType.Enemy:
-                spriteRenderer.color = enemyColor;
-                break;
-            case SelectionType.Friendly:
-                spriteRenderer.color = friendlyColor;
-                break;
-            case SelectionType.Owned:
-                spriteRenderer.color = ownedColor;
-                break;
-        }
+        spriteRenderer.color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToUnit(unit));
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
 

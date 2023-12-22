@@ -185,18 +185,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
             SelectUnit(UnitSelection.SelectionStrength.Unselected);
     }
 
-    public UnitSelection.SelectionType GetSelectionTypeOfUnit() {
-        if (LocalPlayer.Instance.GetFaction() == null)
-            return UnitSelection.SelectionType.Neutral;
-        if (LocalPlayer.Instance.ownedUnits.Contains(this))
-            return UnitSelection.SelectionType.Owned;
-        if (LocalPlayer.Instance.GetFaction() == faction)
-            return UnitSelection.SelectionType.Friendly;
-        if (LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(faction))
-            return UnitSelection.SelectionType.Enemy;
-        return UnitSelection.SelectionType.Neutral;
-    }
-
     public virtual void ShowUnit(bool show) {
         spriteRenderer.enabled = show;
         ActivateColliders(show);
