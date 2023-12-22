@@ -226,10 +226,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
         RemoveFromAllGroups();
     }
 
-    public virtual bool IsSelectable() {
-        return IsSpawned();
-    }
-
     public virtual bool IsTargetable() {
         return IsSpawned();
     }

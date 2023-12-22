@@ -129,7 +129,7 @@ public class BattleManager : MonoBehaviour {
             PrespawnNewMissile();
         }
         for (int i = 0; i < starCount; i++) {
-            CreateNewStar();
+            CreateNewStar("Star" + (i + 1));
         }
         for (int i = 0; i < asteroidFieldCount; i++) {
             CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
@@ -276,10 +276,10 @@ public class BattleManager : MonoBehaviour {
         return newStation;
     }
 
-    public void CreateNewStar() {
+    public void CreateNewStar(string name) {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
         Star newStar = Instantiate(starPrefab, GetStarTransform()).GetComponent<Star>();
-        newStar.SetupStar(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
+        newStar.SetupStar(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
     }
 

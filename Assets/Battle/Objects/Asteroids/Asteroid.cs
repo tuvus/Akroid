@@ -34,6 +34,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         this.position = transform.position;
         float greyColor = Random.Range(0.3f, 0.7f);
         spriteRenderer.color = new Color(greyColor, greyColor, greyColor, 1);
+        Spawn();
     }
 
     protected override float SetupSize() {

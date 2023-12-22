@@ -38,7 +38,7 @@ public class Chapter1 : CampaingController {
         metalCost = 2.4f;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
-            battleManager.CreateNewStar();
+            battleManager.CreateNewStar("Star" + (i + 1));
         }
         playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "PlayerFaction", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();

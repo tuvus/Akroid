@@ -10,10 +10,11 @@ public class Star : BattleObject, IPositionConfirmer {
     float targetBrightness;
     float brightnessSpeed;
 
-    public void SetupStar(BattleManager.PositionGiver positionGiver) {
+    public void SetupStar(string name, BattleManager.PositionGiver positionGiver) {
         float scale = UnityEngine.Random.Range(30, 100);
         transform.localScale = new Vector2(scale, scale);
         base.SetupBattleObject(positionGiver, UnityEngine.Random.Range(0, 360));
+        objectName = name;
         glareRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         spriteRenderer.color = color;
@@ -25,6 +26,7 @@ public class Star : BattleObject, IPositionConfirmer {
             transform.position = positionGiver.position;
         this.position = transform.position;
         RandomiseGlareTarget();
+        Spawn();
     }
 
     protected override float SetupSize() {

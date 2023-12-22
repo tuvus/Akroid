@@ -5,7 +5,6 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
-    public string planetName { get; protected set; }
     [field: SerializeField] public long population { get; protected set; }
 
     public float rotationSpeed;
@@ -17,7 +16,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation) {
         this.faction = faction;
         base.SetupBattleObject(positionGiver, rotation);
-        this.planetName = name;
+        objectName = name;
         this.population = population;
         this.rateOfGrowth = rateOfGrowth;
         SetPopulationTarget(population);
@@ -25,6 +24,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
+        Spawn();
     }
 
     public void UpdatePlanet(float deltaTime) {

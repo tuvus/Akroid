@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -83,7 +85,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     public virtual void UpdatePlayer() {
-        mouseOverBattleObject = GetUnitOverMouse();
+        mouseOverBattleObject = GetBattleObjectOverMouse();
         if (primaryMousePressed)
             PrimaryMouseHeld();
         if (secondaryMousePressed)
@@ -255,21 +257,32 @@ public class LocalPlayerInput : MonoBehaviour {
         LocalPlayer.Instance.GetPlayerUI().ToggleUnitZoomIndicators();
     }
 
-    Unit GetUnitOverMouse() {
-        Unit unit = null;
+    BattleObject GetBattleObjectOverMouse() {
+        BattleObject battleObject = null;
         float distance = float.MaxValue;
-        for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
-            Unit targetUnit = BattleManager.Instance.GetAllUnits()[i];
+        foreach (Unit targetUnit in BattleManager.Instance.GetAllUnits()) {
             if (!targetUnit.IsSelectable()) {
                 continue;
             }
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.transform.position);
-            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
-                unit = targetUnit;
+            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, (targetUnit).GetZoomIndicatorSize()) && tempDistance < distance) {
+                battleObject = targetUnit;
                 distance = tempDistance;
             }
         }
-        return unit;
+        List<BattleObject> battleObjects = new List<BattleObject>(new List<BattleObject>(BattleManager.Instance.stars));
+        battleObjects.AddRange(BattleManager.Instance.planets);
+        foreach (BattleObject targetObject in battleObjects) {
+            if (!targetObject.IsSelectable()) {
+                continue;
+            }
+            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.transform.position);
+            if (tempDistance < targetObject.GetSize() && tempDistance < distance) {
+                battleObject = targetObject;
+                distance = tempDistance;
+            }
+        }
+        return battleObject;
     }
 
     public virtual void UnitDestroyed(Unit unit) {

@@ -122,6 +122,10 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         return spawned;
     }
 
+    public virtual bool IsSelectable() {
+        return IsSpawned();
+    }
+
     [ContextMenu("GetObjectSize")]
     private void ManualLogSize() {
         spriteRenderer = GetComponent<SpriteRenderer>();
