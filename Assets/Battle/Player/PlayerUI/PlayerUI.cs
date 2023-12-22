@@ -17,6 +17,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerCommsManager playerCommsManager;
     [SerializeField] private PlayerMenueUI playerMenueUI;
     [SerializeField] private PlayerStationUI playerStationUI;
+    [SerializeField] private PlayerPlanetUI playerPlanetUI;
     [SerializeField] private PlayerShipUI playerShipUI;
     [SerializeField] private PlayerFactionOverviewUI playerFactionOverviewUI;
     [SerializeField] private GameObject factionUI;
@@ -36,6 +37,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private Text victoryRealTime;
     [SerializeField] private GameObject stationUI;
     [SerializeField] private GameObject shipUI;
+    [SerializeField] private GameObject planetUI;
     [SerializeField] private GameObject factionOverviewUI;
 
 
@@ -48,7 +50,7 @@ public class PlayerUI : MonoBehaviour {
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         Instance = this;
         this.localPlayerInput = localPlayerInput;
-        CloseAllMenues();
+        CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
@@ -59,6 +61,7 @@ public class PlayerUI : MonoBehaviour {
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
         playerShipUI.SetupPlayerShipUI(this);
+        playerPlanetUI.SetupPlayerPlanetUI(this);
         playerFactionOverviewUI.SetupFactionOverviewUI(this);
     }
 
@@ -90,6 +93,9 @@ public class PlayerUI : MonoBehaviour {
         if (shipUI.activeSelf) {
             playerShipUI.UpdateShipUI();
         }
+        if (planetUI.activeSelf) {
+            playerPlanetUI.UpdatePlanetUI();
+        }
         if (factionOverviewUI.activeSelf) {
             playerFactionOverviewUI.UpdateFactionOverviewUI(GetLocalPlayer().GetFaction());
         }
@@ -115,7 +121,7 @@ public class PlayerUI : MonoBehaviour {
 
     #region MenueUIs
     public void ShowControlList(bool shown) {
-        CloseAllMenues();
+        CloseAllMenus();
         controlsListUI.SetActive(shown);
     }
 
@@ -124,7 +130,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ShowMenueUI(bool shown) {
-        CloseAllMenues();
+        CloseAllMenus();
         menuUI.SetActive(shown);
     }
 
@@ -136,7 +142,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ShowVictoryUI(bool shown) {
-        CloseAllMenues();
+        CloseAllMenus();
         victoryUI.SetActive(shown);
     }
 
@@ -149,7 +155,7 @@ public class PlayerUI : MonoBehaviour {
 
     public void ShowStationUI(bool shown) {
         stationUI.SetActive(false);
-        CloseAllMenues();
+        CloseAllMenus();
         stationUI.SetActive(shown);
         if (!shown)
             playerStationUI.DisplayStation(null);
@@ -168,9 +174,30 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void ShowPlanetUI(bool shown) {
+        planetUI.SetActive(false);
+        CloseAllMenus();
+        planetUI.SetActive(shown);
+        if (!shown)
+            playerPlanetUI.DisplayPlanet(null);
+    }
+
+    public void SetDisplayedPlanet(Planet planet) {
+        if (!planetUI.activeSelf) {
+            ShowPlanetUI(true);
+            playerPlanetUI.DisplayPlanet(planet);
+            return;
+        }
+        if (playerPlanetUI.displayedPlanet == planet) {
+            playerPlanetUI.UpdatePlanetUI();
+        } else {
+            playerPlanetUI.DisplayPlanet(planet);
+        }
+    }
+
     public void ShowShipUI(bool shown) {
         shipUI.SetActive(false);
-        CloseAllMenues();
+        CloseAllMenus();
         shipUI.SetActive(shown);
         if (!shown)
             playerShipUI.DisplayShip(null);
@@ -190,11 +217,11 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ShowResearchUI(bool shown) {
-        CloseAllMenues();
+        CloseAllMenus();
         factionOverviewUI.SetActive(shown);
     }
 
-    public void CloseAllMenues() {
+    public void CloseAllMenus() {
         menuUI.SetActive(false);
         controlsListUI.SetActive(false);
         victoryUI.SetActive(false);
@@ -203,6 +230,9 @@ public class PlayerUI : MonoBehaviour {
         }
         if (shipUI.activeSelf) {
             shipUI.SetActive(false);
+        }
+        if (planetUI.activeSelf) {
+            planetUI.SetActive(false);
         }
         if (factionOverviewUI.activeSelf) {
             factionOverviewUI.SetActive(false);
@@ -262,7 +292,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || factionOverviewUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf;
     }
 
     public LocalPlayer GetLocalPlayer() {

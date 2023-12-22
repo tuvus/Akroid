@@ -200,10 +200,13 @@ public class LocalPlayerInput : MonoBehaviour {
                 } else if (rightClickedBattleObject.IsStation()) {
                     LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedBattleObject);
                     rightClickedBattleObject = null;
+                } else if (rightClickedBattleObject.IsPlanet()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedPlanet((Planet)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
                 }
             }
         } else {
-            LocalPlayer.Instance.GetPlayerUI().CloseAllMenues();
+            LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
         }
     }
 
@@ -237,7 +240,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     void EscapeButtonPressed() {
         if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
-            LocalPlayer.Instance.GetPlayerUI().CloseAllMenues();
+            LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
             return;
         }
         LocalPlayer.Instance.GetPlayerUI().ToggleMenueUI();
