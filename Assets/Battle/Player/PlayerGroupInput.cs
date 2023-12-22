@@ -44,10 +44,10 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             SelectOnlyControllableUnits();
             SetGroupToUnits(selectedUnits, buttonNumber);
         } else if (!SelectGroup(buttonNumber)) {
-            selectedUnits.UnselectAllUnits();
+            selectedUnits.UnselectAllBattleObjects();
             selectedUnits.ClearGroup();
             selectedUnits.CopyGroup(groups[buttonNumber]);
-            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
             if (groups[buttonNumber].groupType == SelectionGroup.GroupType.Fleet)
                 SetDisplayedFleet(groups[buttonNumber].fleet);
             else
@@ -56,8 +56,8 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         }
     }
 
-    protected override void ClearSelectedUnits() {
-        base.ClearSelectedUnits();
+    protected override void ClearSelectedBattleObjects() {
+        base.ClearSelectedBattleObjects();
         selectedGroup = -1;
     }
 

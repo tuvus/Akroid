@@ -556,7 +556,7 @@ public class Ship : Unit {
 
         mass = SetupSize() * 100;
         thrust /= mass;
-        print(unitName + "Thrust:" + thrust);
+        print(objectName + "Thrust:" + thrust);
     }
     #endregion
 }

@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
     public string planetName { get; protected set; }
-    public Faction faction { get; protected set; }
+    [field: SerializeField] public long population { get; protected set; }
 
-    [SerializeField] long population;
-
+    public float rotationSpeed;
     public double rateOfGrowth;
     [SerializeField] long carryingCapacity;
-    [SerializeField] long stargingPop;
+    [SerializeField] long startingPop;
     [SerializeField] float timeSinceStart;
 
     public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation) {
@@ -21,16 +21,21 @@ public class Planet : BattleObject, IPositionConfirmer {
         this.population = population;
         this.rateOfGrowth = rateOfGrowth;
         SetPopulationTarget(population);
+        rotationSpeed *= Random.Range(.5f, 1.5f);
+        if (Random.Range(-1, 1) < 0) {
+            rotationSpeed *= -1;
+        }
     }
 
     public void UpdatePlanet(float deltaTime) {
         timeSinceStart += deltaTime;
-        population = (long)((carryingCapacity / (1 + ((carryingCapacity / stargingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
+        population = (long)((carryingCapacity / (1 + ((carryingCapacity / startingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
+        SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
     }
 
     public void SetPopulationTarget(long carryingCapacity) {
         timeSinceStart = 0;
-        stargingPop = population;
+        startingPop = population;
         this.carryingCapacity = carryingCapacity;
     }
 

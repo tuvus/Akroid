@@ -77,7 +77,7 @@ public class PlayerUI : MonoBehaviour {
         if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
             unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
         }
-        UpdateDisplayedUnitUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedUnit(), unitCount);
+        UpdateDisplayedUnitUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
@@ -97,15 +97,15 @@ public class PlayerUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-    public void UpdateDisplayedUnitUI(Fleet fleet, Unit unit, int unitCount) {
-        if (unit == null || !unit.IsSpawned()) {
+    public void UpdateDisplayedUnitUI(Fleet fleet, BattleObject battleObject, int unitCount) {
+        if (battleObject == null || !battleObject.IsSpawned()) {
             shipStatusUI.DeselectPlayerUnitStatusUI();
             //shipFuelCellsUI.DeleteFuelCellUI();
-        } else {
+        } else if (battleObject.IsUnit()) {
             if (fleet != null)
-                shipStatusUI.RefreshPlayerUnitStatusUI(fleet, unit, unitCount);
+                shipStatusUI.RefreshPlayerUnitStatusUI(fleet, (Unit)battleObject, unitCount);
             else
-                shipStatusUI.RefreshPlayerUnitStatusUI(unit, unitCount);
+                shipStatusUI.RefreshPlayerUnitStatusUI((Unit)battleObject, unitCount);
         }
     }
 

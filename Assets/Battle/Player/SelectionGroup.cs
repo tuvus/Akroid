@@ -1,25 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
 public class SelectionGroup {
     public enum GroupType {
-        Station = -2,
-        Ship = -1,
+        Station = -4,
+        Ship = -3,
+        Unit = -2,
+        Object = -1,
         None = 0,
-        Ships = 1,
-        Units = 2,
-        Fleet = 3,
+        Objects = 1,
+        Ships = 2,
+        Units = 3,
+        Fleet = 4,
     }
     public GroupType groupType;
 
-    public List<Unit> units = new List<Unit>();
+    public List<BattleObject> objects = new List<BattleObject>();
     public Fleet fleet;
 
     public void ClearGroup() {
-        units.Clear();
+        objects.Clear();
         fleet = null;
         groupType = GroupType.None;
     }
@@ -32,14 +36,14 @@ public class SelectionGroup {
             }
             return fleetUnits;
         }
-        return units;
+        return objects.Where(obj => obj.IsUnit()).Cast<Unit>().ToList();
     }
 
     public List<Ship> GetAllShips(Faction faction = null) {
         List<Ship> listOfShips = new List<Ship>();
-        foreach (Unit unit in units) {
-            if (unit.IsShip()) {
-                Ship ship = (Ship)unit;
+        foreach (BattleObject battleObject in objects) {
+            if (battleObject.IsShip()) {
+                Ship ship = (Ship)battleObject;
                 if (faction != null) {
                     if (ship.faction == faction)
                         listOfShips.Add(ship);
@@ -53,9 +57,9 @@ public class SelectionGroup {
 
     public List<Station> GetAllStations(Faction faction = null) {
         List<Station> listOfStations = new List<Station>();
-        foreach (Unit unit in units) {
-            if (unit.IsStation()) {
-                Station station = (Station)unit;
+        foreach (BattleObject battleObject in objects) {
+            if (battleObject.IsStation()) {
+                Station station = (Station)battleObject;
                 if (faction != null) {
                     if (station.faction == faction)
                         listOfStations.Add(station);
@@ -67,23 +71,24 @@ public class SelectionGroup {
         return listOfStations;
     }
 
-    public bool ContainsUnit(Unit unit) {
-        return units.Contains(unit);
+    public bool ContainsObject(BattleObject battleObject) {
+        return objects.Contains(battleObject);
     }
+
 
     public bool HasShip() {
         if (groupType == GroupType.Fleet && fleet.GetShips().Count > 0)
             return true;
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsShip())
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsShip())
                 return true;
         }
         return false;
     }
 
     public bool HasStation() {
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsStation())
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsStation())
                 return true;
         }
         return false;
@@ -91,22 +96,24 @@ public class SelectionGroup {
 
     public void SetShips(List<Ship> shipList) {
         ClearGroup();
-        units.AddRange(shipList);
+        objects.AddRange(shipList);
         groupType = GroupType.Ships;
     }
 
     public void AddShips(List<Ship> shipList) {
-        units.AddRange(shipList);
+        objects.AddRange(shipList);
     }
 
     public void AddShip(Ship ship) {
-        units.Add(ship);
+        objects.Add(ship);
         if (groupType == GroupType.Ship)
             groupType = GroupType.Ships;
         else if (groupType == GroupType.None)
             groupType = GroupType.Ship;
-        else if (groupType == GroupType.Station)
+        else if (groupType == GroupType.Station || groupType == GroupType.Unit)
             groupType = GroupType.Units;
+        else if (groupType == GroupType.Object)
+            groupType = GroupType.Objects;
     }
 
     public List<Ship> GetShipsOfClass(Ship.ShipClass shipClass) {
@@ -121,30 +128,34 @@ public class SelectionGroup {
 
     public void SetUnits(List<Unit> unitList) {
         ClearGroup();
-        units.AddRange(unitList);
+        objects.AddRange(unitList);
         groupType = GroupType.Units;
     }
 
     public void CopyGroup(SelectionGroup group) {
         this.groupType = group.groupType;
-        foreach (var unit in group.units) {
-            units.Add(unit);
+        foreach (var unit in group.objects) {
+            objects.Add(unit);
         }
         this.fleet = group.fleet;
     }
 
     public void AddUnits(List<Unit> unitList) {
-        units.AddRange(unitList);
+        objects.AddRange(unitList);
         groupType = GroupType.Units;
     }
 
     public void AddUnits(SelectionGroup unitGroup) {
-        AddUnits(unitGroup.units);
+        AddUnits(unitGroup.GetAllUnits());
     }
 
     public void AddUnit(Unit unit) {
-        units.Add(unit);
-        groupType = GroupType.Units;
+        objects.Add(unit);
+        if (groupType == GroupType.Object || groupType == GroupType.Objects)
+            groupType = GroupType.Objects;
+        else if (groupType == GroupType.None)
+            groupType = GroupType.Unit;
+        else groupType = GroupType.Units;
     }
 
     public void RemoveUnit(Unit unit) {
@@ -157,8 +168,29 @@ public class SelectionGroup {
                     AddShip((Ship)groupUnits[i]);
                 }
             } else {
-                units.Remove(unit);
+                objects.Remove(unit);
             }
+        }
+    }
+
+    public void AddBattleObject(BattleObject battleObject) {
+        objects.Add(battleObject);
+        if (groupType == GroupType.None)
+            groupType = GroupType.Object;
+        else
+            groupType = GroupType.Objects;
+    }
+
+    public void AddBattleObjects(List<BattleObject> battleObject) {
+        objects.AddRange(battleObject);
+        groupType = GroupType.Objects;
+    }
+
+    public void RemoveBattleObject(BattleObject battleObject) {
+        if (battleObject.IsUnit()) { 
+            RemoveUnit((Unit)battleObject);
+        } else {
+            objects.Remove(battleObject);
         }
     }
 
@@ -170,9 +202,9 @@ public class SelectionGroup {
     public Ship GetShip() {
         if (groupType == GroupType.Fleet)
             return fleet.GetShips()[0];
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsShip())
-                return (Ship)units[i];
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsShip())
+                return (Ship)objects[i];
         }
         return null;
     }
@@ -182,18 +214,18 @@ public class SelectionGroup {
     /// </summary>
     /// <returns>the first station in the group</returns>
     public Station GetStation() {
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsStation())
-                return (Station)units[i];
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsStation())
+                return (Station)objects[i];
         }
         return null;
     }
 
     //Takes out all non ship units in units
     public void ConvertToShips() {
-        for (int i = 0; i < units.Count; i++) {
-            if ((Ship)units[i] == null) {
-                units.RemoveAt(i);
+        for (int i = 0; i < objects.Count; i++) {
+            if ((Ship)objects[i] == null) {
+                objects.RemoveAt(i);
             }
         }
     }
@@ -201,7 +233,7 @@ public class SelectionGroup {
     public void SetShip(Ship ship) {
         if (ship != null) {
             ClearGroup();
-            units.Add(ship);
+            objects.Add(ship);
             groupType = GroupType.Ship;
         } else {
             ClearGroup();
@@ -229,29 +261,27 @@ public class SelectionGroup {
     public int GetUnitCount() {
         if (groupType == GroupType.Fleet)
             return fleet.GetShips().Count;
-        return units.Count;
+        return objects.Count;
     }
 
     public void RemoveAllNonCombatShips() {
-        for (int i = units.Count - 1; i >= 0; i--) {
-            if (!units[i].IsShip() || !((Ship)units[i]).IsCombatShip()) {
-                units[i].SelectUnit(UnitSelection.SelectionStrength.Unselected);
-                units.RemoveAt(i);
+        for (int i = objects.Count - 1; i >= 0; i--) {
+            if (!objects[i].IsShip() || !((Ship)objects[i]).IsCombatShip()) {
+                objects[i].SelectObject(UnitSelection.SelectionStrength.Unselected);
+                objects.RemoveAt(i);
             }
         }
     }
 
-    public void SelectAllUnits(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
-        foreach (Unit unit in units) {
-            unit.SelectUnit(strength);
-        }
+    public void SelectAllBattleObjects(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
+        objects.ForEach(obj => obj.SelectObject(strength));
         if (fleet != null) {
             fleet.SelectFleet(strength);
         }
     }
 
-    public void UnselectAllUnits() {
-        SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
+    public void UnselectAllBattleObjects() {
+        SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
     }
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {
@@ -259,34 +289,34 @@ public class SelectionGroup {
             fleet.FleetAI.AddUnitAICommand(command, commandAction);
             return;
         }
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsSpawned() && units[i].IsShip()) {
-                ((Ship)units[i]).shipAI.AddUnitAICommand(command, commandAction);
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsSpawned() && objects[i].IsShip()) {
+                ((Ship)objects[i]).shipAI.AddUnitAICommand(command, commandAction);
             }
         }
     }
 
     public void ClearCommands() {
-        for (int i = 0; i < units.Count; i++) {
-            if (units[i].IsShip()) {
-                ((Ship)units[i]).shipAI.ClearCommands();
+        for (int i = 0; i < objects.Count; i++) {
+            if (objects[i].IsShip()) {
+                ((Ship)objects[i]).shipAI.ClearCommands();
             }
         }
     }
 
     public void RemoveAnyUnitsNotInList(List<Unit> unitList) {
-        for (int i = units.Count - 1; i >= 0; i--) {
-            if (!unitList.Contains(units[i])) {
-                units[i].UnselectUnit();
-                units.RemoveAt(i);
+        for (int i = objects.Count - 1; i >= 0; i--) {
+            if (!unitList.Contains(objects[i])) {
+                objects[i].UnselectObject();
+                objects.RemoveAt(i);
             }
         }
     }
 
     public void RemoveAnyNullUnits() {
-        for (int i = units.Count - 1; i >= 0; i--) {
-            if (units[i] == null || !units[i].IsSpawned()) {
-                units.RemoveAt(i);
+        for (int i = objects.Count - 1; i >= 0; i--) {
+            if (objects[i] == null || !objects[i].IsSpawned()) {
+                objects.RemoveAt(i);
             }
         }
     }
@@ -295,23 +325,23 @@ public class SelectionGroup {
         int totalHealth = 0;
         if (groupType == GroupType.Fleet)
             totalHealth += fleet.GetTotalFleetHealth();
-        for (int i = 0; i < units.Count; i++) {
-            totalHealth += units[i].GetTotalHealth();
-        }
+        totalHealth = objects.Sum(obj => { 
+            if (obj.IsUnit()) return 0; 
+            return ((Unit)obj).GetTotalHealth(); });
         return totalHealth;
     }
 
     public bool ContainsOnlyConstructionShips() {
-        for(int i = 0;i < units.Count;i++) {
-            if (!units[i].IsShip() || !((Ship)units[i]).IsConstructionShip())
+        for(int i = 0;i < objects.Count;i++) {
+            if (!objects[i].IsShip() || !((Ship)objects[i]).IsConstructionShip())
                 return false;
         }
         return true;
     }
 
     public bool ContainsOnlyScienceShips() {
-        for (int i = 0; i < units.Count; i++) {
-            if (!units[i].IsShip() || !((Ship)units[i]).IsScienceShip())
+        for (int i = 0; i < objects.Count; i++) {
+            if (!objects[i].IsShip() || !((Ship)objects[i]).IsScienceShip())
                 return false;
         }
         return true;

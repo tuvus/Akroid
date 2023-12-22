@@ -6,10 +6,7 @@ using UnityEngine.Profiling;
 [RequireComponent(typeof(ModuleSystem))]
 public abstract class Unit : BattleObject, IParticleHolder {
     public UnitScriptableObject UnitScriptableObject { get; private set; }
-    [SerializeField] protected string unitName;
     [field: SerializeField] public ModuleSystem moduleSystem { get; private set; }
-    [field: SerializeField] public Faction faction { get; protected set; }
-    private bool spawned;
     private UnitGroup group;
 
     protected int health;
@@ -34,7 +31,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         base.SetupBattleObject(positionGiver, rotation);
         moduleSystem = GetComponent<ModuleSystem>();
         moduleSystem.SetupModuleSystem(this,unitScriptableObject);
-        this.unitName = name;
+        this.objectName = name;
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
@@ -156,10 +153,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
     #endregion
 
     #region UnitControlls
-    public void SetRotation(float rotation) {
-        transform.eulerAngles = new Vector3(0, 0, rotation);
-    }
-
     public virtual int TakeDamage(int damage) {
         if (IsSpawned()) {
             health -= damage;
@@ -171,18 +164,18 @@ public abstract class Unit : BattleObject, IParticleHolder {
             }
             return 0;
         }
-        Debug.LogWarning("Unit not spawned is taking damage" + unitName + " position:" + GetPosition());
+        Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
         return 0;
     }
 
-    public void SelectUnit(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        if (spawned)
+    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
+        if (IsSpawned())
             unitSelection.SetSelected(selectionStrength);
     }
 
-    public void UnselectUnit() {
-        if (spawned)
-            SelectUnit(UnitSelection.SelectionStrength.Unselected);
+    public override void UnselectObject() {
+        if (IsSpawned())
+            SelectObject(UnitSelection.SelectionStrength.Unselected);
     }
 
     public virtual void ShowUnit(bool show) {
@@ -200,12 +193,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         }
     }
 
-    protected void Spawn() {
-        spawned = true;
-    }
-
-    protected void Despawn(bool removeImmediately) {
-        spawned = false;
+    protected override void Despawn(bool removeImmediately) {
         health = 0;
         ActivateColliders(false);
         unitSelection.ShowUnitSelection(false);
@@ -238,16 +226,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
         RemoveFromAllGroups();
     }
 
-    public virtual bool IsSpawned() {
-        return spawned;
-    }
-
     public virtual bool IsSelectable() {
-        return spawned;
+        return IsSpawned();
     }
 
     public virtual bool IsTargetable() {
-        return spawned;
+        return IsSpawned();
     }
     #endregion
 
@@ -304,7 +288,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public string GetUnitName() {
-        return unitName;
+        return objectName;
     }
 
     public int GetHealth() {
@@ -386,14 +370,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return turrets.Count > 0 || missileLaunchers.Count > 0;
     }
 
-    public bool IsShip() {
-        return this is Ship;
-    }
-
-    public bool IsStation() {
-        return this is Station;
-    }
-
     public virtual List<Unit> GetEnemyUnitsInRange() {
         return enemyUnitsInRange;
     }
@@ -426,7 +402,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         foreach (var missileLauncher in GetComponentsInChildren<MissileLauncher>()) {
             dps += missileLauncher.GetDamagePerSecond();
         }
-        print(unitName + "Dps:" + dps);
+        print(objectName + "Dps:" + dps);
     }
 
     [ContextMenu("ForceDestroy")]

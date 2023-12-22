@@ -15,7 +15,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     float maxRightClickDistance;
 
     [SerializeField] protected SelectionGroup selectedUnits;
-    private SelectionGroup unitsInSelectionBox;
+    private SelectionGroup objectsInSelectionBox;
 
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
@@ -23,7 +23,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     public override void Setup() {
         base.Setup();
         selectedUnits = new SelectionGroup();
-        unitsInSelectionBox = new SelectionGroup();
+        objectsInSelectionBox = new SelectionGroup();
 
         GetPlayerInput().Player.SetModifier.started += context => SetButtonDown();
         GetPlayerInput().Player.SetModifier.canceled += context => SetButtonUp();
@@ -37,7 +37,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     public override void ChangeFaction() {
         base.ChangeFaction();
         EndBoxSelection();
-        selectedUnits.UnselectAllUnits();
+        selectedUnits.UnselectAllBattleObjects();
         SelectGroup(-1);
     }
 
@@ -90,7 +90,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.SecondaryMouseUp();
         //EndBoxSelection();
         if (maxRightClickDistance < 1) {
-            if (rightClickedUnit == null) {
+            if (rightClickedBattleObject == null) {
                 //CreateShipCommand(GetMouseWorldPosition());
             } else {
                 if (selectedUnits.GetAllShips().Count > 0) {
@@ -122,7 +122,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     protected virtual void AllCombatUnitsButtonPressed() {
         if (!SelectGroup(10)) {
-            selectedUnits.UnselectAllUnits();
+            selectedUnits.UnselectAllBattleObjects();
             selectedUnits.ClearGroup();
             if (LocalPlayer.Instance.ownedUnits == null)
                 return;
@@ -131,7 +131,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                     selectedUnits.AddShip((Ship)unit);
                 }
             }
-            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
     }
@@ -140,16 +140,16 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         actionType = ActionType.Selecting;
         boxStartPosition = mousePosition;
         if (!AdditiveButtonPressed) {
-            ClearSelectedUnits();
+            ClearSelectedBattleObjects();
         }
     }
 
     void UpdateBoxSelection(Vector2 mousePosition) {
         if (!AdditiveButtonPressed) {
-            unitsInSelectionBox.UnselectAllUnits();
-            selectedUnits.SelectAllUnits();
+            objectsInSelectionBox.UnselectAllBattleObjects();
+            selectedUnits.SelectAllBattleObjects();
         }
-        unitsInSelectionBox.ClearGroup();
+        objectsInSelectionBox.ClearGroup();
         if (Vector2.Distance(mousePosition, boxStartPosition) < 2) {
             selectionBox.gameObject.SetActive(false);
             return;
@@ -162,35 +162,35 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         Vector2 bottomLeft = selectionBox.anchoredPosition - (selectionBox.sizeDelta / 2);
         Vector2 topRight = selectionBox.anchoredPosition + (selectionBox.sizeDelta / 2);
 
-        if (rightClickedUnit != null)
-            unitsInSelectionBox.AddUnit(rightClickedUnit);
-        if (mouseOverUnit != null)
-            unitsInSelectionBox.AddUnit(mouseOverUnit);
+        if (rightClickedBattleObject != null)
+            objectsInSelectionBox.AddBattleObject(rightClickedBattleObject);
+        if (mouseOverBattleObject != null)
+            objectsInSelectionBox.AddBattleObject(mouseOverBattleObject);
 
         foreach (Unit unit in BattleManager.Instance.GetAllUnits()) {
-            if (!unit.IsSelectable() || unit == rightClickedUnit || unit == mouseOverUnit)
+            if (!unit.IsSelectable() || unit == rightClickedBattleObject || unit == mouseOverBattleObject)
                 continue;
             Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.transform.position);
             if (screenPosition.x > bottomLeft.x && screenPosition.x < topRight.x && screenPosition.y > bottomLeft.y && screenPosition.y < topRight.y)
-                unitsInSelectionBox.AddUnit(unit);
+                objectsInSelectionBox.AddUnit(unit);
         }
-        unitsInSelectionBox.SelectAllUnits(UnitSelection.SelectionStrength.Highlighted);
+        objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Highlighted);
     }
 
     void EndBoxSelection() {
         actionType = ActionType.None;
         selectionBox.gameObject.SetActive(false);
         if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
-            if (mouseOverUnit != null) {
+            if (mouseOverBattleObject != null) {
                 selectedGroup = -1;
-                if (AdditiveButtonPressed && !(selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverUnit.IsShip() && ((Ship)mouseOverUnit).fleet == selectedUnits.fleet)) {
-                    ToggleSelectedUnit(mouseOverUnit);
+                if (AdditiveButtonPressed && !(selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverBattleObject.IsShip() && ((Ship)mouseOverBattleObject).fleet == selectedUnits.fleet)) {
+                    ToggleSelectedUnit(mouseOverBattleObject);
                 } else {
-                    SelectUnits(mouseOverUnit);
+                    SelectBattleObjects(mouseOverBattleObject);
                 }
             } else if (!AdditiveButtonPressed) {
-                unitsInSelectionBox.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
-                unitsInSelectionBox.ClearGroup();
+                objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
+                objectsInSelectionBox.ClearGroup();
             } else {
                 if (displayedFleet != null) {
                     SetDisplayedFleet(displayedFleet);
@@ -202,53 +202,53 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         }
         selectedGroup = -1;
         if (AdditiveButtonPressed) {
-            AddSelectedUnits(unitsInSelectionBox.GetAllUnits());
+            AddSelectedBattleObjects(objectsInSelectionBox.objects);
         } else {
-            SelectUnits(unitsInSelectionBox.GetAllUnits());
+            SelectBattleObjects(objectsInSelectionBox.objects);
         }
-        unitsInSelectionBox.ClearGroup();
+        objectsInSelectionBox.ClearGroup();
     }
 
-    public void SelectUnits(Unit unit) {
-        SelectUnits(new List<Unit>() { unit });
+    public void SelectBattleObjects(BattleObject battleObject) {
+        SelectBattleObjects(new List<BattleObject>() { battleObject });
     }
 
-    public void SelectUnits(List<Unit> newUnits) {
-        ClearSelectedUnits();
-        selectedUnits.AddUnits(newUnits);
+    public void SelectBattleObjects(List<BattleObject> newBattleObjects) {
+        ClearSelectedBattleObjects();
+        selectedUnits.AddBattleObjects(newBattleObjects);
         if (!AdditiveButtonPressed && !AltButtonPressed && AreUnitsInUnitGroupInOneFleet(selectedUnits)) {
             Fleet fleet = selectedUnits.GetShip().fleet;
-            ClearSelectedUnits();
+            ClearSelectedBattleObjects();
             selectedUnits.SetFleet(fleet);
-            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
             SetDisplayedFleet(fleet);
         } else {
-            selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
     }
 
-    public void ToggleSelectedUnit(Unit newUnit) {
-        if (selectedUnits.ContainsUnit(newUnit)) {
-            selectedUnits.RemoveUnit(newUnit);
-            newUnit.SelectUnit(UnitSelection.SelectionStrength.Unselected);
+    public void ToggleSelectedUnit(BattleObject newBattleObject) {
+        if (selectedUnits.ContainsObject(newBattleObject)) {
+            selectedUnits.RemoveBattleObject(newBattleObject);
+            newBattleObject.SelectObject(UnitSelection.SelectionStrength.Unselected);
             SetDisplayedUnit();
         } else {
-            AddSelectedUnits(newUnit);
+            AddSelectedBattleObjects(newBattleObject);
         }
     }
 
-    public void AddSelectedUnits(Unit newUnit) {
-        AddSelectedUnits(new List<Unit>() { newUnit });
+    public void AddSelectedBattleObjects(BattleObject newBatleObject) {
+        AddSelectedBattleObjects(new List<BattleObject>() { newBatleObject });
     }
 
-    public void AddSelectedUnits(List<Unit> newUnits) {
-        for (int i = newUnits.Count - 1; i >= 0; i--) {
-            if (selectedUnits.ContainsUnit(newUnits[i]))
-                newUnits.RemoveAt(i);
+    public void AddSelectedBattleObjects(List<BattleObject> newBattleObjects) {
+        for (int i = newBattleObjects.Count - 1; i >= 0; i--) {
+            if (selectedUnits.ContainsObject(newBattleObjects[i]))
+                newBattleObjects.RemoveAt(i);
         }
-        selectedUnits.AddUnits(newUnits);
-        selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Selected);
+        selectedUnits.AddBattleObjects(newBattleObjects);
+        selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
         SetDisplayedUnit();
     }
 
@@ -258,7 +258,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     /// <returns>true if all ships belong to the same fleet, otherswise returns false </returns>
     bool AreUnitsInUnitGroupInOneFleet(SelectionGroup unitGroup) {
         List<Ship> allShips = unitGroup.GetAllShips();
-        if (allShips.Count == 0 || allShips.Count < unitGroup.units.Count || allShips[0].fleet == null)
+        if (allShips.Count == 0 || allShips.Count < unitGroup.objects.Count || allShips[0].fleet == null)
             return false;
         for (int i = 1; i < allShips.Count; i++) {
             if (allShips[i].fleet != allShips[0].fleet)
@@ -274,7 +274,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             if (strongestUnit == null || unit.GetMaxHealth() > strongestUnit.GetMaxHealth())
                 strongestUnit = unit;
         }
-        displayedUnit = strongestUnit;
+        displayedBattleObject = strongestUnit;
     }
 
     public void SetDisplayedFleet(Fleet fleet) {
@@ -290,8 +290,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     /// <returns>True if the group was alreay selected</returns>
     public bool SelectGroup(int selectedGroup) {
         if (this.selectedGroup == selectedGroup) {
-            if (displayedUnit != null && selectedGroup != -1)
-                SetCameraPosition(displayedUnit.GetPosition());
+            if (displayedBattleObject != null && selectedGroup != -1)
+                SetCameraPosition(displayedBattleObject.GetPosition());
             this.selectedGroup = -1;
             return true;
         } else {
@@ -308,16 +308,16 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     /// <summary>
     /// Unselects all selected units and then clears the selectUnits group
     /// </summary>
-    protected virtual void ClearSelectedUnits() {
-        selectedUnits.SelectAllUnits(UnitSelection.SelectionStrength.Unselected);
+    protected virtual void ClearSelectedBattleObjects() {
+        selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
         selectedUnits.ClearGroup();
     }
 
-    public override Unit GetDisplayedUnit() {
-        if ((displayedUnit == null || !displayedUnit.IsSpawned()) && displayedFleet != null) {
+    public override BattleObject GetDisplayedBattleObject() {
+        if ((displayedBattleObject == null || !displayedBattleObject.IsSpawned()) && displayedFleet != null) {
             SetDisplayedFleet(displayedFleet);
         }
-        return base.GetDisplayedUnit();
+        return base.GetDisplayedBattleObject();
     }
 
     public override void UnitDestroyed(Unit unit) {

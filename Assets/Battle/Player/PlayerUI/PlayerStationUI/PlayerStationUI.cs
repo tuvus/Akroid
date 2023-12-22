@@ -81,8 +81,8 @@ public class PlayerStationUI : MonoBehaviour {
             UpdateCargoBayUI(displayedStation.GetCargoBay(), LocalPlayer.Instance.GetRelationToUnit(displayedStation) != LocalPlayer.RelationType.Enemy);
         }
         if (shipYardOrUpgrade && blueprintList.gameObject.activeSelf &&
-            !((LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() == upgradeDisplayUnit && upgradeDisplayUnit != null && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))
-            || LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() == displayedStation))
+            !((LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() == upgradeDisplayUnit && upgradeDisplayUnit != null && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))
+            || LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() == displayedStation))
             UpdateUpgradeBlueprintUI();
         if (!shipYardOrUpgrade && blueprintList.gameObject.activeSelf) {
             UpdateShipBlueprintUI();
@@ -181,8 +181,8 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     void UpdateUpgradeBlueprintUI() {
-        if (LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() != null && LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit().IsShip() && ((Ship)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit()).dockedStation == displayedStation)
-            upgradeDisplayUnit = LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit();
+        if (LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() != null && LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject().IsShip() && ((Ship)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject()).dockedStation == displayedStation)
+            upgradeDisplayUnit = (Ship)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject();
         else
             upgradeDisplayUnit = null;
         if (upgradeDisplayUnit == null)
@@ -288,7 +288,7 @@ public class PlayerStationUI : MonoBehaviour {
             if (localPlayerSelection.AdditiveButtonPressed) {
                 localPlayerSelection.ToggleSelectedUnit(shipsInHanger[index]);
             } else {
-                localPlayerSelection.SelectUnits(shipsInHanger[index]);
+                localPlayerSelection.SelectBattleObjects(shipsInHanger[index]);
             }
             UpdateHangerUI(displayedStation.GetHanger());
         }

@@ -35,11 +35,11 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected Vector2 pastMousePosition;
 
-    protected Unit mouseOverUnit;
-    protected Unit leftClickedUnit;
-    protected Unit displayedUnit;
+    protected BattleObject mouseOverBattleObject;
+    protected BattleObject leftClickedBattleObject;
+    protected BattleObject displayedBattleObject;
     protected Fleet displayedFleet;
-    protected Unit rightClickedUnit;
+    protected BattleObject rightClickedBattleObject;
     protected Unit followUnit;
 
     private int[] timeSteps = new int[] { 0, 1, 2, 5, 10, 15, 20, 25 };
@@ -75,15 +75,15 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     public virtual void ChangeFaction() {
-        displayedUnit = null;
-        leftClickedUnit = null;
-        rightClickedUnit = null;
+        displayedBattleObject = null;
+        leftClickedBattleObject = null;
+        rightClickedBattleObject = null;
         StopFollowingUnit();
-        mouseOverUnit = null;
+        mouseOverBattleObject = null;
     }
 
     public virtual void UpdatePlayer() {
-        mouseOverUnit = GetUnitOverMouse();
+        mouseOverBattleObject = GetUnitOverMouse();
         if (primaryMousePressed)
             PrimaryMouseHeld();
         if (secondaryMousePressed)
@@ -149,8 +149,8 @@ public class LocalPlayerInput : MonoBehaviour {
             StopFollowingUnit();
             StartFollowingUnit(targetUnit);
             transform.position = followUnit.GetPosition();
-        } else if (displayedUnit != null) {
-            SetCameraPosition(displayedUnit.GetPosition());
+        } else if (displayedBattleObject != null) {
+            SetCameraPosition(displayedBattleObject.GetPosition());
         } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
             SetCameraPosition(LocalPlayer.Instance.GetFaction().stations[0].transform.position);
         }
@@ -160,7 +160,7 @@ public class LocalPlayerInput : MonoBehaviour {
         if (primaryMousePressed == true || LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
             return;
         primaryMousePressed = true;
-        leftClickedUnit = mouseOverUnit;
+        leftClickedBattleObject = mouseOverBattleObject;
     }
 
     protected virtual void PrimaryMouseHeld() {
@@ -171,16 +171,16 @@ public class LocalPlayerInput : MonoBehaviour {
         primaryMousePressed = false;
         if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
             return;
-        displayedUnit = null;
-        if (leftClickedUnit != null) {
-            displayedUnit = leftClickedUnit;
+        displayedBattleObject = null;
+        if (leftClickedBattleObject != null) {
+            displayedBattleObject = leftClickedBattleObject;
         }
     }
 
     protected virtual void SecondaryMouseDown() {
         secondaryMousePressed = true;
         pastMousePosition = GetMousePosition();
-        rightClickedUnit = mouseOverUnit;
+        rightClickedBattleObject = mouseOverBattleObject;
     }
 
     protected virtual void SecondaryMouseHeld() {
@@ -191,13 +191,13 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
         if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
-            if (rightClickedUnit != null && rightClickedUnit == mouseOverUnit) {
-                if (rightClickedUnit.IsShip()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayShip((Ship)rightClickedUnit);
-                    rightClickedUnit = null;
-                } else if (rightClickedUnit.IsStation()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedUnit);
-                    rightClickedUnit = null;
+            if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
+                if (rightClickedBattleObject.IsShip()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayShip((Ship)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
+                } else if (rightClickedBattleObject.IsStation()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
                 }
             }
         } else {
@@ -246,8 +246,8 @@ public class LocalPlayerInput : MonoBehaviour {
             StopFollowingUnit();
             return;
         }
-        if (displayedUnit != null) {
-            StartFollowingUnit(displayedUnit);
+        if (displayedBattleObject != null && displayedBattleObject.IsUnit()) {
+            StartFollowingUnit((Unit)displayedBattleObject);
         }
     }
 
@@ -273,16 +273,16 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     public virtual void UnitDestroyed(Unit unit) {
-        if (GetDisplayedUnit() == unit)
-            displayedUnit = null;
+        if (GetDisplayedBattleObject() == unit)
+            displayedBattleObject = null;
     }
 
     public PlayerInput GetPlayerInput() {
         return playerInput;
     }
 
-    public virtual Unit GetDisplayedUnit() {
-        return displayedUnit;
+    public virtual BattleObject GetDisplayedBattleObject() {
+        return displayedBattleObject;
     }
 
     public Fleet GetDisplayedFleet() {

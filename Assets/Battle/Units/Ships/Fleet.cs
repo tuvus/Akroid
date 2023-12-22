@@ -250,7 +250,7 @@ public class Fleet : ShipGroup {
 
     public void SelectFleet(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
         foreach (Ship ship in ships) {
-            ship.SelectUnit(strength);
+            ship.SelectObject(strength);
         }
     }
 

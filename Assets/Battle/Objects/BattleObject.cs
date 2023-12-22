@@ -4,10 +4,14 @@ using UnityEngine;
 
 public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
 
+    [field: SerializeField] public string objectName { get; protected set; }
     [SerializeField] float size;
     protected Vector2 position;
     protected SpriteRenderer spriteRenderer;
     private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
+    [field: SerializeField] public Faction faction { get; protected set; }
+    private bool spawned;
+
     //Transform sizeIndicator;
 
     /// <summary>
@@ -15,6 +19,7 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// Sets up the size as normal
     /// </summary>
     protected void SetupBattleObject() {
+        faction = null;
         spriteRenderer = GetComponent<SpriteRenderer>();
         position = transform.position;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
@@ -81,9 +86,18 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
         return position;
     }
 
+
     public float GetRotation() {
         return transform.eulerAngles.z;
     }
+
+    public void SetRotation(float rotation) {
+        transform.eulerAngles = new Vector3(0, 0, rotation);
+    }
+
+    public virtual void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
+
+    public virtual void UnselectObject() { }
 
     /// <summary>
     /// Returns the game size of the object used for collisions, targeting, etc.
@@ -91,6 +105,21 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// <returns>the physical size of the object</returns>
     public float GetSize() {
         return size;
+    }
+
+    protected virtual void Spawn() {
+        spawned = true;
+    }
+
+    protected virtual void Despawn(bool removeImmediately) {
+        spawned = false;
+        if (removeImmediately) {
+            Destroy(gameObject);
+        }
+    }
+
+    public virtual bool IsSpawned() {
+        return spawned;
     }
 
     [ContextMenu("GetObjectSize")]
@@ -111,5 +140,17 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
 
     public SpriteRenderer GetSpriteRenderer() {
         return spriteRenderer;
+    }
+
+    public bool IsUnit() {
+        return this is Unit;
+    }
+
+    public bool IsShip() {
+        return this is Ship;
+    }
+
+    public bool IsStation() {
+        return this is Station;
     }
 }
