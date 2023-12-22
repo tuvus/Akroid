@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using static BattleManager;
 
@@ -12,7 +13,7 @@ public class Chapter1 : CampaingController {
     OtherMiningFactionAI otherMiningFactionAI;
     MiningStation otherMiningStation;
     Faction planetFaction;
-    PlanetFactionAI planetFactionAI;
+    public PlanetFactionAI planetFactionAI { get; private set; }
     Planet planet;
     Station tradeStation;
     public Faction shipyardFaction { get; private set; }
@@ -21,6 +22,14 @@ public class Chapter1 : CampaingController {
     Faction researchFaction;
     Station researchStation;
     float metalCost;
+
+    public DifficultyLevel difficultyLevel { get; private set; }
+
+    public enum DifficultyLevel {
+        Easy,
+        Normal,
+        Hard,
+    }
 
     public override void SetupBattle() {
         base.SetupBattle();
@@ -130,5 +139,9 @@ public class Chapter1 : CampaingController {
 
     public BattleManager GetBattleManager() {
         return battleManager;
+    }
+
+    public void SetDifficultyLevel(DifficultyLevel level) {
+        difficultyLevel = level;
     }
 }
