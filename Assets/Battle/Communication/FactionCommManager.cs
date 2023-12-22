@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static FactionCommManager.CommunicationEvent;
-using static FactionCommManager.CommunicationEvent.CommunicationEventOption;
 
 public class FactionCommManager : MonoBehaviour {
     private Faction faction;

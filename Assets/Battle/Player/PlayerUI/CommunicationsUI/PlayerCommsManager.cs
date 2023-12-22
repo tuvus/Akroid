@@ -23,6 +23,7 @@ public class PlayerCommsManager : MonoBehaviour {
 
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
+        lockToBottom = true;
         HidePanel();
     }
 
@@ -51,11 +52,11 @@ public class PlayerCommsManager : MonoBehaviour {
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
         lockToBottom = verticleScrollbar.value <= 0.1;
-        if (lockToBottom)
-            verticleScrollbar.value = 0;
         ShowPanel();
         CreateCommEvent(communicationEvent);
         SetPortrait(communicationEvent.sender);
+        if (lockToBottom)
+            verticleScrollbar.value = 0;
     }
 
     private void LateUpdate() {
