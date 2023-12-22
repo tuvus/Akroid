@@ -157,4 +157,12 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
     public bool IsStation() {
         return this is Station;
     }
+
+    public bool IsPlanet() {
+        return this is Planet;
+    }
+
+    public bool IsStar() {
+        return this is Star;
+    }
 }

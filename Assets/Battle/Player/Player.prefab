@@ -29712,7 +29712,7 @@ MonoBehaviour:
   selectionBox: {fileID: 8714345815540280993}
   selectedUnits:
     groupType: 0
-    units: []
+    objects: []
     fleet: {fileID: 0}
   groups: []
 --- !u!1 &8714345815520173843
@@ -30357,7 +30357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 268e870086f8a8e41adaf5354b13e75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipStatusUI: {fileID: 8714345816382604124}
+  objectStatusUI: {fileID: 8714345816382604124}
   shipFuelCellsUI: {fileID: 8714345816428262399}
   playerCommsManager: {fileID: 251416266922612947}
   playerMenueUI: {fileID: 3805286146913107314}
@@ -30672,7 +30672,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83ace466e60adca44bdedf12ea2935bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitImage: {fileID: 8714345816086684205}
+  objectImage: {fileID: 8714345816086684205}
   healthText: {fileID: 8714345816571315561}
   shieldText: {fileID: 8714345815983972866}
   nameText: {fileID: 8714345816469046141}
@@ -30893,7 +30893,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: No units selected
+  m_Text: No object selected
 --- !u!1 &8714345816563219429
 GameObject:
   m_ObjectHideFlags: 0

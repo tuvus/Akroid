@@ -12,7 +12,7 @@ public class PlayerUI : MonoBehaviour {
     public static PlayerUI Instance { get; protected set; }
     private LocalPlayerInput localPlayerInput;
 
-    [SerializeField] private PlayerUnitStatusUI shipStatusUI;
+    [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [SerializeField] private PlayerCommsManager playerCommsManager;
     [SerializeField] private PlayerMenueUI playerMenueUI;
@@ -77,7 +77,7 @@ public class PlayerUI : MonoBehaviour {
         if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
             unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
         }
-        UpdateDisplayedUnitUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
+        UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
             for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
@@ -97,15 +97,19 @@ public class PlayerUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-    public void UpdateDisplayedUnitUI(Fleet fleet, BattleObject battleObject, int unitCount) {
+    public void UpdateDisplayedObjectUI(Fleet fleet, BattleObject battleObject, int unitCount) {
         if (battleObject == null || !battleObject.IsSpawned()) {
-            shipStatusUI.DeselectPlayerUnitStatusUI();
+            objectStatusUI.DeselectPlayerObjectStatusUI();
             //shipFuelCellsUI.DeleteFuelCellUI();
         } else if (battleObject.IsUnit()) {
             if (fleet != null)
-                shipStatusUI.RefreshPlayerUnitStatusUI(fleet, (Unit)battleObject, unitCount);
+                objectStatusUI.RefreshPlayerObjectStatusUI(fleet, (Unit)battleObject, unitCount);
             else
-                shipStatusUI.RefreshPlayerUnitStatusUI((Unit)battleObject, unitCount);
+                objectStatusUI.RefreshPlayerObjectStatusUI((Unit)battleObject, unitCount);
+        } else if (battleObject.IsPlanet()) {
+            objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
+        } else if (battleObject.IsStar()) {
+            objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
         }
     }
 

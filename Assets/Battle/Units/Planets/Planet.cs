@@ -27,6 +27,10 @@ public class Planet : BattleObject, IPositionConfirmer {
         Spawn();
     }
 
+    protected override float SetupSize() {
+        return GetSpriteSize() * transform.localScale.x;
+    }
+
     public void UpdatePlanet(float deltaTime) {
         timeSinceStart += deltaTime;
         population = (long)((carryingCapacity / (1 + ((carryingCapacity / startingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
