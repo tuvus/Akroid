@@ -55,9 +55,10 @@ public class PlayerStationUI : MonoBehaviour {
         this.displayedStation = displayedStation;
         if (displayedStation == null)
             return;
+        bool isEnemy = LocalPlayer.Instance.GetRelationToUnit(displayedStation) == LocalPlayer.RelationType.Enemy;
         stationStatusUI.SetActive(displayedStation.stationType != Station.StationType.None);
-        stationConstructionUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && (displayedStation.stationType == Station.StationType.Shipyard || displayedStation.stationType == Station.StationType.FleetCommand));
-        stationHangerUI.SetActive(!LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction) && displayedStation.GetHanger() != null);
+        stationConstructionUI.SetActive(!isEnemy && (displayedStation.stationType == Station.StationType.Shipyard || displayedStation.stationType == Station.StationType.FleetCommand));
+        stationHangerUI.SetActive(!isEnemy && displayedStation.GetHanger() != null);
         UpdateStationDisplay();
     }
 
@@ -77,7 +78,7 @@ public class PlayerStationUI : MonoBehaviour {
                 stationTotalDPS.gameObject.SetActive(false);
                 maxWeaponRange.gameObject.SetActive(false);
             }
-            UpdateCargoBayUI(displayedStation.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedStation.faction));
+            UpdateCargoBayUI(displayedStation.GetCargoBay(), LocalPlayer.Instance.GetRelationToUnit(displayedStation) != LocalPlayer.RelationType.Enemy);
         }
         if (shipYardOrUpgrade && blueprintList.gameObject.activeSelf &&
             !((LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedUnit() == upgradeDisplayUnit && upgradeDisplayUnit != null && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))
@@ -243,7 +244,7 @@ public class PlayerStationUI : MonoBehaviour {
 
     public void ConstructionButtonPressed(int index) {
         ConstructionBay constructionBay = ((Shipyard)displayedStation).GetConstructionBay();
-        if (constructionBay.buildQueue[index].factionIndex == LocalPlayer.Instance.GetFaction().factionIndex) {
+        if (LocalPlayer.Instance.GetFaction() != null && constructionBay.buildQueue[index].GetFaction() == LocalPlayer.Instance.GetFaction()) {
             constructionBay.RemoveBlueprintFromQueue(index);
             UpdateConstructionUI(constructionBay);
         }
