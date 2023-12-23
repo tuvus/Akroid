@@ -283,10 +283,10 @@ public class BattleManager : MonoBehaviour {
         stars.Add(newStar);
     }
 
-    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population, double populationGrowthRate = 0.01) {
+    public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population, float landFactor, double populationGrowthRate = 0.01) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(name, faction, positionGiver, population, populationGrowthRate, Random.Range(0, 360));
+        newPlanet.SetupPlanet(name, faction, positionGiver, population, populationGrowthRate, Random.Range(0, 360), landFactor);
         planets.Add(newPlanet);
         return newPlanet;
     }

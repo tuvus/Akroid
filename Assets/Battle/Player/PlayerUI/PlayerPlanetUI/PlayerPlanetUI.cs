@@ -17,7 +17,9 @@ public class PlayerPlanetUI : MonoBehaviour {
     [SerializeField] Text planetFactionName;
     [SerializeField] Text planetType;
     [SerializeField] Text planetPopulation;
-
+    [SerializeField] Text percentLand;
+    [SerializeField] Text planetAreas;
+    [SerializeField] GameObject planetFactionButton;
 
     public void SetupPlayerPlanetUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
@@ -42,11 +44,13 @@ public class PlayerPlanetUI : MonoBehaviour {
         if (planetStatusUI.activeSelf) {
             planetName.text = displayedPlanet.objectName;
             if (displayedPlanet.faction != null) {
-                planetFactionName.text = displayedPlanet.faction.name;
+                planetFactionName.text = "Faction: " + displayedPlanet.faction.name;
             } else {
-                planetFactionName.text = "Unowned";
+                planetFactionName.text = "Faction" + "Unowned";
             }
-            planetPopulation.text = displayedPlanet.population.ToString();
+            planetPopulation.text = "Population: " + displayedPlanet.population.ToString();
+            percentLand.text = "Land Percent: " + (Mathf.RoundToInt(displayedPlanet.landFactor * 10000) / 100).ToString() + "%";
+            planetAreas.text = "Areas: " + displayedPlanet.areas.ToString();
         }
     }
 }

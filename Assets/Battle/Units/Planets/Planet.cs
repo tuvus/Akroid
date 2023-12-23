@@ -11,10 +11,28 @@ public class Planet : BattleObject, IPositionConfirmer {
     public double rateOfGrowth;
     [SerializeField] long carryingCapacity;
     [SerializeField] long startingPop;
+    public long areas { get; protected set; }
+    public float landFactor { get; protected set; }
     [SerializeField] float timeSinceStart;
 
-    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation) {
+    public List<PlanetFaction> planetFactions;
+
+    public class PlanetFaction {
+        public Faction faction { get; private set; }
+        public long territory { get; private set; }
+        public string special { get; private set; }
+
+        public PlanetFaction(Faction faction, long territory, string special) {
+            this.faction = faction;
+            this.territory = territory;
+            this.special = special;
+        }
+    }
+
+    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation, float landFactor = 1) {
         this.faction = faction;
+        float scale = Random.Range(.9f, 1.3f);
+        transform.localScale = new Vector3(transform.localScale.x * scale, transform.localScale.y * scale, 1);
         base.SetupBattleObject(positionGiver, rotation);
         objectName = name;
         this.population = population;
@@ -24,6 +42,9 @@ public class Planet : BattleObject, IPositionConfirmer {
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
+        this.landFactor = landFactor;
+        planetFactions = new List<PlanetFaction>();
+        areas = (long)(math.pow(GetSize(), 2) * math.PI * landFactor);
         Spawn();
     }
 

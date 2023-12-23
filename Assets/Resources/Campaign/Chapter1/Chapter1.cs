@@ -57,9 +57,9 @@ public class Chapter1 : CampaingController {
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.GetPosition()), (long)Random.Range(500, 600) * 100000000);
+        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.GetPosition()), (long)Random.Range(500, 600) * 100000000, Random.Range(0.4f,0.6f));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
-        tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 300), 0, 1000, 30, 300, 3));
+        tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
