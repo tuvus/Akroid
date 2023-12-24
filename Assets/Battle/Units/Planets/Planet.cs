@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -15,17 +17,46 @@ public class Planet : BattleObject, IPositionConfirmer {
     public float landFactor { get; protected set; }
     [SerializeField] float timeSinceStart;
 
-    public List<PlanetFaction> planetFactions;
+    public Dictionary<Faction, PlanetFaction> planetFactions;
+    private PlanetFaction unclaimedTerritory;
 
     public class PlanetFaction {
+        private Planet planet;
+        // If faction is null then this PlanetFaction represents unclaimed territory
         public Faction faction { get; private set; }
         public long territory { get; private set; }
+        public long force { get; private set; }
         public string special { get; private set; }
 
-        public PlanetFaction(Faction faction, long territory, string special) {
+        public PlanetFaction(Planet planet ,Faction faction, long territory, long force, string special) {
+            this.planet = planet;
             this.faction = faction;
             this.territory = territory;
+            this.force = force;
             this.special = special;
+        }
+
+        public void ChangeTerritory(long territoryChange) {
+            territory += territoryChange;
+        }
+
+        public void FightFactionForTerritory(Faction otherFaction, long attackWithForce, float deltaTime) {
+            FightFactionForTerritory(planet.planetFactions[otherFaction], attackWithForce, deltaTime);
+        }
+
+        public void FightFactionForTerritory(PlanetFaction defender, long attackWithForce, float deltaTime) {
+            long defenseForce = math.max(0,  (long)(defender.force / (math.max(1, defender.territory) * .8d)));
+            long attackersKilled = math.min(attackWithForce, (long)(defenseForce * 10 * deltaTime));
+            long defendersKilled = math.min(defenseForce, (long)(attackWithForce * 10 * deltaTime));
+            force -= attackersKilled;
+            defender.force -= defendersKilled;
+            double attackerDefenderRatio = (attackWithForce - attackersKilled) / (double)(defenseForce - defendersKilled + 1);
+            if (attackerDefenderRatio < 1) return;
+            long territoryTaken = math.min(defender.territory, math.max(0, (long)(100 * attackerDefenderRatio * deltaTime)));
+            defender.territory -= territoryTaken;
+            territory += territoryTaken;
+            planet.population -= (attackersKilled + defendersKilled) * 2;
+
         }
     }
 
@@ -43,9 +74,29 @@ public class Planet : BattleObject, IPositionConfirmer {
             rotationSpeed *= -1;
         }
         this.landFactor = landFactor;
-        planetFactions = new List<PlanetFaction>();
+        planetFactions = new Dictionary<Faction, PlanetFaction>();
         areas = (long)(math.pow(GetSize(), 2) * math.PI * landFactor);
+        unclaimedTerritory = new PlanetFaction(this, null, areas, 0, "This territory is open to claim.");
         Spawn();
+    }
+
+    public void AddFaction(Faction faction, long territory, long force, string special) {
+        territory = math.min(territory, GetUnclaimedFaction().territory);
+        GetUnclaimedFaction().ChangeTerritory(-territory);
+        planetFactions.Add(faction, new PlanetFaction(this, faction, territory, force, special));
+        faction.AddPlanet(this);
+    }
+
+    public void AddFactionTerritoryFraction(Faction faction, double territoryFraction, long force, string special) {
+        AddFaction(faction, (long)(GetUnclaimedFaction().territory * territoryFraction), force, special);
+    }
+
+    public void AddFactionTerritoryForceFraction(Faction faction, double territoryFraction, double forceFraction, string special) {
+        AddFaction(faction, (long)(GetUnclaimedFaction().territory * territoryFraction), (long)(GetUnclaimedFaction().territory * territoryFraction * forceFraction), special);
+    }
+
+    public PlanetFaction GetUnclaimedFaction() {
+        return unclaimedTerritory;
     }
 
     protected override float SetupSize() {

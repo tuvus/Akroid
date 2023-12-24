@@ -104,7 +104,10 @@ public class PlayerFactionAI : FactionAI {
                                         if (!playerMiningStation.IsBuilt()) {
                                             commManager.SendCommunication(faction,
                                             "Now we have nothing to do but wait until we reach the mining site. \n Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n In the mean time feel free to click the \"Controls help\" button and read the controls.", (communicationEvent) => {
+                                                SetState(AIState.SettingUp);
                                             });
+                                        } else {
+                                            SetState(AIState.SettingUp);
                                         }
                                     }, 15 * GetTimeScale());
                                 }, 15 * GetTimeScale());
@@ -115,13 +118,13 @@ public class PlayerFactionAI : FactionAI {
             }, 5 * GetTimeScale());
         } else if (state == AIState.SettingUp) {
             chapter1.GetBattleManager().SetSimulationTimeScale(10);
-            commManager.SendCommunication(new CommunicationEvent(chapter1.shipyardFaction, "We have arrived safely at the destination and are setting up our operations.",
+            commManager.SendCommunication(new CommunicationEvent(chapter1.planetFactionAI.faction, "We have arrived safely at the destination and are setting up our operations.",
             new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
                 (communicationEvent) => {
                     if (!communicationEvent.isActive)
                         return false;
                     SetState(AIState.Normal);
-                    AddTradeRouteToStation(chapter1.shipyard);
+                    AddTradeRouteToStation(chapter1.tradeStation);
                     communicationEvent.DeactivateEvent();
                     chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.", 3 * GetTimeScale());
                     return true;

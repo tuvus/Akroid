@@ -15,7 +15,7 @@ public class Chapter1 : CampaingController {
     Faction planetFaction;
     public PlanetFactionAI planetFactionAI { get; private set; }
     Planet planet;
-    Station tradeStation;
+    public Station tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
     public Shipyard shipyard { get; private set; }
@@ -107,6 +107,19 @@ public class Chapter1 : CampaingController {
         for (int i = 0; i < asteroidFieldCount; i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(Vector2.zero, 1500, 100000, 20000, 300, 1), Random.Range(8, 10), 10);
         }
+
+        planet.AddFactionTerritoryForceFraction(planetFaction, Random.Range(0.01f, 0.05f), Random.Range(30.0f, 50.0f), "Increases space production");
+        planet.AddFactionTerritoryForceFraction(shipyardFaction, Random.Range(0.20f, 0.35f), Random.Range(8.0f, 10.0f), "Increases unit production");
+        planet.AddFactionTerritoryForceFraction(otherMiningFaction, Random.Range(0.30f, 0.40f), Random.Range(6f, 11f), "Increases mining speed");
+        planet.AddFactionTerritoryForceFraction(researchFaction, Random.Range(0.70f, 0.80f), Random.Range(4f, 6f), "Increases research rate");
+        planetFaction.AddEnemyFaction(shipyardFaction);
+        shipyardFaction.AddEnemyFaction(planetFaction);
+        researchFaction.AddEnemyFaction(shipyardFaction);
+        shipyardFaction.AddEnemyFaction(researchFaction);
+        otherMiningFaction.AddEnemyFaction(researchFaction);
+        researchFaction.AddEnemyFaction(otherMiningFaction);
+        planetFaction.AddEnemyFaction(otherMiningFaction);
+        otherMiningFaction.AddEnemyFaction(planetFaction);
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
         LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);

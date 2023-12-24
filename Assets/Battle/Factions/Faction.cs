@@ -49,6 +49,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<Ship> ships { get; private set; }
     public List<Fleet> fleets { get; private set; }
     public List<Station> stations { get; private set; }
+    public List<Planet> planets { get; private set; }
     public List<Station> stationBlueprints { get; private set; }
 
     public List<MiningStation> activeMiningStations { get; private set; }
@@ -125,6 +126,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         ships = new List<Ship>(factionData.ships * 5);
         fleets = new List<Fleet>(10);
         stations = new List<Station>(factionData.stations * 5);
+        planets = new List<Planet>();
         stationBlueprints = new List<Station>();
         activeMiningStations = new List<MiningStation>();
         enemyFactions = new List<Faction>();
@@ -143,6 +145,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
         name = factionData.name;
+        gameObject.name = name;
         abbreviatedName = factionData.abbreviatedName;
         credits = factionData.credits;
         science = factionData.science;
@@ -255,6 +258,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void RemoveMiningStation(MiningStation miningStation) {
         activeMiningStations.Remove(miningStation);
+    }
+
+    public void AddPlanet(Planet planet) {
+        planets.Add(planet);
+    }
+
+    public void RemovePlanet(Planet planet) {
+        planets.Remove(planet);
     }
 
     public Fleet CreateNewFleet(string fleetName, List<Ship> ships) {

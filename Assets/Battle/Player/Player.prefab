@@ -17508,7 +17508,7 @@ GameObject:
   - component: {fileID: 5050813121407219585}
   - component: {fileID: 1244388554533087474}
   m_Layer: 5
-  m_Name: BlueprintList
+  m_Name: FactionsList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17533,7 +17533,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 460, y: 240}
+  m_SizeDelta: {x: 460, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5050813121407219585
 CanvasRenderer:
@@ -29865,6 +29865,7 @@ MonoBehaviour:
   planetPopulation: {fileID: 821112951764701182}
   percentLand: {fileID: 7441629671566006598}
   planetAreas: {fileID: 6000829949561698102}
+  planetFactionsList: {fileID: 4691418480400859468}
   planetFactionButton: {fileID: 6917939575041792617, guid: 81644518d3a380746b8738422d22db7a,
     type: 3}
 --- !u!1 &8175601377621620060

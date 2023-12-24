@@ -16,6 +16,7 @@ public class OtherMiningFactionAI : FactionAI {
     }
 
     public override void UpdateFactionAI(float deltaTime) {
+        base.UpdateFactionAI(deltaTime);
         if (faction.credits > 10000) {
             if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
                 shipyardFactionAI.PlaceTransportOrder(faction);
