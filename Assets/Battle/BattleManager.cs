@@ -231,6 +231,7 @@ public class BattleManager : MonoBehaviour {
     /// <returns></returns>
     public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
         float distance = positionGiver.minDistance * systemSizeModifier;
+        if (positionGiver.numberOfTries == 0) return positionGiver.position;
         while (true) {
             Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance, distance + positionGiver.incrementDistance * systemSizeModifier);
             if (targetPosition.HasValue) {
