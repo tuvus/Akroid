@@ -33,14 +33,14 @@ public class FactionCommManager : MonoBehaviour {
         }
     }
 
+    #region CommunicationTransfer
     public void SendCommunication(Faction receiver, string text, float delay = 0) {
         SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], false), delay);
     }
 
-    public void SendCommunication(Faction receiver, string text, EventLogic eventLogic, float delay = 0) {
+    public void SendCommunication(Faction receiver, string text, ReceivedEventLogic eventLogic, float delay = 0) {
         SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], eventLogic, false), delay);
     }
-
 
     public void SendCommunication(DelayCommunication delayedCommunication) {
         SendCommunication(delayedCommunication.newCommunication);
@@ -54,15 +54,20 @@ public class FactionCommManager : MonoBehaviour {
             newCommunication.receiver.ReceiveCommunication(this, newCommunication);
     }
 
-    public void ReceiveCommunication(FactionCommManager sender, CommunicationEvent newCommunication) {
-        newCommunication.sender = sender;
-        newCommunication.receiver = this;
-        communicationLog.Add(newCommunication);
+    public void ReceiveCommunication(FactionCommManager sender, CommunicationEvent receivedCommunication) {
+        receivedCommunication.sender = sender;
+        receivedCommunication.receiver = this;
+        communicationLog.Add(receivedCommunication);
         if (IsLocalPlayer()) {
-            LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(newCommunication);
+            LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(receivedCommunication);
+        } else if ( receivedCommunication.optionChoiceLogic != null) {
+            receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
-        newCommunication.eventLogic(newCommunication);
+        receivedCommunication.receivedEventLogic(receivedCommunication);
     }
+    #endregion
+
+    #region HelperMethods
 
     public bool IsLocalPlayer() {
         return LocalPlayer.Instance.GetFaction() == faction;
@@ -75,4 +80,5 @@ public class FactionCommManager : MonoBehaviour {
     public GameObject GetPortrait() {
         return character.characterModel;
     }
+    #endregion
 }

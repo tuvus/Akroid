@@ -8,9 +8,11 @@ public class CommunicationEvent {
     public FactionCommManager sender;
     public FactionCommManager receiver;
     public string text;
-    public EventLogic eventLogic;
-    public delegate void EventLogic(CommunicationEvent communicationEvent);
+    public ReceivedEventLogic receivedEventLogic;
+    public delegate void ReceivedEventLogic(CommunicationEvent communicationEvent);
     public CommunicationEventOption[] options;
+    public OptionChoiceLogic optionChoiceLogic;
+    public delegate int OptionChoiceLogic(CommunicationEvent communicationEvent);
     public bool isActive;
 
     [Serializable]
@@ -28,27 +30,33 @@ public class CommunicationEvent {
         }
     }
 
-    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, EventLogic eventLogic, bool isActive) {
+    /// <summary>
+    /// Sends a quick message
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, new CommunicationEventOption[0], (eventLogic) => { }, null, false) { }
+    /// <summary>
+    /// Sends a message and calls ReceivedEventLogic
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, ReceivedEventLogic eventLogic) : this(receiver, text, new CommunicationEventOption[0], eventLogic, null, false) { }
+    /// <summary>
+    /// Sends a message with options, the AI chooses a random option
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, bool isActive) : this(receiver, text, options, (eventLogic) => { }, (choiceLogic) => UnityEngine.Random.Range(0, options.Length), isActive) { }
+    /// <summary>
+    /// Sends a message with options and calls a ReceivedEventLogic, the AI chooses a random option
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, ReceivedEventLogic eventLogic, bool isActive) : this(receiver, text, options, eventLogic, (choiceLogic) => UnityEngine.Random.Range(0, options.Length), isActive) { }
+    /// <summary>
+    /// Sends a message with options and calls a ReceivedEventLogic, the AI chooses the option returned by OptionChoiceLogic
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, ReceivedEventLogic eventLogic, OptionChoiceLogic choiceLogic, bool isActive) {
         this.receiver = receiver;
         this.text = text;
         this.options = options;
         this.isActive = isActive;
-        this.eventLogic = eventLogic;
+        this.receivedEventLogic = eventLogic;
+        this.optionChoiceLogic = choiceLogic;
     }
-
-    public CommunicationEvent(Faction receiver, string text, CommunicationEventOption[] options, EventLogic eventLogic, bool isActive) : this(receiver.GetFactionCommManager(), text, options, eventLogic, isActive) { }
-
-    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, bool isActive) : this(receiver, text, options, (eventLogic) => { }, isActive) { }
-
-    public CommunicationEvent(Faction receiver, string text, CommunicationEventOption[] options, bool isActive) : this(receiver.GetFactionCommManager(), text, options, (eventLogic) => { }, isActive) { }
-
-    public CommunicationEvent(FactionCommManager receiver, string text, EventLogic eventLogic) : this(receiver, text, new CommunicationEventOption[0], eventLogic, false) { }
-
-    public CommunicationEvent(Faction receiver, string text, EventLogic eventLogic) : this(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], eventLogic, false) { }
-
-    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, new CommunicationEventOption[0], (eventLogic) => { }, false) { }
-
-    public CommunicationEvent(Faction receiver, string text) : this(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], (eventLogic) => { }, false) { }
 
     public bool ChooseOption(int option) {
         if (!options[option].checkStatus(this))

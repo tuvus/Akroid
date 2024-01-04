@@ -34,7 +34,7 @@ public class PlanetFactionAI : FactionAI {
         planetFactionState = State.Beginning;
         timeUntilNextCommunication = Random.Range(30, 60);
         friendlyStations = new List<Station>();
-        faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction,
+        faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction.GetFactionCommManager(),
             "Undocking procedure successful! \n You are now on route to the designated mining location. As we planned, you will construct the mining station at the designated point (" +
             Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!",
             (communicationEvent) => { chapter1.playerFactionAI.SetState(AIState.Deploying); }), 10 * GetTimeScale());

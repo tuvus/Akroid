@@ -53,7 +53,7 @@ public class PlayerFactionAI : FactionAI {
                             "This solar system has more stations than just the shipyard we just left. Zoom out and right click on all of the stations to view their unique menus.", (communicationEvent) => {
                                 commManager.SendCommunication(faction,
                                 "Now press G to toggle all of the unit icons while zoomed out. You can barely see the stations, planet and many asteroid fields. We are currently heading to a particularly dense asteroid field to mine.", (communicationEvent) => {
-                                    commManager.SendCommunication(new CommunicationEvent(faction,
+                                    commManager.SendCommunication(new CommunicationEvent(faction.GetFactionCommManager(),
                                     "What difficulty would you like to play at? Harder difficulties will have a faster intro scene."
                                     , new CommunicationEventOption[] {
                                         new CommunicationEventOption("Easy", (communicationEvent) => { return true; }, (communicationEvent) => {
@@ -117,7 +117,7 @@ public class PlayerFactionAI : FactionAI {
             }, 5 * GetTimeScale());
         } else if (state == AIState.SettingUp) {
             chapter1.GetBattleManager().SetSimulationTimeScale(10);
-            commManager.SendCommunication(new CommunicationEvent(chapter1.planetFactionAI.faction, "We have arrived safely at the destination and are setting up our operations.",
+            commManager.SendCommunication(new CommunicationEvent(chapter1.planetFactionAI.faction.GetFactionCommManager(), "We have arrived safely at the destination and are setting up our operations.",
             new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
                 (communicationEvent) => {
                     if (!communicationEvent.isActive)
