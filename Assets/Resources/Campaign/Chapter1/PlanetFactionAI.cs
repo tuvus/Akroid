@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using static FactionCommManager;
-using static FactionCommManager.CommunicationEvent;
 using static PlayerFactionAI;
 
 public class PlanetFactionAI : FactionAI {

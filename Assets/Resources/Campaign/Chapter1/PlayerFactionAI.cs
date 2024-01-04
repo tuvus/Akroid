@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static FactionCommManager;
-using static FactionCommManager.CommunicationEvent;
+using static CommunicationEvent;
 
 public class PlayerFactionAI : FactionAI {
     public enum AIState {
