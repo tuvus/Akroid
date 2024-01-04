@@ -324,6 +324,7 @@ public class BattleManager : MonoBehaviour {
         ships.Remove(ship);
         if (ship.faction != null)
             ship.faction.RemoveShip(ship);
+        if (destroyedUnits.Contains(ship)) throw new System.Exception("The ship that was trying to be destroyed was already destroyed");
         destroyedUnits.Add(ship);
     }
 

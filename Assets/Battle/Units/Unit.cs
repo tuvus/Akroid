@@ -194,13 +194,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     protected override void Despawn(bool removeImmediately) {
+        base.Despawn(removeImmediately);
         health = 0;
         ActivateColliders(false);
         unitSelection.ShowUnitSelection(false);
         DestroyUnit();
-        if (removeImmediately) {
-            Destroy(gameObject);
-        }
     }
 
     public virtual void Explode() {
@@ -213,7 +211,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].StopFiring();
         }
-        float value = UnityEngine.Random.Range(0.2f, 0.6f);
+        float value = Random.Range(0.2f, 0.6f);
         spriteRenderer.color = new Color(value, value, value, 1);
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
