@@ -33,11 +33,11 @@ public class CommunicationEvent {
     /// <summary>
     /// Sends a quick message
     /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, new CommunicationEventOption[0], (eventLogic) => { }, null, false) { }
+    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, null, (eventLogic) => { }, null, false) { }
     /// <summary>
     /// Sends a message and calls ReceivedEventLogic
     /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text, ReceivedEventLogic eventLogic) : this(receiver, text, new CommunicationEventOption[0], eventLogic, null, false) { }
+    public CommunicationEvent(FactionCommManager receiver, string text, ReceivedEventLogic eventLogic) : this(receiver, text, null, eventLogic, null, false) { }
     /// <summary>
     /// Sends a message with options, the AI chooses a random option
     /// </summary>

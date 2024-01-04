@@ -35,11 +35,11 @@ public class FactionCommManager : MonoBehaviour {
 
     #region CommunicationTransfer
     public void SendCommunication(Faction receiver, string text, float delay = 0) {
-        SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], false), delay);
+        SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text), delay);
     }
 
     public void SendCommunication(Faction receiver, string text, ReceivedEventLogic eventLogic, float delay = 0) {
-        SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text, new CommunicationEventOption[0], eventLogic, false), delay);
+        SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text, eventLogic), delay);
     }
 
     public void SendCommunication(DelayCommunication delayedCommunication) {
@@ -60,7 +60,7 @@ public class FactionCommManager : MonoBehaviour {
         communicationLog.Add(receivedCommunication);
         if (IsLocalPlayer()) {
             LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(receivedCommunication);
-        } else if ( receivedCommunication.optionChoiceLogic != null) {
+        } else if (receivedCommunication.options != null && receivedCommunication.optionChoiceLogic != null) {
             receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
         receivedCommunication.receivedEventLogic(receivedCommunication);
