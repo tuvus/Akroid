@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Calculator {
+public static class Calculator {
     /// <summary>
     /// Returns 180 to -180 deg rotation where 0 is upwards and 90 is to the left.
     /// </summary>
@@ -76,7 +76,7 @@ public class Calculator {
     }
 
     /// <summary>
-    /// Returns the target rotaiton relative to the current rotation. Input both as 360, -360 degrees.
+    /// Returns the target rotation relative to the current rotation. Input both as 360, -360 degrees.
     /// </summary>
     public static float GetLocalTargetRotation(float currentRotaiton, float targetRotation) {
         if (currentRotaiton > 180) {
@@ -123,20 +123,20 @@ public class Calculator {
     /// <summary>
     /// Gets the local target position when the target is in range of a direct line to it
     /// </summary>
-    public static Vector2 GetTargetPostionIntersect(Vector2 relativeTargetPos, Vector2 localVelocity, float projectileVelocity) {
+    public static Vector2 GetTargetPositionIntersect(Vector2 relativeTargetPos, Vector2 localVelocity, float projectileVelocity) {
         return -relativeTargetPos;
-        //float incramentValue = 1f;
+        //float incrementValue = 1f;
         //float calculatedTime = 0;
         //while (true) {
         //    Vector2 localTargetPosition = FindLocalPositionAfterTime(relativeTargetPos, localVelocity, calculatedTime);
         //    if (GetDistanceToPosition(localTargetPosition) <= projectileVelocity * calculatedTime) {
-        //        calculatedTime -= incramentValue;
-        //        incramentValue /= 10;
+        //        calculatedTime -= incrementValue;
+        //        incrementValue /= 10;
         //    }
-        //    if (incramentValue <= 0.0001f) {
+        //    if (incrementValue <= 0.0001f) {
         //        return -localTargetPosition;
         //    }
-        //    calculatedTime += incramentValue;
+        //    calculatedTime += incrementValue;
         //}
     }
 

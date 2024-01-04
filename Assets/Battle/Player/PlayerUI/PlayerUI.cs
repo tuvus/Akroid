@@ -71,8 +71,8 @@ public class PlayerUI : MonoBehaviour {
         if (GetLocalPlayer().faction != null) {
             factionUI.SetActive(true);
             factionName.text = GetLocalPlayer().faction.name;
-            factionCredits.text = "Credits: " + GetLocalPlayer().faction.credits.ToString();
-            factionScience.text = "Science: " + GetLocalPlayer().faction.science.ToString() + " (" + GetLocalPlayer().faction.Discoveries + ")";
+            factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(GetLocalPlayer().faction.credits);
+            factionScience.text = "Science: " + NumFormatter.ConvertNumber(GetLocalPlayer().faction.science) + " (" + GetLocalPlayer().faction.Discoveries + ")";
         } else {
             factionUI.SetActive(false);
         }

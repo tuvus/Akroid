@@ -27,8 +27,8 @@ public class PlayerObjectStatusUI : MonoBehaviour {
 
 	private void RefreshUIForUnit(Unit unit) {
         objectImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
-        healthText.GetComponent<Text>().text = "Hull " + unit.GetHealth() + "/" + unit.GetMaxHealth();
-        shieldText.GetComponent<Text>().text = "Shields " + unit.GetShields() + "/" + unit.GetMaxShields();
+        healthText.GetComponent<Text>().text = "Hull " + NumFormatter.ConvertNumber(unit.GetHealth()) + "/" + NumFormatter.ConvertNumber(unit.GetMaxHealth());
+        shieldText.GetComponent<Text>().text = "Shields " + NumFormatter.ConvertNumber(unit.GetShields()) + "/" + NumFormatter.ConvertNumber(unit.GetMaxShields());
     }
 
     public void RefreshPlayerObjectStatusUI(Fleet fleet, Unit unit, int unitCount) {
@@ -38,8 +38,8 @@ public class PlayerObjectStatusUI : MonoBehaviour {
         objectImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
         float sizeRatio = objectImage.rectTransform.sizeDelta.y / objectImage.rectTransform.sizeDelta.x;
         objectImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
-        healthText.GetComponent<Text>().text = "Hull " + fleet.GetFleetHealth() + "/" + fleet.GetMaxFleetHealth();
-        shieldText.GetComponent<Text>().text = "Shields " + fleet.GetFleetShields() + "/" + fleet.GetMaxFleetShields();
+        healthText.GetComponent<Text>().text = "Hull " + NumFormatter.ConvertNumber(fleet.GetFleetHealth()) + "/" + NumFormatter.ConvertNumber(fleet.GetMaxFleetHealth());
+        shieldText.GetComponent<Text>().text = "Shields " + NumFormatter.ConvertNumber(fleet.GetFleetShields()) + "/" + NumFormatter.ConvertNumber(fleet.GetMaxFleetShields());
         nameText.GetComponent<Text>().text = fleet.GetFleetName() + " (" + unitCount + ")";
         gameObject.SetActive(true);
     }

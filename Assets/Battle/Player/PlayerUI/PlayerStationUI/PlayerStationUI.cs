@@ -70,8 +70,8 @@ public class PlayerStationUI : MonoBehaviour {
             stationType.text = "Station Type: " + displayedStation.stationType;
             weaponsCount.text = "Weapons: " + displayedStation.GetWeaponCount();
             if (displayedStation.GetWeaponCount() > 0) {
-                stationTotalDPS.text = "Damage Per Second: " + ((int)(displayedStation.GetUnitDamagePerSecond() * 10) / 10f);
-                maxWeaponRange.text = "Weapon Range: " + displayedStation.GetMaxWeaponRange();
+                stationTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedStation.GetUnitDamagePerSecond());
+                maxWeaponRange.text = "Weapon Range: " + NumFormatter.ConvertNumber(displayedStation.GetMaxWeaponRange());
                 stationTotalDPS.gameObject.SetActive(true);
                 maxWeaponRange.gameObject.SetActive(true);
             } else {
@@ -101,7 +101,7 @@ public class PlayerStationUI : MonoBehaviour {
             cargoHeader.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
             cargoBaysStatus.gameObject.SetActive(true);
-            cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
+            cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
             cargoBayCapacity.gameObject.SetActive(true);
             for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
                 if (cargoBayList.childCount <= i) {
@@ -110,7 +110,7 @@ public class PlayerStationUI : MonoBehaviour {
                 Transform cargoBayButton = cargoBayList.GetChild(i);
                 cargoBayButton.gameObject.SetActive(true);
                 cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-                cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
+                cargoBayButton.GetChild(1).GetComponent<Text>().text = NumFormatter.ConvertNumber(cargoBay.cargoBays[i]);
                 cargoBayButton.GetChild(2).GetComponent<Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
             }
             for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
@@ -161,7 +161,7 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.name;
             cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + blueprint.shipScriptableObject.cost.ToString();
+            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber(blueprint.shipScriptableObject.cost);
             if (LocalPlayer.Instance.GetFaction() != null) {
                 button.interactable = LocalPlayer.Instance.GetFaction().credits >= blueprint.shipScriptableObject.cost;
             } else {
@@ -202,7 +202,7 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = upgradeComponent.name;
             cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + ((upgradeComponent.cost - system.component.cost) * system.moduleCount);
+            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber((upgradeComponent.cost - system.component.cost) * system.moduleCount);
         }
         for (int i = upgradeableSystems.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);

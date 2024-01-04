@@ -52,9 +52,9 @@ public class PlayerPlanetUI : MonoBehaviour {
             } else {
                 planetFactionName.text = "Faction" + "Unowned";
             }
-            planetPopulation.text = "Population: " + displayedPlanet.population.ToString();
+            planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedPlanet.population);
             percentLand.text = "Land Percent: " + (Mathf.RoundToInt(displayedPlanet.landFactor * 10000) / 100).ToString() + "%";
-            planetAreas.text = "Areas: " + displayedPlanet.areas.ToString();
+            planetAreas.text = "Areas: " + NumFormatter.ConvertNumber(displayedPlanet.areas);
         }
         if (planetFactionsUI.activeSelf) {
             UpdatePlanetFactions();
@@ -77,8 +77,8 @@ public class PlayerPlanetUI : MonoBehaviour {
                 constructionBayButtonTransform.GetChild(0).GetChild(0).GetComponent<Text>().text = "Unclaimed Territory";
                 constructionBayButtonTransform.GetChild(0).GetChild(1).GetComponent<Text>().text = "";
             }
-            constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<Text>().text = "Force: " + planetFaction.force;
-            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Territory: " + planetFaction.territory;
+            constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<Text>().text = "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
+            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Territory: " + NumFormatter.ConvertNumber(planetFaction.territory);
             constructionBayButtonTransform.GetChild(1).GetChild(2).GetComponent<Text>().text = (planetFaction.territory * 100 / displayedPlanet.areas).ToString() + "%";
             constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<Text>().text = planetFaction.special;
             constructionBayButtonTransform.GetChild(0).GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));

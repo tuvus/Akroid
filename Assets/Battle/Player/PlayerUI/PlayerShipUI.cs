@@ -67,8 +67,8 @@ public class PlayerShipUI : MonoBehaviour {
         }
         weaponsCount.text = "Weapons: " + displayedShip.GetWeaponCount();
         if (displayedShip.GetWeaponCount() > 0) {
-            shipTotalDPS.text = "Damage Per Second: " + ((int)(displayedShip.GetUnitDamagePerSecond() * 10) / 10f);
-            maxWeaponRange.text = "Weapon Range: " + displayedShip.GetMaxWeaponRange();
+            shipTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedShip.GetUnitDamagePerSecond());
+            maxWeaponRange.text = "Weapon Range: " + NumFormatter.ConvertNumber(displayedShip.GetMaxWeaponRange());
             shipTotalDPS.gameObject.SetActive(true);
             maxWeaponRange.gameObject.SetActive(true);
         } else {
@@ -84,7 +84,7 @@ public class PlayerShipUI : MonoBehaviour {
             cargoHeader.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
             cargoBaysStatus.gameObject.SetActive(true);
-            cargoBayCapacity.text = "Cargo bay capacity " + cargoBay.GetCargoBayCapacity();
+            cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
             cargoBayCapacity.gameObject.SetActive(true);
             for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
                 if (cargoBayList.childCount <= i) {
