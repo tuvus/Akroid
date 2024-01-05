@@ -217,7 +217,7 @@ public class FleetAI : MonoBehaviour {
         }
         if (command.commandType == CommandType.Formation) {
             if (newCommand) {
-                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, fleet.GetPosition(), command.targetRotation, 0f, FleetFormation.FormationType.Line);
+                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, fleet.GetPosition(), command.targetRotation, 0f, FleetFormation.FormationType.Circle);
                 for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
@@ -233,7 +233,7 @@ public class FleetAI : MonoBehaviour {
         }
         if (command.commandType == CommandType.FormationLocation) {
             if (newCommand) {
-                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, command.targetPosition, command.targetRotation, 0f, FleetFormation.FormationType.Line);
+                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, command.targetPosition, command.targetRotation, 0f, FleetFormation.FormationType.Circle);
                 for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));

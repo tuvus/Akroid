@@ -87,10 +87,10 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     protected virtual void Start() {
         if (quickStart == true) {
-            Debug.Log("Seting up test scene");
+            Debug.Log("Setting up test scene");
             List<FactionData> tempFactions = new List<FactionData> {
-                new FactionData("Faction1", "F1", Random.Range(10000000, 100000000), 0, 14, 1),
-                new FactionData("Faction2", "F2", Random.Range(10000000, 100000000), 0, 14, 1)
+                new FactionData("Faction1", "F1", Random.Range(10000000, 100000000), 0, 50, 1),
+                new FactionData("Faction2", "F2", Random.Range(10000000, 100000000), 0, 50, 1)
             };
             SetupBattle(0, 0, 1, 0.1f, 1.1f, tempFactions);
         }
