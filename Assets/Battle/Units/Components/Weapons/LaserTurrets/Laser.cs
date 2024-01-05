@@ -31,8 +31,8 @@ public class Laser : MonoBehaviour {
         spriteRenderer.enabled = false;
         startHighlight.enabled = false;
         endHighlight.enabled = false;
-        startHighlight.transform.localScale = new Vector2(1 / laserSize, 1);
-        endHighlight.transform.localScale = new Vector2(1 / laserSize, 1);
+        startHighlight.transform.localScale = new Vector2(.2f, .2f);
+        endHighlight.transform.localScale = new Vector2(.2f, .2f);
         extraDamage = 0;
     }
 
@@ -40,8 +40,8 @@ public class Laser : MonoBehaviour {
         fireing = true;
         fireTime = laserTurret.GetFireDuration();
         fadeTime = laserTurret.GetFadeDuration();
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, 1);
-        startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, 1);
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
+        startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, .8f);
         endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
     }
 
