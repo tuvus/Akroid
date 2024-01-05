@@ -22,7 +22,11 @@ public class FleetFormation {
         if (formationType == FormationType.Line) {
             return GetLineFormation(shipsSorted, fleet, position, rotation, spread);
         } else if (formationType == FormationType.Circle) {
-            return GetCircleFormation(shipsSorted, fleet, position, rotation, spread);
+            return GetOvalFormation(shipsSorted, fleet, position, rotation, spread, Vector2.one);
+        } else if (formationType == FormationType.VerticalOval) {
+            return GetOvalFormation(shipsSorted, fleet, position, rotation, spread, new Vector2(.5f,1));
+        } else if (formationType == FormationType.HorizontalOval) {
+            return GetOvalFormation(shipsSorted, fleet, position, rotation, spread, new Vector2(1, .5f));
         }
         return (null, null);
     }
@@ -43,12 +47,12 @@ public class FleetFormation {
         return (shipsSorted, shipPositions);
     }
     
-    private static (List<Ship>, List<Vector2>) GetCircleFormation(List<Ship> shipsSorted, Fleet fleet, Vector2 position, float rotation, float spread) {
+    private static (List<Ship>, List<Vector2>) GetOvalFormation(List<Ship> shipsSorted, Fleet fleet, Vector2 position, float rotation, float spread, Vector2 scalar) {
         shipsSorted.Reverse();
         List<Vector2> shipPositions = new List<Vector2>();
         PositionGiver positionGiver = new PositionGiver(position, 0, 500, 10, 10, 5);
         for (int i = 0; i < shipsSorted.Count; i++) {
-            Vector2? newPosition = FindFreeShipLocationIncrement(positionGiver, shipsSorted, shipPositions);
+            Vector2? newPosition = FindFreeShipLocationIncrement(positionGiver, shipsSorted, shipPositions, scalar);
             if (newPosition.HasValue) {
                 shipPositions.Add(newPosition.Value);
             } else {
@@ -58,11 +62,11 @@ public class FleetFormation {
         return (shipsSorted, shipPositions);
     }
 
-    public static Vector2? FindFreeShipLocationIncrement(PositionGiver positionGiver, List<Ship> shipsSorted, List<Vector2> shipPositions) {
+    public static Vector2? FindFreeShipLocationIncrement(PositionGiver positionGiver, List<Ship> shipsSorted, List<Vector2> shipPositions, Vector2 scalar ) {
         float distance = positionGiver.minDistance;
         if (positionGiver.numberOfTries == 0) return positionGiver.position;
         while (true) {
-            Vector2? targetPosition = FindFreeShipLocation(positionGiver, distance, distance + positionGiver.incrementDistance, shipsSorted, shipPositions);
+            Vector2? targetPosition = FindFreeShipLocation(positionGiver, distance, distance + positionGiver.incrementDistance, shipsSorted, shipPositions, scalar);
             if (targetPosition.HasValue) {
                 return targetPosition.Value;
             }
@@ -73,10 +77,10 @@ public class FleetFormation {
         }
     }
 
-    public static Vector2? FindFreeShipLocation(PositionGiver positionGiver, float minRange, float maxRange, List<Ship> shipsSorted, List<Vector2> shipPositions) {
+    public static Vector2? FindFreeShipLocation(PositionGiver positionGiver, float minRange, float maxRange, List<Ship> shipsSorted, List<Vector2> shipPositions, Vector2 scalar) {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
             float distance = Random.Range(minRange, maxRange);
-            Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0f, 360f), distance);
+            Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0f, 360f), distance) * scalar;
             if (ConfirmShipLocation(tryPos, positionGiver.distanceFromObject, shipsSorted, shipPositions)) {
                 return tryPos;
             }
@@ -93,5 +97,17 @@ public class FleetFormation {
             }
         }
         return true;
-    } 
+    }
+
+    public static FormationType ChooseRandomFormation() {
+        int value = Random.Range(0, 5);
+        if (value == 0) {
+            return FormationType.Line;
+        } else if (value == 1) {
+            return FormationType.Circle;
+        } else if (value == 2) {
+            return FormationType.VerticalOval;
+        }
+        return FormationType.HorizontalOval;
+    }
 }

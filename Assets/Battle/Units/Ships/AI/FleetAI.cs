@@ -17,11 +17,13 @@ public class FleetAI : MonoBehaviour {
     public List<Command> commands;
     public bool newCommand;
     public CommandType currentCommandType;
+    public FleetFormation.FormationType formationType;
 
     public void SetupFleetAI(Fleet fleet) {
         this.fleet = fleet;
         commands = new List<Command>(10);
         AddFormationCommand();
+        formationType = FleetFormation.ChooseRandomFormation();
     }
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
@@ -217,7 +219,7 @@ public class FleetAI : MonoBehaviour {
         }
         if (command.commandType == CommandType.Formation) {
             if (newCommand) {
-                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, fleet.GetPosition(), command.targetRotation, 0f, FleetFormation.FormationType.Circle);
+                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, fleet.GetPosition(), command.targetRotation, 0f, formationType);
                 for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
@@ -233,7 +235,7 @@ public class FleetAI : MonoBehaviour {
         }
         if (command.commandType == CommandType.FormationLocation) {
             if (newCommand) {
-                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, command.targetPosition, command.targetRotation, 0f, FleetFormation.FormationType.Circle);
+                (List<Ship>, List<Vector2>) shipTargetPositions = FleetFormation.GetFormationShipPosition(fleet, command.targetPosition, command.targetRotation, 0f, formationType);
                 for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
                     shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(command.targetRotation));
