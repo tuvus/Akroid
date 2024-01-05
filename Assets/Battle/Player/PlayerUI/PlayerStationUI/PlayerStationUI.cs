@@ -125,8 +125,8 @@ public class PlayerStationUI : MonoBehaviour {
         }
     }
 
-    public void SetAutoBuildShips(bool autoBuildShips) {
-        ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips = autoBuildShips;
+    public void SetAutoConstruction(bool autoconstruction) {
+        ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoConstruction = autoconstruction;
     }
 
     public void ShipYardButtonSelected() {
@@ -218,9 +218,9 @@ public class PlayerStationUI : MonoBehaviour {
     void UpdateConstructionUI(ConstructionBay constructionBay) {
         autoBuildShips.transform.parent.gameObject.SetActive(displayedStation.faction.GetFactionAI() is SimulationFactionAI);
         if (autoBuildShips.gameObject.activeInHierarchy) {
-            autoBuildShips.SetIsOnWithoutNotify(((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoBuildShips);
+            autoBuildShips.SetIsOnWithoutNotify(((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoConstruction);
             autoBuildShips.onValueChanged.RemoveAllListeners();
-            autoBuildShips.onValueChanged.AddListener((autoBuildShips) => SetAutoBuildShips(autoBuildShips));
+            autoBuildShips.onValueChanged.AddListener((autoConstruction) => SetAutoConstruction(autoConstruction));
         }
         constructionBayStatus.text = "Construction bays in use " + Mathf.Min(constructionBay.buildQueue.Count, constructionBay.GetConstructionBays()) + "/" + constructionBay.GetConstructionBays();
         for (int i = 0; i < constructionBay.buildQueue.Count; i++) {

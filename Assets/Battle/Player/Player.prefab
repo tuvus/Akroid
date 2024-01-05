@@ -27060,7 +27060,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Auto Build Ships
+  m_Text: Auto Construction
 --- !u!1 &7351927757373515925
 GameObject:
   m_ObjectHideFlags: 0
@@ -30150,7 +30150,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3661433903223041532}
   m_Layer: 5
-  m_Name: AutoBuildShips
+  m_Name: AutoConstruction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

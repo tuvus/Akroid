@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -8,17 +9,19 @@ using Random = UnityEngine.Random;
 public class SimulationFactionAI : FactionAI {
     public Shipyard fleetCommand { get; private set; }
     public List<Fleet> defenseFleets;
-    static int wantedDefenseFleets = 1;
+    static int wantedDefenseFleets = 2;
     public List<Fleet> attackFleets;
     public List<Fleet> threats;
     static float threatDistance = 1000;
     float updateTime;
     public bool autoCommandFleets;
-    public bool autoBuildShips;
+    public bool autoConstruction;
+    public int minCombatShips = 10;
+    public int maxCombatShips = 20;
 
     public override void SetupFactionAI(Faction faction) {
         base.SetupFactionAI(faction);
-        autoBuildShips = true;
+        autoConstruction = true;
         autoCommandFleets = true;
         updateTime = Random.Range(0, 0.2f);
         defenseFleets = new List<Fleet>();
@@ -49,9 +52,10 @@ public class SimulationFactionAI : FactionAI {
                 if (autoCommandFleets) {
                     ManageDockedShips();
                 }
-                if (autoBuildShips) {
+                if (autoConstruction) {
                     ManageStationBuilding();
                     ManageShipBuilding();
+                    ManageStationUpgrades();
                 }
                 updateTime += .2f;
             }
@@ -223,16 +227,20 @@ public class SimulationFactionAI : FactionAI {
                 }
             } else {
                 List<Ship> combatShips = fleetCommand.GetHanger().GetAllUndamagedCombatShips();
-                if (combatShips.Count > 4) {
+                if (combatShips.Count > maxCombatShips)
+                    combatShips.RemoveRange(maxCombatShips, combatShips.Count - maxCombatShips);
+                if (combatShips.Count > 8) {
                     int totalHealth = 0;
                     for (int i = 0; i < combatShips.Count; i++) {
                         totalHealth += combatShips[i].GetTotalHealth();
                     }
                     if (totalHealth > 3000) {
                         if (defenseFleets.Count < wantedDefenseFleets) {
-                            Fleet fleet = faction.CreateNewFleet("DefenseFleet" + (int)(defenseFleets.Count + 1), combatShips);
-                            defenseFleets.Add(fleet);
-                            fleet.FleetAI.AddFormationTowardsPositionCommand(faction.GetAveragePosition(), fleetCommand.GetSize() * 4);
+                            if (combatShips.Count >= (int)(minCombatShips * 1.5f)) {
+                                Fleet fleet = faction.CreateNewFleet("DefenseFleet" + (int)(defenseFleets.Count + 1), combatShips);
+                                defenseFleets.Add(fleet);
+                                fleet.FleetAI.AddFormationTowardsPositionCommand(faction.GetAveragePosition(), fleetCommand.GetSize() * 4);
+                            }
                         } else {
                             Station enemyStation = faction.GetClosestEnemyStation(fleetCommand.GetPosition());
                             if (enemyStation != null) {
@@ -291,6 +299,15 @@ public class SimulationFactionAI : FactionAI {
         }
     }
 
+    void ManageStationUpgrades() {
+        if (fleetCommand.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 30000) {
+            for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
+                if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
+                    fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);
+                }
+            }
+        }
+    }
     public override void RemoveFleet(Fleet fleet) {
         base.RemoveFleet(fleet);
         defenseFleets.Remove(fleet);
