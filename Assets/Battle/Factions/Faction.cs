@@ -12,7 +12,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [field: SerializeField] public new string name { get; private set; }
-    [field: SerializeField] public new string abbreviatedName { get; private set; }
+    [field: SerializeField] public string abbreviatedName { get; private set; }
     [field: SerializeField] public long credits { get; private set; }
     [field: SerializeField] public long science { get; private set; }
     public long researchCost { get; private set; }
@@ -160,9 +160,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.Instance.CreateNewStation(new Station.StationData(this, BattleManager.Instance.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
+            battleManager.CreateNewStation(new Station.StationData(this, battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(this, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
+                MiningStation newStation = battleManager.CreateNewStation(new Station.StationData(this, battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -397,7 +397,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     #region Update
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
-        foreach (var unitGroup in unitGroups) {
+        foreach (var unitGroup in unitGroups.ToList()) {
             unitGroup.UpdateObjectGroup();
         }
     }
@@ -442,7 +442,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFleets(float deltaTime) {
-        foreach (var fleet in fleets) {
+        foreach (var fleet in fleets.ToList()) {
             Profiler.BeginSample("UpdateFleet");
             fleet.UpdateFleet(deltaTime);
             Profiler.EndSample();
@@ -654,7 +654,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public bool HasEnemy() {
-        return !enemyFactions.ToList().Any(e => e.units.Count > 0);
+        return enemyFactions.ToList().Any(e => e.units.Count > 0);
     }
 
     public Transform GetShipTransform() {

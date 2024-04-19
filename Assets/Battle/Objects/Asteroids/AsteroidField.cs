@@ -1,12 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static BattleManager;
 
 public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
 
-    public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
+    public void SetupAsteroidField(BattleManager battleManager) {
         SetupObjectGroup(battleManager, new HashSet<Asteroid>(), true);
+    }
+
+    /// <summary>
+    /// SetupAstroidFieldPosition needs to be called after all asteroids have been added and placed to determine it's size.
+    /// All asteroids need to be added after the battleObjects set in ObjectGroup is initialized.
+    /// Therefore SetupAstroidFieldPosition must be called after SetupAsteroidField.
+    /// </summary>
+    public void SetupAstroidFieldPosition(BattleManager.PositionGiver positionGiver) {
         UpdateObjectGroup();
         foreach (var asteroid in battleObjects) {
             asteroid.AdjustPosition(-GetPosition());

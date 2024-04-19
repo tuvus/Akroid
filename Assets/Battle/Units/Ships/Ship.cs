@@ -403,10 +403,11 @@ public class Ship : Unit {
 
     public override void DestroyUnit() {
         base.DestroyUnit();
+        if (fleet != null) fleet.RemoveShip(this);
         fleet = null;
         if (shipAction == ShipAction.Idle)
             faction.GetFactionAI().RemoveIdleShip(this);
-        BattleManager.Instance.DestroyShip(this);
+        battleManager.DestroyShip(this);
     }
 
     public void DockShip(Station station) {

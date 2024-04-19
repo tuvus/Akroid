@@ -14,8 +14,8 @@ public class BattleManager : MonoBehaviour {
 
     [field: SerializeField] public float researchModifier { get; private set; }
     [field: SerializeField] public float systemSizeModifier { get; private set; }
-    public HashSet<ShipBlueprint> shipBlueprints;
-    public HashSet<StationBlueprint> stationBlueprints;
+    public List<ShipBlueprint> shipBlueprints;
+    public List<StationBlueprint> stationBlueprints;
 
     public HashSet<Faction> factions { get; private set; }
     public HashSet<Unit> units { get; private set; }
@@ -40,7 +40,13 @@ public class BattleManager : MonoBehaviour {
 
     float startOfSimulation;
     double simulationTime;
-    bool simulationEnded;
+    [field:SerializeField] public BattleState battleState { get; private set; }
+    public enum BattleState {
+        Setup,
+        Running,
+        Ended
+    }
+
     public struct PositionGiver {
         public Vector2 position;
         public bool isExactPosition;
@@ -87,6 +93,7 @@ public class BattleManager : MonoBehaviour {
     /// Two factions means better performance for faster debugging.
     /// </summary>
     protected virtual void Start() {
+        battleState = BattleState.Setup;
         if (quickStart == true) {
             Debug.Log("Setting up test scene");
             List<FactionData> tempFactions = new List<FactionData> {
@@ -110,32 +117,17 @@ public class BattleManager : MonoBehaviour {
             Instance = this;
         } else {
             Destroy(gameObject);
+            return;
         }
         this.systemSizeModifier = systemSizeModifier;
         this.researchModifier = researchModifier;
-        factions = new HashSet<Faction>(10);
-        units = new HashSet<Unit>(200);
-        ships = new HashSet<Ship>(150);
-        stations = new HashSet<Station>(50);
-        stars = new HashSet<Star>();
-        planets = new HashSet<Planet>();
-        asteroidFields = new HashSet<AsteroidField>(asteroidFieldCount);
-        projectiles = new HashSet<Projectile>(500);
-        destroyedUnits = new HashSet<Unit>(200);
-
-        for (int i = 0; i < 100; i++) {
-            PreSpawnNewProjectile();
-        }
-        for (int i = 0; i < 20; i++) {
-            PrespawnNewMissile();
-        }
+        InitializeBattle();
         for (int i = 0; i < starCount; i++) {
             CreateNewStar("Star" + (i + 1));
         }
         for (int i = 0; i < asteroidFieldCount; i++) {
             CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
         }
-        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
 
         for (int i = 0; i < factionDatas.Count; i++) {
             CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
@@ -146,7 +138,6 @@ public class BattleManager : MonoBehaviour {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);
             }
-
         }
 
         if (factions.Count > 0)
@@ -154,10 +145,11 @@ public class BattleManager : MonoBehaviour {
         else
             LocalPlayer.Instance.SetupFaction(null);
         LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
+
         startOfSimulation = Time.unscaledTime;
-        simulationEnded = false;
+        battleState = BattleState.Running;
         if (CheckVictory())
-            simulationEnded = true;
+            battleState = BattleState.Ended;
     }
 
     /// <summary>
@@ -170,28 +162,45 @@ public class BattleManager : MonoBehaviour {
             Instance = this;
         } else {
             Destroy(gameObject);
+            return;
         }
         this.campaignController = campaignControler;
         systemSizeModifier = campaignControler.systemSizeModifier;
         researchModifier = campaignControler.researchModifier;
-        factions = new HashSet<Faction>(0);
-        units = new HashSet<Unit>(100);
-        ships = new HashSet<Ship>(50);
-        stations = new HashSet<Station>(50);
-        stars = new HashSet<Star>();
-        planets = new HashSet<Planet>();
-        asteroidFields = new HashSet<AsteroidField>(20);
-        projectiles = new HashSet<Projectile>(500);
-        destroyedUnits = new HashSet<Unit>(50);
-        startOfSimulation = Time.time;
-        simulationEnded = false;
-        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        InitializeBattle();
         LocalPlayer.Instance.SetupFaction(null);
         campaignControler.SetupBattle(this);
-        simulationEnded = true;
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
         }
+        startOfSimulation = Time.unscaledTime;
+        battleState = BattleState.Running;
+    }
+
+    private void InitializeBattle() {
+        factions = new HashSet<Faction>(10);
+        units = new HashSet<Unit>(200);
+        ships = new HashSet<Ship>(150);
+        stations = new HashSet<Station>(50);
+        stationsInProgress = new HashSet<Station>(10);
+        stars = new HashSet<Star>(10);
+        planets = new HashSet<Planet>(10);
+        asteroidFields = new HashSet<AsteroidField>(10);
+        projectiles = new HashSet<Projectile>(500);
+        missiles = new HashSet<Missile>(100);
+        destroyedUnits = new HashSet<Unit>(200);
+        usedProjectiles = new HashSet<Projectile>(500);
+        unusedProjectiles = new HashSet<Projectile>(500);
+        usedMissiles = new HashSet<Missile>(100);
+        unusedMissiles = new HashSet<Missile>(100);
+
+        for (int i = 0; i < 100; i++) {
+            PreSpawnNewProjectile();
+        }
+        for (int i = 0; i < 20; i++) {
+            PrespawnNewMissile();
+        }
+        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
     }
     #endregion
 
@@ -300,6 +309,7 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
         AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
+        newAsteroidField.SetupAsteroidField(this);
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
@@ -307,9 +317,8 @@ public class BattleManager : MonoBehaviour {
             newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
+        newAsteroidField.SetupAstroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
-        //newAsteroidField.SetupAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2));
-        newAsteroidField.SetupAsteroidField(positionGiver);
     }
     #endregion
 
@@ -408,20 +417,20 @@ public class BattleManager : MonoBehaviour {
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
-        foreach (var faction in factions) {
+        foreach (var faction in factions.ToList()) {
             Profiler.BeginSample("EarlyFactionUpdate");
             faction.EarlyUpdateFaction();
             Profiler.EndSample();
         }
-        foreach (var faction in factions) {
+        foreach (var faction in factions.ToList()) {
             Profiler.BeginSample("FactionUpdate");
             faction.UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
-        foreach (var faction in factions) {
+        foreach (var faction in factions.ToList()) {
             faction.UpdateFleets(deltaTime);
         }
-        foreach (var unit in units) {
+        foreach (var unit in units.ToList()) {
             Profiler.BeginSample("UnitUpdate");
             Profiler.BeginSample(unit.GetUnitName());
             unit.UpdateUnit(deltaTime);
@@ -429,23 +438,23 @@ public class BattleManager : MonoBehaviour {
             Profiler.EndSample();
         }
         Profiler.BeginSample("ProjectilesUpdate");
-        foreach (var projectile in projectiles) {
+        foreach (var projectile in projectiles.ToList()) {
             projectile.UpdateProjectile(deltaTime);
 
         }
         Profiler.EndSample();
         Profiler.BeginSample("MissilesUpdate");
-        foreach (var missile in usedMissiles) {
+        foreach (var missile in usedMissiles.ToList()) {
             missile.UpdateMissile(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("DestroyedUnitsUpdate");
-        foreach (var destroyedUnit in destroyedUnits) {
+        foreach (var destroyedUnit in destroyedUnits.ToList()) {
             destroyedUnit.UpdateDestroyedUnit(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("StarsUpdate");
-        foreach (var star in stars) {
+        foreach (var star in stars.ToList()) {
             star.UpdateStar(deltaTime);
         }
         Profiler.EndSample();
@@ -457,7 +466,7 @@ public class BattleManager : MonoBehaviour {
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
             LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, GetRealTime(), GetSimulationTime());
-            simulationEnded = true;
+            battleState = BattleState.Ended;
             LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }
     }
@@ -469,7 +478,7 @@ public class BattleManager : MonoBehaviour {
 
     #region HelperMethods
     public Faction CheckVictory() {
-        if (simulationEnded)
+        if (battleState != BattleState.Running)
             return null;
         foreach (var faction in factions) {
             if (faction.units.Count > 0 && !faction.HasEnemy()) {
@@ -563,18 +572,15 @@ public class BattleManager : MonoBehaviour {
     }
 
     public ShipBlueprint GetShipBlueprint(ShipClass shipClass) {
-        shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipClass == shipClass);
-        return null;
+        return shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipClass == shipClass);
     }
 
     public ShipBlueprint GetShipBlueprint(ShipType shipType) {
-        shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipType == shipType);
-        return null;
+        return shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipType == shipType);
     }
 
     public StationBlueprint GetStationBlueprint(StationType stationType) {
-        stationBlueprints.ToList().First(station => station.stationScriptableObject.stationType == stationType);
-        return null;
+        return stationBlueprints.First(station => station.stationScriptableObject.stationType == stationType);
     }
 
     public Transform GetFactionsTransform() {
