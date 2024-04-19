@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
-    [SerializeField] float size;
-    protected Vector2 position;
+    [field: SerializeField] public float size { get; protected set; }
+    [field: SerializeField] public Vector2 position { get; protected set; }
     protected SpriteRenderer spriteRenderer;
     private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     [field: SerializeField] public Faction faction { get; protected set; }

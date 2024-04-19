@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -87,7 +88,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void PrimaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             actionType = ActionType.UndockCombatAtCommand;
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
@@ -98,7 +99,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void SecondaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             actionType = ActionType.UndockTransportAtCommand;
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
@@ -109,8 +110,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void TertiaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             actionType = ActionType.UndockAllCombatCommand;
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
@@ -209,7 +210,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateUndockAllCombatCommand() {
         foreach (var station in selectedUnits.GetAllStations()) {
-            List<Ship> combatShips = station.GetHanger().GetAllCombatShips();
+            HashSet<Ship> combatShips = station.GetHanger().GetAllCombatShips();
             foreach (var ship in combatShips) {
                 if (ship != null && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
                     if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
@@ -254,7 +255,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         Star closestStar = null;
         float closestStarDistance = 0;
         foreach (Star star in BattleManager.Instance.stars) {
-            float newStarDistance = Vector2.Distance(mousePos, star.GetPosition());
+            float newStarDistance = Vector2.Distance(mousePos, star.position);
             if (closestStar == null || newStarDistance < closestStarDistance) {
                 closestStar = star;
                 closestStarDistance = newStarDistance;
@@ -288,9 +289,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 selectedUnits.fleet.FleetAI.AddFormationCommand();
         } else {
             selectedUnits.RemoveAllNonCombatShips();
-            selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+            selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
             selectedUnits.RemoveAnyNullUnits();
-            List<Ship> ships = selectedUnits.GetAllShips();
+            HashSet<Ship> ships = selectedUnits.GetAllShips().ToHashSet();
             if (ships.Count > 0) {
                 selectedUnits.SetFleet(LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships));
             }

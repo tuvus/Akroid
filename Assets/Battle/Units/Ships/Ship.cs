@@ -108,7 +108,7 @@ public class Ship : Unit {
         public List<long> resourceCosts;
         public long totalResourcesRequired;
 
-        public ShipConstructionBlueprint (Faction faction, ShipBlueprint shipBlueprint, String name = null) : base (faction, shipBlueprint.shipScriptableObject, name) {
+        public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, String name = null) : base(faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
             resourcesTypes = new List<CargoBay.CargoTypes>(shipScriptableObject.resourceTypes);
             resourceCosts = new List<long>(shipScriptableObject.resourceCosts);
@@ -160,8 +160,8 @@ public class Ship : Unit {
     public void SetupThrusters() {
         thrusting = false;
         thrust = 0;
-        for (int i = 0; i < thrusters.Count; i++) {
-            thrust += thrusters[i].GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
+        foreach (var thruster in thrusters) {
+            thrust += thruster.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
         }
     }
 

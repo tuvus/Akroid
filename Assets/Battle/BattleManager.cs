@@ -257,7 +257,7 @@ public class BattleManager : MonoBehaviour {
         Ship newShip = Instantiate(shipPrefab.gameObject, shipData.faction.GetShipTransform()).GetComponent<Ship>();
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(shipData.shipName, shipData.faction, new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
+        newShip.SetupUnit(this, shipData.shipName, shipData.faction, new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
         return newShip;
     }
 
@@ -268,7 +268,7 @@ public class BattleManager : MonoBehaviour {
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationData.stationScriptableObject.prefabPath);
         Station newStation = Instantiate(stationPrefab, stationData.faction.GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, stationData.faction, positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
+        newStation.SetupUnit(this, stationData.stationName, stationData.faction, positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -281,14 +281,14 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewStar(string name) {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
         Star newStar = Instantiate(starPrefab, GetStarTransform()).GetComponent<Star>();
-        newStar.SetupStar(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
+        newStar.SetupStar(this, name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
     }
 
     public Planet CreateNewPlanet(string name, Faction faction, PositionGiver positionGiver, long population, float landFactor, double populationGrowthRate = 0.01) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(name, faction, positionGiver, population, populationGrowthRate, Random.Range(0, 360), landFactor);
+        newPlanet.SetupPlanet(this, name, faction, positionGiver, population, populationGrowthRate, Random.Range(0, 360), landFactor);
         planets.Add(newPlanet);
         return newPlanet;
     }
@@ -305,7 +305,7 @@ public class BattleManager : MonoBehaviour {
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(8f, 20f);
             newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
-            newAsteroidField.asteroids.Add(newAsteroid);
+            newAsteroidField.battleObjects.Add(newAsteroid);
         }
         asteroidFields.Add(newAsteroidField);
         //newAsteroidField.SetupAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2));
@@ -368,7 +368,7 @@ public class BattleManager : MonoBehaviour {
     public void PreSpawnNewProjectile() {
         GameObject projectilePrefab = (GameObject)Resources.Load("Prefabs/Projectile");
         Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
-        newProjectile.PrespawnProjectile(projectiles.Count, timeScale);
+        newProjectile.PrespawnProjectile(this, projectiles.Count, timeScale);
         projectiles.Add(newProjectile);
     }
 
@@ -392,7 +392,7 @@ public class BattleManager : MonoBehaviour {
     public void PrespawnNewMissile() {
         GameObject missilePrefab = (GameObject)Resources.Load("Prefabs/HermesMissile");
         Missile newMissile = Instantiate(missilePrefab, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
-        newMissile.PrespawnMissile(missiles.Count, timeScale);
+        newMissile.PrespawnMissile(this, missiles.Count, timeScale);
         missiles.Add(newMissile);
     }
     #endregion

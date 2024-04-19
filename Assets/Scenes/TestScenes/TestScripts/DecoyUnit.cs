@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DecoyUnit : Unit {
@@ -11,10 +12,10 @@ public class DecoyUnit : Unit {
         faction = tempFaction;
         enemyUnitsInRange = new List<Unit>() { target };
         Spawn();
-        SetupUnit("Test", tempFaction, new BattleManager.PositionGiver(), 0, 1, null);
+        SetupUnit(null, "Test", tempFaction, new BattleManager.PositionGiver(), 0, 1, null);
     }
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale, UnitScriptableObject unitScriptableObject) {
+    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale, UnitScriptableObject unitScriptableObject) {
         turrets = new List<Turret>(GetComponentsInChildren<Turret>());
         foreach (var turret in turrets) {
             turret.SetupTurret(this);

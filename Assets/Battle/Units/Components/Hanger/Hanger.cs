@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Hanger : ModuleComponent {
@@ -83,24 +84,12 @@ public class Hanger : ModuleComponent {
     }
 
 
-    public List<Ship> GetAllCombatShips() {
-        List<Ship> combatShips = new List<Ship>(ships.Count);
-        for (int i = 0; i < ships.Count; i++) {
-            if (ships[i].IsCombatShip()) {
-                combatShips.Add(ships[i]);
-            }
-        }
-        return combatShips;
+    public HashSet<Ship> GetAllCombatShips() {
+        return ships.Where(s => s.IsCombatShip()).ToHashSet();
     }
 
-    public List<Ship> GetAllUndamagedCombatShips() {
-        List<Ship> combatShips = new List<Ship>(ships.Count);
-        for (int i = 0; i < ships.Count; i++) {
-            if (ships[i].IsCombatShip() && !ships[i].IsDamaged()) {
-                combatShips.Add(ships[i]);
-            }
-        }
-        return combatShips;
+    public HashSet<Ship> GetAllUndamagedCombatShips() {
+        return ships.Where(s => s.IsCombatShip() && !s.IsDamaged()).ToHashSet();
     }
 
 

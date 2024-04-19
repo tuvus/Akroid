@@ -26,7 +26,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public void SetupAsteroid(AsteroidField asteroidField, BattleManager.PositionGiver positionGiver, AsteroidData asteroidData) {
         transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
         this.asteroidField = asteroidField;
-        base.SetupBattleObject(positionGiver, asteroidData.rotation);
+        base.SetupBattleObject(battleManager, positionGiver, asteroidData.rotation);
         this.position = asteroidData.position;
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
@@ -50,7 +50,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var asteroid in asteroidField.asteroids) {
+        foreach (var asteroid in asteroidField.battleObjects) {
             float dist = Vector2.Distance(position, asteroid.position);
             if (dist <= minDistanceFromObject + GetSize() + asteroid.GetSize()) {
                 return false;

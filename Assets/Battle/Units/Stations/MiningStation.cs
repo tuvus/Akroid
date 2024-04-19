@@ -19,7 +19,7 @@ public class MiningStation : Station {
         activelyMining = true;
         faction.AddMiningStation(this);
         if (this.built) {
-            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
     }
 
@@ -43,7 +43,7 @@ public class MiningStation : Station {
 
     public override bool BuildStation() {
         if (!built) {
-            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new List<Unit>(10)));
+            SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
         return base.BuildStation();
     }
@@ -84,7 +84,7 @@ public class MiningStation : Station {
                 continue;
             float tempDistance = Vector2.Distance(transform.position, asteroidField.GetPosition());
             if (tempDistance <= GetMiningRange() + asteroidField.GetSize()) {
-                foreach (var asteroid in asteroidField.asteroids) {
+                foreach (var asteroid in asteroidField.battleObjects) {
                     tempAsteroids.Add(asteroid);
                 }
             }

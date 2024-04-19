@@ -154,7 +154,7 @@ public class LocalPlayerInput : MonoBehaviour {
         } else if (displayedBattleObject != null) {
             SetCameraPosition(displayedBattleObject.GetPosition());
         } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
-            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations[0].transform.position);
+            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations.First().transform.position);
         }
     }
 

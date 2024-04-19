@@ -9,7 +9,6 @@ using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
-    public BattleManager battleManager { get; private set; }
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [field: SerializeField] public new string name { get; private set; }
@@ -45,17 +44,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public float[] improvementModifiers { get; private set; }
     public int[] improvementDiscoveryCount { get; private set; }
 
-    public List<Unit> units { get; private set; }
-    public List<Ship> ships { get; private set; }
-    public List<Fleet> fleets { get; private set; }
-    public List<Station> stations { get; private set; }
-    public List<Planet> planets { get; private set; }
-    public List<Station> stationBlueprints { get; private set; }
+    public HashSet<Unit> units { get; private set; }
+    public HashSet<Ship> ships { get; private set; }
+    public HashSet<Fleet> fleets { get; private set; }
+    public HashSet<Station> stations { get; private set; }
+    public HashSet<Planet> planets { get; private set; }
+    public HashSet<Station> stationBlueprints { get; private set; }
 
-    public List<MiningStation> activeMiningStations { get; private set; }
+    public HashSet<MiningStation> activeMiningStations { get; private set; }
 
-    public List<Faction> enemyFactions { get; private set; }
-    public List<UnitGroup> unitGroups { get; private set; }
+    public HashSet<Faction> enemyFactions { get; private set; }
+    public HashSet<UnitGroup> unitGroups { get; private set; }
     [field: SerializeField] public List<UnitGroup> closeEnemyGroups { get; private set; }
     public UnitGroup baseGroup { get; private set; }
     [field: SerializeField] public List<float> closeEnemyGroupsDistance { get; private set; }
@@ -116,25 +115,24 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void SetUpFaction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
-        this.battleManager = battleManager;
-        units = new List<Unit>((factionData.ships + factionData.stations) * 5);
+        units = new HashSet<Unit>((factionData.ships + factionData.stations) * 5);
         base.SetupObjectGroup(battleManager, units, false);
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             SetPosition(targetPosition.Value);
         else
             SetPosition(Vector2.zero);
-        ships = new List<Ship>(factionData.ships * 5);
-        fleets = new List<Fleet>(10);
-        stations = new List<Station>(factionData.stations * 5);
-        planets = new List<Planet>();
-        stationBlueprints = new List<Station>();
-        activeMiningStations = new List<MiningStation>();
-        enemyFactions = new List<Faction>();
-        unitGroups = new List<UnitGroup>(100);
+        ships = new HashSet<Ship>(factionData.ships * 5);
+        fleets = new HashSet<Fleet>(10);
+        stations = new HashSet<Station>(factionData.stations * 5);
+        planets = new HashSet<Planet>();
+        stationBlueprints = new HashSet<Station>();
+        activeMiningStations = new HashSet<MiningStation>();
+        enemyFactions = new HashSet<Faction>();
+        unitGroups = new HashSet<UnitGroup>(100);
         closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
-        baseGroup = CreateNewUnitGroup("BaseGroup", false, new List<Unit>(100));
+        baseGroup = CreateNewUnitGroup("BaseGroup", false, new HashSet<Unit>(100));
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
         factionAI.SetupFactionAI(battleManager, this);
         GenerateFaction(factionData, startingResearchCost);
@@ -188,7 +186,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (var star in battleManager.stars) {
-            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject * 2 + star.GetSize() + 1000) {
+            if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000) {
                 return false;
             }
         }
@@ -200,7 +198,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         foreach (var faction in battleManager.factions) {
             if (faction == this)
                 continue;
-            if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject * 5 + 1000) {
+            if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000) {
                 return false;
             }
         }
@@ -268,9 +266,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         planets.Remove(planet);
     }
 
-    public Fleet CreateNewFleet(string fleetName, List<Ship> ships) {
+    public Fleet CreateNewFleet(string fleetName, HashSet<Ship> ships) {
         Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
-        newFleet.SetupFleet(this, fleetName, ships);
+        newFleet.SetupFleet(battleManager, this, fleetName, ships);
         fleets.Add(newFleet);
         unitGroups.Add(newFleet);
         return newFleet;
@@ -281,7 +279,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         factionAI.RemoveFleet(fleet);
     }
 
-    public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, List<Unit> units) {
+    public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, HashSet<Unit> units) {
         GameObject newGroupObject = new GameObject(groupName);
         newGroupObject.transform.SetParent(GetGroupTransform());
         UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
@@ -399,12 +397,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     #region Update
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
-        for (int i = unitGroups.Count - 1; i >= 0; i--) {
-            if (unitGroups[i] == null) {
-                unitGroups.RemoveAt(i);
-            } else {
-                unitGroups[i].UpdateObjectGroup();
-            }
+        foreach (var unitGroup in unitGroups) {
+            unitGroup.UpdateObjectGroup();
         }
     }
 
@@ -420,10 +414,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroups.Clear();
         closeEnemyGroupsDistance.Clear();
         foreach (var enemyFaction in enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.GetPosition()) > GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
+            if (Vector2.Distance(GetPosition(), enemyFaction.position) > GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
-            for (int i = 0; i < enemyFaction.unitGroups.Count; i++) {
-                AddEnemyGroup(enemyFaction.unitGroups[i]);
+            foreach (var enemyGroup in enemyFaction.unitGroups) {
+                AddEnemyGroup(enemyGroup);
             }
         }
     }
@@ -448,13 +442,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFleets(float deltaTime) {
-        for (int i = fleets.Count - 1; i >= 0; i--) {
-            if (fleets[i] == null) {
-                fleets.RemoveAt(i);
-                continue;
-            }
+        foreach (var fleet in fleets) {
             Profiler.BeginSample("UpdateFleet");
-            fleets[i].UpdateFleet(deltaTime);
+            fleet.UpdateFleet(deltaTime);
             Profiler.EndSample();
         }
     }
@@ -464,14 +454,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     void UpdateUnitWeaponRanges() {
-        for (int i = 0; i < units.Count; i++) {
-            units[i].SetupWeaponRanges();
+        foreach (var unit in units) {
+            unit.SetupWeaponRanges();
         }
     }
 
     void UpdateShipThrustPower() {
-        for (int i = 0; i < ships.Count; i++) {
-            ships[i].SetupThrusters();
+        foreach (var ship in ships) {
+            ship.SetupThrusters();
         }
     }
     #endregion
@@ -537,15 +527,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         Station station = null;
         float distance = 0;
         foreach (var faction in enemyFactions) {
-            for (int i = 0; i < faction.stations.Count; i++) {
-                Station targetStation = faction.stations[i];
-                if (targetStation == null || !targetStation.IsTargetable())
-                    continue;
+            foreach (var targetStation in faction.stations) {
+                if (!targetStation.IsTargetable()) continue;
                 float targetDistance = Vector2.Distance(position, targetStation.GetPosition());
                 if (station == null || targetDistance < distance) {
                     station = targetStation;
                     distance = targetDistance;
                 }
+
             }
         }
         return station;
@@ -560,15 +549,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         Unit unit = null;
         float distance = 0;
         foreach (var faction in enemyFactions) {
-            for (int i = 0; i < faction.units.Count; i++) {
-                Unit targetUnit = faction.units[i];
-                if (targetUnit == null || !targetUnit.IsTargetable())
-                    continue;
+            foreach (var targetUnit in faction.units) {
+                if (!targetUnit.IsTargetable()) continue;
                 float targetDistance = Vector2.Distance(position, targetUnit.GetPosition());
                 if (unit == null || targetDistance < distance) {
                     unit = targetUnit;
                     distance = targetDistance;
                 }
+
             }
         }
         return unit;
@@ -577,15 +565,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public Station GetClosestStation(Vector2 position) {
         Station station = null;
         float distance = 0;
-        for (int i = 0; i < stations.Count; i++) {
-            Station targetStation = stations[i];
-            if (targetStation == null || !targetStation.IsSpawned())
-                continue;
+        foreach (var targetStation in stations) {
+            if (!targetStation.IsSpawned()) continue;
             float targetDistance = Vector2.Distance(position, targetStation.GetPosition());
             if (station == null || targetDistance < distance) {
                 station = targetStation;
                 distance = targetDistance;
             }
+
         }
         return station;
     }
@@ -599,9 +586,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         MiningStation miningStation = null;
         float distance = 0;
         int wantedTransportShips = int.MinValue;
-        for (int i = 0; i < activeMiningStations.Count; i++) {
-            MiningStation targetMiningStation = activeMiningStations[i];
-            if (targetMiningStation == null || !targetMiningStation.IsSpawned() || !targetMiningStation.activelyMining)
+        foreach (var targetMiningStation in activeMiningStations) {
+            if (!targetMiningStation.IsSpawned() || !targetMiningStation.activelyMining)
                 continue;
             float targetDistance = Vector2.Distance(position, targetMiningStation.GetPosition());
             int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
@@ -621,17 +607,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns>the total wanted transports throughout the faction</returns>
     public int GetTotalWantedTransports() {
-        int count = 0;
-        for (int i = 0; i < activeMiningStations.Count; i++) {
-            MiningStation targetMiningStation = activeMiningStations[i];
-            if (targetMiningStation != null && targetMiningStation.IsSpawned()) {
-                int? wantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
-                if (wantedTransportShips.HasValue) {
-                    count += wantedTransportShips.Value;
-                }
-            }
-        }
-        return count;
+        return activeMiningStations.Where(station => station.IsSpawned())
+            .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
     }
 
     /// <summary>
@@ -640,25 +617,13 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <param name="shipType">the given ShipType</param>
     /// <returns>all ships of the given ShipType</returns>
     public int GetShipsOfType(Ship.ShipType shipType) {
-        int count = 0;
-        for (int i = 0; i < ships.Count; i++) {
-            if (ships[i].GetShipType() == shipType) {
-                count++;
-            }
-        }
-        return count;
+        return ships.Count(s => s.GetShipType() == shipType);
     }
 
     public Ship GetTransportShip(int index) {
-        for (int i = 0; i < ships.Count; i++) {
-            if (ships[i].IsTransportShip()) {
-                if (index == 0) {
-                    return ships[i];
-                }
-                index--;
-            }
-        }
-        return null;
+        List<Ship> transportShips = ships.Where(s => s.IsTransportShip()).ToList();
+        if (index >= transportShips.Count) return null;
+        return transportShips[index];
     }
 
     /// <summary>
@@ -670,7 +635,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         Star closestStar = null;
         float distance = 0;
         foreach (var star in battleManager.stars) {
-            float targetDistance = Vector2.Distance(position, star.GetPosition());
+            float targetDistance = Vector2.Distance(position, star.position);
             if (star == null || targetDistance < distance) {
                 closestStar = star;
                 distance = targetDistance;
@@ -689,12 +654,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public bool HasEnemy() {
-        foreach (var enemyFaction in enemyFactions) {
-            if (enemyFaction.units.Count > 0) {
-                return true;
-            }
-        }
-        return false;
+        return !enemyFactions.ToList().Any(e => e.units.Count > 0);
     }
 
     public Transform GetShipTransform() {

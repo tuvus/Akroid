@@ -1,23 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleObject {
-    [field: SerializeField] public BattleManager battleManager {  get; private set; }
-    [SerializeField] List<T> battleObjects;
-    [SerializeField] Vector2 position;
-    [SerializeField] Vector2 averagePosition;
-    [SerializeField] float size;
+    [field: SerializeField] public BattleManager battleManager { get; private set; }
+    [field: SerializeField] public HashSet<T> battleObjects { get; private set; }
+    [field: SerializeField] public Vector2 position { get; private set; }
+    [field: SerializeField] public Vector2 averagePosition { get; private set; }
+    [field: SerializeField] public float size {  get; private set; }
     bool deleteGroupWhenEmpty;
     bool alreadyDestroyed;
     //public Transform sizeIndicator { get; private set; }
 
     public virtual void SetupObjectGroup() {
-        battleObjects = new List<T>(10);
+        battleObjects = new HashSet<T>(10);
     }
 
-    public virtual void SetupObjectGroup(BattleManager battleManager, List<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public virtual void SetupObjectGroup(BattleManager battleManager, HashSet<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         this.battleManager = battleManager;
         battleObjects = objects;
         this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
@@ -44,26 +45,19 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
         Vector2 min = new Vector2(int.MaxValue, int.MaxValue);
         Vector2 max = new Vector2(int.MinValue, int.MinValue);
         Vector2 sum = Vector2.zero;
-        for (int i = 0; i < battleObjects.Count; i++) {
-            Vector2 tempPos = battleObjects[i].GetPosition();
+        foreach (var battleObject in battleObjects) {
+            Vector2 tempPos = battleObject.GetPosition();
             sum += tempPos;
             min = Vector2.Min(min, tempPos);
             max = Vector2.Max(max, tempPos);
+
         }
         position = (min + max) / 2;
         averagePosition = sum / battleObjects.Count;
     }
 
     private float CalculateObjectGroupSize() {
-        float size = 0;
-        for (int i = 0; i < battleObjects.Count; i++) {
-            size = Math.Max(size, Vector2.Distance(position, battleObjects[i].GetPosition()) + battleObjects[i].GetSize());
-        }
-        return size;
-    }
-
-    public List<T> GetBattleObjects() {
-        return battleObjects;
+        return battleObjects.Max(battleObject => Vector2.Distance(position, battleObject.GetPosition()) + battleObject.GetSize());
     }
 
     /// <summary>

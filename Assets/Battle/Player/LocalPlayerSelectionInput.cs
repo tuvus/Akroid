@@ -304,7 +304,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     public void SelectOnlyControllableUnits() {
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits);
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
     }
 
     /// <summary>

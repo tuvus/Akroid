@@ -5,8 +5,8 @@ using UnityEngine;
 public class Shipyard : Station {
     private ConstructionBay constructionBay;
 
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
-        base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
+    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
         constructionBay = GetComponentInChildren<ConstructionBay>();
         constructionBay.SetupConstructionBay(this);
     }

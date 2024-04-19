@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -30,7 +31,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         this.faction = faction;
         base.SetupBattleObject(battleManager, positionGiver, rotation);
         moduleSystem = GetComponent<ModuleSystem>();
-        moduleSystem.SetupModuleSystem(this,unitScriptableObject);
+        moduleSystem.SetupModuleSystem(this, unitScriptableObject);
         this.objectName = name;
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
@@ -98,8 +99,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     void FindEnemyGroup(UnitGroup targetGroup) {
-        for (int i = 0; i < targetGroup.GetBattleObjects().Count; i++) {
-            FindEnemyUnit(targetGroup.GetBattleObjects()[i]);
+        foreach (var battleObject in targetGroup.battleObjects) {
+            FindEnemyUnit(battleObject);
         }
     }
 
@@ -122,14 +123,14 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     protected virtual void UpdateWeapons(float deltaTime) {
-        for (int i = 0; i < turrets.Count; i++) {
+        foreach (var turret in turrets) {
             Profiler.BeginSample("Turret");
-            turrets[i].UpdateTurret(deltaTime);
+            turret.UpdateTurret(deltaTime);
             Profiler.EndSample();
         }
-        for (int i = 0; i < missileLaunchers.Count; i++) {
+        foreach (var missileLauncher in missileLaunchers) {
             Profiler.BeginSample("MissileLauncher");
-            missileLaunchers[i].UpdateMissileLauncher(deltaTime);
+            missileLauncher.UpdateMissileLauncher(deltaTime);
             Profiler.EndSample();
         }
     }
@@ -268,17 +269,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public long GetAllCargo(CargoBay.CargoTypes cargoType) {
-        long totalCargo = 0;
-        foreach (var cargo in GetCargoBays()) {
-            totalCargo += cargo.GetAllCargo(cargoType);
-        }
-        return totalCargo;
-    }
-
-    public void LoadCargoFromUnit(Unit unit, CargoBay.CargoTypes cargoType) {
-        for (int i = 0; i < cargoBays.Count; i++) {
-            cargoBays[i].LoadCargoFromBay(unit.GetCargoBays()[i], cargoType);
-        }
+        return cargoBays.Sum(cb => cb.GetAllCargo(cargoType));
     }
 
     public string GetUnitName() {

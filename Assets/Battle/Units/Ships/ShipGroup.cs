@@ -4,17 +4,17 @@ using System.Linq;
 using UnityEngine;
 
 public class ShipGroup : UnitGroup {
-    protected List<Ship> ships;
+    [field:SerializeField] public HashSet<Ship> ships { get; private set; }
     public List<Fleet> sentFleets;
 
-    public override void SetupObjectGroup(List<Unit> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
-        ships = new List<Ship>();
+    public void SetupShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+        ships = objects;
         sentFleets = new List<Fleet>();
-        base.SetupObjectGroup(objects, deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
+        base.SetupObjectGroup(battleManager, new HashSet<Unit>(objects), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
     }
 
-    public void SetupTargetGroup(List<Unit> ships, bool deleteWhenEmpty) {
-        SetupObjectGroup(ships, deleteWhenEmpty);
+    public void SetupTargetGroup(HashSet<Ship> ships, bool deleteWhenEmpty) {
+        //SetupObjectGroup(ships, deleteWhenEmpty);
         UpdateObjectGroup();
     }
 
@@ -54,6 +54,6 @@ public class ShipGroup : UnitGroup {
     }
 
     public List<Ship> GetShips() {
-        return ships;
+        return ships.ToList();
     }
 }

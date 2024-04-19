@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static CommunicationEvent;
 
@@ -86,7 +87,7 @@ public class PlayerFactionAI : FactionAI {
                 }, 25 * GetTimeScale());
              }, 25 * GetTimeScale());
         } else if (state == AIState.Background) {
-            chapter1.GetBattleManager().SetSimulationTimeScale(faction.ships[0].fleet.FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
+            chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
             commManager.SendCommunication(faction,
             "See if you can locate and zoom in on the planet with the station, this is our home. \n Due to the slow development of resource reusing policy and climate change, resources are getting sparse, which is building tension between the major nations. Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.", (communicationEvent) => {
                 commManager.SendCommunication(faction,

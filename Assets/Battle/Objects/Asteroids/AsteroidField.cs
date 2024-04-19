@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
-    public List<Asteroid> asteroids;
     public float totalResources;
 
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
-        SetupObjectGroup(battleManager, asteroids, true);
+        SetupObjectGroup(battleManager, new HashSet<Asteroid>(), true);
         UpdateObjectGroup();
-        for (int i = 0; i < asteroids.Count; i++) {
-            asteroids[i].AdjustPosition(-GetPosition());
+        foreach (var asteroid in battleObjects) {
+            asteroid.AdjustPosition(-GetPosition());
         }
         SetPosition(GetSetupPosition(positionGiver));
         transform.position = GetPosition();
@@ -28,7 +27,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
 
         foreach (var star in battleManager.stars) {
-            if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + GetSize() + star.GetSize()) {
+            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + GetSize() + star.GetSize()) {
                 return false;
             }
         }
@@ -38,7 +37,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
             }
         }
         foreach (var station in battleManager.stations) {
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + GetSize() + station.GetSize()) {
+            if (Vector2.Distance(position, station.position) <= minDistanceFromObject + GetSize() + station.GetSize()) {
                 return false;
             }
         }

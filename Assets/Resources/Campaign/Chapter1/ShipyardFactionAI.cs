@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static FactionCommManager;
 
@@ -24,7 +25,7 @@ public class ShipyardFactionAI : FactionAI {
         base.UpdateFactionAI(deltaTime);
         if (shipyard.GetHanger().GetCombatShip(0) != null) {
             if (shipyard.GetHanger().GetCombatShip(0).faction.stations.Count > 0) {
-                shipyard.GetHanger().GetCombatShip(0).shipAI.AddUnitAICommand(Command.CreateDockCommand(shipyard.GetHanger().GetCombatShip(0).faction.stations[0]), Command.CommandAction.AddToEnd);
+                shipyard.GetHanger().GetCombatShip(0).shipAI.AddUnitAICommand(Command.CreateDockCommand(shipyard.GetHanger().GetCombatShip(0).faction.stations.First()), Command.CommandAction.AddToEnd);
             }
         }
         UpdateFactionCommunication(deltaTime);

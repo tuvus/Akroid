@@ -548,10 +548,9 @@ public class ShipAI : MonoBehaviour {
     Ship GetClosestEnemyShipInRadius(float radius) {
         Ship targetUnit = null;
         float distance = 0;
-        for (int i = 0; i < ship.faction.enemyFactions.Count; i++) {
-            Faction faction = ship.faction.enemyFactions[i];
-            for (int f = 0; f < faction.ships.Count; f++) {
-                Ship tempShip = faction.ships[f];
+
+        foreach (var faction in ship.faction.enemyFactions) {
+            foreach (var tempShip in faction.ships) {
                 float tempDistance = Vector2.Distance(ship.transform.position, tempShip.transform.position);
                 if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
                     targetUnit = tempShip;

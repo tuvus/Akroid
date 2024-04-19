@@ -26,8 +26,8 @@ public class Missile : BattleObject, IParticleHolder {
     bool hit;
     bool expired;
 
-    public void PrespawnMissile(int missileIndex, float particleSpeed) {
-        base.SetupBattleObject();
+    public void PrespawnMissile(BattleManager battleManager, int missileIndex, float particleSpeed) {
+        base.SetupBattleObject(battleManager);
         this.missileIndex = missileIndex;
         SetParticleSpeed(particleSpeed);
         highlight.enabled = false;

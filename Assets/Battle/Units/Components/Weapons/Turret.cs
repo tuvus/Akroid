@@ -36,7 +36,7 @@ public class Turret : ModuleComponent {
     }
 
     public virtual void SetupTurret(Unit unit) {
-        base.SetupBattleObject();
+        base.SetupBattleObject(unit.battleManager);
         this.unit = unit;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);

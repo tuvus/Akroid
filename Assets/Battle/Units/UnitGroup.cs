@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UnitGroup : ObjectGroup<Unit>{
     private int totalGroupHealth;
     private bool hasChanged;
-    public override void SetupObjectGroup(BattleManager battleManager, List<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public override void SetupObjectGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         base.SetupObjectGroup(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
         totalGroupHealth = CalculateTotalGroupHealth();
         hasChanged = false;
@@ -16,11 +17,7 @@ public class UnitGroup : ObjectGroup<Unit>{
     }
 
     private int CalculateTotalGroupHealth() {
-        int newTotalGroupHealth = 0;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            newTotalGroupHealth += GetBattleObjects()[i].GetTotalHealth();
-        }
-        return newTotalGroupHealth;
+        return battleObjects.Sum(o => o.GetTotalHealth());
     }
 
     public void UnitUpdated() {
@@ -49,16 +46,6 @@ public class UnitGroup : ObjectGroup<Unit>{
     }
 
     public bool IsTargetable() {
-        if (GetBattleObjects().Count == 0)
-            return false;
-        for (int i = 0; i < GetBattleObjects().Count; i++) {
-            if (GetBattleObjects()[i].IsTargetable())
-                return true;
-        }
-        return false;
-    }
-
-    public List<Unit> GetUnits() {
-        return GetBattleObjects();
+        return battleObjects.Any(o => o.IsTargetable());
     }
 }

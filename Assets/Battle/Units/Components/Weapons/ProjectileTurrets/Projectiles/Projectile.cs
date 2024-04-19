@@ -16,8 +16,8 @@ public class Projectile : BattleObject, IParticleHolder {
     private Vector2 startingScale;
     private bool hit;
 
-    public void PrespawnProjectile(int projectileIndex, float particleSpeed) {
-        base.SetupBattleObject();
+    public void PrespawnProjectile(BattleManager battleManger, int projectileIndex, float particleSpeed) {
+        base.SetupBattleObject(battleManager);
         this.projectileIndex = projectileIndex;
         startingScale = transform.localScale;
         SetParticleSpeed(particleSpeed);

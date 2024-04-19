@@ -18,7 +18,7 @@ public class LocalPlayer : MonoBehaviour {
         following = 2,
     }
     public Faction faction;
-    public List<Unit> ownedUnits;
+    public HashSet<Unit> ownedUnits;
     public bool lockedOwnedUnits;
 
     public void SetUpPlayer() {
@@ -31,7 +31,7 @@ public class LocalPlayer : MonoBehaviour {
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
         localPlayerInput.Setup();
         playerUI.SetUpUI(localPlayerInput);
-        ownedUnits = new List<Unit>();
+        ownedUnits = new HashSet<Unit>();
     }
 
     public void SetupFaction(Faction faction) {

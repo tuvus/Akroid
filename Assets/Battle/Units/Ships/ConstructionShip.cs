@@ -25,8 +25,7 @@ public class ConstructionShip : Ship {
     public Station GetClosestUnbuiltStationInRange(float range) {
         Station station = null;
         float distance = 0;
-        for (int i = 0; i < faction.stations.Count; i++) {
-            Station targetStation = faction.stations[i];
+        foreach (var targetStation in faction.stations) {
             if (targetStation == null || targetStation.IsSpawned() || targetStation.IsBuilt())
                 continue;
             float targetDistance = Vector2.Distance(GetPosition(), targetStation.GetPosition());
