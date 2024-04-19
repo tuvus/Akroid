@@ -6125,7 +6125,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 0.9999999
+  m_Value: 1
   m_Size: 0.5165289
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -32193,7 +32193,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   faction: {fileID: 0}
-  ownedUnits: []
   lockedOwnedUnits: 0
 --- !u!114 &1340137321875934968
 MonoBehaviour:
@@ -34738,7 +34737,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8714345815927367769}
         m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
-        m_MethodName: CloseAllMenues
+        m_MethodName: CloseAllMenus
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
