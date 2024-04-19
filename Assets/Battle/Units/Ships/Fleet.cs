@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.UIElements;
 
 public class Fleet : ShipGroup {
     public Faction faction { get; private set; }
@@ -23,7 +24,10 @@ public class Fleet : ShipGroup {
     public void SetupFleet(BattleManager battleManger, Faction faction, string fleetName, HashSet<Ship> ships) {
         this.faction = faction;
         this.fleetName = fleetName;
-        SetupShipGroup(battleManager, ships, true);
+        SetupShipGroup(battleManager, new HashSet<Ship>(), true);
+        foreach(Ship ship in ships) {
+            AddShip(ship);
+        }
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
         minShipSpeed = GetMinShipSpeed();
@@ -68,7 +72,9 @@ public class Fleet : ShipGroup {
     public void MergeIntoFleet(Fleet fleet) {
         if (fleet == this)
             Debug.LogError("Merging a fleet into itself");
-        foreach (var ship in ships) {
+        List<Ship> shipsToMerge = ships.ToList();
+        DisbandFleet();
+        foreach (var ship in shipsToMerge) {
             fleet.AddShip(ship);
         }
         fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);

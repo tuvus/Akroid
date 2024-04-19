@@ -291,7 +291,7 @@ public class Ship : Unit {
 
     public void SetTargetRotate(float rotation) {
         if (shipAction == ShipAction.Idle) {
-            faction.GetFactionAI().RemoveIdleShip(this);
+            faction.GetFactionAI().RemoveShip(this);
         }
         if (dockedStation != null) {
             SetIdle();
@@ -311,7 +311,7 @@ public class Ship : Unit {
 
     public void SetLateralMovePosition(Vector2 position) {
         if (shipAction == ShipAction.Idle) {
-            faction.GetFactionAI().RemoveIdleShip(this);
+            faction.GetFactionAI().RemoveShip(this);
         }
         if (dockedStation != null)
             UndockShip(position);
@@ -325,7 +325,7 @@ public class Ship : Unit {
             return;
         }
         if (shipAction == ShipAction.Idle) {
-            faction.GetFactionAI().RemoveIdleShip(this);
+            faction.GetFactionAI().RemoveShip(this);
         }
         if (dockedStation != null)
             UndockShip(position);
@@ -340,7 +340,7 @@ public class Ship : Unit {
 
     public void SetDockTarget(Station targetStation) {
         if (shipAction == ShipAction.Idle) {
-            faction.GetFactionAI().RemoveIdleShip(this);
+            faction.GetFactionAI().RemoveShip(this);
         }
         if (dockedStation == targetStation) {
             SetIdle();
@@ -405,8 +405,6 @@ public class Ship : Unit {
         base.DestroyUnit();
         if (fleet != null) fleet.RemoveShip(this);
         fleet = null;
-        if (shipAction == ShipAction.Idle)
-            faction.GetFactionAI().RemoveIdleShip(this);
         battleManager.DestroyShip(this);
     }
 

@@ -230,6 +230,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void RemoveShip(Ship ship) {
         RemoveUnit(ship);
         ships.Remove(ship);
+        factionAI.RemoveShip(ship);
     }
 
     public void AddStation(Station station) {
@@ -636,7 +637,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         float distance = 0;
         foreach (var star in battleManager.stars) {
             float targetDistance = Vector2.Distance(position, star.position);
-            if (star == null || targetDistance < distance) {
+            if (closestStar == null || targetDistance < distance) {
                 closestStar = star;
                 distance = targetDistance;
             }

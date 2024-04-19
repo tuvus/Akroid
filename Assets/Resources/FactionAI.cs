@@ -50,7 +50,7 @@ public class FactionAI : MonoBehaviour {
         idleShips.Add(ship);
     }
 
-    public virtual void RemoveIdleShip(Ship ship) {
+    public virtual void RemoveShip(Ship ship) {
         idleShips.Remove(ship);
     }
 

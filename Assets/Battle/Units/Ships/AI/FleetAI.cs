@@ -256,8 +256,8 @@ public class FleetAI : MonoBehaviour {
     }
 
     public void SetFleetIdle() {
-        for (int i = 0; i < fleet.GetShips().Count; i++) {
-            fleet.GetShips()[i].SetIdle();
+        foreach (var ship in fleet.ships) {
+            ship.SetIdle();
         }
     }
 
@@ -280,7 +280,7 @@ public class FleetAI : MonoBehaviour {
         else if (command.commandType == CommandType.Move) {
             float distance = Vector2.Distance(fleet.GetPosition(), command.targetPosition);
             return distance / fleet.minShipSpeed;
-        } 
+        }
         return 0;
     }
 
