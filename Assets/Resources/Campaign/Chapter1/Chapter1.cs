@@ -98,7 +98,7 @@ public class Chapter1 : CampaingController {
             civilianShips.Add(randStations[Random.Range(0, randStations.Count)].BuildShip(planetFaction, Ship.ShipType.Civilian));
             civilianShips[i].shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 30)));
         }
-        playerFactionAI.SetupPlayerFactionAI(battleManager, planetFaction, this, playerMiningStation);
+        playerFactionAI.SetupPlayerFactionAI(battleManager, playerFaction, this, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);
         planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips);
         shipyardFactionAI.SetupShipyardFactionAI(battleManager, shipyardFaction, this, planetFactionAI, shipyard);

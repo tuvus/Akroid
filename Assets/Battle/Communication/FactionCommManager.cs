@@ -49,9 +49,10 @@ public class FactionCommManager : MonoBehaviour {
     public void SendCommunication(CommunicationEvent newCommunication, float delay = 0) {
         if (delay > 0) {
             delayedCommunications.Add(new DelayCommunication(newCommunication, delay));
-            delayedCommunications.Sort((a,b) => a.targetTime.CompareTo(b.targetTime));
-        } else
+            delayedCommunications.Sort((a, b) => a.targetTime.CompareTo(b.targetTime));
+        } else {
             newCommunication.receiver.ReceiveCommunication(this, newCommunication);
+        }
     }
 
     public void ReceiveCommunication(FactionCommManager sender, CommunicationEvent receivedCommunication) {

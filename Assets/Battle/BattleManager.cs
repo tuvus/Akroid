@@ -479,7 +479,7 @@ public class BattleManager : MonoBehaviour {
 
     #region HelperMethods
     public Faction CheckVictory() {
-        if (battleState != BattleState.Running)
+        if (battleState != BattleState.Running || campaignController != null)
             return null;
         foreach (var faction in factions) {
             if (faction.units.Count > 0 && !faction.HasEnemy()) {
