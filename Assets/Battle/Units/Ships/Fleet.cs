@@ -38,7 +38,7 @@ public class Fleet : ShipGroup {
 
     public void DisbandFleet() {
         faction.RemoveFleet(this);
-        foreach (var ship in ships) {
+        foreach (var ship in ships.ToList()) {
             ship.SetIdle();
             ship.shipAI.ClearCommands();
             ship.fleet = null;
