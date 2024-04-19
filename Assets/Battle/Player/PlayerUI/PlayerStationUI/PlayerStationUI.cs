@@ -37,6 +37,8 @@ public class PlayerStationUI : MonoBehaviour {
     Unit upgradeDisplayUnit;
     [SerializeField] Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
+    List<Ship.ShipBlueprint> shipBlueprints;
+
     public void SetupPlayerStationUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
         shipYardOrUpgrade = true;
@@ -148,12 +150,13 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     void UpdateShipBlueprintUI() {
+        shipBlueprints = BattleManager.Instance.shipBlueprints.ToList();
         for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
             }
             Transform cargoBayButton = blueprintList.GetChild(i);
-            Ship.ShipBlueprint blueprint = BattleManager.Instance.shipBlueprints[i];
+            Ship.ShipBlueprint blueprint = shipBlueprints[i];
             Button button = cargoBayButton.GetComponent<Button>();
             button.onClick.RemoveAllListeners();
             int f = i;
@@ -175,7 +178,7 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     public void ShipBlueprintButtonPressed(int index) {
-        if (((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(LocalPlayer.Instance.GetFaction().factionIndex, BattleManager.Instance.shipBlueprints[index]))) {
+        if (((Shipyard)displayedStation).GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(LocalPlayer.Instance.GetFaction(), shipBlueprints[index]))) {
             UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
             UpdateShipBlueprintUI();
         }
@@ -235,7 +238,7 @@ public class PlayerStationUI : MonoBehaviour {
             constructionBayButtonTransform.gameObject.SetActive(true);
             Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
             constructionBayButtonTransform.GetChild(0).GetComponent<Text>().text = blueprint.name.ToString();
-            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = BattleManager.Instance.factions[blueprint.factionIndex].abbreviatedName;
+            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = blueprint.faction.abbreviatedName;
             constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
             constructionBayButton.GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(blueprint.GetFaction()));
         }

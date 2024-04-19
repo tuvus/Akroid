@@ -60,11 +60,11 @@ public class Planet : BattleObject, IPositionConfirmer {
         }
     }
 
-    public void SetupPlanet(string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation, float landFactor = 1) {
+    public void SetupPlanet(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, long population, double rateOfGrowth, float rotation, float landFactor = 1) {
         this.faction = faction;
         float scale = Random.Range(.9f, 1.3f);
         transform.localScale = new Vector3(transform.localScale.x * scale, transform.localScale.y * scale, 1);
-        base.SetupBattleObject(positionGiver, rotation);
+        base.SetupBattleObject(battleManager, positionGiver, rotation);
         objectName = name;
         this.population = population;
         this.rateOfGrowth = rateOfGrowth;

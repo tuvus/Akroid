@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleObject {
+    [field: SerializeField] public BattleManager battleManager {  get; private set; }
     [SerializeField] List<T> battleObjects;
     [SerializeField] Vector2 position;
     [SerializeField] Vector2 averagePosition;
@@ -16,7 +17,8 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
         battleObjects = new List<T>(10);
     }
 
-    public virtual void SetupObjectGroup(List<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public virtual void SetupObjectGroup(BattleManager battleManager, List<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+        this.battleManager = battleManager;
         battleObjects = objects;
         this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;

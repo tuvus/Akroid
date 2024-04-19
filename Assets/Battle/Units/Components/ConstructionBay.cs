@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Ship;
 
@@ -82,7 +83,7 @@ public class ConstructionBay : ModuleComponent {
     }
 
     bool BuildBlueprint(Ship.ShipConstructionBlueprint shipBlueprint) {
-        Ship ship = shipyard.BuildShip(shipBlueprint.factionIndex, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.cost);
+        Ship ship = shipyard.BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.cost);
         if (ship == null)
             return false;
         shipyard.stationAI.OnShipBuilt(ship);
@@ -90,23 +91,11 @@ public class ConstructionBay : ModuleComponent {
     }
 
     public int GetNumberOfShipsOfClass(Ship.ShipClass shipClass) {
-        int count = 0;
-        for (int i = 0; i < buildQueue.Count; i++) {
-            if (buildQueue[i].shipScriptableObject.shipClass == shipClass) {
-                count++;
-            }
-        }
-        return count;
+        return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass);
     }
 
-    public int GetNumberOfShipsOfClassFaction(Ship.ShipClass shipClass, int factionIndex) {
-        int count = 0;
-        for (int i = 0; i < buildQueue.Count; i++) {
-            if (buildQueue[i].shipScriptableObject.shipClass == shipClass && buildQueue[i].factionIndex == factionIndex) {
-                count++;
-            }
-        }
-        return count;
+    public int GetNumberOfShipsOfClassFaction(Ship.ShipClass shipClass, Faction faction) {
+        return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass && q.faction == faction);
     }
 
     public bool HasOpenBays() {

@@ -263,7 +263,7 @@ public class LocalPlayerInput : MonoBehaviour {
     BattleObject GetBattleObjectOverMouse() {
         BattleObject battleObject = null;
         float distance = float.MaxValue;
-        foreach (Unit targetUnit in BattleManager.Instance.GetAllUnits()) {
+        foreach (Unit targetUnit in BattleManager.Instance.units) {
             if (!targetUnit.IsSelectable()) {
                 continue;
             }

@@ -52,8 +52,8 @@ public class LocalPlayer : MonoBehaviour {
     /// Call after the player faction or the player faction's enemies list is modified.
     /// </summary>
     public void UpdateFactionColors() {
-        for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
-            BattleManager.Instance.GetAllUnits()[i].GetUnitSelection().UpdateFactionColor();
+        foreach (var unit in BattleManager.Instance.units) {
+            unit.GetUnitSelection().UpdateFactionColor();
         }
     }
 
@@ -99,13 +99,13 @@ public class LocalPlayer : MonoBehaviour {
     public Color GetColorOfRelationType(RelationType relationType) {
         switch (relationType) {
             case RelationType.Enemy:
-                return enemyColor;
+            return enemyColor;
             case RelationType.Friendly:
-                return friendlyColor;
+            return friendlyColor;
             case RelationType.Owned:
-                return ownedColor;
+            return ownedColor;
             default:
-                return neutralColor;
+            return neutralColor;
         }
     }
 

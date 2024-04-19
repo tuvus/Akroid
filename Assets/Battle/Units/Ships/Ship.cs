@@ -62,13 +62,13 @@ public class Ship : Unit {
     private float checkRotationSpeed = 0.2f;
 
     public struct ShipData {
-        public int faction;
+        public Faction faction;
         public ShipScriptableObject shipScriptableObject;
         public string shipName;
         public Vector2 position;
         public float rotation;
 
-        public ShipData(int faction, ShipScriptableObject shipScriptableObject, string shipName, Vector2 position, float rotation) {
+        public ShipData(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, Vector2 position, float rotation) {
             this.faction = faction;
             this.shipScriptableObject = shipScriptableObject;
             this.shipName = shipName;
@@ -76,7 +76,7 @@ public class Ship : Unit {
             this.rotation = rotation;
         }
 
-        public ShipData(int faction, ShipData shipData) {
+        public ShipData(Faction faction, ShipData shipData) {
             this.faction = faction;
             this.shipScriptableObject = shipData.shipScriptableObject;
             this.shipName = shipData.shipName;
@@ -88,15 +88,15 @@ public class Ship : Unit {
     [System.Serializable]
     public class ShipBlueprint {
         public string name;
-        public int factionIndex;
+        public Faction faction;
         public ShipScriptableObject shipScriptableObject;
 
-        protected ShipBlueprint(int factionIndex, ShipScriptableObject shipScriptableObject, string name = null) {
+        protected ShipBlueprint(Faction faction, ShipScriptableObject shipScriptableObject, string name = null) {
             if (name == null)
                 this.name = shipScriptableObject.name;
             else
                 this.name = name;
-            this.factionIndex = factionIndex;
+            this.faction = faction;
             this.shipScriptableObject = shipScriptableObject;
         }
     }
@@ -108,7 +108,7 @@ public class Ship : Unit {
         public List<long> resourceCosts;
         public long totalResourcesRequired;
 
-        public ShipConstructionBlueprint (int factionIndex, ShipBlueprint shipBlueprint, String name = null) : base (factionIndex, shipBlueprint.shipScriptableObject, name) {
+        public ShipConstructionBlueprint (Faction faction, ShipBlueprint shipBlueprint, String name = null) : base (faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
             resourcesTypes = new List<CargoBay.CargoTypes>(shipScriptableObject.resourceTypes);
             resourceCosts = new List<long>(shipScriptableObject.resourceCosts);
@@ -130,14 +130,14 @@ public class Ship : Unit {
         }
 
         public Faction GetFaction() {
-            return BattleManager.Instance.factions[factionIndex];
+            return faction;
         }
     }
-    public override void SetupUnit(string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
+    public override void SetupUnit(BattleManager battleManager, string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
         faction.AddShip(this);
         thrusters = new List<Thruster>();
-        base.SetupUnit(shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
+        base.SetupUnit(battleManager, shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
         shipAI = GetComponent<ShipAI>();
         cargoBay = GetComponentInChildren<CargoBay>();
         if (IsScienceShip()) {

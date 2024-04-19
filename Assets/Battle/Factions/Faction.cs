@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Unity.Mathematics;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
+    public BattleManager battleManager { get; private set; }
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [field: SerializeField] public new string name { get; private set; }
@@ -42,8 +44,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public float[] improvementModifiers { get; private set; }
     public int[] improvementDiscoveryCount { get; private set; }
-
-    public int factionIndex { get; private set; }
 
     public List<Unit> units { get; private set; }
     public List<Ship> ships { get; private set; }
@@ -115,9 +115,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
     }
 
-    public void SetUpFaction(int factionIndex, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
+    public void SetUpFaction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
+        this.battleManager = battleManager;
         units = new List<Unit>((factionData.ships + factionData.stations) * 5);
-        base.SetupObjectGroup(units, false);
+        base.SetupObjectGroup(battleManager, units, false);
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             SetPosition(targetPosition.Value);
@@ -134,9 +135,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
         baseGroup = CreateNewUnitGroup("BaseGroup", false, new List<Unit>(100));
-        this.factionIndex = factionIndex;
         factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
-        factionAI.SetupFactionAI(this);
+        factionAI.SetupFactionAI(battleManager, this);
         GenerateFaction(factionData, startingResearchCost);
         factionAI.GenerateFactionAI();
         commManager = GetComponent<FactionCommManager>();
@@ -162,9 +162,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, BattleManager.Instance.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
+            BattleManager.Instance.CreateNewStation(new Station.StationData(this, BattleManager.Instance.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(factionIndex, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
+                MiningStation newStation = BattleManager.Instance.CreateNewStation(new Station.StationData(this, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -182,22 +182,22 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
             } else
-                BattleManager.Instance.CreateNewShip(new Ship.ShipData(factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
+                BattleManager.Instance.CreateNewShip(new Ship.ShipData(this, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
         }
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var star in BattleManager.Instance.GetAllStars()) {
+        foreach (var star in battleManager.stars) {
             if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject * 2 + star.GetSize() + 1000) {
                 return false;
             }
         }
-        foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
+        foreach (var asteroidField in battleManager.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize()) {
                 return false;
             }
         }
-        foreach (var faction in BattleManager.Instance.GetAllFactions()) {
+        foreach (var faction in battleManager.factions) {
             if (faction == this)
                 continue;
             if (Vector2.Distance(position, faction.GetPosition()) <= minDistanceFromObject * 5 + 1000) {
@@ -285,7 +285,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         GameObject newGroupObject = new GameObject(groupName);
         newGroupObject.transform.SetParent(GetGroupTransform());
         UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
-        newUnitGroup.SetupObjectGroup(units, deleteWhenEmpty);
+        newUnitGroup.SetupObjectGroup(battleManager, units, deleteWhenEmpty);
         unitGroups.Add(newUnitGroup);
         return newUnitGroup;
     }
@@ -338,60 +338,60 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         int improvementArea;
         switch (researchArea) {
             case ResearchAreas.Engineering:
-                improvementArea = Random.Range(0, 4);
-                if (improvementArea == 0) {
-                    improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
-                } else if (improvementArea == 1) {
-                    improvementModifiers[(int)ImprovementAreas.ProjectileDamage] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileDamage]++;
-                } else if (improvementArea == 2) {
-                    improvementModifiers[(int)ImprovementAreas.ProjectileReload] += .2f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileReload]++;
-                } else if (improvementArea == 3) {
-                    improvementModifiers[(int)ImprovementAreas.ProjectileRange] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
-                    UpdateUnitWeaponRanges();
-                }
-                break;
+            improvementArea = Random.Range(0, 4);
+            if (improvementArea == 0) {
+                improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
+                improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
+            } else if (improvementArea == 1) {
+                improvementModifiers[(int)ImprovementAreas.ProjectileDamage] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileDamage]++;
+            } else if (improvementArea == 2) {
+                improvementModifiers[(int)ImprovementAreas.ProjectileReload] += .2f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileReload]++;
+            } else if (improvementArea == 3) {
+                improvementModifiers[(int)ImprovementAreas.ProjectileRange] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
+                UpdateUnitWeaponRanges();
+            }
+            break;
             case ResearchAreas.Electricity:
-                improvementArea = Random.Range(0, 5);
-                if (improvementArea == 0) {
-                    improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
-                } else if (improvementArea == 1) {
-                    improvementModifiers[(int)ImprovementAreas.ShieldRegen] += .3f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldRegen]++;
-                } else if (improvementArea == 2) {
-                    improvementModifiers[(int)ImprovementAreas.LaserDamage] += .2f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.LaserDamage]++;
-                } else if (improvementArea == 3) {
-                    improvementModifiers[(int)ImprovementAreas.LaserReload] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.LaserReload]++;
-                } else if (improvementArea == 4) {
-                    improvementModifiers[(int)ImprovementAreas.LaserRange] += .2f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
-                    UpdateUnitWeaponRanges();
-                }
-                break;
+            improvementArea = Random.Range(0, 5);
+            if (improvementArea == 0) {
+                improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
+            } else if (improvementArea == 1) {
+                improvementModifiers[(int)ImprovementAreas.ShieldRegen] += .3f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ShieldRegen]++;
+            } else if (improvementArea == 2) {
+                improvementModifiers[(int)ImprovementAreas.LaserDamage] += .2f;
+                improvementDiscoveryCount[(int)ImprovementAreas.LaserDamage]++;
+            } else if (improvementArea == 3) {
+                improvementModifiers[(int)ImprovementAreas.LaserReload] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.LaserReload]++;
+            } else if (improvementArea == 4) {
+                improvementModifiers[(int)ImprovementAreas.LaserRange] += .2f;
+                improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
+                UpdateUnitWeaponRanges();
+            }
+            break;
             case ResearchAreas.Chemicals:
-                improvementArea = Random.Range(0, 4);
-                if (improvementArea == 0) {
-                    improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
-                    UpdateShipThrustPower();
-                } else if (improvementArea == 1) {
-                    improvementModifiers[(int)ImprovementAreas.MissileDamage] += .2f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.MissileDamage]++;
-                } else if (improvementArea == 2) {
-                    improvementModifiers[(int)ImprovementAreas.MissileReload] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.MissileReload]++;
-                } else if (improvementArea == 3) {
-                    improvementModifiers[(int)ImprovementAreas.MissileRange] += .15f;
-                    improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
-                    UpdateUnitWeaponRanges();
-                }
-                break;
+            improvementArea = Random.Range(0, 4);
+            if (improvementArea == 0) {
+                improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
+                UpdateShipThrustPower();
+            } else if (improvementArea == 1) {
+                improvementModifiers[(int)ImprovementAreas.MissileDamage] += .2f;
+                improvementDiscoveryCount[(int)ImprovementAreas.MissileDamage]++;
+            } else if (improvementArea == 2) {
+                improvementModifiers[(int)ImprovementAreas.MissileReload] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.MissileReload]++;
+            } else if (improvementArea == 3) {
+                improvementModifiers[(int)ImprovementAreas.MissileRange] += .15f;
+                improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
+                UpdateUnitWeaponRanges();
+            }
+            break;
         }
     }
     #endregion
@@ -486,19 +486,13 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns>the available asteroid field count</returns>
     public int GetAvailableAsteroidFieldsCount() {
-        int count = 0;
-        for (int i = 0; i < BattleManager.Instance.GetAllAsteroidFields().Count; i++) {
-            if (IsAsteroidAvailableForNewMiningStation(BattleManager.Instance.GetAllAsteroidFields()[i]))
-                count++;
-        }
-        return count;
+        return battleManager.asteroidFields.Count(a => IsAsteroidAvailableForNewMiningStation(a));
     }
 
     public List<AsteroidField> GetClosestAvailableAsteroidFields(Vector2 position) {
         List<AsteroidField> eligibleAsteroidFields = new List<AsteroidField>();
         List<float> distances = new List<float>();
-        for (int i = 0; i < BattleManager.Instance.GetAllAsteroidFields().Count; i++) {
-            AsteroidField targetAsteroidField = BattleManager.Instance.GetAllAsteroidFields()[i];
+        foreach (var targetAsteroidField in battleManager.asteroidFields) {
             if (IsAsteroidAvailableForNewMiningStation(targetAsteroidField)) {
                 float distance = Vector2.Distance(position, targetAsteroidField.GetPosition());
                 for (int f = 0; f < eligibleAsteroidFields.Count + 1; f++) {
@@ -673,18 +667,16 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <param name="position">the given position</param>
     /// <returns>the closest star</returns>
     public Star GetClosestStar(Vector2 position) {
-        Star star = null;
+        Star closestStar = null;
         float distance = 0;
-        for (int i = 0; i < BattleManager.Instance.stars.Count; i++) {
-            if (BattleManager.Instance.stars[i] == null)
-                continue;
-            float targetDistance = Vector2.Distance(position, BattleManager.Instance.stars[i].GetPosition());
+        foreach (var star in battleManager.stars) {
+            float targetDistance = Vector2.Distance(position, star.GetPosition());
             if (star == null || targetDistance < distance) {
-                star = BattleManager.Instance.stars[i];
+                closestStar = star;
                 distance = targetDistance;
             }
         }
-        return star;
+        return closestStar;
     }
 
     /// <summary>

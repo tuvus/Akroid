@@ -7,7 +7,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
 
     public void SetupAsteroidField(BattleManager.PositionGiver positionGiver) {
-        SetupObjectGroup(asteroids, true);
+        SetupObjectGroup(battleManager, asteroids, true);
         UpdateObjectGroup();
         for (int i = 0; i < asteroids.Count; i++) {
             asteroids[i].AdjustPosition(-GetPosition());
@@ -26,22 +26,23 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var star in BattleManager.Instance.GetAllStars()) {
+
+        foreach (var star in battleManager.stars) {
             if (Vector2.Distance(position, star.GetPosition()) <= minDistanceFromObject + GetSize() + star.GetSize()) {
                 return false;
             }
         }
-        foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
+        foreach (var asteroidField in battleManager.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + GetSize() + asteroidField.GetSize()) {
                 return false;
             }
         }
-        foreach (var station in BattleManager.Instance.GetAllStations()) {
+        foreach (var station in battleManager.stations) {
             if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + GetSize() + station.GetSize()) {
                 return false;
             }
         }
-        foreach (var planet in BattleManager.Instance.planets) {
+        foreach (var planet in battleManager.planets) {
             if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
                 return false;
             }

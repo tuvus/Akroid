@@ -13,7 +13,8 @@ public class ShipyardFactionAI : FactionAI {
     long lancerMetalCost = 9800;
     long lancerCreditCost = 20000;
 
-    public void SetupShipyardFactionAI(Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard) {
+    public void SetupShipyardFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard) {
+        base.SetupFactionAI(battleManager, faction);
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
@@ -49,7 +50,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, 9800)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
+                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Aria)));
             }
         }
     }
@@ -59,7 +60,7 @@ public class ShipyardFactionAI : FactionAI {
         if (faction.UseCredits(cost)) {
             this.faction.AddCredits(cost);
             if (planetFactionAI.AddMetalOrder(this.faction, transportMetalCost)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport)));
+                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Transport)));
             }
         }
     }
@@ -76,7 +77,7 @@ public class ShipyardFactionAI : FactionAI {
         return (long)(lancerMetalCost * chapter1.GetMetalCost()) + lancerCreditCost;
     }
 
-    public int GetOrderCount(Ship.ShipClass shipClass, int factionIndex) {
-        return shipyard.GetConstructionBay().GetNumberOfShipsOfClassFaction(shipClass, factionIndex);
+    public int GetOrderCount(Ship.ShipClass shipClass, Faction faction) {
+        return shipyard.GetConstructionBay().GetNumberOfShipsOfClassFaction(shipClass, faction);
     }
 }

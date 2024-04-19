@@ -83,8 +83,8 @@ public class PlayerUI : MonoBehaviour {
         UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
-            for (int i = 0; i < BattleManager.Instance.GetAllUnits().Count; i++) {
-                BattleManager.Instance.GetAllUnits()[i].UpdateUnitUI(showUnitZoomIndicators);
+            foreach (var unit in BattleManager.Instance.units) {
+                unit.UpdateUnitUI(showUnitZoomIndicators);
             }
         }
         if (stationUI.activeSelf) {

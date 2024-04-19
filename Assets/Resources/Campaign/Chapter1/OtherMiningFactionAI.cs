@@ -8,7 +8,8 @@ public class OtherMiningFactionAI : FactionAI {
     MiningStation otherMiningStation;
     Station tradeStation;
 
-    public void SetupOtherMiningFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, MiningStation otherMiningStation, Station tradeStation) {
+    public void SetupOtherMiningFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, MiningStation otherMiningStation, Station tradeStation) {
+        base.SetupFactionAI(battleManager, faction);
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.otherMiningStation = otherMiningStation;
@@ -18,7 +19,7 @@ public class OtherMiningFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
         if (faction.credits > 10000) {
-            if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
+            if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
                 shipyardFactionAI.PlaceTransportOrder(faction);
             }
         }

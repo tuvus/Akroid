@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Dropdown menueUIFactionSelect;
     [SerializeField] private Text timeScaleText;
     [SerializeField] private Slider menueUITimeScale;
+    private List<Faction> factions;
 
     public void SetupMenueUI(PlayerUI playerUI) {
         this.playerUI = playerUI;
@@ -19,10 +21,12 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void ShowMenueUI() {
         menueUIFactionSelect.ClearOptions();
-        List<string> factionNames = new List<string>(BattleManager.Instance.GetAllFactions().Count);
+        factions = BattleManager.Instance.factions.ToList();
+        List<string> factionNames = new List<string>(factions.Count);
         factionNames.Add("None");
-        for (int i = 0; i < BattleManager.Instance.GetAllFactions().Count; i++) {
-            factionNames.Add(BattleManager.Instance.GetAllFactions()[i].name);
+        foreach (var faction in factions) {
+            factionNames.Add(faction.name);
+
         }
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
@@ -34,7 +38,7 @@ public class PlayerMenueUI : MonoBehaviour {
         if (LocalPlayer.Instance.GetFaction() == null)
             menueUIFactionSelect.SetValueWithoutNotify(0);
         else
-            menueUIFactionSelect.SetValueWithoutNotify(LocalPlayer.Instance.GetFaction().factionIndex + 1);
+            menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(LocalPlayer.Instance.GetFaction()) + 1);
         timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
         menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
     }
@@ -60,8 +64,8 @@ public class PlayerMenueUI : MonoBehaviour {
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
             LocalPlayer.Instance.SetupFaction(null);
-        } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != LocalPlayer.Instance.GetFaction().factionIndex) {
-            LocalPlayer.Instance.SetupFaction(BattleManager.Instance.GetAllFactions()[menueUIFactionSelect.value - 1]);
+        } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != factions.IndexOf(LocalPlayer.Instance.GetFaction())) {
+            LocalPlayer.Instance.SetupFaction(factions[menueUIFactionSelect.value - 1]);
         }
     }
 

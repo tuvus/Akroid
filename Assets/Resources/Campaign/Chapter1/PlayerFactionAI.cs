@@ -20,7 +20,8 @@ public class PlayerFactionAI : FactionAI {
     public AIState state { get; private set; }
     private bool nextState;
 
-    public void SetupPlayerFactionAI(Chapter1 chapter1, MiningStation playerMiningStation) {
+    public void SetupPlayerFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, MiningStation playerMiningStation) {
+        base.SetupFactionAI(battleManager, faction);
         this.chapter1 = chapter1;
         this.playerMiningStation = playerMiningStation;
         tradeRoutes = new List<Station>();
@@ -156,7 +157,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     public bool WantMoreTransportShips() {
-        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
+        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             return true;
         } else {
             return false;

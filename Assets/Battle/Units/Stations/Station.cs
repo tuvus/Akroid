@@ -20,14 +20,14 @@ public class Station : Unit, IPositionConfirmer {
     public StationType stationType;
 
     public struct StationData {
-        public int faction;
+        public Faction faction;
         public StationScriptableObject stationScriptableObject;
         public string stationName;
         public Vector2 wantedPosition;
         public float rotation;
         public bool built;
 
-        public StationData(int faction, StationScriptableObject stationScriptableObject, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
+        public StationData(Faction faction, StationScriptableObject stationScriptableObject, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
             this.faction = faction;
             this.stationScriptableObject = stationScriptableObject;
             this.stationName = stationName;
@@ -76,8 +76,8 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime { get; protected set; }
     protected bool built;
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
-        base.SetupUnit(name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
+    public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
         stationAI = GetComponent<StationAI>();
         hanger = GetComponentInChildren<Hanger>();
         cargoBay = GetComponentInChildren<CargoBay>();
@@ -170,29 +170,29 @@ public class Station : Unit, IPositionConfirmer {
 
     #region StationControlls
     public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool? undock = false) {
-        return BuildShip(faction.factionIndex, shipClass, cost, undock);
+        return BuildShip(faction, shipClass, cost, undock);
     }
 
     public virtual Ship BuildShip(ShipType shipType, long cost = 0, bool? undock = false) {
-        return BuildShip(faction.factionIndex, shipType, cost, undock);
+        return BuildShip(faction, shipType, cost, undock);
     }
 
-    public virtual Ship BuildShip(int factionIndex, ShipClass shipClass, long cost = 0, bool? undock = false) {
+    public virtual Ship BuildShip(Faction faction, ShipClass shipClass, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
-        return BuildShip(factionIndex, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+        return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
-    public virtual Ship BuildShip(int factionIndex, ShipType shipType, long cost = 0, bool? undock = false) {
+    public virtual Ship BuildShip(Faction faction, ShipType shipType, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
-        return BuildShip(factionIndex, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+        return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
-    public virtual Ship BuildShip(int factionIndex, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {
-        return BuildShip(factionIndex, new Ship.ShipData(factionIndex, shipScriptableObject, shipName, transform.position, Random.Range(0, 360)), cost, undock);
+    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {
+        return BuildShip(faction, new Ship.ShipData(faction, shipScriptableObject, shipName, transform.position, Random.Range(0, 360)), cost, undock);
     }
 
     public virtual Ship BuildShip(ShipData shipData, long cost = 0, bool? undock = false) {
-        return BuildShip(faction.factionIndex, shipData, cost, undock);
+        return BuildShip(faction, shipData, cost, undock);
     }
 
     /// <summary>
@@ -206,8 +206,8 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="cost"></param>
     /// <param name="undock"></param>
     /// <returns></returns>
-    public virtual Ship BuildShip(int factionIndex, ShipData shipData, long cost = 0, bool? undock = false) {
-        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(factionIndex,shipData));
+    public virtual Ship BuildShip(Faction faction, ShipData shipData, long cost = 0, bool? undock = false) {
+        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(faction,shipData));
         if (undock == null) { 
         } else if ((bool)undock) {
             newShip.DockShip(this);

@@ -4,13 +4,15 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class FactionAI : MonoBehaviour {
+    public BattleManager battleManager { get; private set; }
     public Faction faction { protected set; get; }
     public bool autoResearch;
 
     [SerializeField] protected List<Ship> idleShips;
     [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
 
-    public virtual void SetupFactionAI(Faction faction) {
+    public virtual void SetupFactionAI(BattleManager battleManager, Faction faction) {
+        this.battleManager = battleManager;
         this.faction = faction;
         idleShips = new List<Ship>(10);
         autoResearch = true;

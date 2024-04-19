@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using static BattleManager;
 
 public class Chapter1 : CampaingController {
-    BattleManager battleManager;
     public Faction playerFaction { get; private set; }
     public PlayerFactionAI playerFactionAI { get; private set; }
     public MiningStation playerMiningStation { get; private set; }
@@ -31,9 +31,8 @@ public class Chapter1 : CampaingController {
         Hard,
     }
 
-    public override void SetupBattle() {
-        base.SetupBattle();
-        battleManager = BattleManager.Instance;
+    public override void SetupBattle(BattleManager battleManager) {
+        base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
         metalCost = 2.4f;
         int starCount = Random.Range(1, 4);
@@ -45,40 +44,40 @@ public class Chapter1 : CampaingController {
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        playerMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(playerFaction.factionIndex, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", playerFaction.GetPosition(), Random.Range(0, 360), false));
+        playerMiningStation = (MiningStation)battleManager.CreateNewStation(new Station.StationData(playerFaction, battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", playerFaction.GetPosition(), Random.Range(0, 360), false));
 
         otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        otherMiningStation = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(otherMiningFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/MiningStation"), "MiningStation", otherMiningFaction.GetPosition(), Random.Range(0, 360), true));
+        otherMiningStation = (MiningStation)battleManager.CreateNewStation(new Station.StationData(otherMiningFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/MiningStation"), "MiningStation", otherMiningFaction.GetPosition(), Random.Range(0, 360), true));
         otherMiningStation.BuildShip(Ship.ShipClass.Transport);
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.GetPosition()), (long)Random.Range(500, 600) * 100000000, Random.Range(0.4f,0.6f));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
-        tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
+        tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
 
         shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
+        shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
 
         researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("Frontier Research", "FRO", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
-        researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction.factionIndex, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), "ResearchStation", researchFaction.GetPosition(), Random.Range(0, 360)));
+        researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), "ResearchStation", researchFaction.GetPosition(), Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
-        ((ConstructionShip)tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
-        tradeStation.BuildShip(playerFaction.factionIndex, Ship.ShipClass.Transport);
+        tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
+        ((ConstructionShip)tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder)).targetStationBlueprint = playerMiningStation;
+        tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * BattleManager.Instance.timeScale), Command.CommandAction.Replace);
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(3 * BattleManager.Instance.timeScale));
+        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
         miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDisbandFleetCommand());
@@ -91,16 +90,17 @@ public class Chapter1 : CampaingController {
 
         List<Ship> civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(2, 5); i++) {
-            civilianShips.Add(tradeStation.BuildShip(new Ship.ShipData(-1, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian", new Vector2(Random.Range(-50000, 50000), Random.Range(-50000, 50000)), Random.Range(0, 360)), 0, null));
+            civilianShips.Add(tradeStation.BuildShip(new Ship.ShipData(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian", new Vector2(Random.Range(-50000, 50000), Random.Range(-50000, 50000)), Random.Range(0, 360)), 0, null));
         }
         for (int i = 0; i < Random.Range(5, 15); i++) {
-            civilianShips.Add(BattleManager.Instance.stations[Random.Range(0, BattleManager.Instance.stations.Count)].BuildShip(planetFaction.factionIndex, Ship.ShipType.Civilian));
+            List<Station> randStations = battleManager.stations.ToList();
+            civilianShips.Add(randStations[Random.Range(0, randStations.Count)].BuildShip(planetFaction, Ship.ShipType.Civilian));
             civilianShips[i].shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 30)));
         }
-        playerFactionAI.SetupPlayerFactionAI(this, playerMiningStation);
-        otherMiningFactionAI.SetupOtherMiningFactionAI(this, shipyardFactionAI, otherMiningStation, tradeStation);
-        planetFactionAI.SetupPlanetFactionAI(this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips);
-        shipyardFactionAI.SetupShipyardFactionAI(this, planetFactionAI, shipyard);
+        playerFactionAI.SetupPlayerFactionAI(battleManager, planetFaction, this, playerMiningStation);
+        otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);
+        planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips);
+        shipyardFactionAI.SetupShipyardFactionAI(battleManager, shipyardFaction, this, planetFactionAI, shipyard);
 
 
         int asteroidFieldCount = Random.Range(50, 80);

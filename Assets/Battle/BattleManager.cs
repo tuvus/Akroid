@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Asteroid;
@@ -13,25 +14,25 @@ public class BattleManager : MonoBehaviour {
 
     [field: SerializeField] public float researchModifier { get; private set; }
     [field: SerializeField] public float systemSizeModifier { get; private set; }
-    public List<ShipBlueprint> shipBlueprints;
-    public List<StationBlueprint> stationBlueprints;
+    public HashSet<ShipBlueprint> shipBlueprints;
+    public HashSet<StationBlueprint> stationBlueprints;
 
-    public List<Faction> factions;
-    public List<Unit> units;
-    public List<Ship> ships;
-    public List<Station> stations;
-    public List<Station> stationsInProgress;
-    public List<Projectile> projectiles;
-    public List<Missile> missiles;
-    public List<Star> stars;
-    public List<Planet> planets;
-    public List<AsteroidField> asteroidFields;
+    public HashSet<Faction> factions { get; private set; }
+    public HashSet<Unit> units { get; private set; }
+    public HashSet<Ship> ships { get; private set; }
+    public HashSet<Station> stations { get; private set; }
+    public HashSet<Station> stationsInProgress { get; private set; }
+    public HashSet<Projectile> projectiles { get; private set; }
+    public HashSet<Missile> missiles { get; private set; }
+    public HashSet<Star> stars { get; private set; }
+    public HashSet<Planet> planets { get; private set; }
+    public HashSet<AsteroidField> asteroidFields { get; private set; }
 
-    public List<Unit> destroyedUnits;
-    public List<int> usedProjectiles;
-    public List<int> unusedProjectiles;
-    public List<int> usedMissiles;
-    public List<int> unusedMissiles;
+    public HashSet<Unit> destroyedUnits { get; private set; }
+    public HashSet<Projectile> usedProjectiles { get; private set; }
+    public HashSet<Projectile> unusedProjectiles { get; private set; }
+    public HashSet<Missile> usedMissiles { get; private set; }
+    public HashSet<Missile> unusedMissiles { get; private set; }
 
     public bool instantHit;
     public float timeScale;
@@ -112,15 +113,15 @@ public class BattleManager : MonoBehaviour {
         }
         this.systemSizeModifier = systemSizeModifier;
         this.researchModifier = researchModifier;
-        factions = new List<Faction>(10);
-        units = new List<Unit>(200);
-        ships = new List<Ship>(150);
-        stations = new List<Station>(50);
-        stars = new List<Star>();
-        planets = new List<Planet>();
-        asteroidFields = new List<AsteroidField>(asteroidFieldCount);
-        projectiles = new List<Projectile>(500);
-        destroyedUnits = new List<Unit>(200);
+        factions = new HashSet<Faction>(10);
+        units = new HashSet<Unit>(200);
+        ships = new HashSet<Ship>(150);
+        stations = new HashSet<Station>(50);
+        stars = new HashSet<Star>();
+        planets = new HashSet<Planet>();
+        asteroidFields = new HashSet<AsteroidField>(asteroidFieldCount);
+        projectiles = new HashSet<Projectile>(500);
+        destroyedUnits = new HashSet<Unit>(200);
 
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
@@ -140,16 +141,16 @@ public class BattleManager : MonoBehaviour {
             CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
         }
 
-        for (int i = 0; i < factions.Count; i++) {
-            for (int f = 0; f < factions.Count; f++) {
-                if (f == i)
-                    continue;
-                factions[i].AddEnemyFaction(factions[f]);
+        foreach (var faction in factions) {
+            foreach (var faction2 in factions) {
+                if (faction == faction2) continue;
+                faction.AddEnemyFaction(faction2);
             }
+
         }
 
-        if (GetAllFactions().Count > 0)
-            LocalPlayer.Instance.SetupFaction(factions[0]);
+        if (factions.Count > 0)
+            LocalPlayer.Instance.SetupFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
         else
             LocalPlayer.Instance.SetupFaction(null);
         LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
@@ -173,20 +174,20 @@ public class BattleManager : MonoBehaviour {
         this.campaignController = campaignControler;
         systemSizeModifier = campaignControler.systemSizeModifier;
         researchModifier = campaignControler.researchModifier;
-        factions = new List<Faction>(0);
-        units = new List<Unit>(100);
-        ships = new List<Ship>(50);
-        stations = new List<Station>(50);
-        stars = new List<Star>();
-        planets = new List<Planet>();
-        asteroidFields = new List<AsteroidField>(20);
-        projectiles = new List<Projectile>(500);
-        destroyedUnits = new List<Unit>(50);
+        factions = new HashSet<Faction>(0);
+        units = new HashSet<Unit>(100);
+        ships = new HashSet<Ship>(50);
+        stations = new HashSet<Station>(50);
+        stars = new HashSet<Star>();
+        planets = new HashSet<Planet>();
+        asteroidFields = new HashSet<AsteroidField>(20);
+        projectiles = new HashSet<Projectile>(500);
+        destroyedUnits = new HashSet<Unit>(50);
         startOfSimulation = Time.time;
         simulationEnded = false;
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         LocalPlayer.Instance.SetupFaction(null);
-        campaignControler.SetupBattle();
+        campaignControler.SetupBattle(this);
         simulationEnded = true;
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
@@ -247,16 +248,16 @@ public class BattleManager : MonoBehaviour {
     public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
         Faction newFaction = Instantiate(Resources.Load<GameObject>("Prefabs/Faction"), GetFactionsTransform()).GetComponent<Faction>();
         factions.Add(newFaction);
-        newFaction.SetUpFaction(factions.Count - 1, factionData, positionGiver, startingResearchCost);
+        newFaction.SetUpFaction(this, factionData, positionGiver, startingResearchCost);
         return newFaction;
     }
 
     public Ship CreateNewShip(ShipData shipData) {
         Ship shipPrefab = Resources.Load<Ship>(shipData.shipScriptableObject.prefabPath);
-        Ship newShip = Instantiate(shipPrefab.gameObject, factions[shipData.faction].GetShipTransform()).GetComponent<Ship>();
+        Ship newShip = Instantiate(shipPrefab.gameObject, shipData.faction.GetShipTransform()).GetComponent<Ship>();
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(shipData.shipName, factions[shipData.faction], new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
+        newShip.SetupUnit(shipData.shipName, shipData.faction, new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
         return newShip;
     }
 
@@ -266,8 +267,8 @@ public class BattleManager : MonoBehaviour {
 
     public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationData.stationScriptableObject.prefabPath);
-        Station newStation = Instantiate(stationPrefab, factions[stationData.faction].GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(stationData.stationName, factions[stationData.faction], positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
+        Station newStation = Instantiate(stationPrefab, stationData.faction.GetStationTransform()).GetComponent<Station>();
+        newStation.SetupUnit(stationData.stationName, stationData.faction, positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
         if (stationData.built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -348,20 +349,20 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void AddProjectile(Projectile projectile) {
-        usedProjectiles.Add(projectile.projectileIndex);
-        unusedProjectiles.Remove(projectile.projectileIndex);
+        usedProjectiles.Add(projectile);
+        unusedProjectiles.Remove(projectile);
     }
 
     public void RemoveProjectile(Projectile projectile) {
-        usedProjectiles.Remove(projectile.projectileIndex);
-        unusedProjectiles.Add(projectile.projectileIndex);
+        usedProjectiles.Remove(projectile);
+        unusedProjectiles.Add(projectile);
     }
 
     public Projectile GetNewProjectile() {
         if (unusedProjectiles.Count == 0) {
             PreSpawnNewProjectile();
         }
-        return projectiles[unusedProjectiles[0]];
+        return unusedProjectiles.First();
     }
 
     public void PreSpawnNewProjectile() {
@@ -372,20 +373,20 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void AddMissile(Missile missile) {
-        usedMissiles.Add(missile.missileIndex);
-        unusedMissiles.Remove(missile.missileIndex);
+        usedMissiles.Add(missile);
+        unusedMissiles.Remove(missile);
     }
 
     public void RemoveMissile(Missile missile) {
-        usedMissiles.Remove(missile.missileIndex);
-        unusedMissiles.Add(missile.missileIndex);
+        usedMissiles.Remove(missile);
+        unusedMissiles.Add(missile);
     }
 
     public Missile GetNewMissile() {
         if (unusedMissiles.Count == 0) {
             PrespawnNewMissile();
         }
-        return missiles[unusedMissiles[0]];
+        return unusedMissiles.First();
     }
 
     public void PrespawnNewMissile() {
@@ -396,55 +397,61 @@ public class BattleManager : MonoBehaviour {
     }
     #endregion
 
+    /// <summary>
+    /// Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
+    /// 
+    /// Also has profiling for most method calls.
+    /// </summary>
     public virtual void FixedUpdate() {
         if (campaignController != null) {
             campaignController.UpdateController();
         }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
-        for (int i = 0; i < factions.Count; i++) {
+        foreach (var faction in factions) {
             Profiler.BeginSample("EarlyFactionUpdate");
-            factions[i].EarlyUpdateFaction();
+            faction.EarlyUpdateFaction();
             Profiler.EndSample();
         }
-        for (int i = 0; i < factions.Count; i++) {
+        foreach (var faction in factions) {
             Profiler.BeginSample("FactionUpdate");
-            factions[i].UpdateFaction(deltaTime);
+            faction.UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
-        for (int i = 0; i < factions.Count; i++) {
-            factions[i].UpdateFleets(deltaTime);
+        foreach (var faction in factions) {
+            faction.UpdateFleets(deltaTime);
         }
-        for (int i = 0; i < units.Count; i++) {
+        foreach (var unit in units) {
             Profiler.BeginSample("UnitUpdate");
-            Profiler.BeginSample(units[i].GetUnitName());
-            units[i].UpdateUnit(deltaTime);
+            Profiler.BeginSample(unit.GetUnitName());
+            unit.UpdateUnit(deltaTime);
             Profiler.EndSample();
             Profiler.EndSample();
         }
         Profiler.BeginSample("ProjectilesUpdate");
-        for (int i = 0; i < usedProjectiles.Count; i++) {
-            projectiles[usedProjectiles[i]].UpdateProjectile(deltaTime);
+        foreach (var projectile in projectiles) {
+            projectile.UpdateProjectile(deltaTime);
+
         }
         Profiler.EndSample();
         Profiler.BeginSample("MissilesUpdate");
-        for (int i = 0; i < usedMissiles.Count; i++) {
-            missiles[usedMissiles[i]].UpdateMissile(deltaTime);
+        foreach (var missile in usedMissiles) {
+            missile.UpdateMissile(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("DestroyedUnitsUpdate");
-        for (int i = 0; i < destroyedUnits.Count; i++) {
-            destroyedUnits[i].UpdateDestroyedUnit(deltaTime);
+        foreach (var destroyedUnit in destroyedUnits) {
+            destroyedUnit.UpdateDestroyedUnit(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("StarsUpdate");
-        for (int i = 0; i < stars.Count; i++) {
-            stars[i].UpdateStar(deltaTime);
+        foreach (var star in stars) {
+            star.UpdateStar(deltaTime);
         }
         Profiler.EndSample();
         Profiler.BeginSample("PlanetsUpdate");
-        for (int i = 0; i < planets.Count; i++) {
-            planets[i].UpdatePlanet(deltaTime);
+        foreach (var planet in planets) {
+            planet.UpdatePlanet(deltaTime);
         }
         Profiler.EndSample();
         Faction factionWon = CheckVictory();
@@ -464,9 +471,9 @@ public class BattleManager : MonoBehaviour {
     public Faction CheckVictory() {
         if (simulationEnded)
             return null;
-        for (int i = 0; i < factions.Count; i++) {
-            if (factions[i].units.Count > 0 && !factions[i].HasEnemy()) {
-                return factions[i];
+        foreach (var faction in factions) {
+            if (faction.units.Count > 0 && !faction.HasEnemy()) {
+                return faction;
             }
         }
         return null;
@@ -487,14 +494,14 @@ public class BattleManager : MonoBehaviour {
     /// <param name="time"></param>
     public void SetSimulationTimeScale(float time) {
         timeScale = time;
-        for (int i = 0; i < units.Count; i++) {
-            units[i].SetParticleSpeed(time);
+        foreach (var unit in units) {
+            unit.SetParticleSpeed(time);
         }
-        for (int i = 0; i < projectiles.Count; i++) {
-            projectiles[i].SetParticleSpeed(time);
+        foreach (var projectile in projectiles) {
+            projectile.SetParticleSpeed(time);
         }
-        for (int i = 0; i < missiles.Count; i++) {
-            missiles[i].SetParticleSpeed(time);
+        foreach (var missile in missiles) {
+            missile.SetParticleSpeed(time);
         }
         instantHit = time > 10;
     }
@@ -505,17 +512,17 @@ public class BattleManager : MonoBehaviour {
     /// <param name="shown"></param>
     public void ShowEffects(bool shown) {
         ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
-        for (int i = 0; i < units.Count; i++) {
-            units[i].ShowEffects(shown);
+        foreach (var unit in units) {
+            unit.ShowEffects(shown);
         }
-        for (int i = 0; i < projectiles.Count; i++) {
-            projectiles[i].ShowEffects(shown);
+        foreach (var projectile in projectiles) {
+            projectile.ShowEffects(shown);
         }
-        for (int i = 0; i < missiles.Count; i++) {
-            missiles[i].ShowEffects(shown);
+        foreach (var missile in missiles) {
+            missile.ShowEffects(shown);
         }
-        for (int i = 0; i < destroyedUnits.Count; i++) {
-            destroyedUnits[i].ShowEffects(shown);
+        foreach (var destroyedUnit in destroyedUnits) {
+            destroyedUnit.ShowEffects(shown);
         }
     }
 
@@ -525,17 +532,17 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     /// <param name="shown"></param>
     public void ShowParticles(bool shown) {
-        for (int i = 0; i < units.Count; i++) {
-            units[i].ShowParticles(shown);
+        foreach (var unit in units) {
+            unit.ShowParticles(shown);
         }
-        for (int i = 0; i < projectiles.Count; i++) {
-            projectiles[i].ShowParticles(shown);
+        foreach (var projectile in projectiles) {
+            projectile.ShowParticles(shown);
         }
-        for (int i = 0; i < missiles.Count; i++) {
-            missiles[i].ShowParticles(shown);
+        foreach (var missile in missiles) {
+            missile.ShowParticles(shown);
         }
-        for (int i = 0; i < destroyedUnits.Count; i++) {
-            destroyedUnits[i].ShowParticles(shown);
+        foreach (var destroyedUnits in destroyedUnits) {
+            destroyedUnits.ShowParticles(shown);
         }
     }
 
@@ -556,55 +563,18 @@ public class BattleManager : MonoBehaviour {
     }
 
     public ShipBlueprint GetShipBlueprint(ShipClass shipClass) {
-        for (int i = 0; i < shipBlueprints.Count; i++) {
-            if (shipBlueprints[i].shipScriptableObject.shipClass == shipClass) {
-                return shipBlueprints[i];
-            }
-        }
+        shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipClass == shipClass);
         return null;
     }
 
     public ShipBlueprint GetShipBlueprint(ShipType shipType) {
-        for (int i = 0; i < shipBlueprints.Count; i++) {
-            if (shipBlueprints[i].shipScriptableObject.shipType == shipType) {
-                return shipBlueprints[i];
-            }
-        }
+        shipBlueprints.ToList().First(ship => ship.shipScriptableObject.shipType == shipType);
         return null;
     }
 
-
-    public StationBlueprint GetStationBlueprint (StationType stationType) {
-        for (int i = 0; i < stationBlueprints.Count; i++) {
-            if (stationBlueprints[i].stationScriptableObject.stationType == stationType) {
-                return stationBlueprints[i];
-            }
-        }
+    public StationBlueprint GetStationBlueprint(StationType stationType) {
+        stationBlueprints.ToList().First(station => station.stationScriptableObject.stationType == stationType);
         return null;
-    }
-
-    public List<Ship> GetAllShips() {
-        return ships;
-    }
-
-    public List<Station> GetAllStations() {
-        return stations;
-    }
-
-    public List<Faction> GetAllFactions() {
-        return factions;
-    }
-
-    public List<Unit> GetAllUnits() {
-        return units;
-    }
-
-    public List<Star> GetAllStars() {
-        return stars;
-    }
-
-    public List<AsteroidField> GetAllAsteroidFields() {
-        return asteroidFields;
     }
 
     public Transform GetFactionsTransform() {

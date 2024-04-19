@@ -168,7 +168,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (mouseOverBattleObject != null)
             objectsInSelectionBox.AddBattleObject(mouseOverBattleObject);
 
-        foreach (Unit unit in BattleManager.Instance.GetAllUnits()) {
+        foreach (Unit unit in BattleManager.Instance.units) {
             if (!unit.IsSelectable() || unit == rightClickedBattleObject || unit == mouseOverBattleObject)
                 continue;
             Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.transform.position);

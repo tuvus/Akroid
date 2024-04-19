@@ -19,8 +19,8 @@ public class SimulationFactionAI : FactionAI {
     public int minCombatShips = 10;
     public int maxCombatShips = 20;
 
-    public override void SetupFactionAI(Faction faction) {
-        base.SetupFactionAI(faction);
+    public override void SetupFactionAI(BattleManager battleManager, Faction faction) {
+        base.SetupFactionAI(battleManager, faction);
         autoConstruction = true;
         autoCommandFleets = true;
         updateTime = Random.Range(0, 0.2f);
@@ -272,13 +272,13 @@ public class SimulationFactionAI : FactionAI {
                 randomNumber = Random.Range(0, 100);
             }
             if (randomNumber < 20) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Zarrack), "Science Ship"));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Zarrack), "Science Ship"));
             } else if (randomNumber < 50) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
             } else if (randomNumber < 80) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer)));
             } else {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aterna)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aterna)));
             }
         }
     }
@@ -292,9 +292,9 @@ public class SimulationFactionAI : FactionAI {
         if ((fleetCommand.GetConstructionBay().HasOpenBays() && !faction.HasEnemy()) ||
             transportQueueCount == 0 && stationBuilderQueueCount == 0) {
             if (wantTransport) {
-                fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue( new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport)));
+                fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue( new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Transport)));
             } else if (wantNewStationBuilder) {
-                fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction.factionIndex, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.StationBuilder)));
+                fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.StationBuilder)));
             }
         }
     }

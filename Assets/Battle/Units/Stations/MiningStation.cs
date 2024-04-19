@@ -11,9 +11,9 @@ public class MiningStation : Station {
     public List<Asteroid> nearbyAsteroids;
     private float miningTime;
         
-    public override void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
         MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
-        base.SetupUnit(name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
+        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();
         activelyMining = true;
@@ -79,7 +79,7 @@ public class MiningStation : Station {
 
     public void UpdateMiningStationAsteroids() {
         List<Asteroid> tempAsteroids = new List<Asteroid>(10);
-        foreach (var asteroidField in BattleManager.Instance.GetAllAsteroidFields()) {
+        foreach (var asteroidField in battleManager.asteroidFields) {
             if (asteroidField.totalResources <= 0)
                 continue;
             float tempDistance = Vector2.Distance(transform.position, asteroidField.GetPosition());

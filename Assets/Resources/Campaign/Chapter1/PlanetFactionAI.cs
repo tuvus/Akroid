@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using static PlayerFactionAI;
@@ -24,7 +25,8 @@ public class PlanetFactionAI : FactionAI {
         ReceivingMetal,
         AttackingPlayer,
     }
-    public void SetupPlanetFactionAI(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard, List<Ship> civilianShips) {
+    public void SetupPlanetFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard, List<Ship> civilianShips) {
+        base.SetupFactionAI(battleManger, faction);
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;
@@ -132,8 +134,8 @@ public class PlanetFactionAI : FactionAI {
             }
             count++;
         }
-        if (faction.credits > 200000 * (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) && 7 < faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex)) {
-            if (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction.factionIndex) < 3) {
+        if (faction.credits > 200000 * (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) && 7 < faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
+            if (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction) < 3) {
                 shipyardFactionAI.PlaceTransportOrder(faction);
             } else {
                 shipyardFactionAI.PlaceCombatOrder(faction);
@@ -144,11 +146,8 @@ public class PlanetFactionAI : FactionAI {
 
     void ManageIdleShips() {
         friendlyStations.Clear();
-        for (int i = 0; i < BattleManager.Instance.stations.Count; i++) {
-            if (!faction.IsAtWarWithFaction(BattleManager.Instance.stations[i].faction)) friendlyStations.Add(BattleManager.Instance.stations[i]);
-        }
-        for (int i = 0; i < idleShips.Count; i++) {
-            Ship idleShip = idleShips[i];
+        friendlyStations.AddRange(battleManager.stations.Where(s => !faction.IsAtWarWithFaction(s.faction)));
+        foreach (var idleShip in idleShips) {
             if (idleShip.IsIdle()) {
                 if (idleShip.IsTransportShip()) {
                     idleShip.shipAI.AddUnitAICommand(Command.CreateTransportCommand(tradeStation, shipyard), Command.CommandAction.AddToEnd);

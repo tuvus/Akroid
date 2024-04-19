@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
-
+    public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
     [SerializeField] float size;
     protected Vector2 position;
@@ -18,7 +18,8 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// Sets up the BattleObject with default position and rotation.
     /// Sets up the size as normal
     /// </summary>
-    protected void SetupBattleObject() {
+    protected void SetupBattleObject(BattleManager battleManager) {
+        this.battleManager = battleManager;
         faction = null;
         spriteRenderer = GetComponent<SpriteRenderer>();
         position = transform.position;
@@ -32,7 +33,8 @@ public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
     /// </summary>
     /// <param name="positionGiver"></param>
     /// <param name="rotation"></param>
-    protected void SetupBattleObject(BattleManager.PositionGiver positionGiver, float rotation) {
+    protected void SetupBattleObject(BattleManager battleManager, BattleManager.PositionGiver positionGiver, float rotation) {
+        this.battleManager = battleManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;

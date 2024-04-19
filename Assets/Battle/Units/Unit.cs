@@ -25,10 +25,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public virtual void SetupUnit(string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
+    public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.UnitScriptableObject = unitScriptableObject;
         this.faction = faction;
-        base.SetupBattleObject(positionGiver, rotation);
+        base.SetupBattleObject(battleManager, positionGiver, rotation);
         moduleSystem = GetComponent<ModuleSystem>();
         moduleSystem.SetupModuleSystem(this,unitScriptableObject);
         this.objectName = name;
