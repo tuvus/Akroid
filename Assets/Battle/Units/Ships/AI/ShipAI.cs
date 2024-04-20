@@ -18,7 +18,7 @@ public class ShipAI : MonoBehaviour {
 
     public List<Command> commands;
     public bool newCommand;
-    public CommandType currentCommandType;
+    public CommandType currentCommandState;
 
     public void SetupShipAI(Ship ship) {
         this.ship = ship;
@@ -104,7 +104,7 @@ public class ShipAI : MonoBehaviour {
     /// <summary> Idles until something removes this command. </summary>
     CommandResult DoIdleCommand(Command command, float deltaTime) {
         if (newCommand) {
-            currentCommandType = CommandType.Idle;
+            currentCommandState = CommandType.Idle;
             ship.SetIdle();
             newCommand = false;
         }
@@ -114,7 +114,7 @@ public class ShipAI : MonoBehaviour {
     /// <summary Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished. </summary>
     CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
-            currentCommandType = CommandType.Wait;
+            currentCommandState = CommandType.Wait;
             ship.SetIdle();
             newCommand = false;
         }
@@ -128,7 +128,7 @@ public class ShipAI : MonoBehaviour {
     /// <summary> Rotates towards angle, Stop until turned to rotation, ContinueRemove once Finished </summary>
     CommandResult DoTurnToRotationCommand(Command command, float deltaTime) {
         if (newCommand) {
-            currentCommandType = CommandType.TurnToRotation;
+            currentCommandState = CommandType.TurnToRotation;
             ship.SetTargetRotate(command.targetRotation);
             newCommand = false;
         }
@@ -141,7 +141,7 @@ public class ShipAI : MonoBehaviour {
     /// <summary> Rotates towards position, Stop until turned to angle, ContinueRemove once Finished. </summary>
     CommandResult DoTurnToPositionCommand(Command command, float deltaTime) {
         if (newCommand) {
-            currentCommandType = CommandType.TurnToPosition;
+            currentCommandState = CommandType.TurnToPosition;
             ship.SetTargetRotate(command.targetPosition);
             newCommand = false;
         }
@@ -154,13 +154,13 @@ public class ShipAI : MonoBehaviour {
     /// <summary> Rotates towards position then moves towards position, Stop until moved to position, ContinueRemoveOnce Finished. </summary>
     CommandResult DoMoveRotateCommand(Command command, float deltaTime) {
         if (newCommand) {
-            currentCommandType = CommandType.Move;
+            currentCommandState = CommandType.Move;
             ship.SetMovePosition(command.targetPosition);
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
-        if (ship.shipAction == Ship.ShipAction.Idle && currentCommandType == CommandType.Move) {
+        if (ship.shipAction == Ship.ShipAction.Idle && currentCommandState == CommandType.Move) {
             return CommandResult.ContinueRemove;
         }
         return CommandResult.Stop;
@@ -178,26 +178,26 @@ public class ShipAI : MonoBehaviour {
                 distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
 
             //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+            if (currentCommandState != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
             if (newCommand) {
                 ship.SetMovePosition(command.targetPosition);
-                currentCommandType = CommandType.Move;
+                currentCommandState = CommandType.Move;
                 ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
-            if (currentCommandType == CommandType.Move) {
+            if (currentCommandState == CommandType.Move) {
 
                 command.targetUnit = GetClosestNearbyEnemyUnit();
                 if (command.targetUnit != null) {
                     distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
                     if (distanceToTargetUnit < ship.GetMinWeaponRange()) {
-                        currentCommandType = CommandType.TurnToRotation;
+                        currentCommandState = CommandType.TurnToRotation;
                     } else {
-                        currentCommandType = CommandType.AttackMove;
+                        currentCommandState = CommandType.AttackMove;
                         ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     }
                 } else if (ship.shipAction == Ship.ShipAction.Idle) {
@@ -212,18 +212,18 @@ public class ShipAI : MonoBehaviour {
                 }
             }
 
-            if (currentCommandType == CommandType.AttackMove) {
+            if (currentCommandState == CommandType.AttackMove) {
                 if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
-                    currentCommandType = CommandType.TurnToRotation;
+                    currentCommandState = CommandType.TurnToRotation;
                 } else {
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
 
-            if (currentCommandType == CommandType.TurnToRotation) {
+            if (currentCommandState == CommandType.TurnToRotation) {
                 if (distanceToTargetUnit > ship.GetMinWeaponRange()) {
-                    currentCommandType = CommandType.AttackMove;
+                    currentCommandState = CommandType.AttackMove;
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
                 }
@@ -249,27 +249,27 @@ public class ShipAI : MonoBehaviour {
                 distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
 
             //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandType != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+            if (currentCommandState != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() || (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) || (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 && command.targetUnit != ship.GetEnemyUnitsInRange()[0]) || (distanceToTargetUnit > ship.GetMaxWeaponRange() && command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
             if (newCommand) {
                 ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                 command.targetPosition = ship.GetTargetMovePosition();
-                currentCommandType = CommandType.Move;
+                currentCommandState = CommandType.Move;
                 ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
-            if (currentCommandType == CommandType.Move) {
+            if (currentCommandState == CommandType.Move) {
 
                 command.targetUnit = GetClosestNearbyEnemyUnit();
                 if (command.targetUnit != null) {
                     distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
                     if (distanceToTargetUnit < ship.GetMinWeaponRange()) {
-                        currentCommandType = CommandType.TurnToRotation;
+                        currentCommandState = CommandType.TurnToRotation;
                     } else {
-                        currentCommandType = CommandType.AttackMove;
+                        currentCommandState = CommandType.AttackMove;
                         ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     }
                 } else if (ship.shipAction == Ship.ShipAction.Idle) {
@@ -286,18 +286,18 @@ public class ShipAI : MonoBehaviour {
                 }
             }
 
-            if (currentCommandType == CommandType.AttackMove) {
+            if (currentCommandState == CommandType.AttackMove) {
                 if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
-                    currentCommandType = CommandType.TurnToRotation;
+                    currentCommandState = CommandType.TurnToRotation;
                 } else {
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
 
-            if (currentCommandType == CommandType.TurnToRotation) {
+            if (currentCommandState == CommandType.TurnToRotation) {
                 if (distanceToTargetUnit > ship.GetMinWeaponRange()) {
-                    currentCommandType = CommandType.AttackMove;
+                    currentCommandState = CommandType.AttackMove;
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
                 }
@@ -322,24 +322,24 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             }
             if (newCommand) {
-                currentCommandType = CommandType.Move;
+                currentCommandState = CommandType.Move;
                 ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 command.targetPosition = command.targetUnit.GetPosition();
                 newCommand = false;
             }
 
-            if (currentCommandType == CommandType.Move) {
+            if (currentCommandState == CommandType.Move) {
                 if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <= ship.GetMinWeaponRange() * .8f) {
-                    currentCommandType = CommandType.TurnToRotation;
+                    currentCommandState = CommandType.TurnToRotation;
                 } else {
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
 
-            if (currentCommandType == CommandType.TurnToRotation) {
+            if (currentCommandState == CommandType.TurnToRotation) {
                 if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
-                    currentCommandType = CommandType.Move;
+                    currentCommandState = CommandType.Move;
                     ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
@@ -469,35 +469,35 @@ public class ShipAI : MonoBehaviour {
         if (newCommand) {
             if (ship.GetResearchEquiptment().WantMoreData()) {
                 ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
-                currentCommandType = CommandType.Move;
+                currentCommandState = CommandType.Move;
             } else {
                 ship.SetDockTarget(command.destinationStation);
-                currentCommandType = CommandType.Dock;
+                currentCommandState = CommandType.Dock;
             }
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
         if (ship.shipAction == Ship.ShipAction.Idle) {
-            if (currentCommandType == CommandType.Move) {
-                currentCommandType = CommandType.Research;
+            if (currentCommandState == CommandType.Move) {
+                currentCommandState = CommandType.Research;
                 return CommandResult.Stop;
-            } else if (currentCommandType == CommandType.Research) {
+            } else if (currentCommandState == CommandType.Research) {
                 ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
                 if (!ship.GetResearchEquiptment().WantMoreData()) {
                     ship.SetDockTarget(command.destinationStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 }
                 return CommandResult.Stop;
-            } else if (currentCommandType == CommandType.Dock) {
-                currentCommandType = CommandType.Wait;
+            } else if (currentCommandState == CommandType.Dock) {
+                currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
-            } else if (currentCommandType == CommandType.Wait) {
+            } else if (currentCommandState == CommandType.Wait) {
                 if (ship.GetResearchEquiptment().WantMoreData()) {
                     ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
-                    currentCommandType = CommandType.Move;
+                    currentCommandState = CommandType.Move;
                 }
                 return CommandResult.Stop;
-            } else if (currentCommandType == CommandType.Idle) {
+            } else if (currentCommandState == CommandType.Idle) {
                 newCommand = true;
             }
         }
@@ -514,39 +514,39 @@ public class ShipAI : MonoBehaviour {
         }
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
-                currentCommandType = CommandType.Transport;
+                currentCommandState = CommandType.Transport;
                 ship.SetMaxSpeed(command.maxSpeed);
                 ship.SetGroup(command.productionStation.GetGroup());
                 newCommand = false;
             }
             if (ship.dockedStation == command.productionStation) {
-                if (command.useAlternateCommandOnceDone && currentCommandType == CommandType.Move) {
-                    currentCommandType = CommandType.Idle;
+                if (command.useAlternateCommandOnceDone && currentCommandState == CommandType.Move) {
+                    currentCommandState = CommandType.Idle;
                     return CommandResult.StopRemove;
                 }
                 if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 } else {
-                    currentCommandType = CommandType.Wait;
+                    currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
                 if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.productionStation);
                     if (command.useAlternateCommandOnceDone)
-                        currentCommandType = CommandType.Move;
+                        currentCommandState = CommandType.Move;
                     else
-                        currentCommandType = CommandType.Dock;
+                        currentCommandState = CommandType.Dock;
                 } else {
-                    currentCommandType = CommandType.Wait;
+                    currentCommandState = CommandType.Wait;
                 }
             } else {
                 if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 } else {
                     ship.SetDockTarget(command.productionStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 }
             }
         }
@@ -563,7 +563,7 @@ public class ShipAI : MonoBehaviour {
         }
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
-                currentCommandType = CommandType.Transport;
+                currentCommandState = CommandType.Transport;
                 ship.SetMaxSpeed(command.maxSpeed);
                 ship.SetGroup(command.productionStation.GetGroup());
                 newCommand = false;
@@ -574,10 +574,10 @@ public class ShipAI : MonoBehaviour {
                 }
                 if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.destinationStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
-                    currentCommandType = CommandType.Wait;
+                    currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
                 if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {
@@ -585,19 +585,19 @@ public class ShipAI : MonoBehaviour {
                 }
                 if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.productionStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
-                    currentCommandType = CommandType.Wait;
+                    currentCommandState = CommandType.Wait;
                 }
             } else {
                 command.waitTime = command.targetRotation;
                 if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 } else {
                     ship.SetDockTarget(command.productionStation);
-                    currentCommandType = CommandType.Dock;
+                    currentCommandState = CommandType.Dock;
                 }
             }
         }
