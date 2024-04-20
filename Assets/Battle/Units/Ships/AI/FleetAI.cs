@@ -70,44 +70,22 @@ public class FleetAI : MonoBehaviour {
     #region CommandLogic
 
     CommandResult ResolveCommand(Command command, float deltaTime) {
-        switch (command.commandType) {
-            case CommandType.Idle:
-                return DoIdleCommand(command, deltaTime);
-            case CommandType.Wait:
-                return DoWaitCommand(command, deltaTime);
-            case CommandType.TurnToRotation:
-                return DoTurnToRotation(command, deltaTime);
-            case CommandType.TurnToPosition:
-                return DoTurnToPosition(command, deltaTime);
-            case CommandType.Move:
-                return DoMoveCommand(command, deltaTime);
-            case CommandType.AttackMove:
-            case CommandType.AttackMoveUnit:
-            case CommandType.AttackFleet:
-            case CommandType.Protect:
-                return DoAttackCommand(command, deltaTime);
-            case CommandType.Dock:
-                return DoDockCommand(command, deltaTime);
-            case CommandType.Follow:
-                break;
-            case CommandType.Formation:
-                return DoFormationCommand(command, deltaTime);
-            case CommandType.FormationLocation:
-                return DoFormationLocationCommand(command, deltaTime);
-            case CommandType.UndockCommand:
-                break;
-            case CommandType.Transport:
-                break;
-            case CommandType.TransportDelay:
-                break;
-            case CommandType.Research:
-                break;
-            case CommandType.DisbandFleet:
-                return DoDisbandFleetCommand(command, deltaTime);
-            default:
-                break;
-        }
-        return CommandResult.Stop;
+        return command.commandType switch {
+            CommandType.Idle => DoIdleCommand(command, deltaTime),
+            CommandType.Wait => DoWaitCommand(command, deltaTime),
+            CommandType.TurnToRotation => DoTurnToRotation(command, deltaTime),
+            CommandType.TurnToPosition => DoTurnToPosition(command, deltaTime),
+            CommandType.Move => DoMoveCommand(command, deltaTime),
+            CommandType.AttackMove => DoAttackCommand(command, deltaTime),
+            CommandType.AttackMoveUnit => DoAttackCommand(command, deltaTime),
+            CommandType.AttackFleet => DoAttackCommand(command, deltaTime),
+            CommandType.Protect => DoAttackCommand(command, deltaTime),
+            CommandType.Dock => DoDockCommand(command, deltaTime),
+            CommandType.Formation => DoFormationCommand(command, deltaTime),
+            CommandType.FormationLocation => DoFormationLocationCommand(command, deltaTime),
+            CommandType.DisbandFleet => DoDisbandFleetCommand(command, deltaTime),
+            _ => CommandResult.Stop,
+        };
     }
 
     /// <summary> Idles until something removes this command. </summary>
