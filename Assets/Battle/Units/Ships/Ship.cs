@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -206,7 +207,10 @@ public class Ship : Unit {
         }
         if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate || shipAction == ShipAction.MoveAndRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
-            if (Mathf.Abs(localRotation) <= GetTurnSpeed() * deltaTime) {
+            float turnSpeed = GetTurnSpeed() * deltaTime;
+            if (shipAction == ShipAction.MoveAndRotate && GetEnemyUnitsInRangeDistance().Count != 0)
+                    turnSpeed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
+            if (Mathf.Abs(localRotation) <= turnSpeed) {
                 SetRotation(targetRotation);
                 if (shipAction == ShipAction.Rotate) {
                     shipAction = ShipAction.Idle;
@@ -221,13 +225,13 @@ public class Ship : Unit {
                     shipAction = ShipAction.Move;
                 }
             } else if (localRotation > 0) {
-                SetRotation(transform.eulerAngles.z + (GetTurnSpeed() * deltaTime));
+                SetRotation(transform.eulerAngles.z + turnSpeed);
                 if (shipAction != ShipAction.MoveAndRotate) {
                     SetThrusters(false);
                     return;
                 }
             } else {
-                SetRotation(transform.eulerAngles.z - (GetTurnSpeed() * deltaTime));
+                SetRotation(transform.eulerAngles.z - turnSpeed);
                 if (shipAction == ShipAction.MoveAndRotate) {
                     SetThrusters(false);
                     return;
@@ -238,7 +242,10 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove || shipAction == ShipAction.MoveAndRotate) {
             float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
+            if (GetEnemyUnitsInRangeDistance().Count != 0)
+                speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
             float thrust = speed * deltaTime;
+
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
                 return;
@@ -375,6 +382,12 @@ public class Ship : Unit {
 
     public float GetSpeed() {
         return thrust / GetMass();
+    }
+
+    public float GetBattleSpeed(float distanceToClosestEnemy) {
+        if (distanceToClosestEnemy > GetMaxWeaponRange()) return 1f;
+        if (distanceToClosestEnemy <= GetMinWeaponRange()) return 0.5f;
+        return 0.5f + 0.5f * ((distanceToClosestEnemy - GetMinWeaponRange()) / (GetMaxWeaponRange() - GetMinWeaponRange())) ;
     }
 
     public void SetThrusters(bool trueOrFalse) {
