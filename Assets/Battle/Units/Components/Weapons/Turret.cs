@@ -144,6 +144,7 @@ public class Turret : ModuleComponent {
     private bool IsTargetBetter(Unit newTarget, Unit oldTarget) {
         if (oldTarget == null)
             return true;
+        if (Random.Range(0, 10) < 3) return true;
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (turretScriptableObject.targeting == TargetingBehaviors.closest) {

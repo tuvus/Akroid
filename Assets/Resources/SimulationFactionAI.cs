@@ -81,10 +81,7 @@ public class SimulationFactionAI : FactionAI {
 
     void ManageFleets() {
         foreach (var defenseFleet in defenseFleets.ToList()) {
-            List<Command> commands = defenseFleet.FleetAI.commands;
-            if ((commands.Count > 0 && commands[0].commandType == Command.CommandType.AttackFleet)
-                || (commands.Count > 1 && commands[0].commandType == Command.CommandType.FormationLocation && commands[1].commandType == Command.CommandType.AttackFleet))
-                continue;
+            if (defenseFleet.FleetAI.commands.Any(c => c.IsAttackCommand())) continue;
             Fleet threat = null;
             float distanceToThreat = 0;
             foreach (var tempThreat in threats.ToList()) {
@@ -96,12 +93,9 @@ public class SimulationFactionAI : FactionAI {
             }
             if (threat != null) {
                 defenseFleet.FleetAI.AddUnitAICommand(Command.CreateFormationCommand(defenseFleet.GetPosition(), Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), threat.GetPosition())), Command.CommandAction.Replace);
-                defenseFleet.FleetAI.AddUnitAICommand(Command.CreateAttackFleetCommand(threat), Command.CommandAction.AddToEnd);
+                defenseFleet.FleetAI.AddUnitAICommand(Command.CreateAttackMoveCommand(threat.ships.First()), Command.CommandAction.AddToEnd);
                 threat.sentFleets.Add(defenseFleet);
             } else {
-                if ((commands.Count > 0 && commands[0].commandType == Command.CommandType.AttackMoveUnit)
-                || (commands.Count > 1 && commands[0].commandType == Command.CommandType.FormationLocation && commands[1].commandType == Command.CommandType.AttackMoveUnit))
-                    continue;
                 for (int f = 0; f < faction.closeEnemyGroupsDistance.Count; f++) {
                     if (faction.closeEnemyGroupsDistance[f] < faction.GetSize() * .8f) {
                         List<Unit> targetUnits = faction.closeEnemyGroups[f].battleObjects.ToList();

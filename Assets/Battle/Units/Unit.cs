@@ -155,6 +155,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     #region UnitControlls
     public virtual int TakeDamage(int damage) {
+        damage /= 4;
         if (IsSpawned()) {
             health -= damage;
             if (Destroyed()) {

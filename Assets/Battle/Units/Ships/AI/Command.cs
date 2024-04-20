@@ -194,4 +194,8 @@ public class Command {
         Command newCommand = new Command(CommandType.DisbandFleet);
         return newCommand;
     }
+
+    public bool IsAttackCommand() {
+        return commandType == CommandType.AttackMove || commandType == CommandType.AttackMoveUnit || commandType == CommandType.AttackFleet;
+    }
 }
