@@ -21,7 +21,7 @@ public class Fleet : ShipGroup {
         SetupFleet(battleManger, faction, fleetName, new HashSet<Ship>() { ship });
     }
 
-    public void SetupFleet(BattleManager battleManger, Faction faction, string fleetName, HashSet<Ship> ships) {
+    public void SetupFleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships) {
         this.faction = faction;
         this.fleetName = fleetName;
         SetupShipGroup(battleManager, new HashSet<Ship>(), true);
