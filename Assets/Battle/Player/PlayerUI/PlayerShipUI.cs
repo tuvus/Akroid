@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -14,7 +15,9 @@ public class PlayerShipUI : MonoBehaviour {
     [SerializeField] Text shipClass;
     [SerializeField] Text shipType;
     [SerializeField] Text shipAction;
+    [SerializeField] Text shipAI;
     [SerializeField] Text shipFleet;
+    [SerializeField] Text shipFleetAI;
     [SerializeField] Text weaponsCount;
     [SerializeField] Text shipTotalDPS;
     [SerializeField] Text maxWeaponRange;
@@ -59,11 +62,20 @@ public class PlayerShipUI : MonoBehaviour {
         shipFaction.text = "Faction: " + displayedShip.faction.name;
         shipClass.text = "Ship Class: " + displayedShip.GetShipClass();
         shipType.text = "Ship Type: " + displayedShip.GetShipType();
+        if (!displayedShip.IsIdle())
+            shipAI.text = "ShipAI: " + displayedShip.shipAI.commands.First().commandType.ToString() + ", " + displayedShip.shipAI.currentCommandState.ToString();
+        else shipAI.text = "ShipAI: Idle";
+
         if (displayedShip.fleet != null) {
             shipFleet.gameObject.SetActive(true);
             shipFleet.text = "Fleet: " + displayedShip.fleet.GetFleetName();
+            shipFleetAI.gameObject.SetActive(true);
+            if (!displayedShip.fleet.IsFleetIdle())
+                shipFleetAI.text = "FleetAI: " + displayedShip.fleet.FleetAI.commands.First().commandType.ToString() + ", " + displayedShip.fleet.FleetAI.currentCommandState.ToString();
+            else shipFleetAI.text = "FleetAI: Idle";
         } else {
             shipFleet.gameObject.SetActive(false);
+            shipFleetAI.gameObject.SetActive(false);
         }
         weaponsCount.text = "Weapons: " + displayedShip.GetWeaponCount();
         if (displayedShip.GetWeaponCount() > 0) {
