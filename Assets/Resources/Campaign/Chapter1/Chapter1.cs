@@ -76,12 +76,12 @@ public class Chapter1 : CampaingController {
         setupFleetShip2.targetStationBlueprint = playerMiningStation;
         Ship setupFleetShip3 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale), Command.CommandAction.Replace);
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
-        miningStationSetupFleet.FleetAI.AddUnitAICommand(Command.CreateDisbandFleetCommand());
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(), playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateDockCommand(playerMiningStation));
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBegining);

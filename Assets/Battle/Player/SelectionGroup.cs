@@ -286,7 +286,7 @@ public class SelectionGroup {
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {
         if (groupType == GroupType.Fleet) {
-            fleet.FleetAI.AddUnitAICommand(command, commandAction);
+            fleet.FleetAI.AddFleetAICommand(command, commandAction);
             return;
         }
         for (int i = 0; i < objects.Count; i++) {

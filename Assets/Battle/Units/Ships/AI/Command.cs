@@ -120,14 +120,15 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateAttackFleetCommand(Fleet targetFleet) {
+    public static Command CreateAttackFleetCommand(Fleet targetFleet, Ship targetShip = null) {
         Command newCommand = new Command(CommandType.AttackFleet);
         newCommand.targetFleet = targetFleet;
         newCommand.maxSpeed = float.MaxValue;
+        newCommand.targetUnit = targetShip;
         return newCommand;
     }
 
-    public static Command CreateSkirmishCommand(Ship targetShip, Fleet targetFleet) {
+    public static Command CreateSkirmishCommand(Fleet targetFleet, Ship targetShip) {
         Command newCommand = new Command(CommandType.AttackFleet);
         newCommand.targetUnit = targetShip;
         newCommand.targetFleet = targetFleet;

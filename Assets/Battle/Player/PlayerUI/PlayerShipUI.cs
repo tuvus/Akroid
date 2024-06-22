@@ -62,7 +62,7 @@ public class PlayerShipUI : MonoBehaviour {
         shipFaction.text = "Faction: " + displayedShip.faction.name;
         shipClass.text = "Ship Class: " + displayedShip.GetShipClass();
         shipType.text = "Ship Type: " + displayedShip.GetShipType();
-        if (!displayedShip.IsIdle())
+        if (displayedShip.shipAI.commands.Count > 0)
             shipAI.text = "ShipAI: " + displayedShip.shipAI.commands.First().commandType.ToString() + ", " + displayedShip.shipAI.currentCommandState.ToString();
         else shipAI.text = "ShipAI: Idle";
 
@@ -70,7 +70,7 @@ public class PlayerShipUI : MonoBehaviour {
             shipFleet.gameObject.SetActive(true);
             shipFleet.text = "Fleet: " + displayedShip.fleet.GetFleetName();
             shipFleetAI.gameObject.SetActive(true);
-            if (!displayedShip.fleet.IsFleetIdle())
+            if (displayedShip.fleet.FleetAI.commands.Count > 0)
                 shipFleetAI.text = "FleetAI: " + displayedShip.fleet.FleetAI.commands.First().commandType.ToString() + ", " + displayedShip.fleet.FleetAI.currentCommandState.ToString();
             else shipFleetAI.text = "FleetAI: Idle";
         } else {

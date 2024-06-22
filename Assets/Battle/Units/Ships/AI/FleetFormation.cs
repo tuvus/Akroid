@@ -102,12 +102,10 @@ public class FleetFormation {
     public static FormationType ChooseRandomFormation() {
         int value = Random.Range(0, 5);
         if (value == 0) {
-            return FormationType.Line;
-        } else if (value == 1) {
             return FormationType.Circle;
-        } else if (value == 2) {
+        } else if (value == 1) {
             return FormationType.VerticalOval;
-        }
+        } 
         return FormationType.HorizontalOval;
     }
 }
