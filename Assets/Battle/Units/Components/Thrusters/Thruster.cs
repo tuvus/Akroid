@@ -8,6 +8,7 @@ public class Thruster : ModuleComponent, IParticleHolder {
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
     float targetBrightness;
+    float baseThrustEmissionRate;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
@@ -15,6 +16,7 @@ public class Thruster : ModuleComponent, IParticleHolder {
         Instantiate(thrusterScriptableObject.thrustEffect, transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
+        baseThrustEmissionRate = particle.emission.rateOverTime.constant;
     }
 
     public void SetupThruster(Unit unit) {
@@ -38,6 +40,16 @@ public class Thruster : ModuleComponent, IParticleHolder {
 
     public void ShowEffects(bool shown) {
         thrusterFlare.enabled = shown;
+    }
+
+    /// <summary>
+    /// Sets the size of the thruster flare
+    /// </summary>
+    /// <param name="modifier">A value between 0 and 1</param>
+    public void SetThrustSize(float modifier) {
+        thrusterFlare.brightness = targetBrightness * modifier;
+        var emission = particle.emission;
+        emission.rateOverTime = baseThrustEmissionRate * modifier;
     }
 
     public void SetParticleSpeed(float speed) {

@@ -223,6 +223,7 @@ public class Ship : Unit {
                     SetThrusters(true);
                 } else if (shipAction == ShipAction.MoveAndRotate) {
                     shipAction = ShipAction.Move;
+                    SetThrusters(true);
                 }
             } else if (localRotation > 0) {
                 SetRotation(transform.eulerAngles.z + turnSpeed);
@@ -245,6 +246,7 @@ public class Ship : Unit {
             if (GetEnemyUnitsInRangeDistance().Count != 0)
                 speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
             float thrust = speed * deltaTime;
+            thrusters.ForEach(thruster => thruster.SetThrustSize(speed / GetSpeed()));
 
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
