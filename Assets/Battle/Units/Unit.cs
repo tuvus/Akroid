@@ -214,10 +214,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
             turrets[i].StopFiring();
         }
         float value = Random.Range(0.2f, 0.6f);
-        spriteRenderer.color = new Color(value, value, value, 1);
-        for (int i = 0; i < turrets.Count; i++) {
-            turrets[i].GetSpriteRenderer().color = new Color(value, value, value, 1);
-        }
+        GetSpriteRenderers().ForEach(r => { r.color = new Color(value, value, value, 1); });
         Despawn(false);
     }
 
@@ -412,6 +409,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return turrets.Count + missileLaunchers.Count;
     }
 
+    public List<SpriteRenderer> GetSpriteRenderers() {
+        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+        spriteRenderers.Add(spriteRenderer);
+        spriteRenderers.AddRange(turrets.Select(t => t.GetSpriteRenderer()));
+        return spriteRenderers;
+    }
     #endregion
 
 }

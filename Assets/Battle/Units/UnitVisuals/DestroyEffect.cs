@@ -13,6 +13,15 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
     [SerializeField] public float fadeSpeed;
     float targetBrightness;
     float flareTime;
+    FlareState flareState;
+
+    enum FlareState {
+        FlaringUp,
+        FadeToNormal,
+        KeepNormal,
+        Fade,
+        End,
+    }
 
     public void SetupDestroyEffect(Unit unit, SpriteRenderer targetRenderer) {
         this.unit = unit;
@@ -27,8 +36,9 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         shape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
         flare.enabled = false;
         flare.brightness = 0;
-        targetBrightness = unit.GetSize() * 80;
+        targetBrightness = getBaseFlareSize() * 2;
         flareTime = 0;
+        flareState = FlareState.FlaringUp;
     }
 
     public void Explode() {
@@ -43,13 +53,37 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
 
     public void UpdateExplosion(float deltaTime) {
         flareTime += deltaTime;
-        if (flareTime <= flareSpeed) {
-            flare.brightness = targetBrightness * flareTime / flareSpeed;
-        } else if (flareTime <= flareSpeed + fadeSpeed) {
-            flare.brightness = targetBrightness * (1 / Mathf.Pow(1 + flareTime - flareSpeed, 2));
-        } else if (flare.enabled) {
-            flare.brightness = 0;
-            flare.enabled = false;
+        switch (flareState) {
+            case FlareState.FlaringUp:
+                flare.brightness = targetBrightness * flareTime / flareSpeed;
+                if (flareTime > flareSpeed) {
+                    flareState = FlareState.FadeToNormal;
+                    flareTime = 0;
+                }
+                break;
+            case FlareState.FadeToNormal:
+                flare.brightness = (targetBrightness - getBaseFlareSize()) / Mathf.Pow(1 + flareTime, 3) + getBaseFlareSize();
+                if (flare.brightness <= getBaseFlareSize() * 1.01) {
+                    flareState = FlareState.KeepNormal;
+                    flareTime = 0;
+                }
+                break;
+            case FlareState.KeepNormal:
+                flare.brightness = getBaseFlareSize();
+                if (!explosion.isEmitting) {
+                    unit.GetSpriteRenderers().ForEach(r => r.enabled = false);
+                    flareState = FlareState.Fade;
+                    flareTime = 0;
+                }
+                break;
+            case FlareState.Fade:
+                flare.brightness = getBaseFlareSize() * (1 / Mathf.Pow(1 + flareTime, 2));
+                if (explosion.particleCount == 0 || flare.brightness < 2) {
+                    flare.brightness = 0;
+                    flare.enabled = false;
+                    flareState = FlareState.End;
+                }
+                break;
         }
     }
 
@@ -75,5 +109,9 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         if (!shown && fragments.IsAlive()) {
             fragments.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
+    }
+
+    private float getBaseFlareSize() {
+        return unit.GetSpriteSize() * 30;
     }
 }

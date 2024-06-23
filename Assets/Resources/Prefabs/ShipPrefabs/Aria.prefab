@@ -304,10 +304,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
-  unitName: Aria
-  <moduleSystem>k__BackingField: {fileID: 0}
+  <objectName>k__BackingField: 
+  <size>k__BackingField: 0
+  <position>k__BackingField: {x: 0, y: 0}
   <faction>k__BackingField: {fileID: 0}
+  <moduleSystem>k__BackingField: {fileID: 0}
   followDist: 12
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -335,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commands: []
   newCommand: 0
-  currentCommandType: 0
+  currentCommandState: 0
 --- !u!114 &-4415673513833916498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,6 +516,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DestroyParticle
+      objectReference: {fileID: 0}
+    - target: {fileID: 1482487795117946562, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: m_IgnoreLayers.m_Bits
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
