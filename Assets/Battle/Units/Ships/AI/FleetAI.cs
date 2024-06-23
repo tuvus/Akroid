@@ -102,7 +102,7 @@ public class FleetAI : MonoBehaviour {
     CommandResult DoIdleCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Idle;
-            SetFleetIdle();
+            SetShipsIdle();
             newCommand = false;
         }
         return CommandResult.Stop;
@@ -112,7 +112,7 @@ public class FleetAI : MonoBehaviour {
     CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Wait;
-            SetFleetIdle();
+            SetShipsIdle();
             newCommand = false;
         }
         command.waitTime -= deltaTime;
@@ -177,7 +177,7 @@ public class FleetAI : MonoBehaviour {
         // If there is an enemy fleet nearby lets use DoAttackFleet to engage them
         if (command.targetFleet == null) {
             command.targetFleet = fleet.GetNearbyEnemyFleet();
-            if (command.targetFleet != null)
+            if (command.targetFleet != null || currentCommandState == CommandType.AttackFleet)
                 newCommand = true;
         }
         if (command.targetFleet != null && DoAttackFleet(command, deltaTime) == CommandResult.Stop)
@@ -188,7 +188,7 @@ public class FleetAI : MonoBehaviour {
         // If there is an enemy unit nearby lets use DoAttackUnit to engage it
         if (command.targetUnit == null) {
             command.targetUnit = fleet.enemyUnitsInRange.FirstOrDefault();
-            if (command.targetUnit != null)
+            if (command.targetUnit != null || currentCommandState == CommandType.AttackMoveUnit)
                 newCommand = true;
         }
         if (command.targetUnit != null && DoAttackUnit(command, deltaTime) == CommandResult.Stop)
@@ -211,20 +211,23 @@ public class FleetAI : MonoBehaviour {
         //TODO: Add range check here
         if (command.targetFleet == null)
             return CommandResult.ContinueRemove;
-        command.targetPosition = command.targetFleet.GetPosition();
+
+        // Save the postion for DoAttackMove if the target fleet is destroyed
+        if (command.commandType == CommandType.AttackFleet)
+            command.targetPosition = command.targetFleet.GetPosition();
 
         //Sets the target position of the command and tells all ships to attack move
         if (newCommand) {
-            // If we are close to the enemy fleet then engage them, otherwise form up to attack
-            if (Vector2.Distance(fleet.GetPosition(), command.targetPosition) <= fleet.GetMaxTurretRange() * 1.2) {
-                AssignShipsToAttackFleet(command.targetFleet);
-                currentCommandState = CommandType.AttackFleet;
-            } else {
-                AssignShipsToFormationLocation(command.targetPosition, fleet.GetSize() / 2);
-                currentCommandState = CommandType.FormationLocation;
-            }
             newCommand = false;
-            return CommandResult.Stop;
+            currentCommandState = CommandType.FormationLocation;
+
+            // If we are far away form the target fleet form up before attacking
+            if (Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) > fleet.GetMaxTurretRange() * 1.2) {
+                AssignShipsToFormationLocation(command.targetFleet.GetPosition(), fleet.GetSize() / 2);
+                return CommandResult.Stop;
+            } else {
+                SetShipsIdle();
+            }
         }
 
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
@@ -245,14 +248,47 @@ public class FleetAI : MonoBehaviour {
 
     private CommandResult DoAttackUnit(Command command, float deltaTime) {
         if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
-            SetFleetIdle();
+            SetShipsIdle();
             command.targetUnit = null;
             return CommandResult.ContinueRemove;
+        }
+
+        // Save the postion for DoAttackMove if the target unit is destroyed
+        if (command.commandType == CommandType.AttackMoveUnit)
+            command.targetPosition = command.targetUnit.GetPosition();
+
+        if (newCommand) {
+            newCommand = false;
+            currentCommandState = CommandType.FormationLocation;
+
+            // If we are far away form the target unit form up before attacking
+            if (Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) > fleet.GetMaxTurretRange() * 1.2) {
+                AssignShipsToFormationLocation(command.targetUnit.GetPosition(), fleet.GetSize() / 2);
+                return CommandResult.Stop;
+            } else {
+                SetShipsIdle();
+            }
+        }
+
+        if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
+            foreach (var ship in fleet.ships) {
+                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, command.maxSpeed));
+            }
+            currentCommandState = CommandType.AttackMoveUnit;
         }
         return CommandResult.Stop;
     }
 
     private CommandResult DoProtectUnit(Command command, float deltaTime) {
+        if (command.protectUnit == null) {
+            return CommandResult.ContinueRemove;
+        }
+        if (newCommand) {
+            foreach (var ship in fleet.ships) {
+                ship.shipAI.AddUnitAICommand(CreateProtectCommand(command.protectUnit, command.maxSpeed));
+            }
+            currentCommandState = CommandType.Move;
+        }
         return CommandResult.Stop;
     }
 
@@ -358,7 +394,7 @@ public class FleetAI : MonoBehaviour {
     #endregion
 
     #region FleetAIControls
-    public void SetFleetIdle() {
+    public void SetShipsIdle() {
         foreach (var ship in fleet.ships) {
             ship.SetIdle();
         }
