@@ -48,10 +48,12 @@ public class Projectile : BattleObject, IParticleHolder {
         if (hit) {
             if (particleSystem.isPlaying == false) {
                 RemoveProjectile();
+            } else {
+                transform.Translate(shipVelocity * deltaTime);
             }
         } else {
             transform.position += new Vector3(shipVelocity.x * deltaTime, shipVelocity.y * deltaTime, 0);
-            transform.Translate(Vector2.up * speed * deltaTime);
+            transform.Translate(Vector2.up * speed * deltaTime / transform.localScale);
             distance += speed * deltaTime;
             if (distance >= projectileRange) {
                 RemoveProjectile();
@@ -71,24 +73,29 @@ public class Projectile : BattleObject, IParticleHolder {
                     return;
             }
             damage = unit.TakeDamage(damage);
-            Explode();
+            Explode(unit);
             return;
         }
         Shield shield = coll.GetComponent<Shield>();
         if (shield != null && shield.GetUnit().faction != faction) {
             damage = shield.TakeDamage(damage);
             if (damage == 0)
-                Explode();
+                Explode(unit);
             return;
         }
     }
 
-    public void Explode() {
+    public void Explode(Unit unit) {
         hit = true;
         highlight.enabled = false;
         transform.position = new Vector3(transform.position.x, transform.position.y, 10);
         transform.localScale = new Vector2(.5f, .5f);
-        transform.rotation.eulerAngles.Set(0, 0, 0);
+        if (unit != null) {
+            shipVelocity = unit.GetVelocity();
+        } else {
+            shipVelocity = Vector2.zero;
+        }
+
         spriteRenderer.enabled = false;
         boxCollider2D.enabled = false;
         if (BattleManager.Instance.GetParticlesShown())
