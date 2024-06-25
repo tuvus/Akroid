@@ -5186,6 +5186,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: DestroyParticle
       objectReference: {fileID: 0}
+    - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
+        type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[1].time
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3448740622132478152, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
       propertyPath: fadeSpeed

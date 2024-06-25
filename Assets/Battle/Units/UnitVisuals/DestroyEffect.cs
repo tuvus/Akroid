@@ -28,6 +28,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         unitRenderer = targetRenderer;
         float newScale = battleObject.GetSpriteSize() * transform.parent.localScale.x;
         transform.localScale = new Vector2(newScale, newScale);
+        explosion.transform.localScale = transform.localScale;
         var shape = explosion.shape;
         shape.spriteRenderer = targetRenderer;
         shape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
