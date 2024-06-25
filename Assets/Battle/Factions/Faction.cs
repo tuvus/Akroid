@@ -171,12 +171,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
         for (int i = 0; i < shipCount; i++) {
             if (GetFleetCommand() != null) {
-                int randomNum = Random.Range(0, 3);
-                if (randomNum == 0) {
+                int randomNum = Random.Range(0, 10);
+                if (randomNum < 3) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aria);
-                } else if (randomNum == 1) {
+                } else if (randomNum < 8) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
-                } else if (randomNum == 2) {
+                } else if (randomNum <= 10) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
             } else

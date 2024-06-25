@@ -412,7 +412,7 @@ public class BattleManager : MonoBehaviour {
     /// Also has profiling for most method calls.
     /// </summary>
     public virtual void FixedUpdate() {
-        if (battleState != BattleState.Running) return;
+        if (battleState == BattleState.Setup) return;
         if (campaignController != null) {
             campaignController.UpdateController();
         }

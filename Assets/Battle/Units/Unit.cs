@@ -409,9 +409,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return turrets.Count + missileLaunchers.Count;
     }
 
-    public List<SpriteRenderer> GetSpriteRenderers() {
-        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
-        spriteRenderers.Add(spriteRenderer);
+    public override List<SpriteRenderer> GetSpriteRenderers() {
+        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer> {
+            spriteRenderer
+        };
         spriteRenderers.AddRange(turrets.Select(t => t.GetSpriteRenderer()));
         return spriteRenderers;
     }

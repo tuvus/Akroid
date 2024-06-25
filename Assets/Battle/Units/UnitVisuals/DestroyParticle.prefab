@@ -100,7 +100,7 @@ MonoBehaviour:
   fragments: {fileID: 5626107184251421489}
   flare: {fileID: 1482487795117946562}
   flareSpeed: 1
-  fadeSpeed: 1
+  fadeSpeed: 10
 --- !u!198 &8353732590059730950
 ParticleSystem:
   m_ObjectHideFlags: 0

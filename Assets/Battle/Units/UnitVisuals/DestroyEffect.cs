@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DestroyEffect : MonoBehaviour, IParticleHolder {
-    Unit unit;
+    BattleObject battleObject;
     SpriteRenderer unitRenderer;
     [SerializeField] ParticleSystem explosion;
     [SerializeField] ParticleSystem fragments;
@@ -23,10 +23,10 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         End,
     }
 
-    public void SetupDestroyEffect(Unit unit, SpriteRenderer targetRenderer) {
-        this.unit = unit;
+    public void SetupDestroyEffect(BattleObject battleObject, SpriteRenderer targetRenderer) {
+        this.battleObject = battleObject;
         unitRenderer = targetRenderer;
-        float newScale = unit.GetSpriteSize() * transform.parent.localScale.x;
+        float newScale = battleObject.GetSpriteSize() * transform.parent.localScale.x;
         transform.localScale = new Vector2(newScale, newScale);
         var shape = explosion.shape;
         shape.spriteRenderer = targetRenderer;
@@ -48,6 +48,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         }
         if (BattleManager.Instance.GetEffectsShown())
             flare.enabled = true;
+        flareTime = 0;
         UpdateExplosion(0);
     }
 
@@ -62,7 +63,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
                 }
                 break;
             case FlareState.FadeToNormal:
-                flare.brightness = (targetBrightness - getBaseFlareSize()) / Mathf.Pow(1 + flareTime, 3) + getBaseFlareSize();
+                flare.brightness = (targetBrightness - getBaseFlareSize() + 3) / Mathf.Pow(1 + 8 * flareTime / fadeSpeed, 3) + getBaseFlareSize() - 3;
                 if (flare.brightness <= getBaseFlareSize() * 1.01) {
                     flareState = FlareState.KeepNormal;
                     flareTime = 0;
@@ -71,7 +72,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
             case FlareState.KeepNormal:
                 flare.brightness = getBaseFlareSize();
                 if (!explosion.isEmitting) {
-                    unit.GetSpriteRenderers().ForEach(r => r.enabled = false);
+                    battleObject.GetSpriteRenderers().ForEach(r => r.enabled = false);
                     flareState = FlareState.Fade;
                     flareTime = 0;
                 }
@@ -112,6 +113,6 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
     }
 
     private float getBaseFlareSize() {
-        return unit.GetSpriteSize() * 30;
+        return battleObject.GetSpriteSize() * 30;
     }
 }

@@ -148,6 +148,10 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
         return spriteRenderer;
     }
 
+    public virtual List<SpriteRenderer> GetSpriteRenderers() {
+        return new List<SpriteRenderer> { spriteRenderer };
+    }
+
     public bool IsUnit() {
         return this is Unit;
     }

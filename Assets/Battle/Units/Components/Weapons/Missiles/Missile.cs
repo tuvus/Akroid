@@ -9,7 +9,7 @@ public class Missile : BattleObject, IParticleHolder {
     public int missileIndex { get; private set; }
     private Faction faction;
     [SerializeField] private SpriteRenderer highlight;
-    [SerializeField] private ParticleSystem explodeParticleSystem;
+    [SerializeField] private DestroyEffect destroyEffect;
     [SerializeField] private ParticleSystem thrustParticleSystem;
     [SerializeField] private BoxCollider2D boxCollider2D;
     public MissileType missileType;
@@ -49,6 +49,7 @@ public class Missile : BattleObject, IParticleHolder {
         this.retarget = retarget;
         hit = false;
         expired = false;
+        destroyEffect.SetupDestroyEffect(this, spriteRenderer);
         if (BattleManager.Instance.GetParticlesShown())
             thrustParticleSystem.Play();
         distance = 0;
@@ -58,9 +59,10 @@ public class Missile : BattleObject, IParticleHolder {
 
     public void UpdateMissile(float deltaTime) {
         if (hit) {
-            if (explodeParticleSystem.isPlaying == false && thrustParticleSystem.isPlaying == false) {
+            if (!destroyEffect.IsPlaying() && thrustParticleSystem.isPlaying == false) {
                 RemoveMissile();
             } else {
+                destroyEffect.UpdateExplosion(deltaTime);
                 transform.Translate(velocity * deltaTime);
             }
         } else if (expired) {
@@ -138,7 +140,7 @@ public class Missile : BattleObject, IParticleHolder {
         spriteRenderer.enabled = false;
         thrustParticleSystem.Stop(false);
         if (BattleManager.Instance.GetParticlesShown())
-            explodeParticleSystem.Play(false);
+            destroyEffect.Explode();
     }
 
 
@@ -152,7 +154,8 @@ public class Missile : BattleObject, IParticleHolder {
 
     public void RemoveMissile() {
         thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        explodeParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        destroyEffect.ShowEffects(false);
+        destroyEffect.ShowParticles(false);
         Activate(false);
     }
 
@@ -172,15 +175,14 @@ public class Missile : BattleObject, IParticleHolder {
     }
 
     public void SetParticleSpeed(float speed) {
-        var main = explodeParticleSystem.main;
-        main.simulationSpeed = speed;
-        main = thrustParticleSystem.main;
+        destroyEffect.SetParticleSpeed(speed);
+        var main = thrustParticleSystem.main;
         main.simulationSpeed = speed;
     }
 
     public void ShowParticles(bool shown) {
         if (hit && !shown)
-            explodeParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            destroyEffect.ShowEffects(shown);
 
         if (!shown)
             thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
