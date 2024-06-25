@@ -26,7 +26,7 @@ MonoBehaviour:
   reloadSpeed: 3
   maxAmmo: 3
   fireVelocity: 76
-  fireAccuracy: 1.4
+  fireAccuracy: 2.2
   minDamage: 5
   maxDamage: 7
   projectileRange: 380
