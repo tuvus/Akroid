@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Ship;
+using static System.Collections.Specialized.BitVector32;
 using Random = UnityEngine.Random;
 
 public class Station : Unit, IPositionConfirmer {
@@ -117,27 +118,16 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var star in battleManager.stars) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject + star.GetSize() + GetSize()) {
-                return false;
-            }
-        }
-        foreach (var asteroidField in battleManager.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + GetSize()) {
-                return false;
-            }
-        }
-        foreach (var planet in battleManager.planets) {
-            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
-                return false;
-            }
-        }
-
-        foreach (var station in battleManager.stations) {
-            float enemyBonus = 0;
-            if (faction.IsAtWarWithFaction(station.faction))
-                enemyBonus = GetMaxWeaponRange() * 2;
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.GetSize() + GetSize()) {
+        foreach (var blockingObject in battleManager.GetPositionBlockingObjects()) {
+            if (blockingObject is Station) {
+                Station station = (Station)blockingObject;
+                float enemyBonus = 0;
+                if (faction.IsAtWarWithFaction(station.faction))
+                    enemyBonus = GetMaxWeaponRange() * 2;
+                if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + enemyBonus + station.GetSize() + GetSize()) {
+                    return false;
+                }
+            } else if (Vector2.Distance(position, blockingObject.GetPosition()) <= minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
                 return false;
             }
         }

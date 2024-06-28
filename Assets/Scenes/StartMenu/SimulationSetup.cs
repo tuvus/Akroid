@@ -27,6 +27,7 @@ public class SimulationSetup : MonoBehaviour {
     private int starCount;
     private int asteroidFieldCount;
     private float asteroidCountModifier;
+    private int gasCloudCount;
     private float systemSizeModifier;
     private float researchModifier;
 
@@ -40,6 +41,7 @@ public class SimulationSetup : MonoBehaviour {
         starCount = 3;
         asteroidFieldCount = 60;
         asteroidCountModifier = 1;
+        gasCloudCount = 10;
         systemSizeModifier = 1;
         researchModifier = 1.01f;
 
@@ -204,7 +206,7 @@ public class SimulationSetup : MonoBehaviour {
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, systemSizeModifier, researchModifier, factions);
+        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, gasCloudCount, systemSizeModifier, researchModifier, factions);
         Destroy(gameObject);
     }
 

@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Star : BattleObject, IPositionConfirmer {
     SpriteRenderer glareRenderer;
@@ -19,18 +16,30 @@ public class Star : BattleObject, IPositionConfirmer {
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         spriteRenderer.color = color;
         glareRenderer.color = color;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
-        if (targetPosition.HasValue)
-            transform.position = targetPosition.Value;
-        else
-            transform.position = positionGiver.position;
-        this.position = transform.position;
         RandomiseGlareTarget();
         Spawn();
     }
 
     protected override float SetupSize() {
         return GetSpriteSize() * transform.localScale.x;
+    }
+
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+        if (positionGiver.isExactPosition)
+            return positionGiver.position;
+        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        if (targetPosition.HasValue)
+            return targetPosition.Value;
+        return positionGiver.position;
+    }
+
+    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        foreach (var blockingObject in battleManager.GetPositionBlockingObjects()) {
+            if (Vector2.Distance(position, blockingObject.GetPosition()) <= minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void UpdateStar(float deltaTime) {
@@ -55,26 +64,6 @@ public class Star : BattleObject, IPositionConfirmer {
     void RandomiseGlareTarget() {
         targetBrightness = UnityEngine.Random.Range(.5f, 1f);
         brightnessSpeed = UnityEngine.Random.Range(10f, 30f);
-    }
-
-    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var star in BattleManager.Instance.stars) {
-            float dist = Vector2.Distance(position, star.position);
-            if (dist <= minDistanceFromObject + GetSize() + star.GetSize()) {
-                return false;
-            }
-        }
-        foreach (var planet in BattleManager.Instance.planets) {
-            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
-                return false;
-            }
-        }
-        foreach (var station in BattleManager.Instance.stations) {
-            if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + GetSize()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public override float GetSpriteSize() {

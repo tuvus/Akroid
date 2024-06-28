@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1857143896828785080
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6119686611944374411}
+  m_Layer: 0
+  m_Name: GasClouds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6119686611944374411
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1857143896828785080}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9046208289571305099}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2503832312828348619
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,6 +249,7 @@ Transform:
   m_Children:
   - {fileID: 9046208289032798722}
   - {fileID: 4740854473996124652}
+  - {fileID: 6119686611944374411}
   - {fileID: 6668943095276722249}
   - {fileID: 8718350507117193988}
   - {fileID: 8305398053432012074}
@@ -240,35 +272,35 @@ MonoBehaviour:
   <systemSizeModifier>k__BackingField: 0
   shipBlueprints:
   - name: Transport
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
       type: 2}
   - name: Station Builder
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
       type: 2}
   - name: Science Ship
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
       type: 2}
   - name: Aria
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
       type: 2}
   - name: Lancer
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: 861654087bb19d64596b1dd3e9e603a7,
       type: 2}
   - name: Aterna
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
       type: 2}
   - name: Heavy Transport
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
       type: 2}
   - name: Civilian Ship
-    factionIndex: 0
+    faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
       type: 2}
   stationBlueprints:
@@ -288,20 +320,6 @@ MonoBehaviour:
     resourcesTypes: 01000000
     resources: a00f000000000000
     totalResourcesRequired: 0
-  factions: []
-  units: []
-  ships: []
-  stations: []
-  stationsInProgress: []
-  projectiles: []
-  missiles: []
-  stars: []
-  planets: []
-  asteroidFields: []
-  destroyedUnits: []
-  usedProjectiles: 
-  unusedProjectiles: 
-  usedMissiles: 
-  unusedMissiles: 
   instantHit: 0
   timeScale: 1
+  <battleState>k__BackingField: 0

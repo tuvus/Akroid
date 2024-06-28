@@ -11,4 +11,8 @@ public interface IPositionConfirmer {
     /// <param name="minDistanceFromObject">the given distance the object should be away from other objects</param>
     /// <returns>true if the position is valid, otherwise returns false </returns>
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject);
+
+    public Vector2 GetPosition();
+
+    public float GetSize();
 }

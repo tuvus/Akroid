@@ -27,6 +27,7 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Star> stars { get; private set; }
     public HashSet<Planet> planets { get; private set; }
     public HashSet<AsteroidField> asteroidFields { get; private set; }
+    public HashSet<GasCloud> gasClouds { get; private set; }
 
     public HashSet<Unit> destroyedUnits { get; private set; }
     public HashSet<Projectile> usedProjectiles { get; private set; }
@@ -40,7 +41,7 @@ public class BattleManager : MonoBehaviour {
 
     float startOfSimulation;
     double simulationTime;
-    [field:SerializeField] public BattleState battleState { get; private set; }
+    [field: SerializeField] public BattleState battleState { get; private set; }
     public enum BattleState {
         Setup,
         Running,
@@ -100,7 +101,7 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", "F1", Random.Range(10000000, 100000000), 0, 50, 1),
                 new FactionData("Faction2", "F2", Random.Range(10000000, 100000000), 0, 50, 1)
             };
-            SetupBattle(0, 0, 1, 0.1f, 1.1f, tempFactions);
+            SetupBattle(0, 0, 1, 0, 0.1f, 1.1f, tempFactions);
         }
     }
 
@@ -112,7 +113,7 @@ public class BattleManager : MonoBehaviour {
     /// <param name="asteroidCountModifier"></param>
     /// <param name="researchModifier"></param>
     /// <param name="factionDatas"></param>
-    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, float systemSizeModifier, float researchModifier, List<FactionData> factionDatas) {
+    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, int gasCloudCount, float systemSizeModifier, float researchModifier, List<FactionData> factionDatas) {
         if (Instance == null) {
             Instance = this;
         } else {
@@ -131,6 +132,10 @@ public class BattleManager : MonoBehaviour {
 
         for (int i = 0; i < factionDatas.Count; i++) {
             CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
+        }
+
+        for (int i = 0; i < gasCloudCount; i++) {
+            CreateNewGasCloud(new PositionGiver(Vector2.zero, 1000, 100000, 500, 2000, 3));
         }
 
         foreach (var faction in factions) {
@@ -186,6 +191,7 @@ public class BattleManager : MonoBehaviour {
         stars = new HashSet<Star>(10);
         planets = new HashSet<Planet>(10);
         asteroidFields = new HashSet<AsteroidField>(10);
+        gasClouds = new HashSet<GasCloud>(10);
         projectiles = new HashSet<Projectile>(500);
         missiles = new HashSet<Missile>(100);
         destroyedUnits = new HashSet<Unit>(200);
@@ -309,6 +315,7 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
         AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
+        // The Asteroid field must be set up before the asteroids are generated
         newAsteroidField.SetupAsteroidField(this);
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
@@ -317,8 +324,16 @@ public class BattleManager : MonoBehaviour {
             newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
+        // The Asteroid field position must be set after the asteroids have been generated
         newAsteroidField.SetupAstroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
+    }
+
+    public void CreateNewGasCloud(PositionGiver positionGiver) {
+        GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
+        GasCloud newGasCloud = Instantiate(gasCloudPrefab, Vector2.zero, Quaternion.identity, GetGasCloudsTransform()).GetComponent<GasCloud>();
+        newGasCloud.SetupGasCloud(this, positionGiver);
+        gasClouds.Add(newGasCloud);
     }
     #endregion
 
@@ -403,6 +418,16 @@ public class BattleManager : MonoBehaviour {
         Missile newMissile = Instantiate(missilePrefab, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
         newMissile.PrespawnMissile(this, missiles.Count, timeScale);
         missiles.Add(newMissile);
+    }
+
+    public List<IPositionConfirmer> GetPositionBlockingObjects() {
+        var blockingObjects = new List<IPositionConfirmer>();
+        blockingObjects.AddRange(stars);
+        blockingObjects.AddRange(stations);
+        blockingObjects.AddRange(planets);
+        blockingObjects.AddRange(asteroidFields);
+        blockingObjects.AddRange(gasClouds);
+        return blockingObjects;
     }
     #endregion
 
@@ -592,20 +617,24 @@ public class BattleManager : MonoBehaviour {
         return transform.GetChild(1);
     }
 
-    public Transform GetStarTransform() {
+    public Transform GetGasCloudsTransform() {
         return transform.GetChild(2);
     }
 
-    public Transform GetPlanetsTransform() {
+    public Transform GetStarTransform() {
         return transform.GetChild(3);
     }
 
-    public Transform GetProjectileTransform() {
+    public Transform GetPlanetsTransform() {
         return transform.GetChild(4);
     }
 
-    public Transform GetMissileTransform() {
+    public Transform GetProjectileTransform() {
         return transform.GetChild(5);
+    }
+
+    public Transform GetMissileTransform() {
+        return transform.GetChild(6);
     }
 
     public static GameObject GetSizeIndicatorPrefab() {
