@@ -22,6 +22,7 @@ public class Command {
         Transport,
         TransportDelay,
         Research,
+        CollectGas,
         DisbandFleet,
     }
 
@@ -40,6 +41,7 @@ public class Command {
     public Unit targetUnit;
     public Unit protectUnit;
     public Star targetStar;
+    public GasCloud targetGasCloud;
     public bool useAlternateCommandOnceDone;
 
     public Station productionStation;
@@ -188,6 +190,13 @@ public class Command {
         Command newCommand = new Command(CommandType.Research);
         newCommand.destinationStation = returnStation;
         newCommand.targetStar = targetStar;
+        return newCommand;
+    }
+
+    public static Command CreateCollectGasCommand(GasCloud targetGasCloud, Station returnStation) {
+        Command newCommand = new Command(CommandType.CollectGas);
+        newCommand.destinationStation = returnStation;
+        newCommand.targetGasCloud = targetGasCloud;
         return newCommand;
     }
 

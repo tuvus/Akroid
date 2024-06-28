@@ -163,6 +163,10 @@ public class Station : Unit, IPositionConfirmer {
         return BuildShip(faction, shipClass, cost, undock);
     }
 
+    public virtual Ship BuildShip(ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
+        return BuildShip(faction, shipScriptableObject, cost, undock);
+    }
+
     public virtual Ship BuildShip(ShipType shipType, long cost = 0, bool? undock = false) {
         return BuildShip(faction, shipType, cost, undock);
     }
@@ -170,6 +174,10 @@ public class Station : Unit, IPositionConfirmer {
     public virtual Ship BuildShip(Faction faction, ShipClass shipClass, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
         return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+    }
+
+    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
+        return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
     public virtual Ship BuildShip(Faction faction, ShipType shipType, long cost = 0, bool? undock = false) {
@@ -195,7 +203,7 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="shipData"></param>
     /// <param name="cost"></param>
     /// <param name="undock"></param>
-    /// <returns></returns>
+    /// <returns>The newly built ship</returns>
     public virtual Ship BuildShip(Faction faction, ShipData shipData, long cost = 0, bool? undock = false) {
         Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(faction,shipData));
         if (undock == null) { 

@@ -97,6 +97,7 @@ public class ShipAI : MonoBehaviour {
             CommandType.Transport => DoTransportCommand(command, deltaTime),
             CommandType.TransportDelay => DoTransportDelayCommand(command, deltaTime),
             CommandType.Research => DoResearchCommand(command, deltaTime),
+            CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             _ => CommandResult.Stop,
         };
     }
@@ -467,7 +468,7 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.StopRemove;
         }
         if (newCommand) {
-            if (ship.GetResearchEquiptment().WantMoreData()) {
+            if (ship.GetResearchEquiptment().WantsMoreData()) {
                 ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
                 currentCommandState = CommandType.Move;
             } else {
@@ -483,7 +484,7 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Research) {
                 ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
-                if (!ship.GetResearchEquiptment().WantMoreData()) {
+                if (!ship.GetResearchEquiptment().WantsMoreData()) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 }
@@ -492,7 +493,7 @@ public class ShipAI : MonoBehaviour {
                 currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Wait) {
-                if (ship.GetResearchEquiptment().WantMoreData()) {
+                if (ship.GetResearchEquiptment().WantsMoreData()) {
                     ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
                     currentCommandState = CommandType.Move;
                 }
@@ -503,6 +504,50 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
+
+    /// <summary> AttackMove to the gas cloud, do research, then remove command. </summary>
+    CommandResult DoCollectGasCommand(Command command, float deltaTime) {
+        if (command.targetGasCloud == null || command.destinationStation == null) {
+            return CommandResult.StopRemove;
+        }
+        if (newCommand) {
+            if (ship.GetGasCollector().WantsMoreGas()) {
+                ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
+                currentCommandState = CommandType.Move;
+            } else {
+                ship.SetDockTarget(command.destinationStation);
+                currentCommandState = CommandType.Dock;
+            }
+            ship.SetMaxSpeed(command.maxSpeed);
+            newCommand = false;
+        }
+        if (ship.shipAction == Ship.ShipAction.Idle) {
+            if (currentCommandState == CommandType.Move) {
+                currentCommandState = CommandType.CollectGas;
+                return CommandResult.Stop;
+            } else if (currentCommandState == CommandType.CollectGas) {
+                ship.GetGasCollector().CollectGas(command.targetGasCloud, deltaTime);
+                if (!ship.GetGasCollector().WantsMoreGas()) {
+                    ship.SetDockTarget(command.destinationStation);
+                    currentCommandState = CommandType.Dock;
+                }
+                return CommandResult.Stop;
+            } else if (currentCommandState == CommandType.Dock) {
+                currentCommandState = CommandType.Wait;
+                return CommandResult.Stop;
+            } else if (currentCommandState == CommandType.Wait) {
+                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
+                    ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
+                    currentCommandState = CommandType.Move;
+                }
+                return CommandResult.Stop;
+            } else if (currentCommandState == CommandType.Idle) {
+                newCommand = true;
+            }
+        }
+        return CommandResult.Stop;
+    }
+
 
     /// <summary> Sets up the ship to transport goods from one station to another. The transport will only undock when full. </summary>
     CommandResult DoTransportCommand(Command command, float deltaTime) {

@@ -47,13 +47,13 @@ public class MiningStationAI : StationAI {
     }
 
     void ManageMinningStationCargo() {
-        for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
-            Ship ship = station.GetHanger().GetShips()[i];
+        foreach (var ship in station.GetHanger().GetShips()) {
             if (ship.GetShipType() == Ship.ShipType.Transport) {
-                ship.GetCargoBay().LoadCargoFromBay(station.GetCargoBay(), CargoBay.CargoTypes.Metal, cargoAmmount);
+                ship.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Metal, station);
                 cargoTime += cargoSpeed;
                 break;
             }
+
         }
     }
 

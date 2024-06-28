@@ -7,7 +7,7 @@ public class StationAI : MonoBehaviour {
     protected Station station;
     [SerializeField] protected float waitSpeed;
     [SerializeField] protected float cargoSpeed;
-    [SerializeField] protected long cargoAmmount;
+    [SerializeField] protected long cargoAmount;
     protected float waitTime;
     protected float cargoTime;
 

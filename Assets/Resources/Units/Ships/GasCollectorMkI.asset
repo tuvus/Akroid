@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: GasCollectorMkI
+  m_EditorClassIdentifier: 
+  cost: 7613
+  resourceTypes: 01000000
+  resourceCosts: 7d05000000000000
+  prefabPath: Prefabs/ShipPrefabs/GasCollector
+  unitName: GasCollector
+  maxHealth: 560
+  sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
+  components: []
+  systems:
+  - name: Turrets
+    moduleCount: 4
+    component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: e38e059c39986f04c81366ab1f6fdeeb, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: 7353c4549b3029f4bafe064928171027, type: 2}
+  - name: MainThrusters
+    moduleCount: 2
+    component: {fileID: 11400000, guid: c0ec4a137cddba946b65a204f849f966, type: 2}
+  - name: SubThrusters
+    moduleCount: 2
+    component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+  shipClass: 6
+  shipType: 8
+  turnSpeed: 40
+  combatRotation: 0

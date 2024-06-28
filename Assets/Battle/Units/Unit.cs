@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -213,7 +214,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < turrets.Count; i++) {
             turrets[i].StopFiring();
         }
-        float value = Random.Range(0.2f, 0.6f);
+        float value = UnityEngine.Random.Range(0.2f, 0.6f);
         GetSpriteRenderers().ForEach(r => { r.color = new Color(value, value, value, 1); });
         Despawn(false);
     }
@@ -255,19 +256,49 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return minWeaponRange;
     }
 
+    /// <summary>
+    /// Tries and uses up to the amount cargo from all of the cargo bays
+    /// </summary>
+    /// <returns>The leftover amount that couldn't be used, or 0 if all of it was used</returns>
     public long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToUse = amount;
-        foreach (var bay in GetCargoBays()) {
-            totalCargoToUse = bay.UseCargo(totalCargoToUse, cargoType);
-            if (totalCargoToUse <= 0) {
-                return 0;
-            }
+        foreach (var cargoBay in GetCargoBays()) {
+            totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
+            if (totalCargoToUse <= 0) return 0;
         }
         return totalCargoToUse;
     }
 
-    public long GetAllCargo(CargoBay.CargoTypes cargoType) {
-        return cargoBays.Sum(cb => cb.GetAllCargo(cargoType));
+    /// <summary>
+    /// Tries to load up to the amount in cargo to all of the cargo bays
+    /// </summary>
+    /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
+    public long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
+        long totalCargoToLoad = amount;
+        foreach (var cargoBay in GetCargoBays()) {
+            totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
+            if (totalCargoToLoad <= 0) return 0;
+        }
+        return totalCargoToLoad;
+    }
+
+    /// <summary>
+    /// Tries to load up to the amount in cargo from the unit given to this unit
+    /// </summary>
+    /// <returns>The leftover amount that couldn't be loaded </returns>
+    public long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit) {
+        long cargoToLoad = Math.Min(amount, Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
+        unit.UseCargo(cargoToLoad, cargoType);
+        LoadCargo(cargoToLoad, cargoType);
+        return amount - cargoToLoad;
+    }
+
+    public long GetAllCargoOfType(CargoBay.CargoTypes cargoType) {
+        return cargoBays.Sum(cargoBay => cargoBay.GetAllCargo(cargoType));
+    }
+
+    public long GetAvailableCargoSpace(CargoBay.CargoTypes cargoType) {
+        return GetCargoBays().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
     }
 
     public string GetUnitName() {

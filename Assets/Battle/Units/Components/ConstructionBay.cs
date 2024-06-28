@@ -11,7 +11,7 @@ public class ConstructionBay : ModuleComponent {
     private float constructionTime;
 
     [SerializeField]
-    public List<Ship.ShipConstructionBlueprint> buildQueue;
+    public List<ShipConstructionBlueprint> buildQueue;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
@@ -20,10 +20,10 @@ public class ConstructionBay : ModuleComponent {
 
     public void SetupConstructionBay(Shipyard fleetCommand) {
         this.shipyard = fleetCommand;
-        buildQueue = new List<Ship.ShipConstructionBlueprint>(10);
+        buildQueue = new List<ShipConstructionBlueprint>(10);
     }
 
-    public bool AddConstructionToQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
+    public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {
         if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, shipyard.faction)) {
                 shipyard.faction.UseCredits(shipBlueprint.cost);
             buildQueue.Add(shipBlueprint);
@@ -32,7 +32,7 @@ public class ConstructionBay : ModuleComponent {
         return false;
     }
 
-    public void AddConstructionToBeginningQueue(Ship.ShipConstructionBlueprint shipBlueprint) {
+    public void AddConstructionToBeginningQueue(ShipConstructionBlueprint shipBlueprint) {
         buildQueue.Insert(0, shipBlueprint);
     }
 
@@ -57,14 +57,14 @@ public class ConstructionBay : ModuleComponent {
         for (int i = 0; i < buildQueue.Count; i++) {
             if (availableConstructionBays == 0)
                 return;
-            Ship.ShipConstructionBlueprint shipBlueprint = buildQueue[i];
+            ShipConstructionBlueprint shipBlueprint = buildQueue[i];
             if (!shipBlueprint.IsFinished()) {
                 availableConstructionBays--;
                 long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
                 for (int f = 0; f < shipBlueprint.resourceCosts.Count; f++) {
                     if (buildAmount <= 0)
                         break;
-                    long amountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargo(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmount, shipBlueprint.resourceCosts[f]));
+                    long amountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargoOfType(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmount, shipBlueprint.resourceCosts[f]));
                     shipBlueprint.resourceCosts[f] -= amountToUse;
                     shipyard.GetCargoBay().UseCargo(amountToUse, shipBlueprint.resourcesTypes[f]);
                     if (shipBlueprint.resourceCosts[f] <= 0) {
@@ -82,19 +82,19 @@ public class ConstructionBay : ModuleComponent {
         }
     }
 
-    bool BuildBlueprint(Ship.ShipConstructionBlueprint shipBlueprint) {
-        Ship ship = shipyard.BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject.shipClass, shipBlueprint.cost);
+    bool BuildBlueprint(ShipConstructionBlueprint shipBlueprint) {
+        Ship ship = shipyard.BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject, shipBlueprint.cost);
         if (ship == null)
             return false;
         shipyard.stationAI.OnShipBuilt(ship);
         return true;
     }
 
-    public int GetNumberOfShipsOfClass(Ship.ShipClass shipClass) {
+    public int GetNumberOfShipsOfClass(ShipClass shipClass) {
         return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass);
     }
 
-    public int GetNumberOfShipsOfClassFaction(Ship.ShipClass shipClass, Faction faction) {
+    public int GetNumberOfShipsOfClassFaction(ShipClass shipClass, Faction faction) {
         return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass && q.faction == faction);
     }
 

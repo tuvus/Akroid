@@ -57,7 +57,7 @@ public class MiningStation : Station {
                 ManageStationMining();
                 miningTime += GetMiningSpeed();
             }
-            if (nearbyAsteroids.Count == 0 && GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
+            if (nearbyAsteroids.Count == 0 && GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0) {
                 activelyMining = false;
                 faction.RemoveMiningStation(this);
             }

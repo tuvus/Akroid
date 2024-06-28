@@ -41,7 +41,7 @@ public class SimulationSetup : MonoBehaviour {
         starCount = 3;
         asteroidFieldCount = 60;
         asteroidCountModifier = 1;
-        gasCloudCount = 10;
+        gasCloudCount = 16;
         systemSizeModifier = 1;
         researchModifier = 1.01f;
 

@@ -6,6 +6,7 @@ public class CargoBay : ModuleComponent {
     public enum CargoTypes {
         Empty = 0,
         Metal = 1,
+        Gas = 2,
     }
 
     CargoBayScriptableObject cargoBayScriptableObject;
@@ -18,9 +19,7 @@ public class CargoBay : ModuleComponent {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
     }
 
-    /// <summary>
-    /// Returns Cargo that was not loaded.
-    /// </summary>
+    /// <returns> Returns Cargo that was not loaded. </returns>
     public long LoadCargo(long cargoToLoad, CargoTypes cargoType) {
         //Puts Cargo in existing cargo bays
         for (int i = 0; i < cargoBays.Count; i++) {
@@ -37,9 +36,7 @@ public class CargoBay : ModuleComponent {
         return cargoToLoad;
     }
 
-    /// <summary>
-    /// Returns Unadded Cargo
-    /// </summary>
+    /// <returns> The extra unadded cargo </returns>
     long AddCargoToBay(long cargoToAdd, CargoTypes cargoType, int cargoBayNumber) {
         if (cargoBayTypes[cargoBayNumber] != cargoType)
             return cargoToAdd;
@@ -52,9 +49,7 @@ public class CargoBay : ModuleComponent {
         return returnValue;
     }
 
-    /// <summary>
-    /// Returns Unadded Cargo
-    /// </summary>
+    /// <returns> The extra unadded cargo </returns>
     long AddNewCargoBay(long cargoAmount, CargoTypes cargoType) {
         if (cargoBays.Count < cargoBayScriptableObject.maxCargoBays) {
             if (cargoAmount <= cargoBayScriptableObject.cargoBaySize) {

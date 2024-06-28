@@ -303,6 +303,10 @@ MonoBehaviour:
     faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
       type: 2}
+  - name: Gas Collector
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: 9e5dfb8892aab944481eb82a16720054,
+      type: 2}
   stationBlueprints:
   - name: Fleet Command
     factionIndex: 0

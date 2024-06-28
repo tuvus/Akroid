@@ -646,6 +646,24 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
+    /// Gets the closest gas cloud to the given position
+    /// </summary>
+    /// <param name="position">the given position</param>
+    /// <returns>the closest gas cloud</returns>
+    public GasCloud GetClosestGasCloud(Vector2 position) {
+        GasCloud closestGasCloud = null;
+        float distance = 0;
+        foreach (var gasCloud in battleManager.gasClouds) {
+            float targetDistance = Vector2.Distance(position, gasCloud.position);
+            if (closestGasCloud == null || targetDistance < distance) {
+                closestGasCloud = gasCloud;
+                distance = targetDistance;
+            }
+        }
+        return closestGasCloud;
+    }
+
+    /// <summary>
     /// Gets the improvement modifier aligned with the given improvement area
     /// </summary>
     /// <param name="improvementArea">the given improvement area</param>

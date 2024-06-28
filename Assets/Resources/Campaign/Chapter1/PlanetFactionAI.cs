@@ -121,10 +121,10 @@ public class PlanetFactionAI : FactionAI {
         while (tradeStation.GetHanger().GetTransportShip(count) != null) {
             Ship transportShip = tradeStation.GetHanger().GetTransportShip(count);
             if (transportShip.faction != faction) {
-                long cost = (long)(transportShip.GetAllCargo(CargoBay.CargoTypes.Metal) * chapter1.GetMetalCost() * 0.8f);
+                long cost = (long)(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal) * chapter1.GetMetalCost() * 0.8f);
                 if (faction.UseCredits(cost)) {
                     transportShip.faction.AddCredits(cost);
-                    transportShip.GetCargoBay().UseCargo(transportShip.GetAllCargo(CargoBay.CargoTypes.Metal), CargoBay.CargoTypes.Metal);
+                    transportShip.GetCargoBay().UseCargo(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal), CargoBay.CargoTypes.Metal);
                 }
             } else if (transportShip.faction == faction && metalOrder > 0) {
                 //long cost = (long)(metalOrder * chapter1.GetMetalCost());

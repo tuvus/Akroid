@@ -217,7 +217,7 @@ public class ModuleSystem : MonoBehaviour {
                 long currentAmount = 0;
                 int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
                 if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
-                if (upgrader.GetAllCargo(upgrade.resourceTypes[i]) < upgrade.resourceCosts[i] - currentAmount) {
+                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i]) < upgrade.resourceCosts[i] - currentAmount) {
                     return false;
                 }
             }

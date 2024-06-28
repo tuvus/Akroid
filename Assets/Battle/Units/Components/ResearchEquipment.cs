@@ -37,7 +37,7 @@ public class ResearchEquipment : ModuleComponent {
         return returnValue;
     }
 
-    public bool WantMoreData() {
+    public bool WantsMoreData() {
         return data != researchEquipmentScriptableObject.maxData;
     }
 }

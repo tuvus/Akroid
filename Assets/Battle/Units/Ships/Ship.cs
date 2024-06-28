@@ -27,6 +27,7 @@ public class Ship : Unit {
         Frigate,
         Cruiser,
         Dreadnaught,
+        GasCollector,
     }
     public enum ShipAction {
         Idle,
@@ -46,6 +47,7 @@ public class Ship : Unit {
     [field: SerializeField] private ShipType shipType;
     private CargoBay cargoBay;
     private ResearchEquipment researchEquipment;
+    private GasCollector gasCollector;
     private List<Thruster> thrusters;
     public float turnSpeed;
     public float combatRotation;
@@ -144,6 +146,10 @@ public class Ship : Unit {
         if (IsScienceShip()) {
             researchEquipment = GetComponentInChildren<ResearchEquipment>();
             researchEquipment.SetupResearchEquipment(this);
+        }
+        if (IsGasCollectorShip()) {
+            gasCollector = GetComponentInChildren<GasCollector>();
+            gasCollector.SetupGasCollector(this);
         }
         thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
         foreach (var thruster in thrusters) {
@@ -503,6 +509,10 @@ public class Ship : Unit {
         return ShipScriptableObject.shipType == ShipType.Research;
     }
 
+    public bool IsGasCollectorShip() {
+        return ShipScriptableObject.shipType == ShipType.GasCollector;
+    }
+
     public bool IsCivilianShip() {
         return ShipScriptableObject.shipType == ShipType.Civilian;
     }
@@ -532,6 +542,11 @@ public class Ship : Unit {
     public ResearchEquipment GetResearchEquiptment() {
         return researchEquipment;
     }
+
+    public GasCollector GetGasCollector() {
+        return gasCollector;
+    }
+
 
     public bool IsIdle() {
         return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);

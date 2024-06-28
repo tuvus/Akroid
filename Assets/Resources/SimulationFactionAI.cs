@@ -218,6 +218,8 @@ public class SimulationFactionAI : FactionAI {
                     }
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand), Command.CommandAction.Replace);
+                } else if (idleShip.IsGasCollectorShip()) {
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateCollectGasCommand(faction.GetClosestGasCloud(idleShip.GetPosition()), fleetCommand), Command.CommandAction.Replace);
                 } else if (idleShip.IsConstructionShip()) {
                     Station newMiningStation = ((ConstructionShip)idleShip).CreateStation(faction.GetPosition());
                     idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()), Command.CommandAction.AddToEnd);
@@ -264,7 +266,9 @@ public class SimulationFactionAI : FactionAI {
                 randomNumber = Random.Range(0, 100);
             }
             if (randomNumber < 20) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Zarrack), "Science Ship"));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.Research), "Science Ship"));
+            } else if (randomNumber < 25) {
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.GasCollector), "Gas Collector"));
             } else if (randomNumber < 50) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
             } else if (randomNumber < 80) {
