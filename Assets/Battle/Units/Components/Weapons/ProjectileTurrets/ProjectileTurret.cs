@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MassTurret : Turret {
-    MassTurretScriptableObject massTurretScriptableObject;
+public class ProjectileTurret : Turret {
+    ProjectileTurretScriptableObject projectileTurretScriptableObject;
     private SpriteRenderer flash;
     static float flashSpeed = 0.5f;
     private float flashTime;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
-        massTurretScriptableObject = (MassTurretScriptableObject)componentScriptableObject;
+        projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
     }
 
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
         flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
-        flash.transform.localPosition = new Vector2(0, massTurretScriptableObject.turretOffset);
+        flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);
         flash.enabled = false;
     }
 
@@ -24,12 +24,12 @@ public class MassTurret : Turret {
         base.Fire();
         if (!BattleManager.Instance.instantHit) {
             Projectile projectile = BattleManager.Instance.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-massTurretScriptableObject.fireAccuracy, massTurretScriptableObject.fireAccuracy), unit.GetVelocity(), massTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(massTurretScriptableObject.minDamage, massTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), massTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+            projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy), unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
             flashTime = flashSpeed;
             flash.enabled = BattleManager.Instance.GetEffectsShown();
             flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
         } else {
-            targetUnit.TakeDamage(Mathf.RoundToInt(Random.Range(massTurretScriptableObject.minDamage, massTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
+            targetUnit.TakeDamage(Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
         }
         return reloadController.Empty();
     }
@@ -51,7 +51,7 @@ public class MassTurret : Turret {
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
-        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(), target.GetPosition(), unit.GetVelocity(), target.GetVelocity(), massTurretScriptableObject.fireVelocity, GetTurretOffSet());
+        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(), target.GetPosition(), unit.GetVelocity(), target.GetVelocity(), projectileTurretScriptableObject.fireVelocity, GetTurretOffSet());
     }
 
     public override float GetRange() {
@@ -68,7 +68,7 @@ public class MassTurret : Turret {
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = (massTurretScriptableObject.minDamage + massTurretScriptableObject.maxDamage) / 2f * reloadController.maxAmmo;
+        float damage = (projectileTurretScriptableObject.minDamage + projectileTurretScriptableObject.maxDamage) / 2f * reloadController.maxAmmo;
         return damage / time;
     }
 

@@ -2,8 +2,8 @@
 using UnityEngine;
 using static Turret;
 
-[CreateAssetMenu(fileName = "Resources/Components/MassTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
-class MassTurretScriptableObject : TurretScriptableObject {
+[CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
+class ProjectileTurretScriptableObject : TurretScriptableObject {
     [Tooltip("Max at around 150")]
     public float fireVelocity;
     public float fireAccuracy;
@@ -28,7 +28,7 @@ class MassTurretScriptableObject : TurretScriptableObject {
     }
 
     public override Type GetComponentType() {
-        return typeof(MassTurret);
+        return typeof(ProjectileTurret);
     }
 
     protected override void UpdateCosts() {
