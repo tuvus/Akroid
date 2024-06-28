@@ -53,7 +53,7 @@ public class Projectile : BattleObject, IParticleHolder {
             }
         } else {
             transform.position += new Vector3(shipVelocity.x * deltaTime, shipVelocity.y * deltaTime, 0);
-            transform.Translate(Vector2.up * speed * deltaTime / transform.localScale);
+            transform.Translate(Vector2.up * speed * deltaTime);
             distance += speed * deltaTime;
             if (distance >= projectileRange) {
                 RemoveProjectile();
