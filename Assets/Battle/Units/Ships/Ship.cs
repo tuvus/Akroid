@@ -376,11 +376,7 @@ public class Ship : Unit {
         shipAction = ShipAction.MoveAndRotate;
     }
 
-    public void SetMaxSpeed() {
-        maxSetSpeed = GetSpeed();
-    }
-
-    public void SetMaxSpeed(float maxspeed) {
+    public void SetMaxSpeed(float maxspeed = float.MaxValue) {
         maxSetSpeed = maxspeed;
     }
 

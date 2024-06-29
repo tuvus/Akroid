@@ -231,7 +231,12 @@ public class FleetAI : MonoBehaviour {
         }
 
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
-            AssignShipsToAttackFleet(command.targetFleet);
+            AssignShipsToAttackFleet(command.targetFleet, fleet.minShipSpeed);
+            currentCommandState = CommandType.Move;
+        } 
+        if (currentCommandState == CommandType.Move 
+            && Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) <= fleet.GetMaxTurretRange()) {
+            SetAllShipsSpeed();
             currentCommandState = CommandType.AttackFleet;
         } else if (currentCommandState == CommandType.AttackFleet) {
             //Sets all idle ships to attackMove to the commands targetPosition
@@ -262,7 +267,7 @@ public class FleetAI : MonoBehaviour {
             currentCommandState = CommandType.FormationLocation;
 
             // If we are far away form the target unit form up before attacking
-            if (Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) > fleet.GetMaxTurretRange() * 1.2) {
+            if (Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) > fleet.GetMaxTurretRange()) {
                 AssignShipsToFormationLocation(command.targetUnit.GetPosition(), fleet.GetSize() / 2);
                 return CommandResult.Stop;
             } else {
@@ -270,10 +275,16 @@ public class FleetAI : MonoBehaviour {
             }
         }
 
+
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
             foreach (var ship in fleet.ships) {
-                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, command.maxSpeed));
+                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, fleet.minShipSpeed));
             }
+            currentCommandState = CommandType.Move;
+        } 
+        if (currentCommandState == CommandType.Move 
+            && Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) <= fleet.GetMaxTurretRange() * 1.2) {
+            SetAllShipsSpeed();
             currentCommandState = CommandType.AttackMoveUnit;
         }
         return CommandResult.Stop;
@@ -352,9 +363,9 @@ public class FleetAI : MonoBehaviour {
     /// Gives each ship in this fleet an AttackFleet command with the targetUnit set to a respective ship in the enemy fleet.
     /// The targetUnit is found based on the relative positioning of the ship to this fleet center and the targetUnit's position to its fleet's center.
     /// </summary>
-    private void AssignShipsToAttackFleet(Fleet targetFleet) {
+    private void AssignShipsToAttackFleet(Fleet targetFleet, float maxSpeed = float.MaxValue) {
         foreach (var ship in fleet.ships) {
-            AssignShipToAttackFleet(ship, targetFleet);
+            AssignShipToAttackFleet(ship, targetFleet, maxSpeed);
         }
     }
 
@@ -362,7 +373,7 @@ public class FleetAI : MonoBehaviour {
     /// Gives the ship in this fleet an AttackFleet command with the targetUnit set to a respective ship in the enemy fleet.
     /// The targetUnit is found based on the relative positioning of the ship to this fleet center and the targetUnit's position to its fleet's center.
     /// </summary>
-    private void AssignShipToAttackFleet(Ship ship, Fleet targetFleet) {
+    private void AssignShipToAttackFleet(Ship ship, Fleet targetFleet, float maxSpeed = float.MaxValue) {
         Vector2 shipOffset = fleet.GetPosition() - ship.GetPosition();
 
         Ship targetShip = null;
@@ -376,7 +387,7 @@ public class FleetAI : MonoBehaviour {
             }
         }
 
-        ship.shipAI.AddUnitAICommand(CreateSkirmishCommand(targetFleet, targetShip), CommandAction.Replace);
+        ship.shipAI.AddUnitAICommand(CreateSkirmishCommand(targetFleet, targetShip, maxSpeed), CommandAction.Replace);
     }
 
     private void AssignShipsToFormationLocation(Vector2 targetPosition, float distance) {
@@ -397,6 +408,13 @@ public class FleetAI : MonoBehaviour {
     public void SetShipsIdle() {
         foreach (var ship in fleet.ships) {
             ship.SetIdle();
+        }
+    }
+
+    public void SetAllShipsSpeed(float maxSpeed = float.MaxValue) {
+        foreach (var ship in fleet.ships) {
+            ship.shipAI.commands.ForEach(command => command.maxSpeed = maxSpeed);
+            ship.SetMaxSpeed(maxSpeed);
         }
     }
 

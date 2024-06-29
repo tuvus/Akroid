@@ -326,6 +326,7 @@ public class ShipAI : MonoBehaviour {
                 currentCommandState = CommandType.Move;
                 ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 command.targetPosition = command.targetUnit.GetPosition();
+                ship.SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
