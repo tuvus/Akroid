@@ -311,12 +311,15 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
         if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
-            if (AdditiveButtonPressed)
+            if (AdditiveButtonPressed && AltButtonPressed) {
+                selectedUnits.fleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
+            } else if (AdditiveButtonPressed) {
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
-            else if (AltButtonPressed)
+            } else if (AltButtonPressed) {
                 selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
-            else
+            } else {
                 selectedUnits.fleet.FleetAI.AddFormationCommand();
+            }
         } else {
             selectedUnits.RemoveAllNonCombatShips();
             selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
