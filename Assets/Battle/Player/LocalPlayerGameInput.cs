@@ -326,9 +326,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             selectedUnits.RemoveAnyNullUnits();
             HashSet<Ship> ships = selectedUnits.GetAllShips().ToHashSet();
             if (ships.Count > 0) {
-                selectedUnits.SetFleet(LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships));
+                LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships);
+                SelectBattleObjects(new List<BattleObject>() { ships.First() });
             }
-            SetDisplayedUnit();
             selectedGroup = -1;
         }
     }
