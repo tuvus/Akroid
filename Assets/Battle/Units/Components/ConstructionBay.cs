@@ -98,6 +98,14 @@ public class ConstructionBay : ModuleComponent {
         return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass && q.faction == faction);
     }
 
+    public int GetNumberOfShipsOfType(ShipType shipType) {
+        return buildQueue.Count(q => q.shipScriptableObject.shipType == shipType);
+    }
+
+    public int GetNumberOfShipsOfTypeFaction(ShipType shipType, Faction faction) {
+        return buildQueue.Count(q => q.shipScriptableObject.shipType == shipType && q.faction == faction);
+    }
+
     public bool HasOpenBays() {
         return constructionBayScriptableObject.constructionBays > buildQueue.Count;
     }

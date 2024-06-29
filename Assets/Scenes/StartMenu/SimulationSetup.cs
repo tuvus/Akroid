@@ -60,10 +60,10 @@ public class SimulationSetup : MonoBehaviour {
         asteroidCountModifier = 1.2f;
         systemSizeModifier = 1.2f;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", "F1", Random.Range(2000000, 4000000), 0, 5, 5));
-        factions.Add(new FactionData("Faction2", "F2", Random.Range(2000000, 4000000), 0, 5, 5));
-        factions.Add(new FactionData("Faction3", "F3", Random.Range(2000000, 4000000), 0, 5, 5));
-        factions.Add(new FactionData("Faction4", "F4", Random.Range(2000000, 4000000), 0, 5, 5));
+        factions.Add(new FactionData("Faction1", "F1", Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction2", "F2", Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction3", "F3", Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction4", "F4", Random.Range(1000000, 1500000), 0, 5, 5));
         StartSimulation();
     }
 
@@ -75,8 +75,8 @@ public class SimulationSetup : MonoBehaviour {
         systemSizeModifier = 0.1f;
         gasCloudCount = 0;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", "F1", Random.Range(2000000, 4000000), 0, 50, 1));
-        factions.Add(new FactionData("Faction2", "F2", Random.Range(2000000, 4000000), 0, 50, 1));
+        factions.Add(new FactionData("Faction1", "F1", Random.Range(1000000, 1500000), 0, 50, 1));
+        factions.Add(new FactionData("Faction2", "F2", Random.Range(1000000, 1500000), 0, 50, 1));
         StartSimulation();
     }
 
