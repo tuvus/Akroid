@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -282,13 +281,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void RemoveFleet(Fleet fleet) {
         fleets.Remove(fleet);
         factionAI.RemoveFleet(fleet);
+        unitGroups.Remove(fleet);
     }
 
     public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, HashSet<Unit> units) {
         GameObject newGroupObject = new GameObject(groupName);
         newGroupObject.transform.SetParent(GetGroupTransform());
         UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
-        newUnitGroup.SetupObjectGroup(battleManager, units, deleteWhenEmpty);
+        newUnitGroup.SetupObjectGroup(battleManager, units, deleteWhenEmpty, true);
         unitGroups.Add(newUnitGroup);
         return newUnitGroup;
     }

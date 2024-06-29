@@ -101,9 +101,11 @@ public class SimulationFactionAI : FactionAI {
             // Find any extra units that the fleet needs to defend against
             if (!defenseFleet.FleetAI.HasActionCommand()) {
                 for (int f = 0; f < faction.closeEnemyGroupsDistance.Count; f++) {
-                    if (faction.closeEnemyGroupsDistance[f] < faction.GetSize() * 1.6f) {
+                    if (faction.closeEnemyGroupsDistance[f] < faction.GetSize()) {
                         List<Unit> targetUnits = faction.closeEnemyGroups[f].battleObjects.ToList();
-                        Unit closestUnit = targetUnits.First();
+                        Unit closestUnit = targetUnits.FirstOrDefault(unit => !unit.IsStation() && unit.IsShip() && ((Ship)unit).IsCombatShip() && unit.IsTargetable()
+                            || Vector2.Distance(defenseFleet.GetPosition(), unit.GetPosition()) + defenseFleet.GetSize() <= defenseFleet.maxWeaponRange);
+                        if (closestUnit == null) continue;
                         float closestUnitDistance = Vector2.Distance(defenseFleet.GetPosition(), closestUnit.GetPosition());
                         for (int u = 0; u < targetUnits.Count; u++) {
                             float newUnitDistance = Vector2.Distance(defenseFleet.GetPosition(), targetUnits[u].GetPosition());

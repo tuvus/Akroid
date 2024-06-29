@@ -304,7 +304,7 @@ public class FleetAI : MonoBehaviour {
     }
 
     private CommandResult DoAttackMove(Command command, float deltaTime) {
-        if (newCommand) {
+        if (newCommand || fleet.AreShipsIdle()) {
             SetFleetAttackMovePosition(command.targetPosition);
             newCommand = false;
         }

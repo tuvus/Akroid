@@ -9,8 +9,8 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
     [field: SerializeField] public HashSet<T> battleObjects { get; private set; }
     [field: SerializeField] public Vector2 position { get; private set; }
     [field: SerializeField] public Vector2 averagePosition { get; private set; }
-    [field: SerializeField] public float size {  get; private set; }
-    bool deleteGroupWhenEmpty;
+    [field: SerializeField] public float size { get; private set; }
+    public bool deleteGroupWhenEmpty { get; private set; }
     //public Transform sizeIndicator { get; private set; }
 
     public virtual void SetupObjectGroup() {
