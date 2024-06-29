@@ -267,7 +267,7 @@ public class Ship : Unit {
                     shipAction = ShipAction.Dock;
                 }
             } else {
-                transform.Translate(Vector2.up * thrust);
+                transform.Translate(Vector2.up * thrust); // Most of ShipAction computation cost
                 velocity = transform.up * speed;
                 position = transform.position;
                 return;

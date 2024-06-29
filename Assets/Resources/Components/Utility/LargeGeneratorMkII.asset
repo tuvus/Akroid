@@ -18,5 +18,5 @@ MonoBehaviour:
   upgrade: {fileID: 11400000, guid: 84dcbf7f64b90164993a9d4faf77c35b, type: 2}
   consumptionSpeed: 4.5
   consumptionAmount: 300
-  energyGain: 1800
+  energyGain: 18000
   consumptionType: 2

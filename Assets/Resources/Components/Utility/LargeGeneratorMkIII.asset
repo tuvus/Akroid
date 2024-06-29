@@ -18,5 +18,5 @@ MonoBehaviour:
   upgrade: {fileID: 0}
   consumptionSpeed: 4
   consumptionAmount: 400
-  energyGain: 3000
+  energyGain: 30000
   consumptionType: 2

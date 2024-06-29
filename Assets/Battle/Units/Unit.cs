@@ -124,16 +124,14 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     protected virtual void UpdateWeapons(float deltaTime) {
+        Profiler.BeginSample("Weapons");
         foreach (var turret in turrets) {
-            Profiler.BeginSample("Turret");
             turret.UpdateTurret(deltaTime);
-            Profiler.EndSample();
         }
         foreach (var missileLauncher in missileLaunchers) {
-            Profiler.BeginSample("MissileLauncher");
             missileLauncher.UpdateMissileLauncher(deltaTime);
-            Profiler.EndSample();
         }
+        Profiler.EndSample();
     }
 
     public void UpdateUnitUI(bool showIndicators) {

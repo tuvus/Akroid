@@ -10,6 +10,7 @@ public class SimulationSetup : MonoBehaviour {
     [SerializeField] private InputField editSimulationStars;
     [SerializeField] private InputField editSimulationAsteroids;
     [SerializeField] private InputField editSimulationAsteroidCount;
+    [SerializeField] private InputField editSimulationGasClouds;
     [SerializeField] private InputField editSimulationSystemSizeModifier;
     [SerializeField] private InputField editSimulationResearchModifier;
     [SerializeField] private GameObject factionPrefab;
@@ -84,9 +85,10 @@ public class SimulationSetup : MonoBehaviour {
             editFactionPanel.SetActive(false);
             editSimulationStars.SetTextWithoutNotify(starCount.ToString());
             editSimulationAsteroids.SetTextWithoutNotify(asteroidFieldCount.ToString());
-            editSimulationAsteroidCount.SetTextWithoutNotify((asteroidCountModifier).ToString());
-            editSimulationSystemSizeModifier.SetTextWithoutNotify((systemSizeModifier).ToString());
-            editSimulationResearchModifier.SetTextWithoutNotify((researchModifier).ToString());
+            editSimulationAsteroidCount.SetTextWithoutNotify(asteroidCountModifier.ToString());
+            editSimulationGasClouds.SetTextWithoutNotify(gasCloudCount.ToString());
+            editSimulationSystemSizeModifier.SetTextWithoutNotify(systemSizeModifier.ToString());
+            editSimulationResearchModifier.SetTextWithoutNotify(researchModifier.ToString());
         }
     }
 
@@ -95,6 +97,7 @@ public class SimulationSetup : MonoBehaviour {
             starCount = int.Parse(editSimulationStars.text);
             asteroidFieldCount = int.Parse(editSimulationAsteroids.text);
             asteroidCountModifier = float.Parse(editSimulationAsteroidCount.text);
+            gasCloudCount = int.Parse(editSimulationGasClouds.text);
             systemSizeModifier = float.Parse(editSimulationSystemSizeModifier.text);
             researchModifier = float.Parse(editSimulationResearchModifier.text);
         } catch {
