@@ -51,6 +51,7 @@ public class Fleet : ShipGroup {
     }
 
     public void AddShip(Ship ship, bool setMinSpeed = true) {
+        if (ship.fleet != null) ship.fleet.RemoveShip(ship);
         base.AddShip(ship);
         ship.fleet = this;
         if (setMinSpeed)

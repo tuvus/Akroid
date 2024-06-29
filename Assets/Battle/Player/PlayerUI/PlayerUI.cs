@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -39,6 +40,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject shipUI;
     [SerializeField] private GameObject planetUI;
     [SerializeField] private GameObject factionOverviewUI;
+    [SerializeField] private LineRenderer commandRenderer;
 
 
     public bool showUnitZoomIndicators;
@@ -104,14 +106,31 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void UpdateDisplayedObjectUI(Fleet fleet, BattleObject battleObject, int unitCount) {
+        commandRenderer.enabled = false;
         if (battleObject == null || !battleObject.IsSpawned()) {
             objectStatusUI.DeselectPlayerObjectStatusUI();
-            //shipFuelCellsUI.DeleteFuelCellUI();
         } else if (battleObject.IsUnit()) {
-            if (fleet != null)
+            if (fleet != null) {
                 objectStatusUI.RefreshPlayerObjectStatusUI(fleet, (Unit)battleObject, unitCount);
-            else
+            } else {
                 objectStatusUI.RefreshPlayerObjectStatusUI((Unit)battleObject, unitCount);
+            }
+            if (battleObject.IsShip()) {
+                Ship ship = (Ship)battleObject;
+                if (ship.shipAI.commands.Count == 0) return;
+                List<Vector3> positions = ship.shipAI.GetMovementPositionPlan();
+                int targetCount = commandRenderer.positionCount;
+                if (targetCount > positions.Count) {
+                    while (positions.Count < targetCount) {
+                        positions.Add(positions.Last());
+                    }
+                } else if (positions.Count > targetCount) {
+                    positions = positions.GetRange(0, targetCount);
+                }
+                commandRenderer.widthMultiplier = localPlayerInput.GetCamera().orthographicSize / 100;
+                commandRenderer.SetPositions(positions.ToArray());
+                commandRenderer.enabled = true;
+            }
         } else if (battleObject.IsPlanet()) {
             objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
         } else if (battleObject.IsStar()) {

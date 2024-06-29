@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.UIElements;
 using static Command;
 
 public class ShipAI : MonoBehaviour {
@@ -166,7 +168,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished. </summary>
     CommandResult DoAttackMoveCommand(Command command, float deltaTime) {
         if (command.waitTime > 0)
@@ -232,7 +234,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Follows closest enemy ship then follows friendly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed. </summary>
     CommandResult DoProtectCommand(Command command, float deltaTime) {
         if (command.commandType == CommandType.Protect && command.protectUnit == null) {
@@ -306,7 +308,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished. </summary>
     CommandResult DoAttackMoveUnitCommand(Command command, float deltaTime) {
         if (command.waitTime > 0)
@@ -350,7 +352,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Attacks the fleet with this ship </summary>
     CommandResult DoAttackFleetCommand(Command command, float deltaTime) {
         if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
@@ -377,7 +379,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished. </summary>
     CommandResult DoFollowCommand(Command command, float deltaTime) {
         if (newCommand) {
@@ -393,7 +395,7 @@ public class ShipAI : MonoBehaviour {
         ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Follows the friendly ship in a formation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished. </summary>
     CommandResult DoFormationCommand(Command command, float deltaTime) {
         if (command.targetUnit == null) {
@@ -409,7 +411,7 @@ public class ShipAI : MonoBehaviour {
         transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
         return CommandResult.Continue;
     }
-    
+
     /// <summary> Follows the friendly ship in a formation relative to their rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished. </summary>
     CommandResult DoFormationLocationCommand(Command command, float deltaTime) {
         if (command.targetUnit == null) {
@@ -433,7 +435,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-    
+
     /// <summary> Goes to then docks at the station. </summary>
     CommandResult DoDockCommand(Command command, float deltaTime) {
         if (newCommand) {
@@ -570,14 +572,14 @@ public class ShipAI : MonoBehaviour {
                     currentCommandState = CommandType.Idle;
                     return CommandResult.StopRemove;
                 }
-                if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
-                if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.productionStation);
                     if (command.useAlternateCommandOnceDone)
                         currentCommandState = CommandType.Move;
@@ -587,7 +589,7 @@ public class ShipAI : MonoBehaviour {
                     currentCommandState = CommandType.Wait;
                 }
             } else {
-                if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
@@ -615,10 +617,10 @@ public class ShipAI : MonoBehaviour {
                 newCommand = false;
             }
             if (ship.dockedStation == command.productionStation) {
-                if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {
+                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     command.waitTime -= deltaTime;
                 }
-                if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
+                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
@@ -626,10 +628,10 @@ public class ShipAI : MonoBehaviour {
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
-                if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 0) {
+                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     command.waitTime -= deltaTime;
                 }
-                if (ship.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
+                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.productionStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
@@ -638,7 +640,7 @@ public class ShipAI : MonoBehaviour {
                 }
             } else {
                 command.waitTime = command.targetRotation;
-                if (ship.GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
@@ -649,7 +651,7 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
-#endregion
+    #endregion
 
 
     #region HelperMethods
@@ -712,6 +714,46 @@ public class ShipAI : MonoBehaviour {
             }
         }
         return targetUnit;
+    }
+
+    public List<Vector3> GetMovementPositionPlan() {
+        List<Vector3> positions = new() { ship.GetPosition() };
+
+        foreach (var command in ship.shipAI.commands) {
+            if (command.commandType == Command.CommandType.Research) {
+                if (currentCommandState == CommandType.Dock) {
+                    positions.Add(command.destinationStation.GetPosition());
+                } else {
+                    positions.Add(command.targetStar.GetPosition());
+                }
+            } else if (command.commandType == CommandType.CollectGas) {
+                if (currentCommandState == CommandType.Dock) {
+                    positions.Add(command.destinationStation.GetPosition());
+                } else {
+                    positions.Add(command.targetGasCloud.GetPosition());
+                }
+            } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
+                || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition) {
+
+            } else if (command.commandType == CommandType.Dock) {
+                positions.Add(command.destinationStation.GetPosition());
+            } else if (command.commandType == CommandType.Transport || command.commandType == CommandType.TransportDelay) { 
+                if (commands.First() == command) {
+                    if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                        positions.Add(command.destinationStation.GetPosition());
+                        positions.Add(command.productionStation.GetPosition());
+                    } else {
+                        positions.Add(command.productionStation.GetPosition());
+                        positions.Add(command.destinationStation.GetPosition());
+                    }
+                } else {
+                    positions.Add(command.destinationStation.GetPosition());
+                }
+            } else {
+                positions.Add(command.targetPosition);
+            }
+        }
+        return positions;
     }
     #endregion
 }
