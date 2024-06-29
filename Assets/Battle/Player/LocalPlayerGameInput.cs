@@ -19,6 +19,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     protected override void PrimaryMouseDown() {
+        if (actionType != ActionType.None) doingUnitClickAction = true;
         base.PrimaryMouseDown();
         switch (actionType) {
             case ActionType.MoveCommand:
@@ -77,6 +78,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     protected override void PrimaryMouseUp() {
         base.PrimaryMouseUp();
+        doingUnitClickAction = false;
     }
 
     protected override void AdditiveButtonUp() {

@@ -44,6 +44,9 @@ public class LocalPlayerInput : MonoBehaviour {
     protected BattleObject rightClickedBattleObject;
     protected Unit followUnit;
 
+    /// <summary>Determines if the unit should be deselected on mouse up</summary>
+    protected bool doingUnitClickAction;
+
     private int[] timeSteps = new int[] { 0, 1, 2, 5, 10, 15, 20, 25 };
     int timeStepIndex;
 
@@ -74,6 +77,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
         playerInput.Enable();
         timeStepIndex = 1;
+        doingUnitClickAction = false;
     }
 
     public virtual void ChangeFaction() {
@@ -173,9 +177,10 @@ public class LocalPlayerInput : MonoBehaviour {
         primaryMousePressed = false;
         if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
             return;
-        displayedBattleObject = null;
-        if (leftClickedBattleObject != null) {
+        if (leftClickedBattleObject != null && !doingUnitClickAction) {
             displayedBattleObject = leftClickedBattleObject;
+        } else if (!doingUnitClickAction) {
+            displayedBattleObject = null;
         }
     }
 
