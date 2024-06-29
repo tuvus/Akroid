@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Hanger : ModuleComponent {
     HangerScriptableObject hangerScriptableObject;
-    Station station;
     public List<Ship> ships { get; private set; }
     [SerializeField] int dockSpace;
 
@@ -14,9 +13,8 @@ public class Hanger : ModuleComponent {
         hangerScriptableObject = (HangerScriptableObject)componentScriptableObject;
     }
 
-    public void SetupHanger(Station station) {
+    public void SetupHanger() {
         ships = new List<Ship>(hangerScriptableObject.maxDockSpace);
-        this.station = station;
     }
 
     public bool DockShip(Ship ship) {

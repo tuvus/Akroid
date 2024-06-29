@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: FleetCommand
   m_EditorClassIdentifier: 
-  cost: 141968
+  cost: 138435
   resourceTypes: 01000000
-  resourceCosts: cc55000000000000
+  resourceCosts: 0e5a000000000000
   prefabPath: Prefabs/StationPrefabs/FleetCommand
   unitName: FleetCommand
   maxHealth: 13000
@@ -54,6 +54,9 @@ MonoBehaviour:
   - name: Utility
     moduleCount: 1
     component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: c894325743034634288ca3b5d5112419, type: 2}
   stationType: 1
   repairAmount: 1000
   repairSpeed: 10

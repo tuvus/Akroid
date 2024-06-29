@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/HangerScriptableObject", menuName = "Components/Hanger", order = 1)]
+[CreateAssetMenu(fileName = "Resources/Components/HangerScriptableObject", menuName = "Components/Hanger", order = 27)]
 public class HangerScriptableObject : ComponentScriptableObject {
     public int maxDockSpace;
 

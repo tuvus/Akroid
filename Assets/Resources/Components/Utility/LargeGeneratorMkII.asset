@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce55ecfff370aa449ebeef28c343063, type: 3}
+  m_Name: LargeGeneratorMkII
+  m_EditorClassIdentifier: 
+  cost: 1133
+  resourceTypes: 01000000
+  resourceCosts: dc05000000000000
+  upgrade: {fileID: 11400000, guid: 84dcbf7f64b90164993a9d4faf77c35b, type: 2}
+  consumptionSpeed: 4.5
+  consumptionAmount: 300
+  energyGain: 1800
+  consumptionType: 2

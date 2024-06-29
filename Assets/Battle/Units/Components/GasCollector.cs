@@ -9,6 +9,7 @@ public class GasCollector : ModuleComponent {
     float collectionTime;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
     }
 

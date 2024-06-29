@@ -16,6 +16,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     private UnitSelection unitSelection;
     protected List<Collider2D> colliders;
     private ShieldGenerator shieldGenerator;
+    protected List<Generator> generators;
     protected List<CargoBay> cargoBays;
     protected List<Turret> turrets;
     protected List<MissileLauncher> missileLaunchers;
@@ -45,18 +46,16 @@ public abstract class Unit : BattleObject, IParticleHolder {
         destroyEffect = GetComponentInChildren<DestroyEffect>();
         destroyEffect.SetupDestroyEffect(this, spriteRenderer);
         shieldGenerator = GetComponentInChildren<ShieldGenerator>();
+        generators = new List<Generator>(GetComponentsInChildren<Generator>());
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
-        foreach (var turret in turrets) {
-            turret.SetupTurret(this);
-        }
-        foreach (var missileLauncher in missileLaunchers) {
-            missileLauncher.SetupMissileLauncher(this);
-        }
+        turrets.ForEach(turret => turret.SetupTurret(this));
+        missileLaunchers.ForEach(missileLauncher => missileLauncher.SetupMissileLauncher(this));
         SetupWeaponRanges();
         if (shieldGenerator != null)
             shieldGenerator.SetupShieldGenerator(this);
+        generators.ForEach(generator => generator.SetupGenerator(this));
         unitSelection.SetupSelection(this);
         SetParticleSpeed(particleSpeed);
         followDist = (int)(GetSize() * 2);
@@ -83,6 +82,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
             if (shieldGenerator != null) {
                 shieldGenerator.UpdateShieldGenerator(deltaTime);
             }
+            generators.ForEach(generator => generator.UpdateGenerator(deltaTime));
         }
     }
 

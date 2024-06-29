@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: Shipyard
   m_EditorClassIdentifier: 
-  cost: 104587
+  cost: 97160
   resourceTypes: 01000000
-  resourceCosts: f846000000000000
+  resourceCosts: 5749000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   unitName: Shipyard
   maxHealth: 9000
@@ -39,16 +39,24 @@ MonoBehaviour:
   - name: Utility
     component: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
   systems:
-  - name: LowerBottomTurret
+  - name: LowerTurrets
+    moduleCount: 3
     component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: UpperTopTurret
+  - name: UpperTurrets
+    moduleCount: 3
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
   - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
   - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
   - name: Utility
+    moduleCount: 1
     component: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: c894325743034634288ca3b5d5112419, type: 2}
   stationType: 4
   repairAmount: 500
   repairSpeed: 5

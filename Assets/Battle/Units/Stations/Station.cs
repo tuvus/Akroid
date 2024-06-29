@@ -83,7 +83,7 @@ public class Station : Unit, IPositionConfirmer {
         hanger = GetComponentInChildren<Hanger>();
         cargoBay = GetComponentInChildren<CargoBay>();
         stationAI.SetupStationAI(this);
-        hanger.SetupHanger(this);
+        hanger.SetupHanger();
         this.built = built;
         if (!built) {
             faction.AddStationBlueprint(this);

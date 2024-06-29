@@ -267,7 +267,7 @@ public class SimulationFactionAI : FactionAI {
             }
             if (randomNumber < 20) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.Research), "Science Ship"));
-            } else if (randomNumber < 25) {
+            } else if (randomNumber < 30) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.GasCollector), "Gas Collector"));
             } else if (randomNumber < 50) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));

@@ -169,6 +169,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 }
             }
         }
+        for (int i = 0; i < math.min(shipCount, 3); i++) {
+            GetFleetCommand().BuildShip(Ship.ShipType.GasCollector);
+            shipCount--;
+        }
         for (int i = 0; i < shipCount; i++) {
             if (GetFleetCommand() != null) {
                 int randomNum = Random.Range(0, 10);

@@ -9,6 +9,7 @@ public class ResearchEquipment : ModuleComponent {
     float researchTime;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, componentScriptableObject);
         researchEquipmentScriptableObject = (ResearchEquipmentScriptableObject)componentScriptableObject;
     }
 
