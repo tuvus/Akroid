@@ -719,15 +719,18 @@ public class ShipAI : MonoBehaviour {
     public List<Vector3> GetMovementPositionPlan() {
         List<Vector3> positions = new() { ship.GetPosition() };
 
-        foreach (var command in ship.shipAI.commands) {
+        foreach (var command in commands) {
             if (command.commandType == Command.CommandType.Research) {
                 if (currentCommandState == CommandType.Dock) {
+                    if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
                 } else {
-                    positions.Add(command.targetStar.GetPosition());
+                    positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetStar.GetPosition(), 
+                        Vector2.Distance(ship.GetPosition(), command.targetStar.GetPosition()) - (ship.GetSize() + command.targetStar.GetSize() * 2)));
                 }
             } else if (command.commandType == CommandType.CollectGas) {
                 if (currentCommandState == CommandType.Dock) {
+                    if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
                 } else {
                     positions.Add(command.targetGasCloud.GetPosition());
@@ -735,19 +738,34 @@ public class ShipAI : MonoBehaviour {
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
                 || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition) {
 
+            } else if (command.commandType == CommandType.Protect) {
+                if (command.protectUnit == null) continue;
+                positions.Add(command.protectUnit.GetPosition());
+            } else if (command.commandType == CommandType.AttackMoveUnit) {
+                if (command.targetUnit == null) continue;
+                positions.Add(command.targetUnit.GetPosition());
+            } else if (command.commandType == CommandType.AttackFleet) {
+                if (command.targetFleet == null) continue;
+                positions.Add(command.targetFleet.GetPosition());
             } else if (command.commandType == CommandType.Dock) {
+                if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
             } else if (command.commandType == CommandType.Transport || command.commandType == CommandType.TransportDelay) { 
                 if (commands.First() == command) {
                     if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
-                        positions.Add(command.destinationStation.GetPosition());
-                        positions.Add(command.productionStation.GetPosition());
+                        if (command.destinationStation != null)
+                            positions.Add(command.destinationStation.GetPosition());
+                        if (command.productionStation != null)
+                            positions.Add(command.productionStation.GetPosition());
                     } else {
-                        positions.Add(command.productionStation.GetPosition());
-                        positions.Add(command.destinationStation.GetPosition());
+                        if (command.productionStation != null)
+                            positions.Add(command.productionStation.GetPosition());
+                        if (command.destinationStation != null)
+                            positions.Add(command.destinationStation.GetPosition());
                     }
                 } else {
-                    positions.Add(command.destinationStation.GetPosition());
+                    if (command.destinationStation != null)
+                        positions.Add(command.destinationStation.GetPosition());
                 }
             } else {
                 positions.Add(command.targetPosition);
