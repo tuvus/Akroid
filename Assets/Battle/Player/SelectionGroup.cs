@@ -346,4 +346,12 @@ public class SelectionGroup {
         }
         return true;
     }
+
+    public bool ContainsOnlyGasCollectionShips() {
+        for (int i = 0; i < objects.Count; i++) {
+            if (!objects[i].IsShip() || !((Ship)objects[i]).IsGasCollectorShip())
+                return false;
+        }
+        return true;
+    }
 }

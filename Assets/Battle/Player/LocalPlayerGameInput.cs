@@ -73,6 +73,11 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 GenerateResearchCommand();
                 actionType = ActionType.None;
                 break;
+            case ActionType.CollectGasCommand:
+                SelectOnlyControllableUnits();
+                GenerateCollectGasCommand();
+                actionType = ActionType.None;
+                break;
         }
     }
 
@@ -121,6 +126,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 actionType = ActionType.StationBuilderCommand;
             } else if (selectedUnits.ContainsOnlyScienceShips()) {
                 actionType = ActionType.ResearchCommand;
+            } else if (selectedUnits.ContainsOnlyGasCollectionShips()) {
+                actionType = ActionType.CollectGasCommand;
             } else {
                 actionType = ActionType.FormationCommand;
             }
@@ -271,6 +278,27 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             }
         }
     }
+
+    void GenerateCollectGasCommand() {
+        Vector2 mousePos = GetMouseWorldPosition();
+        GasCloud closestGasCloud = null;
+        float closestGasCloudDistance = 0;
+        foreach (GasCloud star in BattleManager.Instance.gasClouds) {
+            float newStarDistance = Vector2.Distance(mousePos, star.position);
+            if (closestGasCloud == null || newStarDistance < closestGasCloudDistance) {
+                closestGasCloud = star;
+                closestGasCloudDistance = newStarDistance;
+            }
+        }
+        List<Ship> allShips = selectedUnits.GetAllShips();
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsGasCollectorShip()) {
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateCollectGasCommand(closestGasCloud, LocalPlayer.Instance.faction.GetFleetCommand()), GetCommandAction());
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+            }
+        }
+    }
+
 
     void ClearCommands() {
         if (LocalPlayer.Instance.ownedUnits == null)

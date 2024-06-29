@@ -21,6 +21,7 @@ public class LocalPlayerInput : MonoBehaviour {
         UndockAllCombatCommand,
         StationBuilderCommand,
         ResearchCommand,
+        CollectGasCommand,
     }
     [SerializeField] protected ActionType actionType;
 
