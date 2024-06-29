@@ -18,16 +18,18 @@ public class GasCollector : ModuleComponent {
         collectionTime = gasCollectorScriptableObject.collectionSpeed;
     }
 
+
+    /// <returns>False if we are finished collecting gas, true otherwise</returns>
     public bool CollectGas(GasCloud gasCloud, float deltaTime) {
         collectionTime -= deltaTime;
         if (collectionTime <= 0) {
-            if (unit.LoadCargo(gasCollectorScriptableObject.collectionAmount, CargoBay.CargoTypes.Gas) > 0) {
+            if (unit.LoadCargo(gasCloud.CollectGas(gasCollectorScriptableObject.collectionAmount), CargoBay.CargoTypes.Gas) > 0) {
                 collectionTime = gasCollectorScriptableObject.collectionSpeed;
-                return true;
+                return false;
             }
             collectionTime += gasCollectorScriptableObject.collectionSpeed;
         }
-        return false;
+        return true;
     }
 
     public bool WantsMoreGas() {

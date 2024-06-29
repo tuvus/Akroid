@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class Asteroid : BattleObject, IPositionConfirmer {
     private AsteroidField asteroidField;
-    public int resources;
+    public long resources;
     public CargoBay.CargoTypes asteroidType;
 
     public struct AsteroidData {
-        public Vector2 position;
         public float rotation;
         public float size;
-        public int resources;
+        public long resources;
         public CargoBay.CargoTypes asteroidType;
 
-        public AsteroidData(Vector2 position, float rotation, float size, int resources, CargoBay.CargoTypes asteroidType) {
-            this.position = position;
+        public AsteroidData(float rotation, float size, long resources, CargoBay.CargoTypes asteroidType) {
             this.rotation = rotation;
             this.size = size;
             this.resources = resources;
@@ -27,7 +25,6 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
         this.asteroidField = asteroidField;
         base.SetupBattleObject(battleManager, positionGiver, asteroidData.rotation);
-        this.position = asteroidData.position;
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;
@@ -62,15 +59,15 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     /// <summary>
     /// Returns the ammount mined.
     /// </summary>
-    /// <param name="ammount"></param>
+    /// <param name="amount"></param>
     /// <returns></returns>
-    public int MineAsteroid(int ammount) {
-        if (resources > ammount) {
-            resources -= ammount;
-            asteroidField.totalResources -= ammount;
-            return ammount;
+    public long MineAsteroid(long amount) {
+        if (resources > amount) {
+            resources -= amount;
+            asteroidField.totalResources -= amount;
+            return amount;
         }
-        int returnValue = resources;
+        long returnValue = resources;
         asteroidField.totalResources -= resources;
         resources = 0;
         return returnValue;

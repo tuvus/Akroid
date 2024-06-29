@@ -19,17 +19,18 @@ public class ResearchEquipment : ModuleComponent {
         data = 0;
     }
 
+    /// <returns>False if we done collecting data, true otherwise</returns>
     public bool GatherData(Star star, float time) {
         researchTime -= time;
         if (researchTime <= 0) {
             data = Mathf.Min(researchEquipmentScriptableObject.maxData, data + researchEquipmentScriptableObject.researchAmount);
             if (data == researchEquipmentScriptableObject.maxData) {
                 researchTime = researchEquipmentScriptableObject.researchSpeed;
-                return true;
+                return false;
             }
             researchTime += researchEquipmentScriptableObject.researchSpeed;
         }
-        return false;
+        return true;
     }
 
     public int DownloadData() {

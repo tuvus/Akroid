@@ -658,6 +658,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         GasCloud closestGasCloud = null;
         float distance = 0;
         foreach (var gasCloud in battleManager.gasClouds) {
+            if (gasCloud.resources <= 0) continue;
             float targetDistance = Vector2.Distance(position, gasCloud.position);
             if (closestGasCloud == null || targetDistance < distance) {
                 closestGasCloud = gasCloud;

@@ -484,8 +484,7 @@ public class ShipAI : MonoBehaviour {
                 currentCommandState = CommandType.Research;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Research) {
-                ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime);
-                if (!ship.GetResearchEquiptment().WantsMoreData()) {
+                if (!ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime)) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 }
@@ -527,8 +526,8 @@ public class ShipAI : MonoBehaviour {
                 currentCommandState = CommandType.CollectGas;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.CollectGas) {
-                ship.GetGasCollector().CollectGas(command.targetGasCloud, deltaTime);
-                if (!ship.GetGasCollector().WantsMoreGas()) {
+                if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
+                if (!ship.GetGasCollector().CollectGas(command.targetGasCloud, deltaTime)) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 }
@@ -538,6 +537,7 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Wait) {
                 if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
+                    if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
                     ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
                     currentCommandState = CommandType.Move;
                 }

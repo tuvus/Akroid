@@ -109,6 +109,11 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewAsteroidField(new PositionGiver(Vector2.zero, 1500, 100000, 20000, 300, 1), Random.Range(8, 10), 10);
         }
 
+        int gasFieldCount = Random.Range(8, 14);
+        for (int i = 0; i < gasFieldCount; i++) {
+            battleManager.CreateNewGasCloud(new PositionGiver(Vector2.zero, 10000, 100000, 20000, 1000, 3));
+        }
+
 
         planet.AddFactionTerritoryForceFraction(planetFaction, Random.Range(0.01f, 0.05f), Random.Range(30.0f, 50.0f), "Increases space production");
         Faction planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);

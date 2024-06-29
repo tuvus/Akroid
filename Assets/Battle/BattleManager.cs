@@ -321,7 +321,7 @@ public class BattleManager : MonoBehaviour {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(8f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(newAsteroidField.GetPosition(), Random.Range(0, 360), size, (int)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
+            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData(Random.Range(0, 360), size, (long)(Random.Range(100, 1000) * size * resourceModifier), CargoBay.CargoTypes.Metal));
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
         // The Asteroid field position must be set after the asteroids have been generated
@@ -329,10 +329,11 @@ public class BattleManager : MonoBehaviour {
         asteroidFields.Add(newAsteroidField);
     }
 
-    public void CreateNewGasCloud(PositionGiver positionGiver) {
+    public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
         GasCloud newGasCloud = Instantiate(gasCloudPrefab, Vector2.zero, Quaternion.identity, GetGasCloudsTransform()).GetComponent<GasCloud>();
-        newGasCloud.SetupGasCloud(this, positionGiver);
+        float size = Random.Range(25, 35);
+        newGasCloud.SetupGasCloud(this, positionGiver, new GasCloud.GasCloudData(Random.Range(0,360), size, (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas));
         gasClouds.Add(newGasCloud);
     }
     #endregion
