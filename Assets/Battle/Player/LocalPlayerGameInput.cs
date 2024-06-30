@@ -97,9 +97,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             return;
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
-            actionType = ActionType.UndockCombatAtCommand;
+            ToggleActionType(ActionType.UndockCombatAtCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
-            actionType = ActionType.MoveCommand;
+            ToggleActionType(ActionType.MoveCommand);
         }
     }
 
@@ -108,9 +108,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             return;
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
-            actionType = ActionType.UndockTransportAtCommand;
+            ToggleActionType(ActionType.UndockTransportAtCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
-            actionType = ActionType.AttackCommand;
+            ToggleActionType(ActionType.AttackCommand);
         }
     }
 
@@ -120,17 +120,25 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
-            actionType = ActionType.UndockAllCombatCommand;
+            ToggleActionType(ActionType.UndockAllCombatCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
             if (selectedUnits.ContainsOnlyConstructionShips()) {
-                actionType = ActionType.StationBuilderCommand;
+                ToggleActionType(ActionType.StationBuilderCommand);
             } else if (selectedUnits.ContainsOnlyScienceShips()) {
-                actionType = ActionType.ResearchCommand;
+                ToggleActionType(ActionType.ResearchCommand);
             } else if (selectedUnits.ContainsOnlyGasCollectionShips()) {
-                actionType = ActionType.CollectGasCommand;
+                ToggleActionType(ActionType.CollectGasCommand);
             } else {
-                actionType = ActionType.FormationCommand;
+                ToggleActionType(ActionType.FormationCommand);
             }
+        }
+    }
+
+    private void ToggleActionType(ActionType newActionType) {
+        if (actionType == newActionType) {
+            actionType = ActionType.None;
+        } else {
+            actionType = newActionType;
         }
     }
 
