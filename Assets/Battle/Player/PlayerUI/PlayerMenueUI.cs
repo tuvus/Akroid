@@ -73,4 +73,8 @@ public class PlayerMenueUI : MonoBehaviour {
         BattleManager.Instance.SetSimulationTimeScale(menueUITimeScale.value / 10f);
         timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
     }
+
+    public void ResetBattleTimeScale() {
+        menueUITimeScale.value = 10;
+    }
 }
