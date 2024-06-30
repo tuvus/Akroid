@@ -332,26 +332,18 @@ public class SelectionGroup {
     }
 
     public bool ContainsOnlyConstructionShips() {
-        for(int i = 0;i < objects.Count;i++) {
-            if (!objects[i].IsShip() || !((Ship)objects[i]).IsConstructionShip())
-                return false;
-        }
-        return true;
+        return objects.All(obj => obj.IsShip() && ((Ship)obj).IsConstructionShip());
     }
 
     public bool ContainsOnlyScienceShips() {
-        for (int i = 0; i < objects.Count; i++) {
-            if (!objects[i].IsShip() || !((Ship)objects[i]).IsScienceShip())
-                return false;
-        }
-        return true;
+        return objects.All(obj => obj.IsShip() && ((Ship)obj).IsScienceShip());
     }
 
     public bool ContainsOnlyGasCollectionShips() {
-        for (int i = 0; i < objects.Count; i++) {
-            if (!objects[i].IsShip() || !((Ship)objects[i]).IsGasCollectorShip())
-                return false;
-        }
-        return true;
+        return objects.All(obj => obj.IsShip() && ((Ship)obj).IsGasCollectorShip());
+    }
+
+    public bool ContainsOntlyTransportShips() {
+        return objects.All(obj => obj.IsShip() && ((Ship)obj).IsTransportShip());
     }
 }

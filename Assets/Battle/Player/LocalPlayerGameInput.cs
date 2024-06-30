@@ -78,6 +78,11 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 GenerateCollectGasCommand();
                 actionType = ActionType.None;
                 break;
+            case ActionType.TransportCommand:
+                SelectOnlyControllableUnits();
+                GenerateTransportCommand();
+                actionType = ActionType.None;
+                break;
         }
     }
 
@@ -128,6 +133,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 ToggleActionType(ActionType.ResearchCommand);
             } else if (selectedUnits.ContainsOnlyGasCollectionShips()) {
                 ToggleActionType(ActionType.CollectGasCommand);
+            } else if (selectedUnits.ContainsOntlyTransportShips()) {
+                ToggleActionType(ActionType.TransportCommand);
             } else {
                 ToggleActionType(ActionType.FormationCommand);
             }
@@ -291,17 +298,37 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         Vector2 mousePos = GetMouseWorldPosition();
         GasCloud closestGasCloud = null;
         float closestGasCloudDistance = 0;
-        foreach (GasCloud star in BattleManager.Instance.gasClouds) {
-            float newStarDistance = Vector2.Distance(mousePos, star.position);
-            if (closestGasCloud == null || newStarDistance < closestGasCloudDistance) {
-                closestGasCloud = star;
-                closestGasCloudDistance = newStarDistance;
+        foreach (GasCloud gasCloud in BattleManager.Instance.gasClouds) {
+            float newGasCloud = Vector2.Distance(mousePos, gasCloud.position);
+            if (closestGasCloud == null || newGasCloud < closestGasCloudDistance) {
+                closestGasCloud = gasCloud;
+                closestGasCloudDistance = newGasCloud;
             }
         }
         List<Ship> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].IsGasCollectorShip()) {
                 allShips[i].shipAI.AddUnitAICommand(Command.CreateCollectGasCommand(closestGasCloud, LocalPlayer.Instance.faction.GetFleetCommand()), GetCommandAction());
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+            }
+        }
+    }
+
+    void GenerateTransportCommand() {
+        Vector2 mousePos = GetMouseWorldPosition();
+        Station closestProductionStation = null;
+        float closestStationDistance = 0;
+        foreach (Station station in LocalPlayer.Instance.GetFaction().stations) {
+            float newStationDistance = Vector2.Distance(mousePos, station.position);
+            if (closestProductionStation == null || newStationDistance < closestStationDistance) {
+                closestProductionStation = station;
+                closestStationDistance = newStationDistance;
+            }
+        }
+        List<Ship> allShips = selectedUnits.GetAllShips();
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsTransportShip()) {
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(closestProductionStation, LocalPlayer.Instance.GetFaction().GetFleetCommand()), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }
