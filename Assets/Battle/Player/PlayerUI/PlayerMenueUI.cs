@@ -10,6 +10,7 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
     [SerializeField] private Toggle menueUIEffects;
     [SerializeField] private Toggle menueUIParticles;
+    [SerializeField] private Toggle menueUICommandRenderer;
     [SerializeField] private Dropdown menueUIFactionSelect;
     [SerializeField] private Text timeScaleText;
     [SerializeField] private Slider menueUITimeScale;
@@ -59,6 +60,10 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void SetParticles() {
         playerUI.SetParticles(menueUIParticles.isOn);
+    }
+
+    public void SetCommandRenderer() {
+        playerUI.SetCommandRenderer(menueUICommandRenderer.isOn);
     }
 
     public void ChangeFaction() {

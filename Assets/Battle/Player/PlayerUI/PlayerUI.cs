@@ -48,6 +48,7 @@ public class PlayerUI : MonoBehaviour {
     public bool updateUnitZoomIndicators;
     public bool effects;
     public bool particles;
+    private bool commandRendererShown;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         Instance = this;
@@ -59,6 +60,7 @@ public class PlayerUI : MonoBehaviour {
         showUnitCombatIndicators = true;
         effects = true;
         particles = true;
+        commandRendererShown = true;
         playerCommsManager.SetupPlayerCommsManager(this);
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
@@ -115,7 +117,7 @@ public class PlayerUI : MonoBehaviour {
             } else {
                 objectStatusUI.RefreshPlayerObjectStatusUI((Unit)battleObject, unitCount);
             }
-            if (battleObject.IsShip()) {
+            if (commandRendererShown && battleObject.IsShip()) {
                 Ship ship = (Ship)battleObject;
                 if (ship.shipAI.commands.Count == 0) return;
                 List<Vector3> positions;
@@ -299,6 +301,13 @@ public class PlayerUI : MonoBehaviour {
 
     public bool ShowUnitCombatIndicators() {
         return showUnitCombatIndicators;
+    }
+
+    public void SetCommandRenderer(bool shown) {
+        commandRendererShown = shown;
+        if (!shown) {
+            commandRenderer.enabled = false;
+        }
     }
     #endregion
 
