@@ -19,7 +19,9 @@ public class PlayerPlanetUI : MonoBehaviour {
     [SerializeField] Text planetFactionName;
     [SerializeField] Text planetType;
     [SerializeField] Text planetPopulation;
-    [SerializeField] Text percentLand;
+    [SerializeField] Text highQualityPercentLand;
+    [SerializeField] Text mediumQualityPercentLand;
+    [SerializeField] Text lowQualityPercentLand;
     [SerializeField] Text planetAreas;
 
     [SerializeField] Transform planetFactionsList;
@@ -53,8 +55,10 @@ public class PlayerPlanetUI : MonoBehaviour {
                 planetFactionName.text = "Faction" + "Unowned";
             }
             planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedPlanet.population);
-            percentLand.text = "Land Percent: " + (Mathf.RoundToInt(displayedPlanet.landFactor * 10000) / 100).ToString() + "%";
-            planetAreas.text = "Areas: " + NumFormatter.ConvertNumber(displayedPlanet.areas);
+            highQualityPercentLand.text = "High Quality Land: " + (displayedPlanet.areas.highQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
+            mediumQualityPercentLand.text = "Medium Quality Land: " + (displayedPlanet.areas.mediumQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
+            lowQualityPercentLand.text = "Low Quality Land: " + (displayedPlanet.areas.lowQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
+            planetAreas.text = "Areas: " + NumFormatter.ConvertNumber(displayedPlanet.totalArea);
         }
         if (planetFactionsUI.activeSelf) {
             UpdatePlanetFactions();
@@ -78,8 +82,8 @@ public class PlayerPlanetUI : MonoBehaviour {
                 constructionBayButtonTransform.GetChild(0).GetChild(1).GetComponent<Text>().text = "";
             }
             constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<Text>().text = "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
-            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Territory: " + NumFormatter.ConvertNumber(planetFaction.territory);
-            constructionBayButtonTransform.GetChild(1).GetChild(2).GetComponent<Text>().text = (planetFaction.territory * 100 / displayedPlanet.areas).ToString() + "%";
+            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<Text>().text = "Territory: " + NumFormatter.ConvertNumber(planetFaction.territory.GetTotalAreas());
+            constructionBayButtonTransform.GetChild(1).GetChild(2).GetComponent<Text>().text = (planetFaction.territory.GetTotalAreas() * 100 / displayedPlanet.areas.GetTotalAreas()).ToString() + "%";
             constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<Text>().text = planetFaction.special;
             constructionBayButtonTransform.GetChild(0).GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));
             i++;

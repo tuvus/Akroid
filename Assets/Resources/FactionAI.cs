@@ -28,8 +28,8 @@ public class FactionAI : MonoBehaviour {
         foreach (Faction enemy in faction.enemyFactions) {
             foreach (Planet planet in faction.planets) {
                 Planet.PlanetFaction planetFaction = planet.planetFactions[faction];
-                if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) && planet.planetFactions[enemy].territory > 0) {
-                    planet.planetFactions[faction].FightFactionForTerritory(enemy, math.max(1, (long)(planetFaction.force / (math.max(1, planetFaction.territory) * .6d))), deltaTime);
+                if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) && planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
+                    planet.planetFactions[faction].FightFactionForTerritory(enemy, .05f, deltaTime);
                 }
             }
         }

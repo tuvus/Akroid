@@ -56,7 +56,7 @@ public class Chapter1 : CampaingController {
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet("Home", planetFaction, new BattleManager.PositionGiver(planetFaction.GetPosition()), (long)Random.Range(500, 600) * 100000000, Random.Range(0.4f,0.6f));
+        planet = battleManager.CreateNewPlanet(new BattleManager.PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), (long)Random.Range(500, 600) * 100000000, 0.01, Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
         tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
@@ -115,15 +115,15 @@ public class Chapter1 : CampaingController {
         }
 
 
-        planet.AddFactionTerritoryForceFraction(planetFaction, Random.Range(0.01f, 0.05f), Random.Range(30.0f, 50.0f), "Increases space production");
+        planet.AddFaction(planetFaction, Random.Range(0.01f, 0.05f), Random.Range(30.0f, 50.0f), "Increases space production");
         Faction planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFactionTerritoryForceFraction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(8.0f, 10.0f), "Increases unit production");
+        planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(8.0f, 10.0f), "Increases unit production");
         Faction planetDemocracy = battleManager.CreateNewFaction(new Faction.FactionData("Democracy", "DEM", 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFactionTerritoryForceFraction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(6f, 11f), "Increases mining speed");
+        planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(6f, 11f), "Increases mining speed");
         Faction planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFactionTerritoryForceFraction(planetOligarchy, Random.Range(0.70f, 0.80f), Random.Range(4f, 6f), "Increases research rate");
+        planet.AddFaction(planetOligarchy, Random.Range(0.70f, 0.80f), Random.Range(4f, 6f), "Increases research rate");
         Faction minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFactionTerritoryForceFraction(minorFactions, Random.Range(0.70f, 0.80f), Random.Range(2f, 3f), "All base stats improved a little");
+        planet.AddFaction(minorFactions, Random.Range(0.70f, 0.80f), Random.Range(2f, 3f), "All base stats improved a little");
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
         LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
