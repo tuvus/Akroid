@@ -15,6 +15,7 @@ public class PlanetFactionAI : FactionAI {
     List<Station> friendlyStations;
 
     float updateTime;
+    float sellMetalToPlanetTime;
     long metalOrder;
     float timeUntilNextCommunication;
     State planetFactionState;
@@ -47,9 +48,10 @@ public class PlanetFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
         updateTime -= deltaTime;
+        sellMetalToPlanetTime -= deltaTime;
         if (updateTime <= 0) {
             updateTime += 10;
-            faction.AddCredits(planet.GetPopulation() / 50000000);
+            faction.AddCredits(planet.GetPopulation() / 10000000);
             if (tradeStation != null && tradeStation.IsSpawned()) {
                 UpdateTradeStation();
             }
@@ -135,6 +137,10 @@ public class PlanetFactionAI : FactionAI {
                 //}
             }
             count++;
+        }
+        if (sellMetalToPlanetTime <= 0) {
+            faction.AddCredits((long)((100 - tradeStation.UseCargo(100, CargoBay.CargoTypes.Metal)) * chapter1.GetMetalCost()));
+            sellMetalToPlanetTime += 10;
         }
         if (faction.credits > 200000 * (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) && 7 < faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             if (faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction) < 3) {

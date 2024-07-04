@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c134b8b1fe31645448f971a0e5677516, type: 3}
-  m_Name: ConstructionBayMkIII
+  m_Name: MediumConstructionBayMkIII
   m_EditorClassIdentifier: 
   cost: 3749
   resourceTypes: 01000000
