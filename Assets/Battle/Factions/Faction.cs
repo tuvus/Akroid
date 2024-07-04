@@ -209,8 +209,13 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     #region ObjectListControlls
-    public void AddEnemyFaction(Faction faction) {
-        enemyFactions.Add(faction);
+    public void StartWar(Faction otherFaction) {
+        AddEnemyFaction(otherFaction);
+        otherFaction.AddEnemyFaction(this);
+    }
+
+    public void AddEnemyFaction(Faction otherFaction) {
+        enemyFactions.Add(otherFaction);
         if (LocalPlayer.Instance.faction == this) {
             LocalPlayer.Instance.UpdateFactionColors();
         }

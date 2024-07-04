@@ -56,16 +56,18 @@ public class Planet : BattleObject, IPositionConfirmer {
         /// </summary>
         /// <param name="forceToAttackWith"> A value between 0 and 1 which resembles how much of the faction's attack force it should use. </param>
         public void FightFactionForTerritory(PlanetFaction defender, float forceToAttackWith, float deltaTime) {
-            long forcesDedicatedToAttack = math.max(0, (long)(force / (math.max(1, territory.GetTotalAreas()) * .6d)));
+            // Don't include garisons in the attack forces
+            long forcesDedicatedToAttack = math.max(force / 6, force - territory.GetTerritoryValue() * 10);
             long attackingForce = (long)(forcesDedicatedToAttack * forceToAttackWith);
             PlanetTerritory warZone = CreateWarZone(defender, attackingForce);
             // Defense force is based on the forces stationed in the territory being attacked which includes some forces dedecated to attack as well.
-            long defenseForce = math.max(0, (long)(defender.force * .8d * warZone.GetTerritoryValue() / math.max(1, defender.territory.GetTerritoryValue())));
+            long defenseForce = math.max(0, defender.force * warZone.GetTerritoryValue() / defender.territory.GetTerritoryValue());
 
             // Random factor of the fight, a higher value means the attackers are doing better
-            float bias = Random.Range(-.4f, .3f);
-            long attackersKilled = math.min(attackingForce, (long)(defenseForce * 10 * (1 + math.min(-bias, 0)) * deltaTime));
-            long defendersKilled = math.min(defenseForce, (long)(attackingForce * 10 * (1 + math.min(bias, 0)) * deltaTime));
+            float bias = Random.Range(-.3f, .3f);
+            // Attackers get to attack with more force but defenders will loose less per force
+            long attackersKilled = math.min(attackingForce, (long)(defenseForce * (1 + math.min(-bias, 0)) / 20));
+            long defendersKilled = math.min(defenseForce, (long)(attackingForce * (1 + math.min(bias, 0)) / 50));
             force -= attackersKilled;
             defender.force -= defendersKilled;
 
@@ -78,8 +80,11 @@ public class Planet : BattleObject, IPositionConfirmer {
             }
             defender.territory.SubtractFrom(territoryTaken);
             territory.AddFrom(territoryTaken);
+            if (defender.territory.highQualityArea < 0 || defender.territory.mediumQualityArea < 0 || defender.territory.lowQualityArea < 0) {
+                print("Error");
+            }
             // War is bad for everyone
-            planet.population -= (long)((attackersKilled + defendersKilled) * 2 * (1 + math.abs(bias) * 2));
+            planet.population -= (long)((attackersKilled + defendersKilled) * 10 * (1 + math.abs(bias) * 2));
         }
 
         /// <summary> 
@@ -87,7 +92,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         /// High quality territory is prefered over lower quality territory.
         /// </summary>
         private PlanetTerritory CreateWarZone(PlanetFaction defender, long attackingForce) {
-            long territoryValueToAttack = (long)(territory.GetTotalAreas() * ((double)force / attackingForce) * .2f);
+            long territoryValueToAttack = math.max(1, attackingForce / 800);
             // The attacker can choose to attack areas that are higher quality
             long highQualityTerritory = math.min((long)((double)Random.Range(0.3f, 0.5f) * territoryValueToAttack / 2), defender.territory.highQualityArea);
             territoryValueToAttack -= highQualityTerritory * 2;
@@ -112,7 +117,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             territoryGainedValue -= highQualityTerritoryGained * 2;
             long mediumQualityTerritoryGained = math.min(warZone.mediumQualityArea, territoryGainedValue / 2);
             territoryGainedValue -= mediumQualityTerritoryGained;
-            long lowQualityTerritoryGained = math.min(warZone.mediumQualityArea, territoryGainedValue * 2);
+            long lowQualityTerritoryGained = math.min(warZone.lowQualityArea, territoryGainedValue * 2);
 
             return new PlanetTerritory(highQualityTerritoryGained, mediumQualityTerritoryGained, lowQualityTerritoryGained);
         }
@@ -215,8 +220,16 @@ public class Planet : BattleObject, IPositionConfirmer {
         AddFaction(faction, territory, force, special);
     }
 
+    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor, double lowQualityAreaFactor, double forceFraction, string special) {
+        PlanetTerritory territory = new PlanetTerritory((long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
+            (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
+            (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
+        long force = (long)(territory.GetTerritoryValue() * forceFraction * 100);
+        AddFaction(faction, territory, force, special);
+    }
+
     public void AddFaction(Faction faction, double territoryFactor, double forceFraction, string special) {
-        AddFaction(faction, territoryFactor, territoryFactor, territoryFactor, (long)(GetUnclaimedFaction().territory.GetTotalAreas() * territoryFactor * forceFraction), special);
+        AddFaction(faction, territoryFactor, territoryFactor, territoryFactor, (long)(GetUnclaimedFaction().territory.GetTerritoryValue() * territoryFactor * forceFraction * 100), special);
     }
 
     public PlanetFaction GetUnclaimedFaction() {
