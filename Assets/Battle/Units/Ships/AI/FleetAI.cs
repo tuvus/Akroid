@@ -534,7 +534,8 @@ public class FleetAI : MonoBehaviour {
                     positions.Add(command.targetGasCloud.GetPosition());
                 }
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
-                || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition) {
+                || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition
+                || command.commandType == CommandType.DisbandFleet) {
 
             } else if (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;
