@@ -181,6 +181,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     void EndBoxSelection() {
         actionType = ActionType.None;
         selectionBox.gameObject.SetActive(false);
+        rightClickedBattleObject = null;
         if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
             if (mouseOverBattleObject != null) {
                 selectedGroup = -1;
