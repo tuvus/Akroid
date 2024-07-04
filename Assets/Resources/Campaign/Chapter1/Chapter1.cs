@@ -39,7 +39,7 @@ public class Chapter1 : CampaingController {
         for (int i = 0; i < starCount; i++) {
             battleManager.CreateNewStar("Star" + (i + 1));
         }
-        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", Random.Range(1, 2) * 5400, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
@@ -78,6 +78,7 @@ public class Chapter1 : CampaingController {
         ConstructionShip setupFleetShip2 = (ConstructionShip)tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder);
         setupFleetShip2.targetStationBlueprint = playerMiningStation;
         Ship setupFleetShip3 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
+        Ship setupFleetShip4 = tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian);
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("StationSetupFleet", playerFaction.ships);
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);

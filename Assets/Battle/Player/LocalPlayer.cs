@@ -114,6 +114,7 @@ public class LocalPlayer : MonoBehaviour {
     #region HelperMethods
     public void AddOwnedUnit(Unit unit) {
         ownedUnits.Add(unit);
+        unit.GetUnitSelection().UpdateFactionColor();
     }
 
     public LocalPlayerInput GetInputManager() {

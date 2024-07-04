@@ -138,6 +138,9 @@ public class PlayerFactionAI : FactionAI {
             }, 5 * GetTimeScale());
         } else if (state == AIState.SettingUp) {
             chapter1.GetBattleManager().SetSimulationTimeScale(10);
+            if (LocalPlayer.Instance.GetFaction() == faction) {
+                LocalPlayer.Instance.AddOwnedUnit(faction.ships.First(s => s.IsCivilianShip()));
+            }
             commManager.SendCommunication(new CommunicationEvent(chapter1.planetFactionAI.faction.GetFactionCommManager(), "We have arrived safely at the destination and are setting up our operations.",
             new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
                 (communicationEvent) => {
