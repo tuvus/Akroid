@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class FactionAI : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
-    public Faction faction { protected set; get; }
+    public Faction faction { get; protected set; }
     public bool autoResearch;
     public float attackTime;
 
-    [SerializeField] protected List<Ship> idleShips;
+    [field:SerializeField] public List<Ship> idleShips { get; protected set; }
     [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
 
     public virtual void SetupFactionAI(BattleManager battleManager, Faction faction) {

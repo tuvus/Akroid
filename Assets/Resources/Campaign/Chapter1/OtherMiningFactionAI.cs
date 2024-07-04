@@ -14,6 +14,8 @@ public class OtherMiningFactionAI : FactionAI {
         this.shipyardFactionAI = shipyardFactionAI;
         this.otherMiningStation = otherMiningStation;
         this.tradeStation = tradeStation;
+        // We need to re-add the Idle ships since we are seting up after creating them
+        idleShips.AddRange(faction.ships);
     }
 
     public override void UpdateFactionAI(float deltaTime) {

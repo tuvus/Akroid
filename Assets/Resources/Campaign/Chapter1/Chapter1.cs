@@ -90,13 +90,14 @@ public class Chapter1 : CampaingController {
         planetFaction.GetTransportShip(1).shipAI.AddUnitAICommand(Command.CreateTransportDelayCommand(tradeStation, shipyard, 1000), Command.CommandAction.AddToEnd);
 
         List<Ship> civilianShips = new List<Ship>();
-        for (int i = 0; i < Random.Range(2, 5); i++) {
+        for (int i = 0; i < Random.Range(3, 5); i++) {
             civilianShips.Add(tradeStation.BuildShip(new Ship.ShipData(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian", new Vector2(Random.Range(-50000, 50000), Random.Range(-50000, 50000)), Random.Range(0, 360)), 0, null));
         }
-        for (int i = 0; i < Random.Range(5, 15); i++) {
-            List<Station> randStations = battleManager.stations.ToList();
-            civilianShips.Add(randStations[Random.Range(0, randStations.Count)].BuildShip(planetFaction, Ship.ShipType.Civilian));
-            civilianShips[i].shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 30)));
+        List<Station> randStations = battleManager.stations.ToList();
+        for (int i = 0; i < Random.Range(8, 12); i++) {
+            Ship newShip = randStations[Random.Range(0, randStations.Count)].BuildShip(planetFaction, Ship.ShipType.Civilian);
+            civilianShips.Add(newShip);
+            newShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 70)));
         }
         playerFactionAI.SetupPlayerFactionAI(battleManager, playerFaction, this, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);

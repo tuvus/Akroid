@@ -40,6 +40,8 @@ public class PlanetFactionAI : FactionAI {
             "Undocking procedure successful! \n You are now on route to the designated mining location. As we planned, you will construct the mining station at the designated point (" +
             Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().x) + ", " + Mathf.RoundToInt(chapter1.playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!",
             (communicationEvent) => { chapter1.playerFactionAI.SetState(AIState.Deploying); }), 10 * GetTimeScale());
+        // We need to re-add the Idle ships since we are seting up after creating them
+        idleShips.AddRange(faction.ships);
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -153,12 +155,12 @@ public class PlanetFactionAI : FactionAI {
                     idleShip.shipAI.AddUnitAICommand(Command.CreateTransportCommand(tradeStation, shipyard), Command.CommandAction.AddToEnd);
                 } else if (idleShip.IsCivilianShip()) {
                     int randomNumber = Random.Range(0, 100);
-                    if (friendlyStations.Count > 0 && (idleShip.dockedStation != null && randomNumber > 30) || (idleShip.dockedStation == null && randomNumber > 80)) {
+                    if (friendlyStations.Count > 0 && (idleShip.dockedStation != null && randomNumber > 20) || (idleShip.dockedStation == null && randomNumber > 80)) {
                         idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(2, 10f)));
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(7, 30f)));
                     } else {
                         if (idleShip.dockedStation != null)
-                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(3000, 12000))));
+                            idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(6000, 12000))));
                         else
                             idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(1000, 5000))));
                         idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 3f)));
