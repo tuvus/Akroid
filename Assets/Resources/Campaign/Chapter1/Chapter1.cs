@@ -141,8 +141,8 @@ public class Chapter1 : CampaingController {
     }
 
 
-    public override void UpdateController() {
-        base.UpdateController();
+    public override void UpdateController(float deltaTime) {
+        base.UpdateController(deltaTime);
     }
 
     public float GetMetalCost() {

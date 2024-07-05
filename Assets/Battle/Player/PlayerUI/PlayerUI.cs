@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static System.Collections.Specialized.BitVector32;
 
 public class PlayerUI : MonoBehaviour {
     public static PlayerUI Instance { get; protected set; }
@@ -21,6 +19,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerPlanetUI playerPlanetUI;
     [SerializeField] private PlayerShipUI playerShipUI;
     [SerializeField] private PlayerFactionOverviewUI playerFactionOverviewUI;
+    [field:SerializeField] public PlayerEventUI playerEventUI { get; protected set; }
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
     [SerializeField] private GameObject commandUI;
@@ -67,6 +66,7 @@ public class PlayerUI : MonoBehaviour {
         playerShipUI.SetupPlayerShipUI(this);
         playerPlanetUI.SetupPlayerPlanetUI(this);
         playerFactionOverviewUI.SetupFactionOverviewUI(this);
+        playerEventUI.SetupEventUI(this);
     }
 
     public void UpdatePlayerUI() {
@@ -104,6 +104,7 @@ public class PlayerUI : MonoBehaviour {
             playerFactionOverviewUI.UpdateFactionOverviewUI(GetLocalPlayer().GetFaction());
         }
         timeSpeed.text = "Time: " + Time.timeScale;
+        playerEventUI.UpdateEventUI();
         Profiler.EndSample();
     }
 

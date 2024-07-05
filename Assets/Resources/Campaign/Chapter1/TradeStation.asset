@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: TradeStation
   m_EditorClassIdentifier: 
-  cost: 98963
+  cost: 97529
   resourceTypes: 01000000
-  resourceCosts: 7144000000000000
+  resourceCosts: 1942000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   unitName: TradeStation
   maxHealth: 9346
@@ -53,7 +53,7 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
   - name: Utility
     moduleCount: 1
-    component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
+    component: {fileID: 11400000, guid: b20153318fa355a4d9a2413e00335606, type: 2}
   - name: Utility
     moduleCount: 1
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}

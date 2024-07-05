@@ -1,0 +1,90 @@
+using System;
+using System.Linq;
+using UnityEngine;
+
+public class PlayerEventUI : MonoBehaviour {
+    protected PlayerUI playerUI;
+    protected EventManager EventManager;
+    protected Tuple<EventCondition, Action> EventConditionTuple;
+    protected EventCondition VisualizedEvent;
+    protected Transform worldSpaceTransform;
+    [SerializeField] GameObject unitHighlight;
+
+
+    public void SetupEventUI(PlayerUI playerUI) {
+        this.playerUI = playerUI;
+    }
+
+    public void UpdateEventUI() {
+        bool newEvent = false;
+        // Check if we aren't set up yet
+        if (EventManager == null || worldSpaceTransform == null)
+            return;
+        if (!EventManager.ActiveEvents.Contains(EventConditionTuple)) {
+            RemoveVisuals();
+            EventConditionTuple = null;
+            VisualizedEvent = null;
+        }
+        if (VisualizedEvent == null) {
+            EventConditionTuple = EventManager.ActiveEvents.FirstOrDefault();
+            if (EventConditionTuple != null) VisualizedEvent = EventConditionTuple.Item1;
+            newEvent = true;
+        }
+        if (VisualizedEvent != null) {
+            VisualizeEvent(newEvent);
+        }
+    }
+
+    void VisualizeEvent(bool newEvent) {
+        if (newEvent) {
+            RemoveVisuals();
+            switch (VisualizedEvent.conditionType) {
+                case EventCondition.ConditionType.Wait:
+                    break;
+                case EventCondition.ConditionType.SelectUnit:
+                    Instantiate(unitHighlight, worldSpaceTransform);
+                    break;
+                case EventCondition.ConditionType.SelectFleet:
+                    Instantiate(unitHighlight, worldSpaceTransform);
+                    break;
+                case EventCondition.ConditionType.Predicate:
+                    break;
+            }
+        }
+        switch (VisualizedEvent.conditionType) {
+            case EventCondition.ConditionType.Wait:
+                break;
+            case EventCondition.ConditionType.SelectUnit:
+                // If the unit is docked at a station, we need to show the station instead
+                Unit unitToShow = VisualizedEvent.unitToSelect;
+                if (VisualizedEvent.unitToSelect.IsShip() && ((Ship)VisualizedEvent.unitToSelect).dockedStation != null) {
+                    unitToShow = ((Ship)VisualizedEvent.unitToSelect).dockedStation;
+                }
+                worldSpaceTransform.GetChild(0).position = unitToShow.GetPosition();
+                float unitSize = Math.Max(unitToShow.GetSize() / 3, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
+                worldSpaceTransform.GetChild(0).localScale = new Vector2(unitSize, unitSize);
+                break;
+            case EventCondition.ConditionType.SelectFleet:
+                worldSpaceTransform.GetChild(0).position = VisualizedEvent.fleetToSelect.GetPosition();
+                float fleetSize = Math.Max(VisualizedEvent.fleetToSelect.GetSize() / 4, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
+                worldSpaceTransform.GetChild(0).localScale = new Vector2(fleetSize, fleetSize);
+                break;
+            case EventCondition.ConditionType.Predicate:
+                break;
+        }
+    }
+
+    void RemoveVisuals() {
+        for (int i = worldSpaceTransform.childCount - 1; i >= 0; i--) {
+            GameObject.Destroy(worldSpaceTransform.GetChild(i).gameObject);
+        }
+    }
+
+    public void SetEventManager(EventManager eventManager) {
+        this.EventManager = eventManager;
+    }
+
+    public void SetWorldSpaceTransform(Transform worldSpaceTransform) {
+        this.worldSpaceTransform = worldSpaceTransform;
+    }
+}

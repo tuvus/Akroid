@@ -174,6 +174,7 @@ public class BattleManager : MonoBehaviour {
         researchModifier = campaignControler.researchModifier;
         InitializeBattle();
         LocalPlayer.Instance.SetupFaction(null);
+        LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
         campaignControler.SetupBattle(this);
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
@@ -439,9 +440,6 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     public virtual void FixedUpdate() {
         if (battleState == BattleState.Setup) return;
-        if (campaignController != null) {
-            campaignController.UpdateController();
-        }
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
         foreach (var faction in factions.ToList()) {
@@ -494,6 +492,9 @@ public class BattleManager : MonoBehaviour {
             LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, GetRealTime(), GetSimulationTime());
             battleState = BattleState.Ended;
             LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
+        }
+        if (campaignController != null) {
+            campaignController.UpdateController(deltaTime);
         }
     }
 
@@ -635,6 +636,10 @@ public class BattleManager : MonoBehaviour {
 
     public Transform GetMissileTransform() {
         return transform.GetChild(6);
+    }
+
+    public Transform GetEventVisulationTransform() {
+        return transform.GetChild(7);
     }
 
     public static GameObject GetSizeIndicatorPrefab() {

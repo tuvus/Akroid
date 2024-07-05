@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,6 @@ public class PlayerFactionAI : FactionAI {
         if (!nextState) return;
         nextState = false;
         if (state == AIState.Deploying) {
-            // TODO: Put message about time controls here so the player can read at their own pace.
             commManager.SendCommunication(chapter1.planetFactionAI.faction, "Thanks for the goodbye! We will send you some resources soon.", 5);
             commManager.SendCommunication(faction,
             "We have started heading for the new mining site. \n" +

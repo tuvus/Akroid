@@ -11,7 +11,7 @@ using UnityEngine;
 public class LocalPlayer : MonoBehaviour {
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
-    private PlayerUI playerUI;
+    public PlayerUI playerUI { get; private set; }
 
     public enum PlayerState {
         free = 1,
