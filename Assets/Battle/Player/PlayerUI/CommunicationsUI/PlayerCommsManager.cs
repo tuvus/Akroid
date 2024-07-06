@@ -56,12 +56,10 @@ public class PlayerCommsManager : MonoBehaviour {
         ShowPanel();
         CreateCommEvent(communicationEvent);
         SetPortrait(communicationEvent.sender);
-        if (lockToBottom)
-            verticleScrollbar.value = 0;
     }
 
     private void LateUpdate() {
-        if (lockToBottom && verticleScrollbar.value > 0.1) {
+        if (lockToBottom && verticleScrollbar.value > 0.000001) {
             verticleScrollbar.value = 0;
             lockToBottom = false;
         }
