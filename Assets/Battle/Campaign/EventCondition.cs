@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EventCondition {
@@ -20,6 +21,7 @@ public class EventCondition {
     public float floatValue2 { get; protected set; }
     public Vector2 postionValue { get; protected set; }
     public Predicate<EventManager> predicate { get; protected set; }
+    public bool visualize;
 
     private EventCondition() {
         // No extenal instantiation allowed
@@ -32,17 +34,19 @@ public class EventCondition {
         return condition;
     }
 
-    public static EventCondition SelectUnitEvent(Unit unitToSelect) {
+    public static EventCondition SelectUnitEvent(Unit unitToSelect, bool visualise = false) {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.SelectUnit;
         condition.unitToSelect = unitToSelect;
+        condition.visualize = visualise;
         return condition;
     }
 
-    public static EventCondition SelectFleetEvent(Fleet fleetToSelect) {
+    public static EventCondition SelectFleetEvent(Fleet fleetToSelect, bool visualise = false) {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.SelectFleet;
         condition.fleetToSelect = fleetToSelect;
+        condition.visualize = visualise;
         return condition;
     }
 

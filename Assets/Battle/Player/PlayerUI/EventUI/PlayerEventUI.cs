@@ -26,7 +26,7 @@ public class PlayerEventUI : MonoBehaviour {
             VisualizedEvent = null;
         }
         if (VisualizedEvent == null) {
-            EventConditionTuple = EventManager.ActiveEvents.FirstOrDefault();
+            EventConditionTuple = EventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize);
             if (EventConditionTuple != null) VisualizedEvent = EventConditionTuple.Item1;
             newEvent = true;
         }

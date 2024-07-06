@@ -49,14 +49,16 @@ public class EventChainBuilder {
     /// <summary>
     /// Builds the event chain in reverse order since we need to know the previous action to call.
     /// </summary>
-    private Action Build(EventManager eventManager, Action lastAction) {
-        for (int i = events.Count - 2; i >= 0; i--) {
+    public Action Build(EventManager eventManager, Action lastAction) {
+        for (int i = events.Count - 1; i >= 0; i--) {
             if (events[i].GetType() == typeof(CommunicationEventHolder)) {
                 CommunicationEventHolder communicationEvent = (CommunicationEventHolder)events[i];
-                lastAction = () => communicationEvent.commManager.SendCommunication(communicationEvent.reciever, communicationEvent.text, (communicationEvent) =>  lastAction(), communicationEvent.delay);
+                Action temp = lastAction;
+                lastAction = () => communicationEvent.commManager.SendCommunication(communicationEvent.reciever, communicationEvent.text, (communicationEvent) => temp(), communicationEvent.delay);
             } else {
                 EventCondition eventCondition = (EventCondition)events[i];
-                lastAction = () => eventManager.AddEvent(eventCondition, lastAction);
+                Action temp = lastAction;
+                lastAction = () => eventManager.AddEvent(eventCondition, temp);
             }
         }
         return lastAction;
