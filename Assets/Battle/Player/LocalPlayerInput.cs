@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -39,12 +40,14 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected Vector2 pastMousePosition;
 
-    protected BattleObject mouseOverBattleObject;
-    protected BattleObject leftClickedBattleObject;
-    protected BattleObject displayedBattleObject;
-    protected Fleet displayedFleet;
-    protected BattleObject rightClickedBattleObject;
-    protected Unit followUnit;
+    public BattleObject mouseOverBattleObject { get; protected set; }
+    public BattleObject leftClickedBattleObject { get; protected set; }
+    public BattleObject displayedBattleObject { get; protected set; }
+    public Fleet displayedFleet { get; protected set; }
+    public BattleObject rightClickedBattleObject { get; protected set; }
+    public Unit followUnit { get; protected set; }
+
+    public event Action<Vector2, Vector2> OnPanEvent = delegate { };
 
     /// <summary>Determines if the unit should be deselected on mouse up</summary>
     protected bool doingUnitClickAction;
@@ -193,8 +196,12 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void SecondaryMouseHeld() {
-        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
+        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+            Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / 422);
+            OnPanEvent(oldPosition, GetCamera().transform.position);
+
+        }
     }
 
     protected virtual void SecondaryMouseUp() {

@@ -329,6 +329,10 @@ public class PlayerUI : MonoBehaviour {
         return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf;
     }
 
+    public bool IsAnObjectMenuShown() {
+        return stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf;
+    }
+
     public LocalPlayer GetLocalPlayer() {
         return LocalPlayer.Instance;
     }

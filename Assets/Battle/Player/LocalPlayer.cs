@@ -129,6 +129,10 @@ public class LocalPlayer : MonoBehaviour {
         return localPlayerInput;
     }
 
+    public LocalPlayerGameInput GetLocalPlayerGameInput() {
+        return (LocalPlayerGameInput)localPlayerInput;
+    }
+
     public Faction GetFaction() {
         return faction;
     }

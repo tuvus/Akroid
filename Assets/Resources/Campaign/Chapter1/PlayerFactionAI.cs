@@ -36,32 +36,71 @@ public class PlayerFactionAI : FactionAI {
     void UpdateFactionState() { }
 
     private void AddTutorial1() {
+        Fleet setupFleet = faction.fleets.First();
         commManager.SendCommunication(chapter1.planetFactionAI.faction, "Thanks for the goodbye! We will send you some resources soon.", 5);
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCommEvent(commManager, faction,
             "We have started heading for the new mining site. \n" +
             "If I am talking too fast for you press the \"?\" key to pause and un-pause the game. " +
-            "The [<, >] keys can also change how quickly the game time passes.", 25 * GetTimeScale());
+            "The [<, >] keys can also change how quickly the game time passes.", 15 * GetTimeScale());
         eventChain.AddCommEvent(commManager, faction,
-            "Right click and move the mouse to pan the camera. Scroll out to see more of the solar system. \n" +
-            "Our ships will appear with a green icon, meaning that we own them but can't control them. " +
-            "Neutral units will appear grey and hostile units will appear red.", 35 * GetTimeScale());
+            "Lets review the controls while we are on route to the asteroid fields.", 15 * GetTimeScale());
+
+        // Camera movement Tutorial
         eventChain.AddCommEvent(commManager, faction,
-            "Now scroll back in to our ships and left click on a ship or drag the mouse to select multiple ships. \n" +
+            "Try clicking your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.PanEvent(40));
+        eventChain.AddCommEvent(commManager, faction,
+            "Now scroll out to view more of the solar system.", 2 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.ZoomEvent(2000));
+        eventChain.AddCommEvent(commManager, faction,
+            "Great job! As you can see our ships appear with a green icon when zoomed out, meaning that we own them but can't control them. " +
+            "Neutral units will appear grey and hostile units will appear red.");
+        eventChain.AddCommEvent(commManager, faction,
+            "Now zoom back in to our ships so we can see them better.", 15 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.ZoomEvent(300));
+
+        // Selection Tutorial
+        eventChain.AddCommEvent(commManager, faction,
+            "Well done! Now lets try selecting the ships. Click on one of them to select our fleet.", 2 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.SelectFleetEvent(faction.fleets.First(), true));
+        eventChain.AddCommEvent(commManager, faction,
             "Our ships are in a fleet, which means if you select one you will select all by default. \n" +
+            "Try selecting just one ship in the fleet by holding alt while clicking the ship.", 3 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 1, true));
+        eventChain.AddCommEvent(commManager, faction,
             "You can see a line coming out of the selected ship, this is where they are going. \n" +
-            "Hold alt to select just one ship in a fleet.", 35 * GetTimeScale());
+            "Try holding shift to select multiple ships. " +
+            "You will have to hold alt as well since the ships are in a fleet.");
+        eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
         eventChain.AddCommEvent(commManager, faction,
-            "Try right clicking on a ship or station to view its stats, cargo or construction bay." +
-            "Right click again to close the panel. Try right clicking on each of your ships.", 40 * GetTimeScale());
+            "Exelent. Now click in empty space to deselect the ships.", 1 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.UnselectUnitsEvent(battleManager.units, false));
         eventChain.AddCommEvent(commManager, faction,
-            "Press B to unfollow the ship the ship in our fleet. \n" +
-            "This solar system has more stations than just the trade station we just left. " +
-            "Zoom out and right click on all of the stations to view their unique menus.", 35 * GetTimeScale());
+            "There is one more way that you can select ships, try clicking and dragging your mouse to do a box select. " +
+            "Remember to hold alt while doing it.", 1 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
         eventChain.AddCommEvent(commManager, faction,
-            "Now press G to toggle all of the unit icons while zoomed out. " +
+            "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.OpenObjectPanelEvent(setupFleet.ships.First((ship) => ship.IsConstructionShip()), true));
+        eventChain.AddCommEvent(commManager, faction,
+            "Here you can see its owner, state, cargo and weapons of the unit. " +
+            "Right click again or press the close button to close the panel.", 1 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.OpenObjectPanelEvent(null, false));
+        // Following Tutorial
+        eventChain.AddCommEvent(commManager, faction,
+            "We are currently following a ship in our fleet to keep it visible. " +
+            "Press B to unfollow the ship in our fleet.", 2 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.FollowUnitEvent(null));
+        eventChain.AddCommEvent(commManager, faction,
+            "As you can see, our ships are moving without the camera now. " +
+            "You can always follow a ship again by selecting it and pressing B.", 3 * GetTimeScale());
+        eventChain.AddCommEvent(commManager, faction,
+            "Zoom all the way out to view more of the solar system.", 12 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.ZoomEvent(30000));
+        eventChain.AddCommEvent(commManager, faction,
             "You can barely see the stations, planet, the many asteroid fields and gas clouds. " +
-            "Our minning team is currently heading to a particularly dense asteroid field to mine.", 30 * GetTimeScale());
+            "Our minning team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
         eventChain.Build(chapter1.eventManager, commManager, faction,
             "What difficulty would you like to play at? Harder difficulties will have a faster intro scene.",
             new CommunicationEventOption[] {
@@ -93,7 +132,9 @@ public class PlayerFactionAI : FactionAI {
         chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
         eventChainBuilder.AddCommEvent(commManager, faction,
-        "See if you can locate and zoom in on the planet with the station, this is our home. \n " +
+            "\nSee if you can locate and zoom in on the planet with the station, this is our home.", 2 * GetTimeScale());
+        eventChainBuilder.AddEvent(EventCondition.ZoomEvent(600));
+        eventChainBuilder.AddCommEvent(commManager, faction,
         "Due to the slow development of resource reusing policy and climate change, resources are getting sparse, which is building tension between the major nations. " +
         "Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.", 5 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, faction,

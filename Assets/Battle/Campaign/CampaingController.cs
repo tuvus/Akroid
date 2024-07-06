@@ -10,7 +10,7 @@ public abstract class CampaingController : MonoBehaviour {
 
     public virtual void SetupBattle(BattleManager battleManager) {
         this.battleManager = battleManager;
-        eventManager = new EventManager((LocalPlayerGameInput)LocalPlayer.Instance.GetLocalPlayerInput());
+        eventManager = new EventManager(LocalPlayer.Instance.GetLocalPlayerGameInput());
     }
 
     public virtual void UpdateController(float deltaTime) {
