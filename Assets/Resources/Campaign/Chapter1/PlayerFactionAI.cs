@@ -48,10 +48,12 @@ public class PlayerFactionAI : FactionAI {
 
         // Camera movement Tutorial
         eventChain.AddCommEvent(commManager, faction,
-            "Try clicking your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
+            "Try clicking and holding your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
         eventChain.AddEvent(EventCondition.PanEvent(40));
         eventChain.AddCommEvent(commManager, faction,
-            "Now scroll out to view more of the solar system.", 2 * GetTimeScale());
+            "If you ever get lost, try pressing V to center your camera again.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(commManager, faction,
+            "Now scroll out to view more of the solar system.", 7 * GetTimeScale());
         eventChain.AddEvent(EventCondition.ZoomEvent(2000));
         eventChain.AddCommEvent(commManager, faction,
             "Great job! As you can see our ships appear with a green icon when zoomed out, meaning that we own them but can't control them. " +
@@ -131,12 +133,14 @@ public class PlayerFactionAI : FactionAI {
     void AddTutorial2() {
         chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
+        // TODO: Move this into tutorial 1
         eventChainBuilder.AddCommEvent(commManager, faction,
             "\nSee if you can locate and zoom in on the planet with the station, this is our home.", 2 * GetTimeScale());
         eventChainBuilder.AddEvent(EventCondition.ZoomEvent(600));
         eventChainBuilder.AddCommEvent(commManager, faction,
-        "Due to the slow development of resource reusing policy and climate change, resources are getting sparse, which is building tension between the major nations. " +
-        "Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.", 5 * GetTimeScale());
+            "Resources on our planet are sparce due to the slow development of resource reusing policy and climate change. " +
+            "This is starting to build tension between the major nations. " +
+            "Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.", 5 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, faction,
             "Overpopulation has ignited an effort to colonize other planets in the system. " +
             "That is, however a long way off, to start we have been developing the first moon colony. " +
@@ -144,8 +148,9 @@ public class PlayerFactionAI : FactionAI {
         eventChainBuilder.AddCommEvent(commManager, faction,
             "Space technology is relatively new and we are starting to harvest asteroid fields to help solve our resource problems back at " + GetPlanetName() + ".", 20 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, faction,
-            "We haven't figured out how to travel to other solar systems yet, it might take a hundred years or so until it is possible. " +
-            "Our advanced space research station far out in the solar system is working on this.", 15 * GetTimeScale());
+            "We haven't figured out how to travel to other solar systems yet. " +
+            "It might take a hundred years or so until, if it is even possible. " +
+            "We have an advanced space research station far out in the solar system is working on this.", 15 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, faction,
             "There was a big boom in civilian space travel once a general purpose space ship came into production in our first designated shipyard.", 15 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, faction,
@@ -153,7 +158,7 @@ public class PlayerFactionAI : FactionAI {
         eventChainBuilder.Build(chapter1.eventManager, () => {
             commManager.SendCommunication(chapter1.planetFactionAI.faction, "We are about to arrive at our destination!");
             commManager.SendCommunication(faction,
-                "Now we have nothing to do but wait until we reach the mining site. \n " +
+                "Thats it until until we reach the mining site. \n " +
                 "Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n " +
                 "In the mean time feel free to click the \"Controls help\" button in the top right and read the controls.", 15 * GetTimeScale());
 

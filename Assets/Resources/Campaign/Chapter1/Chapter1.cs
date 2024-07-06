@@ -34,7 +34,7 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle(BattleManager battleManager) {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
-        metalCost = 12.6f;
+        metalCost = 4.6f;
         int starCount = Random.Range(1, 4);
         for (int i = 0; i < starCount; i++) {
             battleManager.CreateNewStar("Star" + (i + 1));
