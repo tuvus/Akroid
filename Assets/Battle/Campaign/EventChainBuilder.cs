@@ -32,6 +32,10 @@ public class EventChainBuilder {
         events.Add(eventCondition);
     }
 
+    public void AddAction(Action action) {
+        events.Add(action);
+    }
+
     /// <summary>
     /// Builds the EventChain with one final multi-option CommunicationEvent.
     /// </summary>
@@ -55,6 +59,10 @@ public class EventChainBuilder {
                 CommunicationEventHolder communicationEvent = (CommunicationEventHolder)events[i];
                 Action temp = lastAction;
                 lastAction = () => communicationEvent.commManager.SendCommunication(communicationEvent.reciever, communicationEvent.text, (communicationEvent) => temp(), communicationEvent.delay);
+            } else if (events[i].GetType() == typeof(Action)) {
+                Action temp = lastAction;
+                Action tempAcion = (Action)events[i];
+                lastAction = () => { tempAcion(); temp(); };
             } else {
                 EventCondition eventCondition = (EventCondition)events[i];
                 Action temp = lastAction;

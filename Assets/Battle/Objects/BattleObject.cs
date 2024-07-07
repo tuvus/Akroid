@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BattleObject : MonoBehaviour, IPositionConfirmer {
+public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer {
     public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
     [field: SerializeField] public float size { get; protected set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleObject {
+public class ObjectGroup<T> : MonoBehaviour, IObject, IObjectGroupLink where T : BattleObject {
     [field: SerializeField] public BattleManager battleManager { get; private set; }
     [field: SerializeField] public HashSet<T> battleObjects { get; private set; }
     [field: SerializeField] public Vector2 position { get; private set; }
@@ -91,6 +91,10 @@ public class ObjectGroup<T> : MonoBehaviour, IObjectGroupLink where T : BattleOb
 
     public float GetSize() {
         return size;
+    }
+
+    public bool IsGroup() {
+        return true;
     }
 
 }

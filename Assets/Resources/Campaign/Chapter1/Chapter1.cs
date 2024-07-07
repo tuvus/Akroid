@@ -14,7 +14,7 @@ public class Chapter1 : CampaingController {
     MiningStation otherMiningStation;
     Faction planetFaction;
     public PlanetFactionAI planetFactionAI { get; private set; }
-    Planet planet;
+    public Planet planet { get; private set; }
     public Station tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 
 public class PlayerEventUI : MonoBehaviour {
@@ -38,83 +39,74 @@ public class PlayerEventUI : MonoBehaviour {
 
     void VisualizeEvent(bool newEvent) {
         if (newEvent) {
-            RemoveVisuals();
-            switch (VisualizedEvent.conditionType) {
-                case EventCondition.ConditionType.Wait:
-                    break;
-                case EventCondition.ConditionType.SelectUnit:
-                    Instantiate(unitHighlight, worldSpaceTransform);
-                    break;
-                case EventCondition.ConditionType.SelectFleet:
-                    Instantiate(unitHighlight, worldSpaceTransform);
-                    break;
-                case EventCondition.ConditionType.SelectUnits:
-                case EventCondition.ConditionType.SelectUnitsAmount:
-                    foreach (var _ in VisualizedEvent.unitsToSelect) {
-                        Instantiate(unitHighlight, worldSpaceTransform);
-                    }
-                    break;
-                case EventCondition.ConditionType.OpenObjectPanel:
-                    Instantiate(unitHighlight, worldSpaceTransform);
-                    break;
-                case EventCondition.ConditionType.FollowUnit:
-                    Instantiate(unitHighlight, worldSpaceTransform);
-                    break;
-                case EventCondition.ConditionType.Predicate:
-                    break;
-            }
+            VisualizeObjects(new List<IObject>());
         }
         switch (VisualizedEvent.conditionType) {
-            case EventCondition.ConditionType.Wait:
-                break;
             case EventCondition.ConditionType.SelectUnit:
                 // If the unit is docked at a station, we need to show the station instead
                 Unit unitToShow = VisualizedEvent.unitToSelect;
                 if (VisualizedEvent.unitToSelect.IsShip() && ((Ship)VisualizedEvent.unitToSelect).dockedStation != null) {
                     unitToShow = ((Ship)VisualizedEvent.unitToSelect).dockedStation;
                 }
-                worldSpaceTransform.GetChild(0).position = unitToShow.GetPosition();
-                float unitSize = Math.Max(unitToShow.GetSize() / 3, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
-                worldSpaceTransform.GetChild(0).localScale = new Vector2(unitSize, unitSize);
+                VisualizeObjects(new List<IObject> { unitToShow });
                 break;
             case EventCondition.ConditionType.SelectUnits:
             case EventCondition.ConditionType.SelectUnitsAmount:
                 HashSet<Unit> selectedUnits = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
                 List<Unit> unitsToSelect = VisualizedEvent.unitsToSelect.ToList();
-                for (int i = 0; i < unitsToSelect.Count; i++) {
-                    Unit unitToShow2 = unitsToSelect[i];
-                    if (selectedUnits.Contains(unitToShow2)) {
-                        worldSpaceTransform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
-                    } else {
-                        worldSpaceTransform.GetChild(i).GetComponent<SpriteRenderer>().enabled = true;
-                        worldSpaceTransform.GetChild(i).position = unitToShow2.GetPosition();
-                        float unitSize2 = Math.Max(unitToShow2.GetSize() / 3, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
-                        worldSpaceTransform.GetChild(i).localScale = new Vector2(unitSize2, unitSize2);
-                    }
-                }
+                VisualizeObjects(unitsToSelect.Select((unit) => selectedUnits.Contains(unit)).ToList().Cast<IObject>().ToList());
                 break;
             case EventCondition.ConditionType.OpenObjectPanel:
                 if (VisualizedEvent.unitToSelect == null)
                     break;
-                Unit unitPanelToOpen = VisualizedEvent.unitToSelect;
-                worldSpaceTransform.GetChild(0).position = unitPanelToOpen.GetPosition();
-                float unitSize3 = Math.Max(unitPanelToOpen.GetSize() / 3, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
-                worldSpaceTransform.GetChild(0).localScale = new Vector2(unitSize3, unitSize3);
+                VisualizeObjects(new List<IObject>() { VisualizedEvent.unitToSelect });
                 break;
             case EventCondition.ConditionType.SelectFleet:
-                worldSpaceTransform.GetChild(0).position = VisualizedEvent.fleetToSelect.GetPosition();
-                float fleetSize = Math.Max(VisualizedEvent.fleetToSelect.GetSize() / 4, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
-                worldSpaceTransform.GetChild(0).localScale = new Vector2(fleetSize, fleetSize);
+                VisualizeObjects(new List<IObject>() { VisualizedEvent.fleetToSelect });
                 break;
             case EventCondition.ConditionType.FollowUnit:
                 if (VisualizedEvent.unitToSelect == null)
                     break;
-                Unit unitToFollow = VisualizedEvent.unitToSelect;
-                worldSpaceTransform.GetChild(0).position = unitToFollow.GetPosition();
-                float unitSize4 = Math.Max(unitToFollow.GetSize() / 3, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
-                worldSpaceTransform.GetChild(0).localScale = new Vector2(unitSize4, unitSize4);
+                VisualizeObjects(new List<IObject>() { VisualizedEvent.unitToSelect });
                 break;
-            case EventCondition.ConditionType.Predicate:
+            case EventCondition.ConditionType.ShipsDockedAtUnit:
+                List<IObject> objectsToVisualize = new List<IObject> { VisualizedEvent.unitToSelect };
+                foreach (var ship in VisualizedEvent.iObjects.Cast<Ship>().ToList()) {
+                    if (ship.dockedStation != VisualizedEvent.unitToSelect
+                        && (ship.shipAI.commands.All((command) => !(command.commandType == Command.CommandType.Dock && command.targetUnit == VisualizedEvent.unitToSelect)))) {
+                        objectsToVisualize.Add(ship);
+                    }
+                }
+                break;
+            case EventCondition.ConditionType.MoveShipToObject:
+                // If the unit is docked at a station, we need to show the station instead
+                Unit unitToShow2 = VisualizedEvent.unitToSelect;
+                HashSet<Unit> selectedUnits3 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                if (selectedUnits3.Contains(unitToShow2) && selectedUnits3.Count == 1) {
+                    VisualizeObjects(new List<IObject> { VisualizedEvent.iObject });
+                } else {
+                    if (((Ship)VisualizedEvent.unitToSelect).dockedStation != null) {
+                        unitToShow2 = ((Ship)VisualizedEvent.unitToSelect).dockedStation;
+                    }
+                    VisualizeObjects(new List<IObject> { unitToShow2, VisualizedEvent.iObject });
+                }
+                break;
+            case EventCondition.ConditionType.CommandMoveShipToObjectSequence:
+                HashSet<Unit> selectedUnits2 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                if (selectedUnits2.Count != 1 || !selectedUnits2.Contains(VisualizedEvent.unitToSelect)) {
+                    VisualizeObjects(new List<IObject>() { VisualizedEvent.unitToSelect });
+                } else {
+                    ShipAI shipAI = ((Ship)VisualizedEvent.unitToSelect).shipAI;
+                    IObject objectToVisualize = VisualizedEvent.iObjects.First();
+                    for (int i = 0; i < VisualizedEvent.iObjects.Count - 1; i++) {
+                        if (shipAI.commands.Count <= i || shipAI.commands[i].commandType != Command.CommandType.Move
+                            || Vector2.Distance(shipAI.commands[i].targetPosition, VisualizedEvent.iObjects[i].GetPosition()) > VisualizedEvent.unitToSelect.GetSize() + VisualizedEvent.iObjects[i].GetSize()) {
+                            break;
+                        }
+                        objectToVisualize = VisualizedEvent.iObjects[i + 1];
+                    }
+                    VisualizeObjects(new List<IObject>() { objectToVisualize });
+                }
                 break;
         }
     }
@@ -122,6 +114,25 @@ public class PlayerEventUI : MonoBehaviour {
     void RemoveVisuals() {
         for (int i = worldSpaceTransform.childCount - 1; i >= 0; i--) {
             GameObject.Destroy(worldSpaceTransform.GetChild(i).gameObject);
+        }
+    }
+
+    void VisualizeObjects(List<IObject> objectsToVisualise) {
+        for (int i = 0; i < objectsToVisualise.Count; i++) {
+            IObject obj = objectsToVisualise[i];
+            if (worldSpaceTransform.childCount <= i)
+                Instantiate(unitHighlight, worldSpaceTransform);
+            Transform visualEffect = worldSpaceTransform.GetChild(i);
+            visualEffect.GetComponent<SpriteRenderer>().enabled = true;
+            visualEffect.position = obj.GetPosition();
+            float objectSizeDivisor = 3;
+            if (obj.IsGroup())
+                objectSizeDivisor = 4;
+            float objectSize = Math.Max(obj.GetSize() / objectSizeDivisor, LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
+            visualEffect.localScale = new Vector2(objectSize, objectSize);
+        }
+        for (int i = objectsToVisualise.Count; i < worldSpaceTransform.childCount; i++) {
+            worldSpaceTransform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 

@@ -7,6 +7,7 @@ using UnityEngine;
 public class EventCondition {
     public enum ConditionType {
         Wait,
+        WaitUntilShipsIdle,
         SelectUnit,
         SelectUnits,
         SelectUnitsAmount,
@@ -14,6 +15,9 @@ public class EventCondition {
         SelectFleet,
         OpenObjectPanel,
         FollowUnit,
+        MoveShipToObject,
+        CommandMoveShipToObjectSequence,
+        ShipsDockedAtUnit,
         Pan,
         Zoom,
         Predicate,
@@ -23,6 +27,8 @@ public class EventCondition {
     public BattleObject objectToSelect { get; protected set; }
     public Unit unitToSelect { get; protected set; }
     public HashSet<Unit> unitsToSelect { get; protected set; }
+    public IObject iObject { get; protected set; }
+    public List<IObject> iObjects { get; protected set; }
     public Fleet fleetToSelect { get; protected set; }
     public int intValue { get; protected set; }
     public float floatValue { get; protected set; }
@@ -39,6 +45,14 @@ public class EventCondition {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.Wait;
         condition.floatValue = timeToWait;
+        return condition;
+    }
+
+    public static EventCondition WaitUntilShipsIdle(List<Ship> shipsToIdle, bool visualise = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.WaitUntilShipsIdle;
+        condition.iObjects = shipsToIdle.Cast<IObject>().ToList();
+        condition.visualize = visualise;
         return condition;
     }
 
@@ -99,6 +113,32 @@ public class EventCondition {
         return condition;
     }
 
+    public static EventCondition DockShipsAtUnit(List<Ship> shipsToDock, Unit unitToDockAt, bool visualise = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.ShipsDockedAtUnit;
+        condition.iObjects = shipsToDock.Cast<IObject>().ToList();
+        condition.unitToSelect = unitToDockAt;
+        condition.visualize = visualise;
+        return condition;
+    }
+
+    public static EventCondition MoveShipToObject(Unit shipToMove, IObject objectToMoveTo, bool visualise = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.MoveShipToObject;
+        condition.unitToSelect = shipToMove;
+        condition.iObject = objectToMoveTo;
+        condition.visualize = visualise;
+        return condition;
+    }
+
+    public static EventCondition CommandMoveShipToObjectSequence(Unit shipToMove, List<IObject> objectToCommandToMoveTo, bool visualise = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.CommandMoveShipToObjectSequence;
+        condition.unitToSelect = shipToMove;
+        condition.iObjects = objectToCommandToMoveTo;
+        condition.visualize = visualise;
+        return condition;
+    }
     public static EventCondition PanEvent(float distanceToPan) {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.Pan;
@@ -129,6 +169,11 @@ public class EventCondition {
                 if (floatValue <= 0)
                     return true;
                 break;
+            case ConditionType.WaitUntilShipsIdle:
+                if (iObjects.Cast<Ship>().All((ship) => ship.IsIdle())) {
+                    return true;
+                }
+                return false;
             case ConditionType.SelectUnit:
                 if (eventManager.playerGameInput.GetSelectedUnits().ContainsObject(unitToSelect)
                     && eventManager.playerGameInput.GetSelectedUnits().objects.Count == 1) {
@@ -176,6 +221,28 @@ public class EventCondition {
                     return true;
                 }
                 break;
+            case ConditionType.MoveShipToObject:
+                if (Vector2.Distance(unitToSelect.GetPosition(), iObject.GetPosition()) <= unitToSelect.GetSize() + iObject.GetSize()) {
+                    return true;
+                }
+                break;
+            case ConditionType.CommandMoveShipToObjectSequence:
+                ShipAI shipAI = ((Ship)unitToSelect).shipAI;
+                if (shipAI.commands.Count < iObjects.Count) return false;
+                for (int i = 0; i < iObjects.Count; i++) {
+                    if (shipAI.commands[i].commandType != Command.CommandType.Move
+                        || Vector2.Distance(shipAI.commands[i].targetPosition, iObjects[i].GetPosition()) > unitToSelect.GetSize() + iObjects[i].GetSize()) {
+                        return false;
+                    }
+                }
+                return true;
+            case ConditionType.ShipsDockedAtUnit:
+                foreach (var ship in iObjects.Cast<Ship>()) {
+                    if (ship.dockedStation != unitToSelect) {
+                        return false;
+                    }
+                }
+                return true;
             case ConditionType.Pan:
                 // We can't just take the position of the camera here because the player might be following a ship
                 // Resulting in non player camera movement

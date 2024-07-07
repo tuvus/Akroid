@@ -76,7 +76,7 @@ public class PlayerFactionAI : FactionAI {
             "You will have to hold alt as well since the ships are in a fleet.");
         eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
         eventChain.AddCommEvent(commManager, faction,
-            "Exelent. Now click in empty space to deselect the ships.", 1 * GetTimeScale());
+            "Exelent. Now click in empty space or press D to deselect the ships.", 1 * GetTimeScale());
         eventChain.AddEvent(EventCondition.UnselectUnitsEvent(battleManager.units, false));
         eventChain.AddCommEvent(commManager, faction,
             "There is one more way that you can select ships, try clicking and dragging your mouse to do a box select. " +
@@ -103,6 +103,11 @@ public class PlayerFactionAI : FactionAI {
         eventChain.AddCommEvent(commManager, faction,
             "You can barely see the stations, planet, the many asteroid fields and gas clouds. " +
             "Our minning team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(commManager, faction,
+            "Zoom in and right click on the planet to view the political state. This is our home.", 6 * GetTimeScale());
+        eventChain.AddEvent(EventCondition.OpenObjectPanelEvent(chapter1.planet, true));
+        eventChain.AddCommEvent(commManager, faction,
+            "Here you can see the various factions on the planet, their territory and forces.", 5 * GetTimeScale());
         eventChain.Build(chapter1.eventManager, commManager, faction,
             "What difficulty would you like to play at? Harder difficulties will have a faster intro scene.",
             new CommunicationEventOption[] {
@@ -127,16 +132,12 @@ public class PlayerFactionAI : FactionAI {
                     chapter1.SetDifficultyLevel(Chapter1.DifficultyLevel.Hard);
                     AddTutorial2();
                     return true; })
-        }, 30 * GetTimeScale())(); // Don't forget the last set of parenthesis to call the function.
+        }, 10 * GetTimeScale())(); // Don't forget the last set of parenthesis to call the function.
     }
 
     void AddTutorial2() {
-        chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
+        chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (5));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
-        // TODO: Move this into tutorial 1
-        eventChainBuilder.AddCommEvent(commManager, faction,
-            "\nSee if you can locate and zoom in on the planet with the station, this is our home.", 2 * GetTimeScale());
-        eventChainBuilder.AddEvent(EventCondition.ZoomEvent(600));
         eventChainBuilder.AddCommEvent(commManager, faction,
             "Resources on our planet are sparce due to the slow development of resource reusing policy and climate change. " +
             "This is starting to build tension between the major nations. " +
@@ -169,21 +170,51 @@ public class PlayerFactionAI : FactionAI {
     }
 
     void AddStationTutorial() {
-        chapter1.GetBattleManager().SetSimulationTimeScale(10);
+        chapter1.GetBattleManager().SetSimulationTimeScale(1);
+        Ship shuttle = faction.ships.First(s => s.IsCivilianShip());
         if (LocalPlayer.Instance.GetFaction() == faction) {
-            LocalPlayer.Instance.AddOwnedUnit(faction.ships.First(s => s.IsCivilianShip()));
+            LocalPlayer.Instance.AddOwnedUnit(shuttle);
         }
+        EventChainBuilder movementTutorial = new EventChainBuilder();
         commManager.SendCommunication(new CommunicationEvent(chapter1.planetFactionAI.faction.GetFactionCommManager(), "We have arrived safely at the destination and are setting up our operations.",
         new CommunicationEventOption[] { new CommunicationEventOption("Trade Metal", (communicationEvent) => { return true; },
-                (communicationEvent) => {
-                    if (!communicationEvent.isActive)
-                        return false;
-                    AddTradeRouteToStation(chapter1.tradeStation);
-                    communicationEvent.DeactivateEvent();
-                    chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, "Good to see that you are set up and everything is going well. We are setting up a trade route for you. We will give you resources to operate your station in return for metal.", 3 * GetTimeScale());
-                    return true;
-                })
-        }, true), 5 * GetTimeScale());
+            (communicationEvent) => {
+                if (!communicationEvent.isActive)
+                    return false;
+                AddTradeRouteToStation(chapter1.tradeStation);
+                communicationEvent.DeactivateEvent();
+                chapter1.shipyardFaction.GetFactionCommManager().SendCommunication(faction, 
+                    "Good to see that you are set up and everything is going well. " +
+                    "We are setting up a trade route for you. " +
+                    "We will give you resources to operate your station in return for metal.", 
+                    (communicationEvent) => movementTutorial.Build(chapter1.eventManager)(), 3 * GetTimeScale());
+                return true;
+            })
+        }, true), 2 * GetTimeScale());
+        movementTutorial.AddCommEvent(commManager, faction,
+            "Lets learn about ship movement and investigate the nearby asteroid fields. " +
+            "Open the minning station panel and click on the civilian ship button in the hanger, then close the menu.", 10 * GetTimeScale());
+        movementTutorial.AddEvent(EventCondition.SelectUnitEvent(shuttle, true));
+        movementTutorial.AddEvent(EventCondition.OpenObjectPanelEvent(null, true));
+        movementTutorial.AddEvent(EventCondition.SelectUnitEvent(shuttle, true));
+        movementTutorial.AddCommEvent(commManager, faction,
+            "Now press Q and click on the asteroid field highlighted nearby to issue a move command to it.");
+        List<AsteroidField> closestAsteroidFields = battleManager.asteroidFields.ToList().OrderBy((a) => Vector2.Distance(shuttle.GetPosition(), a.GetPosition())).ToList();
+        movementTutorial.AddEvent(EventCondition.MoveShipToObject(shuttle, closestAsteroidFields.First(), true));
+        // Make sure the ship isn't moving
+        movementTutorial.AddEvent(EventCondition.WaitUntilShipsIdle(new List<Ship> { shuttle }));
+        movementTutorial.AddCommEvent(commManager, faction,
+            "Lets survey some more asteroid fields. " +
+            "Hold shift while issuing a move command to add the command to the ships command queue. " +
+            "Tell the ship to move to the asteroid fields when they are highlighted.");
+        movementTutorial.AddEvent(EventCondition.CommandMoveShipToObjectSequence(shuttle, closestAsteroidFields.GetRange(1, 4).Cast<IObject>().ToList(), true));
+        movementTutorial.AddAction(() => battleManager.SetSimulationTimeScale(10));
+        movementTutorial.AddCommEvent(commManager, faction,
+            "Issue a dock command by selecting the ship and the move command and clicking on the station. " +
+            "We can also add a command to the start of the queue by holding alt, try it!", 10 * GetTimeScale());
+        movementTutorial.AddEvent(EventCondition.DockShipsAtUnit(new List<Ship> { shuttle }, playerMiningStation, true));
+        movementTutorial.AddCommEvent(commManager, faction,
+            "Great job, this concludes the movement practice for now.", 2 * GetTimeScale());
     }
 
     void ManageIdleShips() {

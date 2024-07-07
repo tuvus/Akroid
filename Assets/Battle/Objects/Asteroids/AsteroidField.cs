@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static BattleManager;
 
 public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
