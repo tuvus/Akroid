@@ -72,8 +72,7 @@ public class PlayerFactionAI : FactionAI {
         eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 1, true));
         eventChain.AddCommEvent(commManager, faction,
             "You can see a line coming out of the selected ship, this is where they are going. \n" +
-            "Try holding shift to select multiple ships. " +
-            "You will have to hold alt as well since the ships are in a fleet.");
+            "Try holding shift to select multiple ships. ");
         eventChain.AddEvent(EventCondition.SelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
         eventChain.AddCommEvent(commManager, faction,
             "Exelent. Now click in empty space or press D to deselect the ships.", 1 * GetTimeScale());
@@ -136,7 +135,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     void AddTutorial2() {
-        chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (5));
+        chapter1.GetBattleManager().SetSimulationTimeScale(faction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
         eventChainBuilder.AddCommEvent(commManager, faction,
             "Resources on our planet are sparce due to the slow development of resource reusing policy and climate change. " +

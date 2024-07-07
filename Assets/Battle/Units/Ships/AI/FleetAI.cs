@@ -535,7 +535,7 @@ public class FleetAI : MonoBehaviour {
                 }
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
                 || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition
-                || command.commandType == CommandType.DisbandFleet) {
+                || command.commandType == CommandType.DisbandFleet || command.commandType == CommandType.Formation) {
 
             } else if (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;

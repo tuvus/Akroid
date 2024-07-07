@@ -54,7 +54,11 @@ public class PlayerEventUI : MonoBehaviour {
             case EventCondition.ConditionType.SelectUnitsAmount:
                 HashSet<Unit> selectedUnits = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
                 List<Unit> unitsToSelect = VisualizedEvent.unitsToSelect.ToList();
-                VisualizeObjects(unitsToSelect.Select((unit) => selectedUnits.Contains(unit)).ToList().Cast<IObject>().ToList());
+                if (EventManager.playerGameInput.GetSelectedUnits().fleet != null) {
+                    VisualizeObjects(unitsToSelect.Cast<IObject>().ToList());
+                } else {
+                    VisualizeObjects(unitsToSelect.Where((unit) => !selectedUnits.Contains(unit)).Cast<IObject>().ToList());
+                }
                 break;
             case EventCondition.ConditionType.OpenObjectPanel:
                 if (VisualizedEvent.unitToSelect == null)

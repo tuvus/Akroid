@@ -314,7 +314,7 @@ public class PlayerUI : MonoBehaviour {
 
     #region HelperMethods
     public bool FreezeZoom() {
-        return controlsListUI.activeSelf || playerCommsManager.FreezeScrolling() || stationUI.activeSelf || shipUI.activeSelf || factionOverviewUI.activeSelf;
+        return playerCommsManager.FreezeScrolling() || IsAMenueShown();
     }
 
     public bool GetShowUnitZoomIndicators() {
