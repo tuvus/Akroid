@@ -97,9 +97,10 @@ public class BattleManager : MonoBehaviour {
         battleState = BattleState.Setup;
         if (quickStart == true) {
             Debug.Log("Setting up test scene");
+            ColorPicker colorPicker = new ColorPicker();
             List<FactionData> tempFactions = new List<FactionData> {
-                new FactionData("Faction1", "F1", Random.Range(50000, 80000), 0, 50, 1),
-                new FactionData("Faction2", "F2", Random.Range(50000, 80000), 0, 50, 1)
+                new FactionData("Faction1", "F1", colorPicker.pickColor(), Random.Range(50000, 80000), 0, 50, 1),
+                new FactionData("Faction2", "F2", colorPicker.pickColor(), Random.Range(50000, 80000), 0, 50, 1)
             };
             SetupBattle(0, 0, 1, 0, 0.1f, 1.1f, tempFactions);
         }
@@ -582,6 +583,17 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Determines whether all units and icorns should show their unique faction color
+    /// or their diplomatic status.
+    /// </summary>
+    /// <param name="shown"></param>
+    public void ShowFactionColoring(bool shown) {
+        foreach (var unit in units) {
+            unit.ShowFactionColor(shown);
+        }
+    }
+
     public bool GetEffectsShown() {
         return PlayerUI.Instance.effects;
     }
@@ -592,6 +604,10 @@ public class BattleManager : MonoBehaviour {
     /// <returns>whether or not the particles should be shown</returns>
     public bool GetParticlesShown() {
         return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
+    }
+
+    public bool GetFactionColoringShown() {
+        return PlayerUI.Instance.factionColoring;
     }
 
     public double GetRealTime() {

@@ -301,6 +301,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleFactionColors",
+                    "type": "Button",
+                    "id": "0da63da2-28b5-4da8-991c-16d30a0d7dbd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -763,6 +772,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "CreateFleet",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0226e264-5dfe-44c0-b3c2-3803f140b35a",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleFactionColors",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

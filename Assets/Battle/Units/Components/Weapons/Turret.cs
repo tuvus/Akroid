@@ -38,6 +38,7 @@ public class Turret : ModuleComponent {
     public virtual void SetupTurret(Unit unit) {
         base.SetupBattleObject(unit.battleManager);
         this.unit = unit;
+        faction = unit.faction;
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);

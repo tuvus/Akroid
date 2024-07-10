@@ -10,6 +10,7 @@ using Random = UnityEngine.Random;
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
+    [field: SerializeField] public Color color { get; private set; }
     [field: SerializeField] public new string name { get; private set; }
     [field: SerializeField] public string abbreviatedName { get; private set; }
     [field: SerializeField] public long credits { get; private set; }
@@ -62,16 +63,18 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         public Type factionAI;
         public string name;
         public string abbreviatedName;
+        public Color color;
         public Character leader;
         public long credits;
         public long science;
         public int ships;
         public int stations;
 
-        public FactionData(Type factionAI, string name, string abbreviatedName, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
             this.abbreviatedName = abbreviatedName;
+            this.color = color;
             this.leader = leader;
             this.credits = credits;
             this.science = science;
@@ -79,10 +82,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(string name, string abbreviatedName, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships, int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
             this.abbreviatedName = abbreviatedName;
+            this.color = color;
             this.leader = leader;
             this.credits = credits;
             this.science = science;
@@ -90,10 +94,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(Type factionAI, string name, string abbreviatedName, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, long credits, long science, int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
             this.abbreviatedName = abbreviatedName;
+            this.color = color;
             this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
@@ -101,10 +106,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(string name, string abbreviatedName, long credits, long science, int ships, int stations) {
+        public FactionData(string name, string abbreviatedName, Color color, long credits, long science, int ships, int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
             this.abbreviatedName = abbreviatedName;
+            this.color = color;
             this.leader = Character.GenerateCharacter();
             this.credits = credits;
             this.science = science;
@@ -121,6 +127,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             SetPosition(targetPosition.Value);
         else
             SetPosition(Vector2.zero);
+        this.color = factionData.color;
         ships = new HashSet<Ship>(factionData.ships * 5);
         fleets = new HashSet<Fleet>(10);
         stations = new HashSet<Station>(factionData.stations * 5);
@@ -716,6 +723,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public FactionCommManager GetFactionCommManager() {
         return commManager;
+    }
+
+    public Color GetColorTint() {
+        return new Color(.6f + color.r * .4f, .6f + color.b * .4f, .6f + color.g * .4f);
     }
     #endregion
 }

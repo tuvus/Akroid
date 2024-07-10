@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-1)]
 public class LocalPlayerInput : MonoBehaviour {
@@ -79,6 +75,7 @@ public class LocalPlayerInput : MonoBehaviour {
         playerInput.Player.CenterCamera.performed += context => CenterCamera();
         playerInput.Player.FollowUnit.performed += context => FollowUnitButtonPressed();
         playerInput.Player.ToggleZoomIndicators.performed += context => ToggleUnitZoomIndicators();
+        playerInput.Player.ToggleFactionColors.performed += context => ToggleFactionColor();
 
         playerInput.Enable();
         timeStepIndex = 1;
@@ -257,7 +254,7 @@ public class LocalPlayerInput : MonoBehaviour {
             LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
             return;
         }
-        LocalPlayer.Instance.GetPlayerUI().ToggleMenueUI();
+        PlayerUI.Instance.ToggleMenueUI();
     }
 
     void FollowUnitButtonPressed() {
@@ -271,7 +268,11 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     void ToggleUnitZoomIndicators() {
-        LocalPlayer.Instance.GetPlayerUI().ToggleUnitZoomIndicators();
+        PlayerUI.Instance.ToggleUnitZoomIndicators();
+    }
+
+    void ToggleFactionColor() {
+        PlayerUI.Instance.SetFactionColor(!PlayerUI.Instance.factionColoring);
     }
 
     BattleObject GetBattleObjectOverMouse() {

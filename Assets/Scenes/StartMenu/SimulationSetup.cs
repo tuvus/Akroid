@@ -31,6 +31,7 @@ public class SimulationSetup : MonoBehaviour {
     private int gasCloudCount;
     private float systemSizeModifier;
     private float researchModifier;
+    ColorPicker colorPicker = new ColorPicker();
 
     public void Awake() {
         gameObject.SetActive(false);
@@ -60,10 +61,11 @@ public class SimulationSetup : MonoBehaviour {
         asteroidCountModifier = 1.2f;
         systemSizeModifier = 1.2f;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", "F1", Random.Range(1000000, 1500000), 0, 5, 5));
-        factions.Add(new FactionData("Faction2", "F2", Random.Range(1000000, 1500000), 0, 5, 5));
-        factions.Add(new FactionData("Faction3", "F3", Random.Range(1000000, 1500000), 0, 5, 5));
-        factions.Add(new FactionData("Faction4", "F4", Random.Range(1000000, 1500000), 0, 5, 5));
+        ColorPicker colorPicker = new ColorPicker();
+        factions.Add(new FactionData("Faction1", "F1", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction2", "F2", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction3", "F3", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
+        factions.Add(new FactionData("Faction4", "F4", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
         StartSimulation();
     }
 
@@ -75,8 +77,8 @@ public class SimulationSetup : MonoBehaviour {
         systemSizeModifier = 0.1f;
         gasCloudCount = 0;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", "F1", Random.Range(1000000, 1500000), 0, 50, 1));
-        factions.Add(new FactionData("Faction2", "F2", Random.Range(1000000, 1500000), 0, 50, 1));
+        factions.Add(new FactionData("Faction1", "F1", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 50, 1));
+        factions.Add(new FactionData("Faction2", "F2", colorPicker.pickColor(), Random.Range(1000000, 1500000), 0, 50, 1));
         StartSimulation();
     }
 
@@ -119,9 +121,9 @@ public class SimulationSetup : MonoBehaviour {
             } else {
                 newName = newName + 1;
             }
-            factions.Add(new FactionData(newName, "F" + factions.Count.ToString(), factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
+            factions.Add(new FactionData(newName, "F" + factions.Count.ToString(), colorPicker.pickColor(), factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
         } else {
-            factions.Add(new FactionData("New Faction", "F" + factions.Count.ToString(), 200000, 0, 2, 2));
+            factions.Add(new FactionData("New Faction", "F" + factions.Count.ToString(), colorPicker.pickColor(), 200000, 0, 2, 2));
         }
         GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
         newFactionPrefab.name = factions[factions.Count - 1].name;
@@ -162,7 +164,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void UpdateSelectedFaction() {
         try {
-            factions[selectedFaction] = new FactionData(editFactionName.text, editFactionAbbreviation.text, long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
+            factions[selectedFaction] = new FactionData(editFactionName.text, editFactionAbbreviation.text, colorPicker.pickColor(), long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
         } catch {
 
         }

@@ -59,6 +59,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         unitSelection.SetupSelection(this);
         SetParticleSpeed(particleSpeed);
         followDist = (int)(GetSize() * 2);
+        ShowFactionColor(battleManager.GetFactionColoringShown(), true);
     }
 
     public void SetupWeaponRanges() {
@@ -402,6 +403,17 @@ public abstract class Unit : BattleObject, IParticleHolder {
         destroyEffect.ShowParticles(shown);
     }
 
+    public void ShowFactionColor(bool shown, bool initialising = false) {
+        if (!initialising && !IsSpawned()) return;
+        if (shown) {
+            GetSpriteRenderer().color = faction.GetColorTint();
+            GetSpriteRenderers().ForEach(r => r.color = faction.GetColorTint());
+        } else {
+            GetSpriteRenderers().ForEach(r => r.color = Color.white);
+        }
+        unitSelection.UpdateFactionColor();
+    }
+
     [ContextMenu("GetUnitDamagePerSecond")]
     public void GetEditorUnitDamagePerSecond() {
         float dps = 0;
@@ -445,6 +457,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         spriteRenderers.AddRange(turrets.Select(t => t.GetSpriteRenderer()));
         return spriteRenderers;
     }
+
     #endregion
 
 }

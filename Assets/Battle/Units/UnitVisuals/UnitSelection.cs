@@ -31,7 +31,11 @@ public class UnitSelection : MonoBehaviour {
 
     public void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
-        spriteRenderer.color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToUnit(unit));
+        if (unit.battleManager.GetFactionColoringShown()) {
+            spriteRenderer.color = unit.faction.GetColorTint();
+        } else {
+            spriteRenderer.color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToUnit(unit));
+        }
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
 

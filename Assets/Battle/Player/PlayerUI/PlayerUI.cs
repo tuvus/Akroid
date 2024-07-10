@@ -48,6 +48,7 @@ public class PlayerUI : MonoBehaviour {
     public bool effects;
     public bool particles;
     private bool commandRendererShown;
+    public bool factionColoring;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {
         Instance = this;
@@ -60,6 +61,7 @@ public class PlayerUI : MonoBehaviour {
         effects = true;
         particles = true;
         commandRendererShown = true;
+        factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
         playerMenueUI.SetupMenueUI(this);
         playerStationUI.SetupPlayerStationUI(this);
@@ -308,6 +310,13 @@ public class PlayerUI : MonoBehaviour {
         commandRendererShown = shown;
         if (!shown) {
             commandRenderer.enabled = false;
+        }
+    }
+
+    public void SetFactionColor(bool shown) {
+        if (factionColoring != shown) {
+            factionColoring = shown;
+            BattleManager.Instance.ShowFactionColoring(shown);
         }
     }
     #endregion
