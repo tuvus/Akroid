@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.UIElements;
 using static Command;
 
 public class FleetAI : MonoBehaviour {
@@ -86,6 +87,7 @@ public class FleetAI : MonoBehaviour {
             CommandType.TurnToRotation => DoTurnToRotation(command, deltaTime),
             CommandType.TurnToPosition => DoTurnToPosition(command, deltaTime),
             CommandType.Move => DoMoveCommand(command, deltaTime),
+            CommandType.Follow => DoFollowCommand(command, deltaTime),
             CommandType.AttackMove => DoAttackCommand(command, deltaTime),
             CommandType.AttackMoveUnit => DoAttackCommand(command, deltaTime),
             CommandType.AttackFleet => DoAttackCommand(command, deltaTime),
@@ -165,6 +167,34 @@ public class FleetAI : MonoBehaviour {
 
         if (currentCommandState == CommandType.Move && fleet.AreShipsIdle()) {
             return CommandResult.ContinueRemove;
+        }
+        return CommandResult.Stop;
+    }
+
+    CommandResult DoFollowCommand(Command command, float deltaTime) {
+        if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+            return CommandResult.ContinueRemove;
+        }
+
+        Vector2 newTargetPostion = Vector2.MoveTowards(fleet.GetPosition(), command.targetUnit.GetPosition(), Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) - fleet.GetSize() + command.targetUnit.GetSize());
+        if (newCommand) {
+            currentCommandState = CommandType.TurnToPosition;
+            command.targetPosition = newTargetPostion;
+            SetFleetMoveCommand(newTargetPostion);
+            newCommand = false;
+            return CommandResult.Stop;
+        }
+
+        if (Vector2.Distance(command.targetPosition, newTargetPostion) > 100) {
+            currentCommandState = CommandType.TurnToPosition;
+            command.targetPosition = newTargetPostion;
+            SetFleetMoveCommand(newTargetPostion);
+        }
+
+        if (currentCommandState == CommandType.TurnToPosition && fleet.AreShipsIdle()) {
+            fleet.NextShipsCommand();
+            currentCommandState = CommandType.Move;
+            return CommandResult.Stop;
         }
         return CommandResult.Stop;
     }
@@ -291,14 +321,29 @@ public class FleetAI : MonoBehaviour {
     }
 
     private CommandResult DoProtectUnit(Command command, float deltaTime) {
-        if (command.protectUnit == null) {
+        if (command.protectUnit == null || !command.protectUnit.IsSpawned()) {
             return CommandResult.ContinueRemove;
         }
+
+        Vector2 newTargetPostion = Vector2.MoveTowards(fleet.GetPosition(), command.protectUnit.GetPosition(), Vector2.Distance(fleet.GetPosition(), command.protectUnit.GetPosition()) - fleet.GetSize() + command.protectUnit.GetSize());
         if (newCommand) {
-            foreach (var ship in fleet.ships) {
-                ship.shipAI.AddUnitAICommand(CreateProtectCommand(command.protectUnit, command.maxSpeed));
-            }
+            currentCommandState = CommandType.TurnToPosition;
+            command.targetPosition = newTargetPostion;
+            SetFleetMoveCommand(newTargetPostion);
+            newCommand = false;
+            return CommandResult.Stop;
+        }
+
+        if (Vector2.Distance(command.targetPosition, newTargetPostion) > 100) {
+            currentCommandState = CommandType.TurnToPosition;
+            command.targetPosition = newTargetPostion;
+            SetFleetMoveCommand(newTargetPostion);
+        }
+
+        if (currentCommandState == CommandType.TurnToPosition && fleet.AreShipsIdle()) {
+            fleet.NextShipsCommand();
             currentCommandState = CommandType.Move;
+            return CommandResult.Stop;
         }
         return CommandResult.Stop;
     }
@@ -540,7 +585,7 @@ public class FleetAI : MonoBehaviour {
             } else if (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;
                 positions.Add(command.protectUnit.GetPosition());
-            } else if (command.commandType == CommandType.AttackMoveUnit) {
+            } else if (command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Follow) {
                 if (command.targetUnit == null) continue;
                 positions.Add(command.targetUnit.GetPosition());
             } else if (command.commandType == CommandType.AttackFleet) {

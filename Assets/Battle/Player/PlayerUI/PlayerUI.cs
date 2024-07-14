@@ -122,11 +122,12 @@ public class PlayerUI : MonoBehaviour {
             }
             if (commandRendererShown && battleObject.IsShip()) {
                 Ship ship = (Ship)battleObject;
-                if (ship.shipAI.commands.Count == 0) return;
                 List<Vector3> positions;
                 if (fleet != null) {
+                    if (fleet.FleetAI.commands.Count == 0) return;
                     positions = fleet.FleetAI.GetMovementPositionPlan();
                 } else {
+                    if (ship.shipAI.commands.Count == 0) return;
                     positions = ship.shipAI.GetMovementPositionPlan();
                 }
                 int targetCount = commandRenderer.positionCount;

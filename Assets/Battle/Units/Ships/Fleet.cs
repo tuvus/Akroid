@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
-using UnityEngine.UIElements;
 
 public class Fleet : ShipGroup {
     public Faction faction { get; private set; }
