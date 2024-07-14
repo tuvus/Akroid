@@ -47,7 +47,7 @@ public class PlayerUI : MonoBehaviour {
     public bool updateUnitZoomIndicators;
     public bool effects;
     public bool particles;
-    private bool commandRendererShown;
+    public bool commandRendererShown;
     public bool factionColoring;
 
     public void SetUpUI(LocalPlayerInput localPlayerInput) {

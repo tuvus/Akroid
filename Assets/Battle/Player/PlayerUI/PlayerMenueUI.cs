@@ -11,6 +11,7 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Toggle menueUIEffects;
     [SerializeField] private Toggle menueUIParticles;
     [SerializeField] private Toggle menueUICommandRenderer;
+    [SerializeField] private Toggle menueUIFactionColors;
     [SerializeField] private Dropdown menueUIFactionSelect;
     [SerializeField] private Text timeScaleText;
     [SerializeField] private Slider menueUITimeScale;
@@ -35,6 +36,8 @@ public class PlayerMenueUI : MonoBehaviour {
         menueUIEffects.SetIsOnWithoutNotify(playerUI.effects);
         menueUIParticles.transform.parent.gameObject.SetActive(playerUI.effects);
         menueUIParticles.SetIsOnWithoutNotify(playerUI.particles);
+        menueUICommandRenderer.SetIsOnWithoutNotify(playerUI.commandRendererShown);
+        menueUIFactionColors.SetIsOnWithoutNotify(playerUI.factionColoring);
         menueUIFactionSelect.AddOptions(factionNames);
         if (LocalPlayer.Instance.GetFaction() == null)
             menueUIFactionSelect.SetValueWithoutNotify(0);
@@ -64,6 +67,10 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void SetCommandRenderer() {
         playerUI.SetCommandRenderer(menueUICommandRenderer.isOn);
+    }
+
+    public void SetFactionColor() {
+        playerUI.SetFactionColor(menueUIFactionColors.isOn);
     }
 
     public void ChangeFaction() {
