@@ -195,22 +195,21 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        if (Vector2.Distance(Vector2.zero, position) <= minDistanceFromObject * 5)
+            return false;
         foreach (var star in battleManager.stars) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000) {
+            if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000)
                 return false;
-            }
         }
         foreach (var asteroidField in battleManager.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize()) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize())
                 return false;
-            }
         }
         foreach (var faction in battleManager.factions) {
             if (faction == this)
                 continue;
-            if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000) {
+            if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000)
                 return false;
-            }
         }
         return true;
     }
