@@ -40,14 +40,14 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewStar("Star" + (i + 1));
         }
         ColorPicker colorPicker = new ColorPicker();
-        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.pickColor(), Random.Range(1, 2) * 5400, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
         playerMiningStation = (MiningStation)battleManager.CreateNewStation(new Station.StationData(playerFaction, battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", playerFaction.GetPosition(), Random.Range(0, 360), false));
 
-        otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.pickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
@@ -57,7 +57,7 @@ public class Chapter1 : CampaingController {
         otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
 
 
-        planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.pickColor(), 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         planet = battleManager.CreateNewPlanet(new BattleManager.PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), (long)Random.Range(500, 600) * 100000000, 0.01, Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
         tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "TradeStation", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
@@ -67,11 +67,11 @@ public class Chapter1 : CampaingController {
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
         tradeStation.BuildShip(Ship.ShipClass.HeavyTransport);
 
-        shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.pickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
 
-        researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("Frontier Research", "FRO", colorPicker.pickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
+        researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("Frontier Research", "FRO", colorPicker.PickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
         researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), "ResearchStation", researchFaction.GetPosition(), Random.Range(0, 360)));
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
@@ -122,13 +122,13 @@ public class Chapter1 : CampaingController {
 
 
         planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), 0f, 0f, Random.Range(5.0f, 10.0f), "Increases space production");
-        Faction planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", colorPicker.pickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        Faction planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(8.0f, 10.0f), "Increases unit production");
-        Faction planetDemocracy = battleManager.CreateNewFaction(new Faction.FactionData("Democracy", "DEM", colorPicker.pickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        Faction planetDemocracy = battleManager.CreateNewFaction(new Faction.FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(6f, 11f), "Increases mining speed");
-        Faction planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", colorPicker.pickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        Faction planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetOligarchy, Random.Range(0.70f, 0.80f), Random.Range(5f, 8f), "Increases research rate");
-        Faction minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", colorPicker.pickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        Faction minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(minorFactions, Random.Range(0.70f, 0.80f), Random.Range(2f, 3f), "All base stats improved a little");
         //planetEmpire.StartWar(planetDemocracy);
         //planetDemocracy.StartWar(planetOligarchy);

@@ -12,6 +12,8 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private GameObject optionPrefab;
     [SerializeField] private GameObject characterPortraitPanel;
     [SerializeField] private Transform characterPortraitFrame;
+    [SerializeField] private Image characterNameBackground;
+    [SerializeField] private Image factionNameBackground;
     [SerializeField] private Text characterName;
     [SerializeField] private Text factionName;
     private GameObject characterPortrait;
@@ -75,6 +77,7 @@ public class PlayerCommsManager : MonoBehaviour {
     void CreateCommEvent(CommunicationEvent communicationEvent) {
         GameObject newCommEvent = Instantiate(communicationEventPrefab, communicationLogTransform);
         newCommEvent.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.sender.GetSenderName() + ": " + communicationEvent.text;
+        newCommEvent.GetComponent<Image>().color = communicationEvent.sender.faction.GetColorBackgroundTint();
         if (communicationEvent.isActive) {
             for (int i = 0; i < communicationEvent.options.Length; i++) {
                 GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
@@ -108,7 +111,10 @@ public class PlayerCommsManager : MonoBehaviour {
         if (factionCommManager.GetPortrait() != null) {
             characterPortrait = Instantiate(factionCommManager.GetPortrait(), characterPortraitFrame);
             characterPortraitPanel.SetActive(true);
+            characterNameBackground.color = factionCommManager.faction.GetColorBackgroundTint(.4f);
             characterName.text = factionCommManager.GetSenderName();
+            Color factionColor = factionCommManager.faction.color;
+            factionNameBackground.color = new Color(factionColor.r * .4f, factionColor.g * .4f, factionColor.b * .4f, .8f);
             factionName.text = factionCommManager.faction.name;
             portraitTime = 10;
         }

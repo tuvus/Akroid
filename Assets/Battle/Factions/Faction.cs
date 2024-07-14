@@ -726,7 +726,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public Color GetColorTint() {
-        return new Color(.6f + color.r * .4f, .6f + color.b * .4f, .6f + color.g * .4f);
+        return new Color(.6f + color.r * .4f, .6f + color.g * .4f, .6f + color.b * .4f);
+    }
+
+    public Color GetColorBackgroundTint(float alpha = .1f) {
+        return new Color(color.r, color.g, color.b, alpha);
     }
     #endregion
 }

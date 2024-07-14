@@ -99,8 +99,8 @@ public class BattleManager : MonoBehaviour {
             Debug.Log("Setting up test scene");
             ColorPicker colorPicker = new ColorPicker();
             List<FactionData> tempFactions = new List<FactionData> {
-                new FactionData("Faction1", "F1", colorPicker.pickColor(), Random.Range(50000, 80000), 0, 50, 1),
-                new FactionData("Faction2", "F2", colorPicker.pickColor(), Random.Range(50000, 80000), 0, 50, 1)
+                new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1),
+                new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1)
             };
             SetupBattle(0, 0, 1, 0, 0.1f, 1.1f, tempFactions);
         }
