@@ -100,7 +100,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void PrimaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
+        SelectOnlyControllableUnits();
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             ToggleActionType(ActionType.UndockCombatAtCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
@@ -111,7 +111,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void SecondaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
+        SelectOnlyControllableUnits();
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             ToggleActionType(ActionType.UndockTransportAtCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {
@@ -122,8 +122,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void TertiaryCommandButtonPreformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
             return;
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
+        SelectOnlyControllableUnits();
         if (selectedUnits.HasStation() && !selectedUnits.HasShip()) {
             ToggleActionType(ActionType.UndockAllCombatCommand);
         } else if (actionType != ActionType.Selecting && selectedUnits.HasShip()) {

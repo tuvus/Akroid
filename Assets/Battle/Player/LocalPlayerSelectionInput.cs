@@ -306,6 +306,17 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     public void SelectOnlyControllableUnits() {
         selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
+        if (selectedUnits.fleet != null && selectedUnits.fleet.faction != LocalPlayer.Instance.faction) {
+            selectedUnits.UnselectAllBattleObjects();
+            selectedUnits.fleet = null;
+            selectedUnits.groupType = SelectionGroup.GroupType.None;
+        }
+        if (selectedUnits.GetAllUnits().Count == 0) {
+            selectedUnits.fleet = null;
+            selectedUnits.groupType = SelectionGroup.GroupType.None;
+            displayedFleet = null;
+            displayedBattleObject = null;
+        }
     }
 
     /// <summary>

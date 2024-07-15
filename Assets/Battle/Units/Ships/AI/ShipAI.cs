@@ -745,8 +745,14 @@ public class ShipAI : MonoBehaviour {
                 if (command.targetUnit == null) continue;
                 positions.Add(command.targetUnit.GetPosition());
             } else if (command.commandType == CommandType.AttackFleet) {
-                if (command.targetFleet == null) continue;
-                positions.Add(command.targetFleet.GetPosition());
+                if (command.targetUnit != null) {
+                    positions.Add(command.targetUnit.GetPosition());
+                    continue;
+                }
+                if (command.targetFleet != null) {
+                    positions.Add(command.targetFleet.GetPosition());
+                    continue;
+                }
             } else if (command.commandType == CommandType.Dock) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
