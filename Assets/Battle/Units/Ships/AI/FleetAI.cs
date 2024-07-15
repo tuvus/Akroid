@@ -590,6 +590,8 @@ public class FleetAI : MonoBehaviour {
             } else if (command.commandType == CommandType.Dock) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
+            } else if (command.commandType == CommandType.AttackMove) {
+                positions.Add(command.targetPosition);
             } else {
                 positions.Add(command.targetPosition);
             }

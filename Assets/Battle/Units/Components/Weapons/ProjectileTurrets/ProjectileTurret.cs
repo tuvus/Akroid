@@ -16,6 +16,7 @@ public class ProjectileTurret : Turret {
     public override void SetupTurret(Unit unit) {
         base.SetupTurret(unit);
         flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
+        flash.transform.localScale = new Vector2(.2f,.2f);
         flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);
         flash.enabled = false;
     }

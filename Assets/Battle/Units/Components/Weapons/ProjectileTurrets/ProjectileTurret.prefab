@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 206751011823210777}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &206751011823210778
 SpriteRenderer:
@@ -95,28 +95,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 206751011823210777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd276d98f85d98645bbebee4272a5be4, type: 3}
+  m_Script: {fileID: 11500000, guid: 97afe09d70b36074f9d3c651723bd1c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
-  Module: {fileID: 0}
+  <objectName>k__BackingField: 
+  <size>k__BackingField: 0
+  <position>k__BackingField: {x: 0, y: 0}
+  <faction>k__BackingField: {fileID: 0}
+  module: {fileID: 0}
   targetRotation: 0
-  startRotation: 0
-  turretOffset: 1.5
-  range: 0
-  rotateSpeed: 0
-  targeting: 1
-  minRotate: 0
-  maxRotate: 0
   targetVector: {x: 0, y: 0}
   targetUnit: {fileID: 0}
-  fireVelocity: 0
-  fireAccuracy: 0
-  minDamage: 0
-  maxDamage: 0
-  projectileRange: 0
-  projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
-    type: 3}
 --- !u!114 &206751011823210776
 MonoBehaviour:
   m_ObjectHideFlags: 0
