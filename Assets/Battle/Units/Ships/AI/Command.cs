@@ -208,4 +208,10 @@ public class Command {
     public bool IsAttackCommand() {
         return commandType == CommandType.AttackMove || commandType == CommandType.AttackMoveUnit || commandType == CommandType.AttackFleet;
     }
+
+    public IObject GetTargetObject() {
+        if (targetFleet != null) return targetFleet;
+        if (targetUnit != null) return targetUnit;
+        return null;
+    }
 }

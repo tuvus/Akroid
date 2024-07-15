@@ -71,16 +71,25 @@ public class SimulationFactionAI : FactionAI {
             if (!faction.closeEnemyGroups[i].IsFleet())
                 continue;
             Fleet targetFleet = (Fleet)faction.closeEnemyGroups[i];
-            //if (targetFleet.IsSentFleetsStronger(faction))
-            //    return;
+            if (faction.stations.Any(s => Vector2.Distance(s.GetPosition(), targetFleet.GetPosition()) <= threatDistance + targetFleet.GetSize() + targetFleet.maxWeaponRange))
+                continue;
             threats.Add(targetFleet);
         }
     }
 
     void ManageFleets() {
         foreach (var defenseFleet in defenseFleets.ToList()) {
+            bool recheck = false;
             // In the case we are patrolling, our command will be of type AttackMove, so we want to check for enemy fleets again
-            if (defenseFleet.FleetAI.commands.Any(c => c.IsAttackCommand() && c.commandType != Command.CommandType.AttackMove)) continue;
+            if (defenseFleet.FleetAI.commands.Any(c => c.GetTargetObject() != null)) {
+                IObject currentThreat = defenseFleet.FleetAI.commands.First(c => c.GetTargetObject() != null).GetTargetObject();
+                float distanceToCurrentThreat = Vector2.Distance(defenseFleet.GetPosition(), currentThreat.GetPosition()) - currentThreat.GetSize();
+                // If there are no closer threats then we should just continue
+                if (distanceToCurrentThreat - defenseFleet.GetSize() <= threatDistance || threats.All(threat => (IObject)threat == currentThreat || Vector2.Distance(defenseFleet.GetPosition(), threat.GetPosition()) - threat.GetSize() > distanceToCurrentThreat - 100)) {
+                    if (distanceToCurrentThreat <= threatDistance * 2 || currentThreat.GetType() != typeof(Fleet) || threats.Contains((Fleet)currentThreat))
+                        continue;
+                }
+            }
 
             // First check if there are any enemy fleets to defend against
             Fleet threat = null;
@@ -93,13 +102,13 @@ public class SimulationFactionAI : FactionAI {
                 }
             }
             if (threat != null) {
-                defenseFleet.FleetAI.AddFleetAICommand(Command.CreateAttackFleetCommand(threat), Command.CommandAction.AddToEnd);
+                defenseFleet.FleetAI.AddFleetAICommand(Command.CreateAttackFleetCommand(threat), Command.CommandAction.Replace);
                 threat.sentFleets.Add(defenseFleet);
                 continue;
             }
 
             // Find any extra units that the fleet needs to defend against
-            if (!defenseFleet.FleetAI.HasActionCommand()) {
+            if (!defenseFleet.FleetAI.HasActionCommand() || recheck) {
                 for (int f = 0; f < faction.closeEnemyGroupsDistance.Count; f++) {
                     if (faction.closeEnemyGroupsDistance[f] < faction.GetSize()) {
                         List<Unit> targetUnits = faction.closeEnemyGroups[f].battleObjects.ToList();
@@ -127,7 +136,8 @@ public class SimulationFactionAI : FactionAI {
 
             // If no kind of threat has been found then lets patrol the area
             if (defenseFleet.IsFleetIdle()) {
-                Vector2 randomTargetPosition = faction.GetAveragePosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(100, faction.GetSize() + 500));
+                float farthestStationDistance = faction.stations.Max(s => Vector2.Distance(s.GetPosition(), faction.position));
+                Vector2 randomTargetPosition = faction.GetAveragePosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(100, farthestStationDistance + 500));
                 defenseFleet.FleetAI.AddFleetAICommand(Command.CreateFormationCommand(defenseFleet.GetPosition(), Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), randomTargetPosition)), Command.CommandAction.Replace);
                 defenseFleet.FleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(randomTargetPosition), Command.CommandAction.AddToEnd);
             }
