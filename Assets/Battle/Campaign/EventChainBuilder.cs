@@ -26,7 +26,7 @@ public class EventChainBuilder {
         events.Add(new CommunicationEventHolder(commManager, reciever, text, delay));
     }
 
-    public void AddEvent(EventCondition eventCondition) {
+    public void AddCondition(EventCondition eventCondition) {
         events.Add(eventCondition);
     }
 

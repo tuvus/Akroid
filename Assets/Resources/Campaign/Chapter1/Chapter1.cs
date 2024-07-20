@@ -19,8 +19,8 @@ public class Chapter1 : CampaingController {
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
     public Shipyard shipyard { get; private set; }
-    Faction researchFaction;
-    Station researchStation;
+    public Faction researchFaction { get; private set; }
+    public Station researchStation { get; private set; }
     float metalCost;
 
     public DifficultyLevel difficultyLevel { get; private set; }

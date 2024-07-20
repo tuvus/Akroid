@@ -53,7 +53,7 @@ public class PlayerEventUI : MonoBehaviour {
             case EventCondition.ConditionType.SelectUnits:
             case EventCondition.ConditionType.SelectUnitsAmount:
                 HashSet<Unit> selectedUnits = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
-                List<Unit> unitsToSelect = VisualizedEvent.unitsToSelect.ToList();
+                List<Unit> unitsToSelect = VisualizedEvent.units.ToList();
                 if (EventManager.playerGameInput.GetSelectedUnits().fleet != null) {
                     VisualizeObjects(unitsToSelect.Cast<IObject>().ToList());
                 } else {
@@ -77,10 +77,16 @@ public class PlayerEventUI : MonoBehaviour {
                 List<IObject> objectsToVisualize = new List<IObject> { VisualizedEvent.unitToSelect };
                 foreach (var ship in VisualizedEvent.iObjects.Cast<Ship>().ToList()) {
                     if (ship.dockedStation != VisualizedEvent.unitToSelect
-                        && (ship.shipAI.commands.All((command) => !(command.commandType == Command.CommandType.Dock && command.targetUnit == VisualizedEvent.unitToSelect)))) {
-                        objectsToVisualize.Add(ship);
+                        && !ship.shipAI.commands.Any((command) => command.commandType == Command.CommandType.Dock && command.destinationStation == VisualizedEvent.unitToSelect)) {
+                        if (ship.dockedStation != null) {
+                            if (!objectsToVisualize.Contains(ship.dockedStation))
+                                objectsToVisualize.Add(ship.dockedStation);
+                        } else {
+                            objectsToVisualize.Add(ship);
+                        }
                     }
                 }
+                VisualizeObjects(objectsToVisualize);
                 break;
             case EventCondition.ConditionType.MoveShipToObject:
                 // If the unit is docked at a station, we need to show the station instead
@@ -110,6 +116,18 @@ public class PlayerEventUI : MonoBehaviour {
                         objectToVisualize = VisualizedEvent.iObjects[i + 1];
                     }
                     VisualizeObjects(new List<IObject>() { objectToVisualize });
+                }
+                break;
+
+            case EventCondition.ConditionType.CommandDockShipToUnit:
+                HashSet<Unit> selectedUnits4 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                if (selectedUnits4.Count != 1 || !selectedUnits4.Contains(VisualizedEvent.iObjects.First())) {
+                    VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.First() });
+                } else {
+                    ShipAI shipAI = ((Ship)VisualizedEvent.iObjects.First()).shipAI;
+                    if (!shipAI.commands.Any((c) => c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)VisualizedEvent.iObjects.Last()) ) {
+                        VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.Last() });
+                    }
                 }
                 break;
         }
