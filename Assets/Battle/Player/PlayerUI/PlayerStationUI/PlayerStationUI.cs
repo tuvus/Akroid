@@ -272,13 +272,16 @@ public class PlayerStationUI : MonoBehaviour {
             Transform hangerBayButtonTransform = hangerList.GetChild(i);
             Button hangerBayButton = hangerBayButtonTransform.GetComponent<Button>();
             hangerBayButton.onClick.RemoveAllListeners();
+            hangerBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.RemoveAllListeners();
             Ship ship = shipsInHanger[i];
             int f = i;
+
             hangerBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerButtonPressed(f)));
             hangerBayButtonTransform.gameObject.SetActive(true);
             hangerBayButtonTransform.GetChild(0).GetComponent<Text>().text = ship.GetUnitName();
             hangerBayButtonTransform.GetChild(1).GetComponent<Text>().text = ship.faction.abbreviatedName;
             hangerBayButtonTransform.GetChild(2).GetComponent<Text>().text = ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
+            hangerBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerInfoButtonPressed(f)));
             hangerBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
         }
         for (int i = shipsInHanger.Count; i < hangerList.childCount; i++) {
@@ -299,5 +302,10 @@ public class PlayerStationUI : MonoBehaviour {
         }
         //if (LocalPlayer.Instance.ownedUnits.Contains(displayedStation) || shipsInHanger[index].faction == LocalPlayer.Instance.GetFaction())
         //    shipsInHanger[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
+    }
+
+    public void HangerInfoButtonPressed(int index) {
+        LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
+        LocalPlayer.Instance.GetPlayerUI().SetDisplayShip(shipsInHanger[index]);
     }
 }
