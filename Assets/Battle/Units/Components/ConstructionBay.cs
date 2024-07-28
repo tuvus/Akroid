@@ -90,6 +90,17 @@ public class ConstructionBay : ModuleComponent {
         return true;
     }
 
+    public long GetCreditCostOfShip(Faction faction, ShipScriptableObject ship) {
+        if (faction == this.faction) {
+            return ship.cost;
+        } else if (faction != null) {
+            // Other factions need to pay us for the metal
+            return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] * faction.GetFactionAI().GetSellCostOfMetal());
+        } else {
+            return ship.cost;
+        }
+    }
+
     public int GetNumberOfShipsOfClass(ShipClass shipClass) {
         return buildQueue.Count(q => q.shipScriptableObject.shipClass == shipClass);
     }

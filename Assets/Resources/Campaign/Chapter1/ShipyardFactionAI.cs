@@ -1,24 +1,21 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using static FactionCommManager;
+using Unity.Mathematics;
 
 public class ShipyardFactionAI : FactionAI {
     Chapter1 chapter1;
     PlanetFactionAI planetFactionAI;
     Shipyard shipyard;
-    float timeUntilNextCommunication;
-    long transportMetalCost = 4800;
-    long transportCreditCost = 10000;
-    long lancerMetalCost = 9800;
-    long lancerCreditCost = 20000;
+    float transportTime;
 
     public void SetupShipyardFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard) {
         base.SetupFactionAI(battleManager, faction);
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
+        transportTime = 0;
+        // We need to re-add the Idle ships since we are seting up after creating them
+        idleShips.AddRange(faction.ships);
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -29,6 +26,8 @@ public class ShipyardFactionAI : FactionAI {
             }
         }
         UpdateFactionCommunication(deltaTime);
+        ManageIdleShips();
+        ManageTransportShips(deltaTime);
     }
 
     void UpdateFactionCommunication(float deltaTime) {
@@ -36,46 +35,41 @@ public class ShipyardFactionAI : FactionAI {
             if (faction.GetFactionCommManager().communicationLog[i].isActive && faction.GetFactionCommManager().communicationLog[i].options.Length > 0)
                 faction.GetFactionCommManager().communicationLog[i].ChooseOption(0);
         }
-        timeUntilNextCommunication -= deltaTime;
-        if (timeUntilNextCommunication <= 0) {
-            if (chapter1.playerFaction.credits > Mathf.Min(GetTransportTotalCost() * 1.2f, GetLancerTotalCost() * 1.2f)) {
-                faction.GetFactionCommManager().SendCommunication(chapter1.playerFaction, "You have enough money to order a ship from us, click our shipyard to open the build menu.");
-            }
+    }
 
-            timeUntilNextCommunication += Random.Range(1200, 5000);
+    void ManageTransportShips(float deltaTime) {
+        transportTime -= deltaTime;
+        if (transportTime > 0) return;
+        foreach (var ship in faction.ships.Where(s => s.IsTransportShip())) {
+            if (ship.dockedStation == shipyard) {
+                shipyard.LoadCargoFromUnit(100, CargoBay.CargoTypes.Metal, ship);
+            } else if (ship.dockedStation == chapter1.tradeStation) {
+                long cargoToLoad = math.min(100, ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal));
+                if (faction.credits >= cargoToLoad * chapter1.GetMetalCost()) {
+                    ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
+                } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                    ship.UndockShip(shipyard.GetPosition());
+                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard), Command.CommandAction.Replace);
+                }
+            }
+        }
+        transportTime += 8;
+    }
+
+    void ManageIdleShips() {
+        foreach (var ship in idleShips) {
+            if (ship.IsTransportShip()) {
+                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard), Command.CommandAction.Replace);
+            }
         }
     }
 
-    public void PlaceCombatOrder(Faction faction) {
-        long cost = GetLancerTotalCost();
-        if (faction.UseCredits(cost)) {
-            this.faction.AddCredits(cost);
-            if (planetFactionAI.AddMetalOrder(this.faction, 9800)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Aria)));
-            }
-        }
-    }
-
-    public void PlaceTransportOrder(Faction faction) {
-        long cost = GetTransportTotalCost();
-        if (faction.UseCredits(cost)) {
-            this.faction.AddCredits(cost);
-            if (planetFactionAI.AddMetalOrder(this.faction, transportMetalCost)) {
-                shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Transport)));
-            }
-        }
+    public override float GetSellCostOfMetal() {
+        return chapter1.GetMetalCost() * 1.2f;
     }
 
     public override void OnShipBuiltForAnotherFaction(Ship ship, Faction faction) {
         this.faction.GetFactionCommManager().SendCommunication(faction, "We have built a " + ship.GetUnitName() + " for you, it will be sent to your station.");
-    }
-
-    long GetTransportTotalCost() {
-        return (long)(transportMetalCost * chapter1.GetMetalCost()) + transportCreditCost;
-    }
-
-    long GetLancerTotalCost() {
-        return (long)(lancerMetalCost * chapter1.GetMetalCost()) + lancerCreditCost;
     }
 
     public int GetOrderCount(Ship.ShipClass shipClass, Faction faction) {

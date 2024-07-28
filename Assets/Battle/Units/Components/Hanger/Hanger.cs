@@ -81,6 +81,9 @@ public class Hanger : ModuleComponent {
         return null;
     }
 
+    public List<Ship> GetTransportShips() {
+        return ships.Where(s => s.IsTransportShip()).ToList();
+    }
 
     public HashSet<Ship> GetAllCombatShips() {
         return ships.Where(s => s.IsCombatShip()).ToHashSet();

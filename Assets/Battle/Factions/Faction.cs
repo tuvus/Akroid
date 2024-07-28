@@ -319,6 +319,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         return false;
     }
 
+    /// <summary>
+    /// Transferes credits from this faction to the other faction.
+    /// </summary>
+    /// <param name="faction">The other faction to transfer credits to.</param>
     public bool TransferCredits(long credits, Faction faction) {
         if (UseCredits(credits)) {
             faction.AddCredits(credits);

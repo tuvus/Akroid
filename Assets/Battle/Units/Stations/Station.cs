@@ -205,7 +205,7 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="undock"></param>
     /// <returns>The newly built ship</returns>
     public virtual Ship BuildShip(Faction faction, ShipData shipData, long cost = 0, bool? undock = false) {
-        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(faction,shipData));
+        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(faction, shipData));
         if (undock == null) { 
             // The ship will be built at this station, however it's position is somewhere else in the system
         } else if ((bool)undock) {

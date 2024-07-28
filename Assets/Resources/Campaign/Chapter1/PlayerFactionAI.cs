@@ -25,7 +25,7 @@ public class PlayerFactionAI : FactionAI {
         // Increase time to skip tutorial
         bool skipTutorial = false;
         EventChainBuilder eventChain = new EventChainBuilder();
-        eventChain.AddCondition(EventCondition.WaitEvent(2f));
+        eventChain.AddCondition(EventCondition.WaitEvent(1f));
         eventChain.AddAction(() => { 
             if (LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
                 chapter1.GetBattleManager().SetSimulationTimeScale(10);
@@ -33,6 +33,34 @@ public class PlayerFactionAI : FactionAI {
             }
         });
         eventChain.Build(chapter1.eventManager)();
+        EventChainBuilder eventChain2 = new EventChainBuilder();
+        eventChain2.AddCondition(EventCondition.WaitEvent(2f));
+        eventChain2.AddAction(() => {
+            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                chapter1.GetBattleManager().SetSimulationTimeScale(10);
+                skipTutorial = true;
+            }
+        });
+        eventChain2.Build(chapter1.eventManager)();
+        EventChainBuilder eventChain3 = new EventChainBuilder();
+        eventChain3.AddCondition(EventCondition.WaitEvent(5f));
+        eventChain3.AddAction(() => {
+            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                chapter1.GetBattleManager().SetSimulationTimeScale(10);
+                skipTutorial = true;
+            }
+        });
+        eventChain3.Build(chapter1.eventManager)();
+        EventChainBuilder eventChain4 = new EventChainBuilder();
+        eventChain4.AddCondition(EventCondition.WaitEvent(10f));
+        eventChain4.AddAction(() => {
+            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                chapter1.GetBattleManager().SetSimulationTimeScale(10);
+                skipTutorial = true;
+            }
+        });
+        eventChain4.Build(chapter1.eventManager)();
+
 
         chapter1.planetFactionAI.faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(chapter1.playerFaction.GetFactionCommManager(),
             "Undocking procedure successful! \n You are now on route to the designated mining location. " +
@@ -49,6 +77,7 @@ public class PlayerFactionAI : FactionAI {
                             if (LocalPlayer.Instance.GetFaction() == faction) {
                                 LocalPlayer.Instance.AddOwnedUnit(shuttle);
                             }
+                            AddTradeRouteToStation(chapter1.tradeStation);
                             AddResearchQuestLine();
                         });
                     }, 20);

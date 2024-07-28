@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class OtherMiningFactionAI : FactionAI {
@@ -20,9 +21,14 @@ public class OtherMiningFactionAI : FactionAI {
 
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
-        if (faction.credits > 10000) {
-            if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
-                shipyardFactionAI.PlaceTransportOrder(faction);
+        if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
+            Ship.ShipBlueprint shipBlueprint = battleManager.GetShipBlueprint(Ship.ShipClass.Transport);
+            long metalToUse = shipBlueprint.shipScriptableObject.resourceCosts[shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
+            long metalCost = (long)(metalToUse * chapter1.GetMetalCost() * 1.2f);
+            long transportCost = shipBlueprint.shipScriptableObject.cost + metalCost;
+            if (faction.credits > 10000 + transportCost) {
+                chapter1.shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, shipBlueprint));
+                faction.TransferCredits(metalCost, chapter1.shipyardFaction);
             }
         }
         ManageIdleShips();

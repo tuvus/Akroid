@@ -31,6 +31,7 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] Toggle autoBuildShips;
     [SerializeField] Button shipYardSelection;
     [SerializeField] Button upgradeSelection;
+    /// <summary> True for shipyard, false for upgrade </summary>
     bool shipYardOrUpgrade;
     [SerializeField] GameObject shipBlueprintButtonPrefab;
     [SerializeField] Transform blueprintList;
@@ -82,15 +83,19 @@ public class PlayerStationUI : MonoBehaviour {
             }
             UpdateCargoBayUI(displayedStation.GetCargoBay(), LocalPlayer.Instance.GetRelationToUnit(displayedStation) != LocalPlayer.RelationType.Enemy);
         }
-        if (shipYardOrUpgrade && blueprintList.gameObject.activeSelf &&
-            !((LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() == upgradeDisplayUnit && upgradeDisplayUnit != null && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))
-            || LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() == displayedStation))
-            UpdateUpgradeBlueprintUI();
-        if (!shipYardOrUpgrade && blueprintList.gameObject.activeSelf) {
-            UpdateShipBlueprintUI();
-        }
+
         if (stationConstructionUI.activeSelf) {
             UpdateConstructionUI(((Shipyard)displayedStation).GetConstructionBay());
+            if (shipYardOrUpgrade) {
+                UpdateShipBlueprintUI();
+            } else {
+                BattleObject displayedObject = LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject();
+                if (displayedObject == displayedStation ||
+                    !(displayedObject == upgradeDisplayUnit && upgradeDisplayUnit != null 
+                    && (!upgradeDisplayUnit.IsShip() || ((Ship)upgradeDisplayUnit).dockedStation == displayedStation))) {
+                    UpdateUpgradeBlueprintUI();
+                }
+            }
         }
         if (stationHangerUI.activeSelf) {
             UpdateHangerUI(displayedStation.GetHanger());
@@ -126,14 +131,13 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayList.transform.parent.parent.gameObject.SetActive(false);
         }
     }
-
     public void SetAutoConstruction(bool autoconstruction) {
         ((SimulationFactionAI)displayedStation.faction.GetFactionAI()).autoConstruction = autoconstruction;
     }
 
     public void ShipYardButtonSelected() {
-        if (shipYardOrUpgrade) {
-            shipYardOrUpgrade = false;
+        if (!shipYardOrUpgrade) {
+            shipYardOrUpgrade = true;
             UpdateShipBlueprintUI();
             shipYardSelection.image.color = new Color(1, 1, 1, 1);
             upgradeSelection.image.color = new Color(.8f, .8f, .8f, 1);
@@ -141,8 +145,8 @@ public class PlayerStationUI : MonoBehaviour {
     }
 
     public void UpgradeButtonSelected() {
-        if (!shipYardOrUpgrade) {
-            shipYardOrUpgrade = true;
+        if (shipYardOrUpgrade) {
+            shipYardOrUpgrade = false;
             UpdateUpgradeBlueprintUI();
             upgradeSelection.image.color = new Color(1, 1, 1, 1);
             shipYardSelection.image.color = new Color(.8f, .8f, .8f, 1);
@@ -164,13 +168,15 @@ public class PlayerStationUI : MonoBehaviour {
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.name;
             cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber(blueprint.shipScriptableObject.cost);
+            long cost;
             if (LocalPlayer.Instance.GetFaction() != null) {
-                button.interactable = LocalPlayer.Instance.GetFaction().credits >= blueprint.shipScriptableObject.cost;
+                cost = ((Shipyard)displayedStation).GetConstructionBay().GetCreditCostOfShip(LocalPlayer.Instance.faction, blueprint.shipScriptableObject);
+                button.interactable = LocalPlayer.Instance.GetFaction().credits >= cost;
             } else {
+                cost = blueprint.shipScriptableObject.cost;
                 button.interactable = false;
             }
-
+            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber(cost);
         }
         for (int i = BattleManager.Instance.shipBlueprints.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);

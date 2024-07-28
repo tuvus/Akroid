@@ -427,10 +427,10 @@ public class Ship : Unit {
 
     public void DockShip(Station station) {
         if (station.DockShip(this)) {
-            SetIdle();
             ShowUnit(false);
             dockedStation = station;
         }
+        SetIdle();
     }
 
     public void UndockShip() {

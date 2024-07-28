@@ -63,6 +63,10 @@ public class FactionAI : MonoBehaviour {
 
     }
 
+    public virtual float GetSellCostOfMetal() {
+        return 2.4f;
+    }
+
     protected float GetTimeScale() {
         return BattleManager.Instance.timeScale;
     }
