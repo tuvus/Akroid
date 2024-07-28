@@ -245,7 +245,7 @@ public class PlayerStationUI : MonoBehaviour {
             Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
             constructionBayButtonTransform.GetChild(0).GetComponent<Text>().text = blueprint.name.ToString();
             constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = blueprint.faction.abbreviatedName;
-            constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesPutIn() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
+            constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesLeftToUse() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
             constructionBayButton.GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(blueprint.GetFaction()));
         }
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {

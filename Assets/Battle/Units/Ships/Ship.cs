@@ -106,26 +106,27 @@ public class Ship : Unit {
 
     [System.Serializable]
     public class ShipConstructionBlueprint : ShipBlueprint {
+        /// <summary> The credit cost of constructing the blueprint. </summary>
         public long cost;
-        public List<CargoBay.CargoTypes> resourcesTypes;
-        public List<long> resourceCosts;
-        public long totalResourcesRequired;
+        /// <summary>
+        /// The amount of resources to be put into the blueprint before it can be constructed.
+        /// This value may be reduced throughout construction.
+        /// </summary>
+        public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
+        public long totalResourcesRequired { get; private set; }
 
         public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, String name = null) : base(faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
-            resourcesTypes = new List<CargoBay.CargoTypes>(shipScriptableObject.resourceTypes);
-            resourceCosts = new List<long>(shipScriptableObject.resourceCosts);
-            for (int i = 0; i < resourceCosts.Count; i++) {
-                totalResourcesRequired += resourceCosts[i];
+            resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
+            totalResourcesRequired = 0;
+            for (int i = 0; i < shipScriptableObject.resourceTypes.Count; i++) {
+                resourceCosts.Add(shipScriptableObject.resourceTypes[i], shipScriptableObject.resourceCosts[i]);
+                totalResourcesRequired += shipScriptableObject.resourceCosts[i];
             }
         }
 
-        public long GetTotalResourcesPutIn() {
-            long totalResources = 0;
-            for (int i = 0; i < resourceCosts.Count; i++) {
-                totalResources += resourceCosts[i];
-            }
-            return totalResources;
+        public long GetTotalResourcesLeftToUse() {
+            return resourceCosts.Sum(c => c.Value);
         }
 
         public bool IsFinished() {

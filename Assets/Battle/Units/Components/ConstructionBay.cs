@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using static Ship;
 
@@ -25,7 +26,7 @@ public class ConstructionBay : ModuleComponent {
 
     public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {
         if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, shipyard.faction)) {
-                shipyard.faction.UseCredits(shipBlueprint.cost);
+            shipyard.faction.UseCredits(shipBlueprint.cost);
             buildQueue.Add(shipBlueprint);
             return true;
         }
@@ -54,31 +55,31 @@ public class ConstructionBay : ModuleComponent {
 
     void UpdateConstruction(int amountMultiplier) {
         int availableConstructionBays = constructionBayScriptableObject.constructionBays;
-        for (int i = 0; i < buildQueue.Count; i++) {
-            if (availableConstructionBays == 0)
-                return;
-            ShipConstructionBlueprint shipBlueprint = buildQueue[i];
-            if (!shipBlueprint.IsFinished()) {
-                availableConstructionBays--;
-                long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
-                for (int f = 0; f < shipBlueprint.resourceCosts.Count; f++) {
-                    if (buildAmount <= 0)
+        long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
+        if (buildAmount <= 0) return;
+        Dictionary<CargoBay.CargoTypes, long> cargoReserved = new();
+
+        foreach (var shipBlueprint in buildQueue.ToList()) {
+            if (availableConstructionBays == 0) return;
+            if (shipBlueprint.IsFinished()) continue;
+            availableConstructionBays--;
+
+            // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
+            foreach (var resourceCost in shipBlueprint.resourceCosts.ToList()) {
+                long availableCargo = math.max(0, shipyard.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
+                long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
+                shipBlueprint.resourceCosts[resourceCost.Key] -= amountToUse;
+                shipyard.GetCargoBay().UseCargo(amountToUse, resourceCost.Key);
+
+                if (shipBlueprint.resourceCosts[resourceCost.Key] <= 0) {
+                    shipBlueprint.resourceCosts.Remove(resourceCost.Key);
+                    if (shipBlueprint.IsFinished() && BuildBlueprint(shipBlueprint)) {
+                        buildQueue.Remove(shipBlueprint);
                         break;
-                    long amountToUse = Unity.Mathematics.math.min(shipyard.GetAllCargoOfType(shipBlueprint.resourcesTypes[f]), Unity.Mathematics.math.min(buildAmount, shipBlueprint.resourceCosts[f]));
-                    shipBlueprint.resourceCosts[f] -= amountToUse;
-                    shipyard.GetCargoBay().UseCargo(amountToUse, shipBlueprint.resourcesTypes[f]);
-                    if (shipBlueprint.resourceCosts[f] <= 0) {
-                        shipBlueprint.resourceCosts.RemoveAt(f);
-                        shipBlueprint.resourcesTypes.RemoveAt(f);
-                        f--;
-                        if (shipBlueprint.IsFinished() && BuildBlueprint(shipBlueprint)) {
-                            buildQueue.Remove(shipBlueprint);
-                            i--;
-                            break;
-                        }
                     }
                 }
             }
+            AddReservedResources(shipBlueprint, cargoReserved);
         }
     }
 
@@ -98,6 +99,23 @@ public class ConstructionBay : ModuleComponent {
             return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] * faction.GetFactionAI().GetSellCostOfMetal());
         } else {
             return ship.cost;
+        }
+    }
+
+    public Dictionary<CargoBay.CargoTypes, long> GetReservedResources() {
+        Dictionary<CargoBay.CargoTypes, long> reservedResources = new();
+        buildQueue.ForEach((blueprint) => AddReservedResources(blueprint, reservedResources));
+        return reservedResources;
+    }
+
+    /// <summary> Adds the resources to reserve from constructionBlueprint to the reservedResources Dictionary passed in. </summary>
+    private void AddReservedResources(ShipConstructionBlueprint constructionBlueprint, Dictionary<CargoBay.CargoTypes, long> reservedResources) {
+        foreach (var cost in constructionBlueprint.resourceCosts) {
+            if (reservedResources.ContainsKey(cost.Key)) {
+                reservedResources[cost.Key] = reservedResources[cost.Key] + cost.Value;
+            } else {
+                reservedResources.Add(cost.Key, cost.Value);
+            }
         }
     }
 

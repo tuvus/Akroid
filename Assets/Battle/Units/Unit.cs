@@ -292,12 +292,23 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return amount - cargoToLoad;
     }
 
-    public long GetAllCargoOfType(CargoBay.CargoTypes cargoType) {
-        return cargoBays.Sum(cargoBay => cargoBay.GetAllCargo(cargoType));
+    public long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
+        long reserved = 0;
+        if (includeReserved) {
+            reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
+        }
+        return cargoBays.Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
     }
 
     public long GetAvailableCargoSpace(CargoBay.CargoTypes cargoType) {
         return GetCargoBays().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
+    }
+
+    public Dictionary<CargoBay.CargoTypes, long> GetReservedCargoSpace() {
+        if (IsStation() && ((Station)this).stationType == Station.StationType.Shipyard || ((Station)this).stationType == Station.StationType.FleetCommand) {
+            return ((Shipyard)this).GetConstructionBay().GetReservedResources();
+        }
+        return new Dictionary<CargoBay.CargoTypes, long>();
     }
 
     public string GetUnitName() {
