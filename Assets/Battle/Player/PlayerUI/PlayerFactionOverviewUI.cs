@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlayerFactionOverviewUI : MonoBehaviour {
     PlayerUI playerUI;
-    Faction faction;
+    public Faction faction { get; private set; }
     [SerializeField] Text unitCount;
     [SerializeField] Text shipCount;
     [SerializeField] Text stationCount;

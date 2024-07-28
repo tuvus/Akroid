@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using static CommunicationEvent;
 
 public class PlayerFactionAI : FactionAI {
 
@@ -21,7 +18,7 @@ public class PlayerFactionAI : FactionAI {
         tradeRoutes = new List<Station>();
         nextStationToSendTo = 0;
         commManager = faction.GetFactionCommManager();
-
+        autoResearch = false;
     }
 
     public override void UpdateFactionAI(float deltaTime) {

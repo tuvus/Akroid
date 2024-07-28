@@ -421,16 +421,38 @@ public class Chapter1 : CampaingController {
             "We have found some interesting gas clouds farther from the sun and they may contain rare gases that could be usefull back on the planet. " +
             "Unfortunately we don't have the funding to construct a science ship with expensive equipment.", 30 * GetTimeScale());
         builder.AddCommEvent(researchCommManager, playerFaction,
-            "Our research could greatly help you and the rest of space exploration. " +
+            "Our research could greatly help you and the rest of space exploration. \n" +
             "It would be a great help if you could help us out by sending your ship to the gas field that we have marked.", 20 * GetTimeScale());
         GasCloud targetGasCloud = researchFaction.GetClosestGasCloud(researchStation.GetPosition());
         builder.AddCondition(EventCondition.MoveShipToObject(shuttle, targetGasCloud, true));
+        builder.AddAction(() => playerFaction.AddScience(100));
         builder.AddCommEvent(researchCommManager, playerFaction,
             "We have recieved some preliminary data about the gas. The high density of the gas cloud is spectacular! " +
             "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship. \n" +
-            "Could you bring the ship back to our station with a sample to farther analyze the gas?", 5 * GetTimeScale());
+            "Were sending you our descoveries as well.", 5 * GetTimeScale());
+        builder.AddCommEvent(researchCommManager, playerFaction, 
+            "Could you bring the ship back to our station with a sample to farther analyze the gas?", 15 * GetTimeScale());
+        builder.AddCondition(EventCondition.CommandDockShipToUnit(shuttle, researchStation, true));
+        builder.AddAction(() => battleManager.SetSimulationTimeScale(1));
         builder.AddCommEvent(commManager, researchFaction,
             "No problem! We'll bring the gas back to the station.", 1 * GetTimeScale());
+        builder.AddAction(() => {
+            EventChainBuilder spendResearchChain = new EventChainBuilder();
+            spendResearchChain.AddCommEvent(commManager, playerFaction,
+                "We have converted the data that we recieved from " + researchFaction.name + ". " +
+                "Lets spend this science, click the top left button to open the faction panel.", 6 * GetTimeScale());
+            spendResearchChain.AddCondition(EventCondition.OpenFactionPanelEvent(playerFaction, true));
+            spendResearchChain.AddCommEvent(commManager, playerFaction,
+                "There are three research fields: Engineering, Electricity and Chemicals. " +
+                "Each time science is put into a field it improves one of the areas assosiated with that field. " +
+                "Try putting your science into one of the fields.", 2 * GetTimeScale());
+            spendResearchChain.AddCondition(EventCondition.PredicateEvent((_) => playerFaction.Discoveries > 0));
+            spendResearchChain.AddCommEvent(commManager, playerFaction,
+                "Great Job! You can see which area was improved by scrolling through the improvements list. \n" +
+                "The cost to research goes up each time. " +
+                "Remember to check back when we get more sciecne!", 3 * GetTimeScale());
+            spendResearchChain.Build(eventManager, () => battleManager.SetSimulationTimeScale(10))();
+        });
         builder.AddCondition(EventCondition.DockShipsAtUnit(new List<Ship> { shuttle }, researchStation, true));
         builder.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
             "Thanks for the gas! We won't be needing your ship anytime soon so you are free to use it again." +
@@ -441,6 +463,7 @@ public class Chapter1 : CampaingController {
             "We have fully analysed the high density gas. " +
             "It seems like it could be used as a very efficient energy generation tool! " +
             "With a specialised reactor installed in our space ships we could last quite a while in deep space without much sunlight.", 500 * GetTimeScale());
+        builder.AddAction(() => playerFaction.AddScience(200));
         builder.AddCommEvent(commManager, researchFaction,
             "Thats interesting, is there any way we could help collect it.", 5 * GetTimeScale());
         builder.AddCommEvent(researchCommManager, playerFaction,

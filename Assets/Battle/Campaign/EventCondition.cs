@@ -14,6 +14,7 @@ public class EventCondition {
         UnSelectUnits,
         SelectFleet,
         OpenObjectPanel,
+        OpenFactionPanel,
         FollowUnit,
         MoveShipToObject,
         CommandMoveShipToObjectSequence,
@@ -36,6 +37,7 @@ public class EventCondition {
     public float floatValue2 { get; protected set; }
     public Vector2 postionValue { get; protected set; }
     public Predicate<EventManager> predicate { get; protected set; }
+    public Faction faction { get; protected set; }
     public bool visualize;
 
     private EventCondition() {
@@ -102,6 +104,14 @@ public class EventCondition {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.OpenObjectPanel;
         condition.objectToSelect = objectToSelect;
+        condition.visualize = visualise;
+        return condition;
+    }
+
+    public static EventCondition OpenFactionPanelEvent(Faction factionToSelect, bool visualise = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.OpenFactionPanel;
+        condition.faction = factionToSelect;
         condition.visualize = visualise;
         return condition;
     }
@@ -225,6 +235,11 @@ public class EventCondition {
                     return true;
                 }
                 break;
+            case ConditionType.OpenFactionPanel:
+                if (LocalPlayer.Instance.playerUI.playerFactionOverviewUI.faction == faction) {
+                    return true;
+                }
+                return false;
             case ConditionType.FollowUnit:
                 if (eventManager.playerGameInput.followUnit == unitToSelect) {
                     return true;

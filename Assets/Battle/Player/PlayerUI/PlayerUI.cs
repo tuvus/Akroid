@@ -18,7 +18,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerStationUI playerStationUI;
     [SerializeField] private PlayerPlanetUI playerPlanetUI;
     [SerializeField] private PlayerShipUI playerShipUI;
-    [SerializeField] private PlayerFactionOverviewUI playerFactionOverviewUI;
+    [field: SerializeField] public PlayerFactionOverviewUI playerFactionOverviewUI { get; private set; }
     [field:SerializeField] public PlayerEventUI playerEventUI { get; protected set; }
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
