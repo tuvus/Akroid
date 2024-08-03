@@ -272,12 +272,12 @@ public class SimulationFactionAI : FactionAI {
         int transportQueueCount = fleetCommand.GetConstructionBay().GetNumberOfShipsOfTypeFaction(Ship.ShipType.Transport, faction);
         int stationBuilderQueueCount = fleetCommand.GetConstructionBay().GetNumberOfShipsOfClassFaction(Ship.ShipClass.StationBuilder, faction);
         int gasCollectorQueueCount = fleetCommand.GetConstructionBay().GetNumberOfShipsOfTypeFaction(Ship.ShipType.GasCollector, faction);
-        bool wantTransport = faction.GetTotalWantedTransports() > faction.GetShipsOfType(Ship.ShipType.Transport) + transportQueueCount;
-        bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() > faction.GetShipsOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipsOfType(Ship.ShipType.Transport) / 3 + 1;
+        bool wantTransport = faction.GetTotalWantedTransports() > faction.GetShipCountOfType(Ship.ShipType.Transport) + transportQueueCount;
+        bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() > faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 3 + 1;
 
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
-            if (faction.GetShipsOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {
+            if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, BattleManager.Instance.GetShipBlueprint(Ship.ShipType.GasCollector)));
             } else if (transportQueueCount == 0 && stationBuilderQueueCount == 0) {
                 if (wantTransport) {
@@ -321,5 +321,9 @@ public class SimulationFactionAI : FactionAI {
         base.RemoveFleet(fleet);
         defenseFleets.Remove(fleet);
         attackFleets.Remove(fleet);
+    }
+
+    public override Station GetFleetCommand() {
+        return fleetCommand;
     }
 }

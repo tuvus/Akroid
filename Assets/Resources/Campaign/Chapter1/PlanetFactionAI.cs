@@ -44,7 +44,7 @@ public class PlanetFactionAI : FactionAI {
     void UpdateTradeStation() {
         foreach (var transportShip in tradeStation.GetHanger().GetTransportShips()) {
             if (transportShip.faction != faction && transportShip.faction != shipyardFactionAI.faction) {
-                long cost = (long)(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal) * chapter1.GetMetalCost() * 0.5f);
+                long cost = (long)(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal) * chapter1.GetMetalCost() * 0.2f);
                 if (faction.UseCredits(cost)) {
                     transportShip.faction.AddCredits(cost);
                     transportShip.GetCargoBay().UseCargo(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal), CargoBay.CargoTypes.Metal);

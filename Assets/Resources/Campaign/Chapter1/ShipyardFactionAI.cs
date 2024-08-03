@@ -68,10 +68,6 @@ public class ShipyardFactionAI : FactionAI {
         return chapter1.GetMetalCost() * 1.2f;
     }
 
-    public override void OnShipBuiltForAnotherFaction(Ship ship, Faction faction) {
-        this.faction.GetFactionCommManager().SendCommunication(faction, "We have built a " + ship.GetUnitName() + " for you, it will be sent to your station.");
-    }
-
     public int GetOrderCount(Ship.ShipClass shipClass, Faction faction) {
         return shipyard.GetConstructionBay().GetNumberOfShipsOfClassFaction(shipClass, faction);
     }

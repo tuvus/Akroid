@@ -5,6 +5,7 @@ using static CommunicationEvent;
 
 /// <summary>
 /// EventChainBuilder handles long sequences of events and communcationEvents by creating a list and putting them together once built.
+/// Don't forget to call the method returned after calling build!!!
 /// </summary>
 public class EventChainBuilder {
     private List<object> events = new List<object>();

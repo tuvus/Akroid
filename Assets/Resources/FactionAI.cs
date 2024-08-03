@@ -48,9 +48,6 @@ public class FactionAI : MonoBehaviour {
 
     }
 
-    public virtual void OnShipBuiltForAnotherFaction(Ship ship, Faction faction) {
-    }
-
     public virtual void AddIdleShip(Ship ship) {
         idleShips.Add(ship);
     }
@@ -69,5 +66,9 @@ public class FactionAI : MonoBehaviour {
 
     protected float GetTimeScale() {
         return BattleManager.Instance.timeScale;
+    }
+
+    public virtual Station GetFleetCommand() {
+        return null;
     }
 }

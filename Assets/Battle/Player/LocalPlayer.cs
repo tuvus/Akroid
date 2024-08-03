@@ -117,6 +117,11 @@ public class LocalPlayer : MonoBehaviour {
         unit.GetUnitSelection().UpdateFactionColor();
     }
 
+    public void RemoveOwnedUnit(Unit unit) {
+        ownedUnits.Remove(unit);
+        unit.GetUnitSelection().UpdateFactionColor();
+    }
+
     public LocalPlayerInput GetInputManager() {
         return localPlayerInput;
     }

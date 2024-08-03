@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 
 public class PlayerEventUI : MonoBehaviour {
@@ -128,6 +127,18 @@ public class PlayerEventUI : MonoBehaviour {
                     if (!shipAI.commands.Any((c) => c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)VisualizedEvent.iObjects.Last()) ) {
                         VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.Last() });
                     }
+                }
+                break;
+            case EventCondition.ConditionType.CommandShipToCollectGas:
+                HashSet<Unit> selectedUnits5 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                if (selectedUnits5.Count != 1 || !selectedUnits5.Contains(VisualizedEvent.iObjects.First())) {
+                    VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.First() });
+                }
+                break;
+            case EventCondition.ConditionType.LateCondition:
+                if (VisualizedEvent.eventConditionFunction != null && VisualizedEvent.eventCondition.visualize) {
+                    VisualizedEvent = VisualizedEvent.eventCondition;
+                    VisualizeEvent(newEvent);
                 }
                 break;
         }

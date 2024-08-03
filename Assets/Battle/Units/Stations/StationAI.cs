@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +11,11 @@ public class StationAI : MonoBehaviour {
     [SerializeField] protected long cargoAmount;
     protected float waitTime;
     protected float cargoTime;
+    public event Action<Ship> onBuildShip;
 
     public virtual void SetupStationAI(Station station) {
         this.station = station;
+        onBuildShip = delegate { };
     }
 
     public virtual void UpdateAI(float deltaTime) {
@@ -29,11 +32,6 @@ public class StationAI : MonoBehaviour {
     }
 
     public virtual void OnShipBuilt(Ship ship) {
-        if (ship.faction == station.faction) {
-            ship.faction.GetFactionAI().OnShipBuilt(ship);
-        } else {
-            ship.faction.GetFactionAI().OnShipBuilt(ship);
-            station.faction.GetFactionAI().OnShipBuiltForAnotherFaction(ship, ship.faction);
-        }
+        onBuildShip.Invoke(ship);
     }
 }

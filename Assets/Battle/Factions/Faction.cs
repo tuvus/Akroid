@@ -356,60 +356,60 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         int improvementArea;
         switch (researchArea) {
             case ResearchAreas.Engineering:
-            improvementArea = Random.Range(0, 4);
-            if (improvementArea == 0) {
-                improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
-                improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
-            } else if (improvementArea == 1) {
-                improvementModifiers[(int)ImprovementAreas.ProjectileDamage] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileDamage]++;
-            } else if (improvementArea == 2) {
-                improvementModifiers[(int)ImprovementAreas.ProjectileReload] += .2f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileReload]++;
-            } else if (improvementArea == 3) {
-                improvementModifiers[(int)ImprovementAreas.ProjectileRange] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
-                UpdateUnitWeaponRanges();
-            }
-            break;
+                improvementArea = Random.Range(0, 4);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileDamage] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileDamage]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileReload] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileReload]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.ProjectileRange] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
             case ResearchAreas.Electricity:
-            improvementArea = Random.Range(0, 5);
-            if (improvementArea == 0) {
-                improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
-            } else if (improvementArea == 1) {
-                improvementModifiers[(int)ImprovementAreas.ShieldRegen] += .3f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ShieldRegen]++;
-            } else if (improvementArea == 2) {
-                improvementModifiers[(int)ImprovementAreas.LaserDamage] += .2f;
-                improvementDiscoveryCount[(int)ImprovementAreas.LaserDamage]++;
-            } else if (improvementArea == 3) {
-                improvementModifiers[(int)ImprovementAreas.LaserReload] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.LaserReload]++;
-            } else if (improvementArea == 4) {
-                improvementModifiers[(int)ImprovementAreas.LaserRange] += .2f;
-                improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
-                UpdateUnitWeaponRanges();
-            }
-            break;
+                improvementArea = Random.Range(0, 5);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.ShieldRegen] += .3f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ShieldRegen]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.LaserDamage] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserDamage]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.LaserReload] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserReload]++;
+                } else if (improvementArea == 4) {
+                    improvementModifiers[(int)ImprovementAreas.LaserRange] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
             case ResearchAreas.Chemicals:
-            improvementArea = Random.Range(0, 4);
-            if (improvementArea == 0) {
-                improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
-                UpdateShipThrustPower();
-            } else if (improvementArea == 1) {
-                improvementModifiers[(int)ImprovementAreas.MissileDamage] += .2f;
-                improvementDiscoveryCount[(int)ImprovementAreas.MissileDamage]++;
-            } else if (improvementArea == 2) {
-                improvementModifiers[(int)ImprovementAreas.MissileReload] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.MissileReload]++;
-            } else if (improvementArea == 3) {
-                improvementModifiers[(int)ImprovementAreas.MissileRange] += .15f;
-                improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
-                UpdateUnitWeaponRanges();
-            }
-            break;
+                improvementArea = Random.Range(0, 4);
+                if (improvementArea == 0) {
+                    improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
+                    UpdateShipThrustPower();
+                } else if (improvementArea == 1) {
+                    improvementModifiers[(int)ImprovementAreas.MissileDamage] += .2f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileDamage]++;
+                } else if (improvementArea == 2) {
+                    improvementModifiers[(int)ImprovementAreas.MissileReload] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileReload]++;
+                } else if (improvementArea == 3) {
+                    improvementModifiers[(int)ImprovementAreas.MissileRange] += .15f;
+                    improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
+                    UpdateUnitWeaponRanges();
+                }
+                break;
         }
     }
     #endregion
@@ -600,8 +600,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <summary>
     /// Gets the closest mining station that wants transports to the position
     /// </summary>
-    /// <param name="position">the given position</param>
-    /// <returns>the closest mining station</returns>
+    /// <param name="position"> The given position </param>
+    /// <returns> The closest mining station </returns>
     public MiningStation GetClosestMiningStationWantingTransport(Vector2 position) {
         MiningStation miningStation = null;
         float distance = 0;
@@ -625,18 +625,18 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <summary>
     /// Gets the total wanted transports of all the factions mining stations
     /// </summary>
-    /// <returns>the total wanted transports throughout the faction</returns>
+    /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
         return activeMiningStations.Where(station => station.IsSpawned())
             .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
     }
 
     /// <summary>
-    /// gets all ships of the given ShipType
+    /// Gets the count all ships of the given ShipType
     /// </summary>
-    /// <param name="shipType">the given ShipType</param>
-    /// <returns>all ships of the given ShipType</returns>
-    public int GetShipsOfType(Ship.ShipType shipType) {
+    /// <param name="shipType"> The given ShipType </param>
+    /// <returns> All ships of the given ShipType </returns>
+    public int GetShipCountOfType(Ship.ShipType shipType) {
         return ships.Count(s => s.GetShipType() == shipType);
     }
 
@@ -649,8 +649,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <summary>
     /// Gets the closest star to the given position
     /// </summary>
-    /// <param name="position">the given position</param>
-    /// <returns>the closest star</returns>
+    /// <param name="position"> The given position </param>
+    /// <returns> The closest star </returns>
     public Star GetClosestStar(Vector2 position) {
         Star closestStar = null;
         float distance = 0;
@@ -667,8 +667,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <summary>
     /// Gets the closest gas cloud to the given position
     /// </summary>
-    /// <param name="position">the given position</param>
-    /// <returns>the closest gas cloud</returns>
+    /// <param name="position"> The given position </param>
+    /// <returns> The closest gas cloud </returns>
     public GasCloud GetClosestGasCloud(Vector2 position) {
         GasCloud closestGasCloud = null;
         float distance = 0;
@@ -686,8 +686,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// <summary>
     /// Gets the improvement modifier aligned with the given improvement area
     /// </summary>
-    /// <param name="improvementArea">the given improvement area</param>
-    /// <returns>the improvement modifier of the area</returns>
+    /// <param name="improvementArea"> The given improvement area </param>
+    /// <returns> The improvement modifier of the area </returns>
     public float GetImprovementModifier(ImprovementAreas improvementArea) {
         return improvementModifiers[(int)improvementArea];
     }
@@ -713,11 +713,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
 
-    public Shipyard GetFleetCommand() {
-        if (factionAI != null && factionAI is SimulationFactionAI) {
-            return ((SimulationFactionAI)factionAI).fleetCommand;
-        }
-        return null;
+    public Station GetFleetCommand() {
+        return factionAI.GetFleetCommand();
     }
 
     public FactionAI GetFactionAI() {

@@ -19,10 +19,13 @@ public class EventCondition {
         MoveShipToObject,
         CommandMoveShipToObjectSequence,
         CommandDockShipToUnit,
+        CommandShipToCollectGas,
+        BuildShipAtStation,
         ShipsDockedAtUnit,
         Pan,
         Zoom,
         Predicate,
+        LateCondition,
     }
 
     public ConditionType conditionType { get; protected set; }
@@ -36,8 +39,11 @@ public class EventCondition {
     public float floatValue { get; protected set; }
     public float floatValue2 { get; protected set; }
     public Vector2 postionValue { get; protected set; }
+    public Ship.ShipBlueprint shipBlueprint { get; protected set; }
     public Predicate<EventManager> predicate { get; protected set; }
     public Faction faction { get; protected set; }
+    public EventCondition eventCondition { get; protected set; }
+    public Func<EventCondition> eventConditionFunction { get; protected set; }
     public bool visualize;
 
     private EventCondition() {
@@ -158,6 +164,25 @@ public class EventCondition {
         condition.visualize = visualize;
         return condition;
     }
+
+    public static EventCondition CommandShipToCollectGas(Ship shipToMove, bool visualize = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.CommandShipToCollectGas;
+        condition.iObjects = new List<IObject> { shipToMove };
+        condition.visualize = visualize;
+        return condition;
+    }
+
+    public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Station station, bool visualize = false) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.BuildShipAtStation;
+        condition.shipBlueprint = shipBlueprint;
+        condition.iObjects = new List<IObject> { station };
+        condition.visualize = visualize;
+        condition.intValue = 0;
+        return condition;
+    }
+
     public static EventCondition PanEvent(float distanceToPan) {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.Pan;
@@ -174,10 +199,34 @@ public class EventCondition {
         return condition;
     }
 
+    /// <summary>
+    /// A catch-all event type that allows for a custom condition.
+    /// The downside is that there is no way to visualise this condition.
+    /// </summary>
     public static EventCondition PredicateEvent(Predicate<EventManager> predicate) {
         EventCondition condition = new EventCondition();
         condition.conditionType = ConditionType.Predicate;
         condition.predicate = predicate;
+        return condition;
+    }
+
+    /// <summary>
+    /// Use this method when the object doesn't exist by the time of building the event chain 
+    /// but will be by the time the condition is called.
+    /// This function will create an EventCondition type that calls the eventConditionFunction to
+    /// create the actual function once the object exits.
+    /// 
+    /// Sometimes the nessesary objects haven't been created by the time of building the event chain.
+    /// So we need some way to pass in an object only once it has been created.
+    /// The solution this function provides is to create a wrapper EventCondition with a function that creates 
+    /// the actual EventCondition the first time it checks for it's condition.
+    /// Then it will act like the condition it is wrapping until the condition is true.
+    /// </summary>
+    public static EventCondition LateConditionEvent(Func<EventCondition> eventConditionFunction) {
+        EventCondition condition = new EventCondition();
+        condition.conditionType = ConditionType.LateCondition;
+        condition.eventConditionFunction = eventConditionFunction;
+        condition.visualize = true;
         return condition;
     }
 
@@ -272,6 +321,26 @@ public class EventCondition {
                 if (shipAI2.commands.Any((c) => c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)iObjects.Last()))
                     return true;
                 return false;
+            case ConditionType.CommandShipToCollectGas:
+                ShipAI shipAI3 = ((Ship)iObjects.First()).shipAI;
+                if (shipAI3.commands.Any((c) => c.commandType == Command.CommandType.CollectGas)) {
+                    return true;
+                }
+                return false;
+            case ConditionType.BuildShipAtStation:
+                if (intValue == 0) {
+                    // If this is the first time the condition is active we need to subscibe to the station ship building
+                    StationAI stationAI = ((Station)iObjects.First()).stationAI;
+                    stationAI.onBuildShip += (ship) => { 
+                        if (ship.ShipScriptableObject == shipBlueprint.shipScriptableObject)
+                            intValue = 2; 
+                    };
+                    intValue = 1;
+                } else if (intValue == 2) {
+                    // The ship has been built between this CheckCondition call and the last so the condition has been satisfied
+                    return true;
+                }
+                return false;
             case ConditionType.Pan:
                 // We can't just take the position of the camera here because the player might be following a ship
                 // Resulting in non player camera movement
@@ -294,6 +363,9 @@ public class EventCondition {
                 if (predicate(eventManager))
                     return true;
                 break;
+            case ConditionType.LateCondition:
+                if (eventCondition == null) eventCondition = eventConditionFunction();
+                return eventCondition.CheckCondition(eventManager, deltaTime);
         }
         return false;
     }

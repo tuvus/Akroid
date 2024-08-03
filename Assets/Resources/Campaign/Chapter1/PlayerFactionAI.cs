@@ -49,7 +49,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     public bool WantMoreTransportShips() {
-        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipsOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
+        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipCountOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             return true;
         } else {
             return false;
@@ -58,5 +58,9 @@ public class PlayerFactionAI : FactionAI {
 
     public void AddTradeRouteToStation(Station station) {
         tradeRoutes.Add(station);
+    }
+
+    public override Station GetFleetCommand() {
+        return playerMiningStation;
     }
 }
