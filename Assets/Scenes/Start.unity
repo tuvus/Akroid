@@ -828,6 +828,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   campaignChapterPanel: {fileID: 372612568}
+--- !u!114 &137025410 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 225028468}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &142777450
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1133,6 +1145,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 172883944}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &204508645 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 333307327}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &205977375
 GameObject:
   m_ObjectHideFlags: 0
@@ -1229,6 +1253,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -1250,7 +1294,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -1438,6 +1482,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -1459,7 +1523,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -1627,6 +1691,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 225028468}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &226020057 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 747442277}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &284789597
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,6 +2023,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Asteroids
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -3305,6 +3401,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -3326,7 +3437,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -3514,6 +3625,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -3535,7 +3661,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -3786,6 +3912,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2a0da9254ff982408527889046e1441, type: 3}
+--- !u!114 &654584559 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1529826126}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &707515954
 GameObject:
   m_ObjectHideFlags: 0
@@ -4151,6 +4289,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Stars
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -4767,6 +4925,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -4788,7 +4966,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -5695,6 +5873,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1254054590 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1635750018}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1264370278
 GameObject:
   m_ObjectHideFlags: 0
@@ -5803,6 +5993,30 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1388946199 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2809942417230766217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1407350902 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1607909842}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1427718094
 GameObject:
   m_ObjectHideFlags: 0
@@ -5887,6 +6101,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SystemSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -7029,6 +7263,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1556660611}
   m_CullTransparentMesh: 1
+--- !u!114 &1584940160 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1515074637}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1587674780
 GameObject:
   m_ObjectHideFlags: 0
@@ -7084,6 +7330,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -7105,7 +7371,7 @@ PrefabInstance:
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UpdateSimulation
+      value: UpdateSelectedFaction
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
@@ -7727,6 +7993,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -7916,6 +8202,30 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1635750018}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1660002862 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1023542339}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1712542126 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 558970520}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1727442731
 GameObject:
   m_ObjectHideFlags: 0
@@ -8630,22 +8940,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   editSimulationPanel: {fileID: 1519402347}
-  editSimulationStars: {fileID: 0}
-  editSimulationAsteroids: {fileID: 0}
-  editSimulationAsteroidCount: {fileID: 0}
-  editSimulationGasClouds: {fileID: 0}
-  editSimulationSystemSizeModifier: {fileID: 0}
-  editSimulationResearchModifier: {fileID: 0}
+  editSimulationStars: {fileID: 226020057}
+  editSimulationAsteroids: {fileID: 1388946199}
+  editSimulationAsteroidCount: {fileID: 204508645}
+  editSimulationGasClouds: {fileID: 1254054590}
+  editSimulationSystemSizeModifier: {fileID: 1584940160}
+  editSimulationResearchModifier: {fileID: 654584559}
   factionPrefab: {fileID: 1027808818879241736, guid: ee3614a8448b3cd4eabd0dd99c35d688,
     type: 3}
   factionList: {fileID: 284789598}
   editFactionPanel: {fileID: 37737910}
-  editFactionName: {fileID: 0}
-  editFactionAbbreviation: {fileID: 0}
-  editFactionCredits: {fileID: 0}
-  editFactionScience: {fileID: 0}
-  editFactionShips: {fileID: 0}
-  editFactionStations: {fileID: 0}
+  editFactionName: {fileID: 2067478367}
+  editFactionAbbreviation: {fileID: 1712542126}
+  editFactionCredits: {fileID: 1986471063}
+  editFactionScience: {fileID: 1407350902}
+  editFactionShips: {fileID: 137025410}
+  editFactionStations: {fileID: 1660002862}
 --- !u!1001 &1908501911
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8972,6 +9282,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1986471063 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 215751516}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1991880064
 GameObject:
   m_ObjectHideFlags: 0
@@ -9350,6 +9672,18 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060331679}
   m_Enabled: 1
+--- !u!114 &2067478367 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+    type: 3}
+  m_PrefabInstance: {fileID: 548940924}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2115307461
 GameObject:
   m_ObjectHideFlags: 0
@@ -9639,6 +9973,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AsteroidFields
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_ContentType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_KeyboardType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
+        type: 3}
+      propertyPath: m_CharacterValidation
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3831039106949273081, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}

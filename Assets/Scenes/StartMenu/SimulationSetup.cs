@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,21 +8,21 @@ using static Faction;
 
 public class SimulationSetup : MonoBehaviour {
     [SerializeField] private GameObject editSimulationPanel;
-    [SerializeField] private InputField editSimulationStars;
-    [SerializeField] private InputField editSimulationAsteroids;
-    [SerializeField] private InputField editSimulationAsteroidCount;
-    [SerializeField] private InputField editSimulationGasClouds;
-    [SerializeField] private InputField editSimulationSystemSizeModifier;
-    [SerializeField] private InputField editSimulationResearchModifier;
+    [SerializeField] private TMP_InputField editSimulationStars;
+    [SerializeField] private TMP_InputField editSimulationAsteroids;
+    [SerializeField] private TMP_InputField editSimulationAsteroidCount;
+    [SerializeField] private TMP_InputField editSimulationGasClouds;
+    [SerializeField] private TMP_InputField editSimulationSystemSizeModifier;
+    [SerializeField] private TMP_InputField editSimulationResearchModifier;
     [SerializeField] private GameObject factionPrefab;
     [SerializeField] private Transform factionList;
     [SerializeField] private GameObject editFactionPanel;
-    [SerializeField] private InputField editFactionName;
-    [SerializeField] private InputField editFactionAbbreviation;
-    [SerializeField] private InputField editFactionCredits;
-    [SerializeField] private InputField editFactionScience;
-    [SerializeField] private InputField editFactionShips;
-    [SerializeField] private InputField editFactionStations;
+    [SerializeField] private TMP_InputField editFactionName;
+    [SerializeField] private TMP_InputField editFactionAbbreviation;
+    [SerializeField] private TMP_InputField editFactionCredits;
+    [SerializeField] private TMP_InputField editFactionScience;
+    [SerializeField] private TMP_InputField editFactionShips;
+    [SerializeField] private TMP_InputField editFactionStations;
 
     public List<FactionData> factions;
     private int selectedFaction;
@@ -127,7 +128,7 @@ public class SimulationSetup : MonoBehaviour {
         }
         GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
         newFactionPrefab.name = factions[factions.Count - 1].name;
-        newFactionPrefab.transform.GetChild(0).GetComponent<Text>().text = newFactionPrefab.name;
+        newFactionPrefab.transform.GetChild(0).GetComponent<TMP_Text>().text = newFactionPrefab.name;
         newFactionPrefab.GetComponent<Button>().onClick.AddListener(() => SelectFaction(newFactionPrefab.transform.GetSiblingIndex()));
         SelectFaction(factions.Count - 1);
     }
@@ -169,7 +170,7 @@ public class SimulationSetup : MonoBehaviour {
 
         }
         factionList.GetChild(selectedFaction).gameObject.name = factions[selectedFaction].name;
-        factionList.GetChild(selectedFaction).GetChild(0).GetComponent<Text>().text = factions[selectedFaction].name;
+        factionList.GetChild(selectedFaction).GetChild(0).GetComponent<TMP_Text>().text = factions[selectedFaction].name;
     }
 
     public void RemoveSelectedFaction() {
