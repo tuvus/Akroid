@@ -95,10 +95,18 @@ public class PlayerUI : MonoBehaviour {
             }
         }
         if (stationUI.activeSelf) {
-            playerStationUI.UpdateStationUI();
+            if (playerStationUI.displayedStation == null || !playerStationUI.displayedStation.IsSpawned()) {
+                CloseAllMenus();
+            } else {
+                playerStationUI.UpdateStationUI();
+            }
         }
         if (shipUI.activeSelf) {
-            playerShipUI.UpdateShipUI();
+            if (playerShipUI.displayedShip == null || !playerShipUI.displayedShip.IsSpawned()) {
+                CloseAllMenus();
+            } else {
+                playerShipUI.UpdateShipUI();
+            }
         }
         if (planetUI.activeSelf) {
             playerPlanetUI.UpdatePlanetUI();
