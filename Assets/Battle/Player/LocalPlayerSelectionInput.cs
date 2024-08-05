@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class LocalPlayerSelectionInput : LocalPlayerInput {
 
@@ -17,6 +16,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     [SerializeField] protected SelectionGroup selectedUnits;
     private SelectionGroup objectsInSelectionBox;
+    private CanvasScaler canvasScaler;
 
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
@@ -33,6 +33,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         GetPlayerInput().Player.AdditiveModifier.canceled += context => AdditiveButtonUp();
 
         GetPlayerInput().Player.AllCombatUnits.performed += context => AllCombatUnitsButtonPressed();
+        canvasScaler = LocalPlayer.Instance.playerUI.GetComponentInParent<CanvasScaler>();
     }
 
     public override void ChangeFaction() {
@@ -73,7 +74,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.PrimaryMouseUp();
         if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
             return;
-        if (actionType == ActionType.Selecting)
+        if (actionType == ActionType.Selecting && !AdditiveButtonPressed)
             EndBoxSelection();
     }
 
@@ -158,10 +159,11 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         selectionBox.gameObject.SetActive(true);
         float boxWidth = mousePosition.x - boxStartPosition.x;
         float boxHeight = mousePosition.y - boxStartPosition.y;
-        selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight));
-        selectionBox.anchoredPosition = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
-        Vector2 bottomLeft = selectionBox.anchoredPosition - (selectionBox.sizeDelta / 2);
-        Vector2 topRight = selectionBox.anchoredPosition + (selectionBox.sizeDelta / 2);
+        selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight)) * GetScreenScale();
+        //selectionBox.anchoredPosition = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
+        selectionBox.position = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
+        Vector2 bottomLeft = new Vector2(Mathf.Min(boxStartPosition.x, mousePosition.x), Mathf.Min(boxStartPosition.y, mousePosition.y));
+        Vector2 topRight = new Vector2(Mathf.Max(boxStartPosition.x, mousePosition.x), Mathf.Max(boxStartPosition.y, mousePosition.y));
 
         if (rightClickedBattleObject != null)
             objectsInSelectionBox.AddBattleObject(rightClickedBattleObject);
@@ -176,6 +178,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 objectsInSelectionBox.AddUnit(unit);
         }
         objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Highlighted);
+    }
+
+    Vector2 GetScreenScale() {
+        return new Vector2(3840f / Screen.width, 2160f / Screen.height);
     }
 
     void EndBoxSelection() {
