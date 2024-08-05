@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -10,20 +11,20 @@ public class PlayerShipUI : MonoBehaviour {
     PlayerUI playerUI;
     public Ship displayedShip { get; private set; }
     [SerializeField] GameObject shipStatusUI;
-    [SerializeField] Text shipName;
-    [SerializeField] Text shipFaction;
-    [SerializeField] Text shipClass;
-    [SerializeField] Text shipType;
-    [SerializeField] Text shipAction;
-    [SerializeField] Text shipAI;
-    [SerializeField] Text shipFleet;
-    [SerializeField] Text shipFleetAI;
-    [SerializeField] Text weaponsCount;
-    [SerializeField] Text shipTotalDPS;
-    [SerializeField] Text maxWeaponRange;
-    [SerializeField] Text cargoHeader;
-    [SerializeField] Text cargoBaysStatus;
-    [SerializeField] Text cargoBayCapacity;
+    [SerializeField] TMP_Text shipName;
+    [SerializeField] TMP_Text shipFaction;
+    [SerializeField] TMP_Text shipClass;
+    [SerializeField] TMP_Text shipType;
+    [SerializeField] TMP_Text shipAction;
+    [SerializeField] TMP_Text shipAI;
+    [SerializeField] TMP_Text shipFleet;
+    [SerializeField] TMP_Text shipFleetAI;
+    [SerializeField] TMP_Text weaponsCount;
+    [SerializeField] TMP_Text shipTotalDPS;
+    [SerializeField] TMP_Text maxWeaponRange;
+    [SerializeField] TMP_Text cargoHeader;
+    [SerializeField] TMP_Text cargoBaysStatus;
+    [SerializeField] TMP_Text cargoBayCapacity;
     [SerializeField] Transform cargoBayList;
     [SerializeField] GameObject cargoBayButtonPrefab;
     float updateSpeed;
@@ -59,7 +60,7 @@ public class PlayerShipUI : MonoBehaviour {
 
     void UpdateShipStatusUI() {
         shipName.text = displayedShip.GetUnitName();
-        shipFaction.text = "Faction: " + displayedShip.faction.name;
+        shipFaction.text = displayedShip.faction.name;
         shipClass.text = "Ship Class: " + displayedShip.GetShipClass();
         shipType.text = "Ship Type: " + displayedShip.GetShipType();
         if (displayedShip.shipAI.commands.Count > 0)
@@ -93,30 +94,29 @@ public class PlayerShipUI : MonoBehaviour {
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
         if (isFriendlyFaction && cargoBay != null) {
-            cargoHeader.gameObject.SetActive(true);
+            cargoHeader.transform.parent.parent.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
-            cargoBaysStatus.gameObject.SetActive(true);
             cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
-            cargoBayCapacity.gameObject.SetActive(true);
             for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
                 if (cargoBayList.childCount <= i) {
                     Instantiate(cargoBayButtonPrefab, cargoBayList);
                 }
                 Transform cargoBayButton = cargoBayList.GetChild(i);
                 cargoBayButton.gameObject.SetActive(true);
-                cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-                cargoBayButton.GetChild(1).GetComponent<Text>().text = cargoBay.cargoBays[i].ToString();
-                cargoBayButton.GetChild(2).GetComponent<Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
+                cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = cargoBay.cargoBayTypes[i].ToString();
+                cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = cargoBay.cargoBays[i].ToString();
+                cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
             }
             for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
                 cargoBayList.GetChild(i).gameObject.SetActive(false);
             }
-            cargoBayList.transform.parent.parent.gameObject.SetActive(true);
         } else {
-            cargoHeader.gameObject.SetActive(false);
-            cargoBaysStatus.gameObject.SetActive(false);
-            cargoBayCapacity.gameObject.SetActive(false);
-            cargoBayList.transform.parent.parent.gameObject.SetActive(false);
+            cargoHeader.transform.parent.parent.gameObject.SetActive(false);
         }
+    }
+
+    public void OpenFactionMenu() {
+        Faction faction = displayedShip.faction;
+        playerUI.ShowFactionUI(faction);
     }
 }

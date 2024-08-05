@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -11,18 +12,18 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] GameObject stationConstructionUI;
     [SerializeField] GameObject stationHangerUI;
     public Station displayedStation { get; private set; }
-    [SerializeField] Text stationName;
-    [SerializeField] Text stationFaction;
-    [SerializeField] Text stationType;
-    [SerializeField] Text weaponsCount;
-    [SerializeField] Text stationTotalDPS;
-    [SerializeField] Text maxWeaponRange;
-    [SerializeField] Text cargoBaysStatus;
-    [SerializeField] Text cargoBayCapacity;
-    [SerializeField] Text cargoHeader;
+    [SerializeField] TMP_Text stationName;
+    [SerializeField] TMP_Text stationFaction;
+    [SerializeField] TMP_Text stationType;
+    [SerializeField] TMP_Text weaponsCount;
+    [SerializeField] TMP_Text stationTotalDPS;
+    [SerializeField] TMP_Text maxWeaponRange;
+    [SerializeField] TMP_Text cargoBaysStatus;
+    [SerializeField] TMP_Text cargoBayCapacity;
+    [SerializeField] TMP_Text cargoHeader;
     [SerializeField] Transform cargoBayList;
     [SerializeField] GameObject cargoBayButtonPrefab;
-    [SerializeField] Text hangerStatus;
+    [SerializeField] TMP_Text hangerStatus;
     [SerializeField] Transform hangerList;
     [SerializeField] GameObject shipButtonPrefab;
     [SerializeField] List<Ship> shipsInHanger;
@@ -36,7 +37,7 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] GameObject shipBlueprintButtonPrefab;
     [SerializeField] Transform blueprintList;
     Unit upgradeDisplayUnit;
-    [SerializeField] Text constructionBayStatus;
+    [SerializeField] TMP_Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
     List<Ship.ShipBlueprint> shipBlueprints;
 
@@ -69,7 +70,7 @@ public class PlayerStationUI : MonoBehaviour {
         Profiler.BeginSample("StationDisplayUpdate");
         if (stationStatusUI.activeSelf) {
             stationName.text = displayedStation.GetUnitName();
-            stationFaction.text = "Faction: " + displayedStation.faction.name;
+            stationFaction.text = displayedStation.faction.name;
             stationType.text = "Station Type: " + displayedStation.stationType;
             weaponsCount.text = "Weapons: " + displayedStation.GetWeaponCount();
             if (displayedStation.GetWeaponCount() > 0) {
@@ -105,30 +106,25 @@ public class PlayerStationUI : MonoBehaviour {
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
         if (isFriendlyFaction && cargoBay != null) {
-            cargoHeader.gameObject.SetActive(true);
+            cargoHeader.transform.parent.parent.gameObject.SetActive(true);
             cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
-            cargoBaysStatus.gameObject.SetActive(true);
             cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
-            cargoBayCapacity.gameObject.SetActive(true);
             for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
                 if (cargoBayList.childCount <= i) {
                     Instantiate(cargoBayButtonPrefab, cargoBayList);
                 }
                 Transform cargoBayButton = cargoBayList.GetChild(i);
                 cargoBayButton.gameObject.SetActive(true);
-                cargoBayButton.GetChild(0).GetComponent<Text>().text = cargoBay.cargoBayTypes[i].ToString();
-                cargoBayButton.GetChild(1).GetComponent<Text>().text = NumFormatter.ConvertNumber(cargoBay.cargoBays[i]);
-                cargoBayButton.GetChild(2).GetComponent<Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
+                cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = cargoBay.cargoBayTypes[i].ToString();
+                cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = NumFormatter.ConvertNumber(cargoBay.cargoBays[i]);
+                cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
             }
             for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
                 cargoBayList.GetChild(i).gameObject.SetActive(false);
             }
             cargoBayList.transform.parent.parent.gameObject.SetActive(true);
         } else {
-            cargoHeader.gameObject.SetActive(false);
-            cargoBaysStatus.gameObject.SetActive(false);
-            cargoBayCapacity.gameObject.SetActive(false);
-            cargoBayList.transform.parent.parent.gameObject.SetActive(false);
+            cargoHeader.transform.parent.parent.gameObject.SetActive(false);
         }
     }
     public void SetAutoConstruction(bool autoconstruction) {
@@ -166,8 +162,7 @@ public class PlayerStationUI : MonoBehaviour {
             int f = i;
             button.onClick.AddListener(new UnityEngine.Events.UnityAction(() => ShipBlueprintButtonPressed(f)));
             cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = blueprint.name;
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
+            cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
             long cost;
             if (LocalPlayer.Instance.GetFaction() != null) {
                 cost = ((Shipyard)displayedStation).GetConstructionBay().GetCreditCostOfShip(LocalPlayer.Instance.faction, blueprint.shipScriptableObject);
@@ -176,7 +171,7 @@ public class PlayerStationUI : MonoBehaviour {
                 cost = blueprint.shipScriptableObject.cost;
                 button.interactable = false;
             }
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber(cost);
+            cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = "Cost: " + NumFormatter.ConvertNumber(cost);
         }
         for (int i = BattleManager.Instance.shipBlueprints.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
@@ -209,9 +204,8 @@ public class PlayerStationUI : MonoBehaviour {
             int f = i;
             cargoBayButton.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => UpgradeBlueprintButtonPressed(upgradeDisplayUnit, system)));
             cargoBayButton.gameObject.SetActive(true);
-            cargoBayButton.GetChild(0).GetComponent<Text>().text = upgradeComponent.name;
-            cargoBayButton.GetChild(1).GetComponent<Text>().text = "";
-            cargoBayButton.GetChild(2).GetComponent<Text>().text = "Cost: " + NumFormatter.ConvertNumber((upgradeComponent.cost - system.component.cost) * system.moduleCount);
+            cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = upgradeComponent.name;
+            cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = "Cost: " + NumFormatter.ConvertNumber((upgradeComponent.cost - system.component.cost) * system.moduleCount);
         }
         for (int i = upgradeableSystems.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
@@ -243,9 +237,9 @@ public class PlayerStationUI : MonoBehaviour {
             constructionBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => ConstructionButtonPressed(f)));
             constructionBayButtonTransform.gameObject.SetActive(true);
             Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
-            constructionBayButtonTransform.GetChild(0).GetComponent<Text>().text = blueprint.name.ToString();
-            constructionBayButtonTransform.GetChild(1).GetComponent<Text>().text = blueprint.faction.abbreviatedName;
-            constructionBayButtonTransform.GetChild(2).GetComponent<Text>().text = (100 - (blueprint.GetTotalResourcesLeftToUse() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
+            constructionBayButtonTransform.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name.ToString();
+            constructionBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text = blueprint.faction.abbreviatedName;
+            constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text = (100 - (blueprint.GetTotalResourcesLeftToUse() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
             constructionBayButton.GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(blueprint.GetFaction()));
         }
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
@@ -284,9 +278,9 @@ public class PlayerStationUI : MonoBehaviour {
 
             hangerBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerButtonPressed(f)));
             hangerBayButtonTransform.gameObject.SetActive(true);
-            hangerBayButtonTransform.GetChild(0).GetComponent<Text>().text = ship.GetUnitName();
-            hangerBayButtonTransform.GetChild(1).GetComponent<Text>().text = ship.faction.abbreviatedName;
-            hangerBayButtonTransform.GetChild(2).GetComponent<Text>().text = ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
+            hangerBayButtonTransform.GetChild(0).GetComponent<TMP_Text>().text = ship.GetUnitName();
+            hangerBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text = ship.faction.abbreviatedName;
+            hangerBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text = ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
             hangerBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangerInfoButtonPressed(f)));
             hangerBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
         }
@@ -313,5 +307,10 @@ public class PlayerStationUI : MonoBehaviour {
     public void HangerInfoButtonPressed(int index) {
         LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
         LocalPlayer.Instance.GetPlayerUI().SetDisplayShip(shipsInHanger[index]);
+    }
+
+    public void OpenFactionMenu() {
+        Faction faction = displayedStation.faction;
+        playerUI.ShowFactionUI(faction);
     }
 }

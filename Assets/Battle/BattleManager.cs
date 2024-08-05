@@ -490,7 +490,7 @@ public class BattleManager : MonoBehaviour {
         Profiler.EndSample();
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
-            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon.name, GetRealTime(), GetSimulationTime());
+            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon, GetRealTime(), GetSimulationTime());
             battleState = BattleState.Ended;
             LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }

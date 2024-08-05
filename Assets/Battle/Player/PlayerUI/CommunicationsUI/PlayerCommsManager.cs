@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static FactionCommManager;
 
 public class PlayerCommsManager : MonoBehaviour {
     PlayerUI playerUI;
@@ -14,8 +13,8 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private Transform characterPortraitFrame;
     [SerializeField] private Image characterNameBackground;
     [SerializeField] private Image factionNameBackground;
-    [SerializeField] private Text characterName;
-    [SerializeField] private Text factionName;
+    [SerializeField] private TMP_Text characterName;
+    [SerializeField] private TMP_Text factionName;
     private GameObject characterPortrait;
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
@@ -76,12 +75,12 @@ public class PlayerCommsManager : MonoBehaviour {
 
     void CreateCommEvent(CommunicationEvent communicationEvent) {
         GameObject newCommEvent = Instantiate(communicationEventPrefab, communicationLogTransform);
-        newCommEvent.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.sender.GetSenderName() + ": " + communicationEvent.text;
+        newCommEvent.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.text;
         newCommEvent.GetComponent<Image>().color = communicationEvent.sender.faction.GetColorBackgroundTint();
         if (communicationEvent.isActive) {
             for (int i = 0; i < communicationEvent.options.Length; i++) {
                 GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
-                newOption.transform.GetChild(0).GetComponent<Text>().text = communicationEvent.options[i].optionName;
+                newOption.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.options[i].optionName;
                 newOption.GetComponent<Button>().interactable = communicationEvent.options[i].checkStatus(communicationEvent);
                 newOption.GetComponent<Button>().onClick.AddListener(() => ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
             }
@@ -140,18 +139,14 @@ public class PlayerCommsManager : MonoBehaviour {
         if (portraitTime > 0) {
             characterPortraitPanel.SetActive(true);
         }
-        for (int i = 0; i < communicationToggleTransform.childCount; i++) {
-            communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 270);
-        }
+        communicationToggleTransform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     public void HidePanel() {
         shown = false;
         communicationPanel.SetActive(false);
         characterPortraitPanel.SetActive(false);
-        for (int i = 0; i < communicationToggleTransform.childCount; i++) {
-            communicationToggleTransform.GetChild(i).transform.eulerAngles = new Vector3(0, 0, 90);
-        }
+        communicationToggleTransform.rotation = Quaternion.Euler(0, 0, 180);
     }
 
     public void ToggleVisibility() {

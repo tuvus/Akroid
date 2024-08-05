@@ -25,16 +25,17 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject commandUI;
     [SerializeField] private GameObject controlsListUI;
     [SerializeField] private GameObject menuUI;
-    [SerializeField] private Text factionName;
-    [SerializeField] private Text factionCredits;
-    [SerializeField] private Text factionScience;
-    [SerializeField] private Text command;
+    [SerializeField] private TMP_Text factionName;
+    [SerializeField] private TMP_Text factionCredits;
+    [SerializeField] private TMP_Text factionScience;
+    [SerializeField] private TMP_Text command;
     [SerializeField] private TMP_Text timeSpeed;
     [SerializeField] private CommandClick commandClick;
     [SerializeField] private GameObject victoryUI;
-    [SerializeField] private Text victoryTitle;
-    [SerializeField] private Text victoryElapsedTime;
-    [SerializeField] private Text victoryRealTime;
+    [SerializeField] private TMP_Text victoryTitle;
+    [SerializeField] private TMP_Text victoryFaction;
+    [SerializeField] private TMP_Text victoryElapsedTime;
+    [SerializeField] private TMP_Text victoryRealTime;
     [SerializeField] private GameObject stationUI;
     [SerializeField] private GameObject shipUI;
     [SerializeField] private GameObject planetUI;
@@ -103,7 +104,7 @@ public class PlayerUI : MonoBehaviour {
             playerPlanetUI.UpdatePlanetUI();
         }
         if (factionOverviewUI.activeSelf) {
-            playerFactionOverviewUI.UpdateFactionOverviewUI(GetLocalPlayer().GetFaction());
+            playerFactionOverviewUI.UpdateFactionOverviewUI();
         }
         timeSpeed.text = "Time: " + Time.timeScale;
         playerEventUI.UpdateEventUI();
@@ -176,8 +177,13 @@ public class PlayerUI : MonoBehaviour {
         victoryUI.SetActive(shown);
     }
 
-    public void FactionWon(string factionName, double realTime, double timeElapsed) {
-        victoryTitle.text = "Victory \n " + factionName;
+    public void FactionWon(Faction faction, double realTime, double timeElapsed) {
+        if (faction == LocalPlayer.Instance.faction) {
+            victoryTitle.text = "Victory!";
+        } else {
+            victoryTitle.text = "Defeat!";
+        }
+        victoryFaction.text = faction.name;
         victoryRealTime.text = "Real time: " + (int)(realTime / 60) + " minutes";
         victoryElapsedTime.text = "Time elapsed: " + (int)(timeElapsed / 60) + " minutes";
         ShowVictoryUI(true);
@@ -246,9 +252,19 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
-    public void ShowResearchUI(bool shown) {
+    public void ShowFactionUI(Faction faction) {
         CloseAllMenus();
-        factionOverviewUI.SetActive(shown);
+        factionOverviewUI.SetActive(true);
+        playerFactionOverviewUI.DisplayFaction(faction);
+    }
+
+    public void ShowResearchUI(bool shown) {
+        if (shown) {
+            ShowFactionUI(LocalPlayer.Instance.faction);
+        } else { 
+            CloseAllMenus();
+            factionOverviewUI.SetActive(false);
+        }
     }
 
     public void CloseAllMenus() {
@@ -272,13 +288,11 @@ public class PlayerUI : MonoBehaviour {
     public void ToggleUnitZoomIndicators() {
         showUnitZoomIndicators = !showUnitZoomIndicators;
         updateUnitZoomIndicators = true;
-        playerMenueUI.UpdateUnitZoomIndicators(showUnitZoomIndicators);
     }
 
     public void ToggleUnitCombatIndicators() {
         showUnitCombatIndicators = !showUnitCombatIndicators;
         updateUnitZoomIndicators = true;
-        playerMenueUI.UpdateUnitCombatIndicators(showUnitCombatIndicators);
     }
 
     public void SetEffects(bool shown) {

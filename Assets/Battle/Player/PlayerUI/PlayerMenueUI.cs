@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,8 +13,8 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Toggle menueUIParticles;
     [SerializeField] private Toggle menueUICommandRenderer;
     [SerializeField] private Toggle menueUIFactionColors;
-    [SerializeField] private Dropdown menueUIFactionSelect;
-    [SerializeField] private Text timeScaleText;
+    [SerializeField] private TMP_Dropdown menueUIFactionSelect;
+    [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private Slider menueUITimeScale;
     private List<Faction> factions;
 
@@ -47,13 +48,13 @@ public class PlayerMenueUI : MonoBehaviour {
         menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
     }
 
-    public void UpdateUnitZoomIndicators(bool newSetting) {
-        menueUIZoomIndicators.SetIsOnWithoutNotify(newSetting);
-        menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(newSetting);
+    public void SetUnitZoomIndicators() {
+        playerUI.ToggleUnitZoomIndicators();
+        menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.GetShowUnitZoomIndicators());
     }
 
-    public void UpdateUnitCombatIndicators(bool newSetting) {
-        menueUIUnitCombatIndicators.SetIsOnWithoutNotify(newSetting);
+    public void SetUnitCombatIndicators() {
+        playerUI.ToggleUnitCombatIndicators();
     }
 
     public void SetEffects() {

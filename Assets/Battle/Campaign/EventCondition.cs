@@ -285,7 +285,7 @@ public class EventCondition {
                 }
                 break;
             case ConditionType.OpenFactionPanel:
-                if (LocalPlayer.Instance.playerUI.playerFactionOverviewUI.faction == faction) {
+                if (LocalPlayer.Instance.playerUI.playerFactionOverviewUI.displayedFaction == faction) {
                     return true;
                 }
                 return false;
