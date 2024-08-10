@@ -74,7 +74,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.PrimaryMouseUp();
         if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
             return;
-        if (actionType == ActionType.Selecting && !AdditiveButtonPressed)
+        if (actionType == ActionType.Selecting)
             EndBoxSelection();
     }
 
