@@ -15,7 +15,7 @@ public class ShipyardFactionAI : FactionAI {
         this.shipyard = shipyard;
         transportTime = 0;
         // We need to re-add the Idle ships since we are seting up after creating them
-        idleShips.AddRange(faction.ships);
+        faction.ships.ToList().ForEach((s) => idleShips.Add(s));
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -45,11 +45,11 @@ public class ShipyardFactionAI : FactionAI {
                 shipyard.LoadCargoFromUnit(100, CargoBay.CargoTypes.Metal, ship);
             } else if (ship.dockedStation == chapter1.tradeStation) {
                 long cargoToLoad = math.min(100, ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal));
-                if (faction.credits >= cargoToLoad * chapter1.GetMetalCost()) {
+                if (faction.credits >= cargoToLoad * chapter1.resourceCosts[CargoBay.CargoTypes.Metal]) {
                     ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
                 } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     ship.UndockShip(shipyard.GetPosition());
-                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard), Command.CommandAction.Replace);
+                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
                 }
             }
         }
@@ -59,13 +59,13 @@ public class ShipyardFactionAI : FactionAI {
     void ManageIdleShips() {
         foreach (var ship in idleShips) {
             if (ship.IsTransportShip()) {
-                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard), Command.CommandAction.Replace);
+                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
             }
         }
     }
 
-    public override float GetSellCostOfMetal() {
-        return chapter1.GetMetalCost() * 1.2f;
+    public override double GetSellCostOfMetal() {
+        return chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2;
     }
 
     public int GetOrderCount(Ship.ShipClass shipClass, Faction faction) {

@@ -234,7 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitSpeed: 1
   cargoSpeed: 2
-  cargoAmount: 300
+  <cargoAmount>k__BackingField: 300
   transportShips: []
   wantedTransports: 0
 --- !u!58 &3457495768788648788

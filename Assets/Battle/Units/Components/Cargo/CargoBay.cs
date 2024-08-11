@@ -1,13 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CargoBay : ModuleComponent {
     public enum CargoTypes {
+        All = -1,
         Empty = 0,
         Metal = 1,
         Gas = 2,
     }
+
+    public static List<CargoTypes> allCargoTypes = new() { CargoTypes.Metal, CargoTypes.Gas };
 
     CargoBayScriptableObject cargoBayScriptableObject;
 
@@ -112,7 +116,7 @@ public class CargoBay : ModuleComponent {
     public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
         long totalCargoCapacity = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
-            if (cargoBayTypes[i] == cargoType) {
+            if (cargoBayTypes[i] == cargoType || cargoType == CargoTypes.All) {
                 totalCargoCapacity += cargoBayScriptableObject.cargoBaySize - cargoBays[i];
             }
         }
@@ -128,6 +132,9 @@ public class CargoBay : ModuleComponent {
     }
 
     public long GetAllCargo(CargoTypes cargoType) {
+        if (cargoType == CargoTypes.All) {
+            return allCargoTypes.Sum((t) => GetAllCargo(t));
+        }
         long totalCargo = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
             if (cargoBayTypes[i] == cargoType) {

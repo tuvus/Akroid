@@ -43,10 +43,10 @@ public class Command {
     public Star targetStar;
     public GasCloud targetGasCloud;
     public bool useAlternateCommandOnceDone;
+    public CargoBay.CargoTypes cargoType;
 
     public Station productionStation;
     public Station destinationStation;
-    public string cargoType;
 
     public float maxSpeed;
 
@@ -169,19 +169,21 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, bool oneTrip = false) {
+    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType, bool oneTrip = false) {
         Command newCommand = new Command(CommandType.Transport);
         newCommand.destinationStation = destinationStation;
         newCommand.productionStation = productionStation;
         newCommand.useAlternateCommandOnceDone = oneTrip;
+        newCommand.cargoType = cargoType;
         return newCommand;
     }
 
-    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, float delay) {
+    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType, float delay) {
         Command newCommand = new Command(CommandType.TransportDelay);
         newCommand.destinationStation = destinationStation;
         newCommand.productionStation = productionStation;
         newCommand.waitTime = delay;
+        newCommand.cargoType = cargoType;
         newCommand.targetRotation = delay;
         return newCommand;
     }

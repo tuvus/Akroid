@@ -9,13 +9,13 @@ public class FactionAI : MonoBehaviour {
     public bool autoResearch;
     public float attackTime;
 
-    [field:SerializeField] public List<Ship> idleShips { get; protected set; }
+    [field:SerializeField] public HashSet<Ship> idleShips { get; protected set; }
     [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
 
     public virtual void SetupFactionAI(BattleManager battleManager, Faction faction) {
         this.battleManager = battleManager;
         this.faction = faction;
-        idleShips = new List<Ship>(10);
+        idleShips = new HashSet<Ship>(40);
         autoResearch = true;
     }
 
@@ -49,7 +49,8 @@ public class FactionAI : MonoBehaviour {
     }
 
     public virtual void AddIdleShip(Ship ship) {
-        idleShips.Add(ship);
+        if (!idleShips.Contains(ship))
+            idleShips.Add(ship);
     }
 
     public virtual void RemoveShip(Ship ship) {
@@ -60,7 +61,7 @@ public class FactionAI : MonoBehaviour {
 
     }
 
-    public virtual float GetSellCostOfMetal() {
+    public virtual double GetSellCostOfMetal() {
         return 2.4f;
     }
 

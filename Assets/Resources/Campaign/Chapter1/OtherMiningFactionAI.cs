@@ -16,7 +16,7 @@ public class OtherMiningFactionAI : FactionAI {
         this.otherMiningStation = otherMiningStation;
         this.tradeStation = tradeStation;
         // We need to re-add the Idle ships since we are seting up after creating them
-        idleShips.AddRange(faction.ships);
+        faction.ships.ToList().ForEach((s) => idleShips.Add(s));
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -24,7 +24,7 @@ public class OtherMiningFactionAI : FactionAI {
         if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             Ship.ShipBlueprint shipBlueprint = battleManager.GetShipBlueprint(Ship.ShipClass.Transport);
             long metalToUse = shipBlueprint.shipScriptableObject.resourceCosts[shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
-            long metalCost = (long)(metalToUse * chapter1.GetMetalCost() * 1.2f);
+            long metalCost = (long)(metalToUse * chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2f);
             long transportCost = shipBlueprint.shipScriptableObject.cost + metalCost;
             if (faction.credits > 10000 + transportCost) {
                 chapter1.shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, shipBlueprint));
@@ -35,11 +35,9 @@ public class OtherMiningFactionAI : FactionAI {
     }
 
     void ManageIdleShips() {
-        for (int i = 0; i < idleShips.Count; i++) {
-            if (idleShips[i].IsIdle()) {
-                if (idleShips[i].IsTransportShip()) {
-                    idleShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(otherMiningStation, tradeStation), Command.CommandAction.AddToEnd);
-                }
+        foreach (var idleShip in idleShips) {
+            if (idleShip.IsTransportShip()) {
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTransportCommand(otherMiningStation, tradeStation, CargoBay.CargoTypes.Metal), Command.CommandAction.AddToEnd);
             }
         }
     }

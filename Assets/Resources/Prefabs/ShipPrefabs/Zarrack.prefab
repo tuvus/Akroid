@@ -210,7 +210,7 @@ GameObject:
   - component: {fileID: 8839863084617687937}
   - component: {fileID: 2209295241726882495}
   - component: {fileID: 8261022325014511525}
-  m_Layer: 10
+  m_Layer: 7
   m_Name: Zarrack
   m_TagString: Units/Ship
   m_Icon: {fileID: 0}

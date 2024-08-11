@@ -49,7 +49,7 @@ public class MiningStationAI : StationAI {
     void ManageMinningStationCargo() {
         foreach (var ship in station.GetHanger().GetShips()) {
             if (ship.GetShipType() == Ship.ShipType.Transport) {
-                ship.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Metal, station);
+                ship.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.All, station);
                 cargoTime += cargoSpeed;
                 break;
             }
@@ -69,7 +69,7 @@ public class MiningStationAI : StationAI {
         if (!transportShips.Contains(ship)) {
             transportShips.Add(ship);
         }
-        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand()), Command.CommandAction.Replace);
+        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
     }
 
     public int? GetWantedTransportShips() {

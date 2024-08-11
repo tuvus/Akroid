@@ -335,18 +335,6 @@ MonoBehaviour:
   <researchModifier>k__BackingField: 0
   <systemSizeModifier>k__BackingField: 0
   shipBlueprints:
-  - name: Transport
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
-      type: 2}
-  - name: Station Builder
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
-      type: 2}
-  - name: Science Ship
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
-      type: 2}
   - name: Aria
     faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
@@ -359,17 +347,29 @@ MonoBehaviour:
     faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
       type: 2}
-  - name: Heavy Transport
+  - name: Station Builder
     faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
-      type: 2}
-  - name: Civilian Ship
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
+    shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
       type: 2}
   - name: Gas Collector
     faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: 9e5dfb8892aab944481eb82a16720054,
+      type: 2}
+  - name: Transport
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
+      type: 2}
+  - name: Heavy Transport
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
+      type: 2}
+  - name: Science Ship
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
+      type: 2}
+  - name: Civilian Ship
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
       type: 2}
   stationBlueprints:
   - name: Fleet Command

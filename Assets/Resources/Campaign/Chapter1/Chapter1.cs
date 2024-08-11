@@ -16,13 +16,13 @@ public class Chapter1 : CampaingController {
     Faction planetFaction;
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
-    public Station tradeStation { get; private set; }
+    public Shipyard tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
     public Shipyard shipyard { get; private set; }
     public Faction researchFaction { get; private set; }
     public Station researchStation { get; private set; }
-    float metalCost;
+    public Dictionary<CargoBay.CargoTypes, double> resourceCosts;
 
     public DifficultyLevel difficultyLevel { get; private set; }
 
@@ -38,7 +38,10 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle(BattleManager battleManager) {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
-        metalCost = 4.6f;
+        resourceCosts = new Dictionary<CargoBay.CargoTypes, double>(10) {
+            { CargoBay.CargoTypes.Metal, 4.6f },
+            { CargoBay.CargoTypes.Gas, 13.9f }
+        };
         battleManager.CreateNewStar("Sun");
         ColorPicker colorPicker = new ColorPicker();
         playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
@@ -61,13 +64,14 @@ public class Chapter1 : CampaingController {
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         planet = battleManager.CreateNewPlanet(new BattleManager.PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), (long)Random.Range(500, 600) * 100000000, 0.01, Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
-        tradeStation = battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "Trade Station", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
+        tradeStation = (Shipyard)battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "Trade Station", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
-        ((Shipyard)tradeStation).GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+        ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
+        tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.onBuildShip += (ship) => { if (ship.faction == LocalPlayer.Instance.GetFaction()) LocalPlayer.Instance.AddOwnedUnit(ship); };
 
-        shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), (long)(2400 * GetMetalCost() * 1.4f), 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), (long)(2400 * resourceCosts[CargoBay.CargoTypes.Metal] * 1.4f), 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Solar Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport);
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
@@ -83,7 +87,7 @@ public class Chapter1 : CampaingController {
         ConstructionShip setupFleetShip2 = (ConstructionShip)tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder);
         setupFleetShip2.targetStationBlueprint = playerMiningStation;
         Ship setupFleetShip3 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
-        Ship setupFleetShip4 = tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian);
+        Ship setupFleetShip4 = tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle");
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet", playerFaction.ships);
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale), Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4, Command.CommandAction.AddToEnd);
@@ -102,7 +106,7 @@ public class Chapter1 : CampaingController {
 
         playerFactionAI.SetupPlayerFactionAI(battleManager, playerFaction, this, playerMiningStation);
         otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);
-        planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips);
+        planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips, eventManager);
         shipyardFactionAI.SetupShipyardFactionAI(battleManager, shipyardFaction, this, planetFactionAI, shipyard);
 
 
@@ -528,19 +532,6 @@ public class Chapter1 : CampaingController {
     public override void UpdateController(float deltaTime) {
         base.UpdateController(deltaTime);
     }
-
-    public float GetMetalCost() {
-        return metalCost;
-    }
-
-    /// <summary>
-    /// Multiplies the metal cost by the factor given
-    /// </summary>
-    /// <param name="factor"> float value close to 1</param>
-    public void ChangeMetalCost(float factor) {
-        metalCost = metalCost * factor;
-    }
-
 
     public override string GetPathToChapterFolder() {
         return "Campaign/Chapter1";

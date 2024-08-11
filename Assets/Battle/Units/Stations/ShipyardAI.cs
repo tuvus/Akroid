@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ShipyardAI : StationAI {
+
+    public bool autoCollectCargo;
+
+    public override void SetupStationAI(Station station) {
+        base.SetupStationAI(station);
+        autoCollectCargo = true;
+    }
+
     public override void UpdateAI(float deltaTime) {
         base.UpdateAI(deltaTime);
         UpdateShipyard();
     }
 
     void UpdateShipyard() {
-        if (cargoTime <= 0) {
+        if (cargoTime <= 0 && autoCollectCargo) {
             foreach (var ship in station.GetHanger().ships) {
                 if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     station.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Metal, ship);

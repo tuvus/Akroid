@@ -327,7 +327,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         List<Ship> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].IsTransportShip()) {
-                allShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(closestProductionStation, LocalPlayer.Instance.GetFaction().GetFleetCommand()), GetCommandAction());
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(closestProductionStation, LocalPlayer.Instance.GetFaction().GetFleetCommand(), CargoBay.CargoTypes.Metal), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }

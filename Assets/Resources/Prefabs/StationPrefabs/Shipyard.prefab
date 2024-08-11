@@ -334,7 +334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitSpeed: 1
   cargoSpeed: 0.2
-  cargoAmount: 0
+  <cargoAmount>k__BackingField: 300
 --- !u!58 &2433509441528522819
 CircleCollider2D:
   m_ObjectHideFlags: 0

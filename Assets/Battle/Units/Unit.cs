@@ -35,6 +35,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         moduleSystem = GetComponent<ModuleSystem>();
         moduleSystem.SetupModuleSystem(this, unitScriptableObject);
         this.objectName = name;
+        gameObject.name = name;
         health = GetMaxHealth();
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
@@ -286,6 +287,13 @@ public abstract class Unit : BattleObject, IParticleHolder {
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
     public long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit) {
+        if (cargoType == CargoBay.CargoTypes.All) {
+            foreach (var type in CargoBay.allCargoTypes) {
+                amount = LoadCargoFromUnit(amount, type, unit);
+                if (amount == 0) break;
+            }
+            return amount;
+        }
         long cargoToLoad = Math.Min(amount, Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
         unit.UseCargo(cargoToLoad, cargoType);
         LoadCargo(cargoToLoad, cargoType);
@@ -295,7 +303,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
     public long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
         long reserved = 0;
         if (includeReserved) {
-            reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
+            if (cargoType == CargoBay.CargoTypes.All) {
+                reserved = CargoBay.allCargoTypes.Sum((t) => GetReservedCargoSpace().GetValueOrDefault(t, 0));
+            } else {
+                reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
+            }
         }
         return cargoBays.Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerFactionAI : FactionAI {
 
@@ -26,17 +27,12 @@ public class PlayerFactionAI : FactionAI {
     }
 
     void ManageIdleShips() {
-        for (int i = 0; i < idleShips.Count; i++) {
-            if (idleShips[i].IsIdle()) {
-                if (idleShips[i].IsTransportShip()) {
-                    if (tradeRoutes.Count > 0) {
-                        nextStationToSendTo++;
-                        if (nextStationToSendTo >= tradeRoutes.Count)
-                            nextStationToSendTo = 0;
-                        idleShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo], true), Command.CommandAction.AddToEnd);
-                    }
-                }
-            }
+        foreach (var ship in idleShips.Where((s) => s.IsIdle() && s.IsTransportShip())) {
+            if (tradeRoutes.Count == 0) break;
+            nextStationToSendTo++;
+            if (nextStationToSendTo >= tradeRoutes.Count)
+                nextStationToSendTo = 0;
+            ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo], CargoBay.CargoTypes.All, true), Command.CommandAction.AddToEnd);
         }
     }
 

@@ -1,21 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using Unity.Mathematics;
+using Random = UnityEngine.Random;
 
 public class PlanetFactionAI : FactionAI {
     Chapter1 chapter1;
     ShipyardFactionAI shipyardFactionAI;
     Planet planet;
-    Station tradeStation;
+    Shipyard tradeStation;
     Shipyard shipyard;
     List<Ship> civilianShips;
     List<Station> friendlyStations;
 
     float updateTime;
-    float sellMetalToPlanetTime;
+    float sellResourcesToPlanetTime;
 
-    public void SetupPlanetFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Station tradeStation, Shipyard shipyard, List<Ship> civilianShips) {
+    public void SetupPlanetFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Shipyard tradeStation, Shipyard shipyard, List<Ship> civilianShips, EventManager eventManager) {
         base.SetupFactionAI(battleManger, faction);
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
@@ -25,13 +27,23 @@ public class PlanetFactionAI : FactionAI {
         this.civilianShips = civilianShips;
         friendlyStations = new List<Station>();
         // We need to re-add the Idle ships since we are seting up after creating them
-        idleShips.AddRange(faction.ships);
+        faction.ships.ToList().ForEach((s) => idleShips.Add(s));
+        void produceCivilianShipDelayed() {
+            eventManager.AddEvent(EventCondition.WaitEvent(1000 + Random.Range(0, 1000)), () => {
+                tradeStation.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+                produceCivilianShipDelayed();
+            });
+        }
+        eventManager.AddEvent(EventCondition.WaitEvent(40000), () => {
+            produceCivilianShipDelayed();
+        });
+        produceCivilianShipDelayed();
     }
 
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
         updateTime -= deltaTime;
-        sellMetalToPlanetTime -= deltaTime;
+        sellResourcesToPlanetTime -= deltaTime;
         if (updateTime <= 0) {
             updateTime += 10;
             faction.AddCredits(planet.GetPopulation() / 100000000);
@@ -44,17 +56,25 @@ public class PlanetFactionAI : FactionAI {
     void UpdateTradeStation() {
         foreach (var transportShip in tradeStation.GetHanger().GetTransportShips()) {
             if (transportShip.faction != faction && transportShip.faction != shipyardFactionAI.faction) {
-                long cost = (long)(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal) * chapter1.GetMetalCost() * 0.2f);
-                if (faction.UseCredits(cost)) {
-                    transportShip.faction.AddCredits(cost);
-                    transportShip.GetCargoBay().UseCargo(transportShip.GetAllCargoOfType(CargoBay.CargoTypes.Metal), CargoBay.CargoTypes.Metal);
+                long amountToTransfer = tradeStation.stationAI.cargoAmount;
+                foreach (var type in CargoBay.allCargoTypes) {
+                    if (amountToTransfer <= 0) break;
+                    long amountOfResource = math.min(amountToTransfer, transportShip.GetAllCargoOfType(type));
+                    if (faction.TransferCredits((long)(amountOfResource * chapter1.resourceCosts[type]), transportShip.faction)) {
+                        tradeStation.LoadCargoFromUnit(amountOfResource, type, transportShip);
+                    }
                 }
             }
         }
 
-        if (sellMetalToPlanetTime <= 0) {
-            faction.AddCredits((long)((100 - tradeStation.UseCargo(100, CargoBay.CargoTypes.Metal)) * chapter1.GetMetalCost() * .8f));
-            sellMetalToPlanetTime += 10;
+        if (sellResourcesToPlanetTime <= 0) {
+            foreach (var type in CargoBay.allCargoTypes) {
+                long amount = math.min(100, tradeStation.GetAllCargoOfType(type, true) - 2400);
+                if (amount <= 0) continue;
+                tradeStation.UseCargo(amount, type);
+                faction.AddCredits((long)(amount * chapter1.resourceCosts[type] * .5f));
+            }
+            sellResourcesToPlanetTime += 5;
         }
         ManageIdleShips();
     }
@@ -73,7 +93,7 @@ public class PlanetFactionAI : FactionAI {
                         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(6000, 12000))));
                     else
                         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(1000, 5000))));
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(0, 3f)));
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
                 }
             }
         }

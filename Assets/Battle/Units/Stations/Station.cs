@@ -4,7 +4,6 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Ship;
-using static System.Collections.Specialized.BitVector32;
 using Random = UnityEngine.Random;
 
 public class Station : Unit, IPositionConfirmer {
@@ -176,6 +175,11 @@ public class Station : Unit, IPositionConfirmer {
         return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
+    public virtual Ship BuildShip(Faction faction, ShipClass shipClass, string shipName, long cost = 0, bool? undock = false) {
+        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
+        return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipName, cost, undock);
+    }
+
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
         return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
@@ -183,6 +187,11 @@ public class Station : Unit, IPositionConfirmer {
     public virtual Ship BuildShip(Faction faction, ShipType shipType, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
         return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+    }
+
+    public virtual Ship BuildShip(Faction faction, ShipType shipType, string shipName, long cost = 0, bool? undock = false) {
+        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
+        return BuildShip(faction, shipScriptableObject, shipName, cost, undock);
     }
 
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {

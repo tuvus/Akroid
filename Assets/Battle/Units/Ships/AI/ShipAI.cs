@@ -49,6 +49,9 @@ public class ShipAI : MonoBehaviour {
             commands.RemoveAt(0);
             newCommand = true;
         }
+        if (commands.Count == 0 && ship.shipAction == Ship.ShipAction.Idle) {
+            ship.SetIdle();
+        }
     }
 
     public void ClearCommands() {
@@ -115,7 +118,6 @@ public class ShipAI : MonoBehaviour {
     CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Wait;
-            ship.SetIdle();
             newCommand = false;
         }
         command.waitTime -= deltaTime;
@@ -569,14 +571,14 @@ public class ShipAI : MonoBehaviour {
                     currentCommandState = CommandType.Idle;
                     return CommandResult.StopRemove;
                 }
-                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAllCargoOfType(command.cargoType) <= 0) {
                     ship.SetDockTarget(command.productionStation);
                     if (command.useAlternateCommandOnceDone)
                         currentCommandState = CommandType.Move;
@@ -586,7 +588,7 @@ public class ShipAI : MonoBehaviour {
                     currentCommandState = CommandType.Wait;
                 }
             } else {
-                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {

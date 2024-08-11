@@ -161,7 +161,6 @@ public class Ship : Unit {
         shipAI.SetupShipAI(this);
         mass = GetSize() * 100;
         Spawn();
-        shipAction = ShipAction.Move;
         SetIdle();
     }
 
@@ -220,8 +219,7 @@ public class Ship : Unit {
             if (Mathf.Abs(localRotation) <= turnSpeed) {
                 SetRotation(targetRotation);
                 if (shipAction == ShipAction.Rotate) {
-                    shipAction = ShipAction.Idle;
-                    SetThrusters(false);
+                    SetIdle();
                 } else if (shipAction == ShipAction.MoveRotate) {
                     shipAction = ShipAction.Move;
                     SetThrusters(true);
@@ -297,9 +295,7 @@ public class Ship : Unit {
 
     #region ShipControlls
     public void SetIdle() {
-        if (shipAction != ShipAction.Idle) {
-            faction.GetFactionAI().AddIdleShip(this);
-        }
+        faction.GetFactionAI().AddIdleShip(this);
         shipAction = ShipAction.Idle;
         velocity = Vector2.zero;
         SetThrusters(false);
