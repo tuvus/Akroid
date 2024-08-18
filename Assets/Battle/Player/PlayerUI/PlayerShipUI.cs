@@ -27,7 +27,7 @@ public class PlayerShipUI : MonoBehaviour {
     [SerializeField] TMP_Text cargoBayCapacity;
     [SerializeField] Transform cargoBayList;
     [SerializeField] GameObject cargoBayButtonPrefab;
-    float updateSpeed;
+    [SerializeField] private float updateSpeed;
     float updateTime;
 
     public void SetupPlayerShipUI(PlayerUI playerUI) {

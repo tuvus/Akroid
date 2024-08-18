@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerPlanetUI : MonoBehaviour {
     PlayerUI playerUI;
-    float updateSpeed;
+    [SerializeField] private float updateSpeed;
     private float updateTime;
 
     [SerializeField] GameObject planetStatusUI;

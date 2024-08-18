@@ -27,7 +27,7 @@ public class PlayerStationUI : MonoBehaviour {
     [SerializeField] Transform hangerList;
     [SerializeField] GameObject shipButtonPrefab;
     [SerializeField] List<Ship> shipsInHanger;
-    float updateSpeed;
+    [SerializeField] private float updateSpeed;
     float updateTime;
     [SerializeField] Toggle autoBuildShips;
     [SerializeField] Button shipYardSelection;

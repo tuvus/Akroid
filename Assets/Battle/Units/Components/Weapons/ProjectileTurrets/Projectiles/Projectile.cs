@@ -7,7 +7,6 @@ public class Projectile : BattleObject, IParticleHolder {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
     [SerializeField] private BoxCollider2D boxCollider2D;
-    private Faction faction;
     private float speed;
     private int damage;
     private float projectileRange;
@@ -53,7 +52,7 @@ public class Projectile : BattleObject, IParticleHolder {
             }
         } else {
             transform.position += new Vector3(shipVelocity.x * deltaTime, shipVelocity.y * deltaTime, 0);
-            transform.Translate(Vector2.up * speed * deltaTime);
+            transform.Translate(deltaTime * speed * Vector2.up);
             distance += speed * deltaTime;
             if (distance >= projectileRange) {
                 RemoveProjectile();

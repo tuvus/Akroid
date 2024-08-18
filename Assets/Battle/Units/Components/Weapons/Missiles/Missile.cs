@@ -7,7 +7,6 @@ public class Missile : BattleObject, IParticleHolder {
         Hermes,
     }
     public int missileIndex { get; private set; }
-    private Faction faction;
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private DestroyEffect destroyEffect;
     [SerializeField] private ParticleSystem thrustParticleSystem;
@@ -101,7 +100,7 @@ public class Missile : BattleObject, IParticleHolder {
 
     void MoveMissile(float deltaTime) {
         transform.Translate(velocity * deltaTime);
-        transform.Translate(Vector2.up * thrustSpeed * deltaTime);
+        transform.Translate(deltaTime * thrustSpeed * Vector2.up);
         distance += thrustSpeed * deltaTime;
         if (distance >= fuelRange) {
             Expire();
