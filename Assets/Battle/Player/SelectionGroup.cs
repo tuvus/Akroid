@@ -101,7 +101,7 @@ public class SelectionGroup {
     }
 
     public void AddShips(List<Ship> shipList) {
-        objects.AddRange(shipList);
+        shipList.ForEach((s) => AddShip(s));
     }
 
     public void AddShip(Ship ship) {
@@ -114,6 +114,11 @@ public class SelectionGroup {
             groupType = GroupType.Units;
         else if (groupType == GroupType.Object)
             groupType = GroupType.Objects;
+        else if (groupType == GroupType.Fleet) {
+            groupType = GroupType.Ships;
+            objects.AddRange(fleet.GetShips());
+            fleet = null;
+        }
     }
 
     public List<Ship> GetShipsOfClass(Ship.ShipClass shipClass) {
@@ -141,8 +146,7 @@ public class SelectionGroup {
     }
 
     public void AddUnits(List<Unit> unitList) {
-        objects.AddRange(unitList);
-        groupType = GroupType.Units;
+        unitList.ForEach((u) => AddUnit(u));
     }
 
     public void AddUnits(SelectionGroup unitGroup) {
@@ -155,7 +159,12 @@ public class SelectionGroup {
             groupType = GroupType.Objects;
         else if (groupType == GroupType.None)
             groupType = GroupType.Unit;
-        else groupType = GroupType.Units;
+        else if (groupType == GroupType.Fleet) {
+            groupType = GroupType.Units;
+            objects.AddRange(fleet.GetShips());
+            fleet = null;
+        } else groupType = GroupType.Units;
+
     }
 
     public void RemoveUnit(Unit unit) {
@@ -177,15 +186,17 @@ public class SelectionGroup {
         objects.Add(battleObject);
         if (groupType == GroupType.None)
             groupType = GroupType.Object;
-        else
+        if (groupType == GroupType.Fleet) {
+            objects.AddRange(fleet.GetShips());
+            fleet = null;
             groupType = GroupType.Objects;
+        } else groupType = GroupType.Objects;
     }
 
     public void AddBattleObjects(List<BattleObject> battleObject) {
-        objects.AddRange(battleObject);
-        groupType = GroupType.Objects;
+        battleObject.ForEach((b) => AddBattleObject(b));
     }
-
+    
     public void RemoveBattleObject(BattleObject battleObject) {
         if (battleObject.IsUnit()) { 
             RemoveUnit((Unit)battleObject);
