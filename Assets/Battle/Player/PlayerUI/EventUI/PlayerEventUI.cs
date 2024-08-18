@@ -106,15 +106,19 @@ public class PlayerEventUI : MonoBehaviour {
                     VisualizeObjects(new List<IObject>() { VisualizedEvent.unitToSelect });
                 } else {
                     ShipAI shipAI = ((Ship)VisualizedEvent.unitToSelect).shipAI;
-                    IObject objectToVisualize = VisualizedEvent.iObjects.First();
-                    for (int i = 0; i < VisualizedEvent.iObjects.Count - 1; i++) {
-                        if (shipAI.commands.Count <= i || shipAI.commands[i].commandType != Command.CommandType.Move
-                            || Vector2.Distance(shipAI.commands[i].targetPosition, VisualizedEvent.iObjects[i].GetPosition()) > VisualizedEvent.unitToSelect.GetSize() + VisualizedEvent.iObjects[i].GetSize()) {
-                            break;
+                    int objectIndex = 0;
+                    foreach (var command in shipAI.commands) {
+                        if (command.commandType == Command.CommandType.Move
+                            && Vector2.Distance(command.targetPosition, VisualizedEvent.iObjects[objectIndex].GetPosition()) <= VisualizedEvent.unitToSelect.GetSize() + VisualizedEvent.iObjects[objectIndex].GetSize()) {
+                            objectIndex++;
+                            if (objectIndex == VisualizedEvent.iObjects.Count) break;
                         }
-                        objectToVisualize = VisualizedEvent.iObjects[i + 1];
                     }
-                    VisualizeObjects(new List<IObject>() { objectToVisualize });
+                    if (objectIndex < VisualizedEvent.iObjects.Count) {
+                        VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects[objectIndex] });
+                    } else {
+                        VisualizeObjects(new());
+                    }
                 }
                 break;
 

@@ -309,13 +309,15 @@ public class EventCondition {
             case ConditionType.CommandMoveShipToObjectSequence:
                 ShipAI shipAI = ((Ship)unitToSelect).shipAI;
                 if (shipAI.commands.Count < iObjects.Count) return false;
-                for (int i = 0; i < iObjects.Count; i++) {
-                    if (shipAI.commands[i].commandType != Command.CommandType.Move
-                        || Vector2.Distance(shipAI.commands[i].targetPosition, iObjects[i].GetPosition()) > unitToSelect.GetSize() + iObjects[i].GetSize()) {
-                        return false;
+                int objectIndex = 0;
+                foreach (var command in shipAI.commands) {
+                    if (command.commandType == Command.CommandType.Move
+                        && Vector2.Distance(command.targetPosition, iObjects[objectIndex].GetPosition()) <= unitToSelect.GetSize() + iObjects[objectIndex].GetSize()) {
+                        objectIndex++;
+                        if (objectIndex == iObjects.Count) return true;
                     }
                 }
-                return true;
+                return false;
             case ConditionType.CommandDockShipToUnit:
                 ShipAI shipAI2 = ((Ship)iObjects.First()).shipAI;
                 if (shipAI2.commands.Any((c) => c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)iObjects.Last()))
