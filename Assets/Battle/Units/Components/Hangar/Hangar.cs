@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Hanger : ModuleComponent {
-    HangerScriptableObject hangerScriptableObject;
+public class Hangar : ModuleComponent {
+    HangarScriptableObject hangarScriptableObject;
     public List<Ship> ships { get; private set; }
     [SerializeField] int dockSpace;
 
     public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, componentScriptableObject);
-        hangerScriptableObject = (HangerScriptableObject)componentScriptableObject;
+        hangarScriptableObject = (HangarScriptableObject)componentScriptableObject;
     }
 
-    public void SetupHanger() {
-        ships = new List<Ship>(hangerScriptableObject.maxDockSpace);
+    public void SetupHangar() {
+        ships = new List<Ship>(hangarScriptableObject.maxDockSpace);
     }
 
     public bool DockShip(Ship ship) {
-        if (dockSpace < hangerScriptableObject.maxDockSpace) {
+        if (dockSpace < hangarScriptableObject.maxDockSpace) {
             ships.Add(ship);
             dockSpace++;
             return true;
@@ -103,6 +103,6 @@ public class Hanger : ModuleComponent {
     }
 
     public int GetMaxDockSpace() {
-        return hangerScriptableObject.maxDockSpace;
+        return hangarScriptableObject.maxDockSpace;
     }
 }

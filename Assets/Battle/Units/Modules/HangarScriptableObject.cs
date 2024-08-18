@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/HangerScriptableObject", menuName = "Components/Hanger", order = 27)]
-public class HangerScriptableObject : ComponentScriptableObject {
+[CreateAssetMenu(fileName = "Resources/Components/HangarScriptableObject", menuName = "Components/Hangar", order = 27)]
+public class HangarScriptableObject : ComponentScriptableObject {
     public int maxDockSpace;
 
     public override Type GetComponentType() {
-        return typeof(Hanger);
+        return typeof(Hangar);
     }
 
     protected override void UpdateCosts() {

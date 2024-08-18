@@ -373,7 +373,7 @@ public class Chapter1 : CampaingController {
         }, true), 2 * GetTimeScale());
         movementTutorial.AddCommEvent(commManager, playerFaction,
             "Lets learn about ship movement and investigate the nearby asteroid fields. " +
-            "Open the minning station panel and click on the civilian ship button in the hanger, then close the menu.", 10 * GetTimeScale());
+            "Open the minning station panel and click on the civilian ship button in the hangar, then close the menu.", 10 * GetTimeScale());
         movementTutorial.AddCondition(EventCondition.SelectUnitEvent(shuttle, true));
         movementTutorial.AddCondition(EventCondition.OpenObjectPanelEvent(null, true));
         movementTutorial.AddCondition(EventCondition.SelectUnitEvent(shuttle, true));

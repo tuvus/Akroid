@@ -169,7 +169,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateUndockCombatAtCommand() {
         foreach (var station in selectedUnits.GetAllStations()) {
-            Ship firstShip = station.GetHanger().GetCombatShip();
+            Ship firstShip = station.GetHangar().GetCombatShip();
             if (firstShip != null) {
                 if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
                     if (mouseOverBattleObject.IsStation()) {
@@ -208,7 +208,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateUndockTransportAtCommand() {
         foreach (var station in selectedUnits.GetAllStations()) {
-            Ship firstShip = station.GetHanger().GetTransportShip();
+            Ship firstShip = station.GetHangar().GetTransportShip();
             if (firstShip != null && LocalPlayer.Instance.ownedUnits.Contains(firstShip)) {
                 if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
                     if (mouseOverBattleObject.IsStation()) {
@@ -231,7 +231,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateUndockAllCombatCommand() {
         foreach (var station in selectedUnits.GetAllStations()) {
-            HashSet<Ship> combatShips = station.GetHanger().GetAllCombatShips();
+            HashSet<Ship> combatShips = station.GetHangar().GetAllCombatShips();
             foreach (var ship in combatShips) {
                 if (ship != null && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
                     if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {

@@ -241,14 +241,14 @@ public class SimulationFactionAI : FactionAI {
     void ManageDockedShips() {
         if (faction.HasEnemy()) {
             if (fleetCommand.enemyUnitsInRange.Count > 0) {
-                HashSet<Ship> combatShips = fleetCommand.GetHanger().GetAllCombatShips();
+                HashSet<Ship> combatShips = fleetCommand.GetHangar().GetAllCombatShips();
                 Vector2 position = fleetCommand.enemyUnitsInRange[0].GetPosition();
                 foreach (var combatShip in combatShips) {
                     combatShip.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(position), Command.CommandAction.AddToEnd);
                     combatShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.AddToEnd);
                 }
             } else {
-                HashSet<Ship> combatShips = fleetCommand.GetHanger().GetAllUndamagedCombatShips().Take(maxCombatShips).ToHashSet();
+                HashSet<Ship> combatShips = fleetCommand.GetHangar().GetAllUndamagedCombatShips().Take(maxCombatShips).ToHashSet();
                 if (combatShips.Count > 8) {
                     int totalHealth = combatShips.Sum(s => s.GetTotalHealth());
                     if (totalHealth > 3000) {

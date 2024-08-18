@@ -125,7 +125,7 @@ public class ModuleSystem : MonoBehaviour {
                     break;
             }
 
-            if ((targetTransform.name.Contains(targetName) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("CargoBay")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("ResearchEquipment")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("Hanger"))) && !targetTransform.GetComponent<Module>()) {
+            if ((targetTransform.name.Contains(targetName) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("CargoBay")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("ResearchEquipment")) || (systems[systemIndex].type == SystemType.Utility && targetTransform.name.Contains("Hangar"))) && !targetTransform.GetComponent<Module>()) {
                 Module newModule;
                 if (systems[systemIndex].type == SystemType.Turret && targetTransform.GetComponent<Turret>() != null) {
                     Turret turret = targetTransform.GetComponent<Turret>();

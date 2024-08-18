@@ -18,7 +18,7 @@ public class ShipyardAI : StationAI {
 
     void UpdateShipyard() {
         if (cargoTime <= 0 && autoCollectCargo) {
-            foreach (var ship in station.GetHanger().ships) {
+            foreach (var ship in station.GetHangar().ships) {
                 if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     station.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Metal, ship);
                 } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) > 0) {
@@ -33,10 +33,10 @@ public class ShipyardAI : StationAI {
         int repairAmmount = GetShipyard().GetRepairAmmount();
         if (repairAmmount > 0 && station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
-        for (int i = 0; i < station.GetHanger().GetShips().Count; i++) {
+        for (int i = 0; i < station.GetHangar().GetShips().Count; i++) {
             if (repairAmmount == 0)
                 return;
-            Ship targetShip = station.GetHanger().GetShips()[i];
+            Ship targetShip = station.GetHangar().GetShips()[i];
             if (targetShip.IsDamaged()) {
                 repairAmmount = station.RepairUnit(targetShip, repairAmmount);
             }

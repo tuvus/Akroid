@@ -68,7 +68,7 @@ public class Station : Unit, IPositionConfirmer {
 
 
     public StationAI stationAI { get; protected set; }
-    private Hanger hanger;
+    private Hangar hangar;
     private CargoBay cargoBay;
     public int repairAmount;
     public float repairSpeed;
@@ -79,10 +79,10 @@ public class Station : Unit, IPositionConfirmer {
     public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
         base.SetupUnit(battleManager, name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
         stationAI = GetComponent<StationAI>();
-        hanger = GetComponentInChildren<Hanger>();
+        hangar = GetComponentInChildren<Hangar>();
         cargoBay = GetComponentInChildren<CargoBay>();
         stationAI.SetupStationAI(this);
-        hanger.SetupHanger();
+        hangar.SetupHangar();
         this.built = built;
         if (!built) {
             faction.AddStationBlueprint(this);
@@ -227,7 +227,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public override void Explode() {
-        hanger.UndockAll();
+        hangar.UndockAll();
         if (!built)
             Spawn();
         base.Explode();
@@ -239,7 +239,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public bool DockShip(Ship ship) {
-        if (IsSpawned() && IsBuilt() && hanger.DockShip(ship)) {
+        if (IsSpawned() && IsBuilt() && hangar.DockShip(ship)) {
             ship.transform.position = transform.position;
             ship.transform.eulerAngles = new Vector3(0, 0, 0);
             return true;
@@ -248,7 +248,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public void UndockShip(Ship ship, float rotation) {
-        hanger.RemoveShip(ship);
+        hangar.RemoveShip(ship);
         Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, GetSize() + ship.GetSize());
         ship.transform.position = new Vector2(transform.position.x + undockPos.x, transform.position.y + undockPos.y);
         ship.transform.eulerAngles = new Vector3(0, 0, rotation);
@@ -294,8 +294,8 @@ public class Station : Unit, IPositionConfirmer {
         return cargoBay;
     }
 
-    public Hanger GetHanger() {
-        return hanger;
+    public Hangar GetHangar() {
+        return hangar;
     }
 
     public bool IsBuilt() {
