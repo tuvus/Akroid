@@ -32,7 +32,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         GetPlayerInput().Player.AdditiveModifier.started += context => AdditiveButtonDown();
         GetPlayerInput().Player.AdditiveModifier.canceled += context => AdditiveButtonUp();
 
-        GetPlayerInput().Player.AllCombatUnits.performed += context => AllCombatUnitsButtonPressed();
+        GetPlayerInput().Player.Deselct.performed += context => DeselectButtonPerformed();
+        GetPlayerInput().Player.CombatUnitCommand.performed += context => CombatUnitButtonPerformed();
         canvasScaler = LocalPlayer.Instance.playerUI.GetComponentInParent<CanvasScaler>();
     }
 
@@ -122,7 +123,19 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         AdditiveButtonPressed = false;
     }
 
-    protected virtual void AllCombatUnitsButtonPressed() {
+    protected virtual void DeselectButtonPerformed() {
+        SelectGroup(-1);
+        ClearSelectedBattleObjects();
+        SetDisplayedUnit();
+    }
+
+    /// <summary>
+    /// Handles operations related to fleets and combat ships.
+    /// If no combat ship is selected it selects all combat ships.
+    /// If there is a combat ship selected then it creates a fleet.
+    /// If there is a fleet selected it tells them to go into a formation.
+    /// </summary>
+    protected virtual void CombatUnitButtonPerformed() {
         if (!SelectGroup(10)) {
             selectedUnits.UnselectAllBattleObjects();
             selectedUnits.ClearGroup();

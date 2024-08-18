@@ -14,8 +14,6 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPreformed();
         GetPlayerInput().Player.SeccondaryCommand.performed += context => SecondaryCommandButtonPreformed();
         GetPlayerInput().Player.TertiaryCommand.performed += context => TertiaryCommandButtonPreformed();
-
-        GetPlayerInput().Player.CreateFleet.performed += context => CreateFleetCommand();
     }
 
     protected override void PrimaryMouseDown() {
@@ -341,9 +339,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         selectedUnits.ClearCommands();
     }
 
-    protected virtual void CreateFleetCommand() {
+    protected override void CombatUnitButtonPerformed() {
         if (LocalPlayer.Instance.ownedUnits == null)
-            return;
+            base.CombatUnitButtonPerformed();
         if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
             if (AdditiveButtonPressed && AltButtonPressed) {
                 selectedUnits.fleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
@@ -354,7 +352,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             } else {
                 selectedUnits.fleet.FleetAI.AddFormationCommand();
             }
-        } else {
+        } else if (selectedUnits.objects.Any((o) => o.IsShip() && ((Ship)o).IsCombatShip())) {
             selectedUnits.RemoveAllNonCombatShips();
             selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
             selectedUnits.RemoveAnyNullUnits();
@@ -364,6 +362,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 SelectBattleObjects(new List<BattleObject>() { ships.First() });
             }
             selectedGroup = -1;
+        } else {
+            base.CombatUnitButtonPerformed();
         }
     }
 

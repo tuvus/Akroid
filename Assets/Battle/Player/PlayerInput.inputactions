@@ -258,7 +258,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "AllCombatUnits",
+                    "name": "Deselct",
                     "type": "Button",
                     "id": "e30f0f1e-b30d-4b42-b0db-0d2c4fe411c3",
                     "expectedControlType": "Button",
@@ -294,7 +294,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CreateFleet",
+                    "name": "CombatUnitCommand",
                     "type": "Button",
                     "id": "39f2bae7-fe7f-4d45-868c-247ca5a0c7d3",
                     "expectedControlType": "Button",
@@ -727,7 +727,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AllCombatUnits",
+                    "action": "Deselct",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -771,7 +771,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CreateFleet",
+                    "action": "CombatUnitCommand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

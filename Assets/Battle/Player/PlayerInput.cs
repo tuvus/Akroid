@@ -280,7 +280,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""AllCombatUnits"",
+                    ""name"": ""Deselct"",
                     ""type"": ""Button"",
                     ""id"": ""e30f0f1e-b30d-4b42-b0db-0d2c4fe411c3"",
                     ""expectedControlType"": ""Button"",
@@ -316,7 +316,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CreateFleet"",
+                    ""name"": ""CombatUnitCommand"",
                     ""type"": ""Button"",
                     ""id"": ""39f2bae7-fe7f-4d45-868c-247ca5a0c7d3"",
                     ""expectedControlType"": ""Button"",
@@ -749,7 +749,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AllCombatUnits"",
+                    ""action"": ""Deselct"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -793,7 +793,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CreateFleet"",
+                    ""action"": ""CombatUnitCommand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -860,11 +860,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_IncreaseSpeed = m_Player.FindAction("IncreaseSpeed", throwIfNotFound: true);
         m_Player_DecreaseSpeed = m_Player.FindAction("DecreaseSpeed", throwIfNotFound: true);
         m_Player_PauseSimulation = m_Player.FindAction("PauseSimulation", throwIfNotFound: true);
-        m_Player_AllCombatUnits = m_Player.FindAction("AllCombatUnits", throwIfNotFound: true);
+        m_Player_Deselct = m_Player.FindAction("Deselct", throwIfNotFound: true);
         m_Player_CenterCamera = m_Player.FindAction("CenterCamera", throwIfNotFound: true);
         m_Player_FollowUnit = m_Player.FindAction("FollowUnit", throwIfNotFound: true);
         m_Player_ToggleZoomIndicators = m_Player.FindAction("ToggleZoomIndicators", throwIfNotFound: true);
-        m_Player_CreateFleet = m_Player.FindAction("CreateFleet", throwIfNotFound: true);
+        m_Player_CombatUnitCommand = m_Player.FindAction("CombatUnitCommand", throwIfNotFound: true);
         m_Player_ToggleFactionColors = m_Player.FindAction("ToggleFactionColors", throwIfNotFound: true);
     }
 
@@ -955,11 +955,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_IncreaseSpeed;
     private readonly InputAction m_Player_DecreaseSpeed;
     private readonly InputAction m_Player_PauseSimulation;
-    private readonly InputAction m_Player_AllCombatUnits;
+    private readonly InputAction m_Player_Deselct;
     private readonly InputAction m_Player_CenterCamera;
     private readonly InputAction m_Player_FollowUnit;
     private readonly InputAction m_Player_ToggleZoomIndicators;
-    private readonly InputAction m_Player_CreateFleet;
+    private readonly InputAction m_Player_CombatUnitCommand;
     private readonly InputAction m_Player_ToggleFactionColors;
     public struct PlayerActions
     {
@@ -993,11 +993,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @IncreaseSpeed => m_Wrapper.m_Player_IncreaseSpeed;
         public InputAction @DecreaseSpeed => m_Wrapper.m_Player_DecreaseSpeed;
         public InputAction @PauseSimulation => m_Wrapper.m_Player_PauseSimulation;
-        public InputAction @AllCombatUnits => m_Wrapper.m_Player_AllCombatUnits;
+        public InputAction @Deselct => m_Wrapper.m_Player_Deselct;
         public InputAction @CenterCamera => m_Wrapper.m_Player_CenterCamera;
         public InputAction @FollowUnit => m_Wrapper.m_Player_FollowUnit;
         public InputAction @ToggleZoomIndicators => m_Wrapper.m_Player_ToggleZoomIndicators;
-        public InputAction @CreateFleet => m_Wrapper.m_Player_CreateFleet;
+        public InputAction @CombatUnitCommand => m_Wrapper.m_Player_CombatUnitCommand;
         public InputAction @ToggleFactionColors => m_Wrapper.m_Player_ToggleFactionColors;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -1092,9 +1092,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @PauseSimulation.started += instance.OnPauseSimulation;
             @PauseSimulation.performed += instance.OnPauseSimulation;
             @PauseSimulation.canceled += instance.OnPauseSimulation;
-            @AllCombatUnits.started += instance.OnAllCombatUnits;
-            @AllCombatUnits.performed += instance.OnAllCombatUnits;
-            @AllCombatUnits.canceled += instance.OnAllCombatUnits;
+            @Deselct.started += instance.OnDeselct;
+            @Deselct.performed += instance.OnDeselct;
+            @Deselct.canceled += instance.OnDeselct;
             @CenterCamera.started += instance.OnCenterCamera;
             @CenterCamera.performed += instance.OnCenterCamera;
             @CenterCamera.canceled += instance.OnCenterCamera;
@@ -1104,9 +1104,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ToggleZoomIndicators.started += instance.OnToggleZoomIndicators;
             @ToggleZoomIndicators.performed += instance.OnToggleZoomIndicators;
             @ToggleZoomIndicators.canceled += instance.OnToggleZoomIndicators;
-            @CreateFleet.started += instance.OnCreateFleet;
-            @CreateFleet.performed += instance.OnCreateFleet;
-            @CreateFleet.canceled += instance.OnCreateFleet;
+            @CombatUnitCommand.started += instance.OnCombatUnitCommand;
+            @CombatUnitCommand.performed += instance.OnCombatUnitCommand;
+            @CombatUnitCommand.canceled += instance.OnCombatUnitCommand;
             @ToggleFactionColors.started += instance.OnToggleFactionColors;
             @ToggleFactionColors.performed += instance.OnToggleFactionColors;
             @ToggleFactionColors.canceled += instance.OnToggleFactionColors;
@@ -1198,9 +1198,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @PauseSimulation.started -= instance.OnPauseSimulation;
             @PauseSimulation.performed -= instance.OnPauseSimulation;
             @PauseSimulation.canceled -= instance.OnPauseSimulation;
-            @AllCombatUnits.started -= instance.OnAllCombatUnits;
-            @AllCombatUnits.performed -= instance.OnAllCombatUnits;
-            @AllCombatUnits.canceled -= instance.OnAllCombatUnits;
+            @Deselct.started -= instance.OnDeselct;
+            @Deselct.performed -= instance.OnDeselct;
+            @Deselct.canceled -= instance.OnDeselct;
             @CenterCamera.started -= instance.OnCenterCamera;
             @CenterCamera.performed -= instance.OnCenterCamera;
             @CenterCamera.canceled -= instance.OnCenterCamera;
@@ -1210,9 +1210,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ToggleZoomIndicators.started -= instance.OnToggleZoomIndicators;
             @ToggleZoomIndicators.performed -= instance.OnToggleZoomIndicators;
             @ToggleZoomIndicators.canceled -= instance.OnToggleZoomIndicators;
-            @CreateFleet.started -= instance.OnCreateFleet;
-            @CreateFleet.performed -= instance.OnCreateFleet;
-            @CreateFleet.canceled -= instance.OnCreateFleet;
+            @CombatUnitCommand.started -= instance.OnCombatUnitCommand;
+            @CombatUnitCommand.performed -= instance.OnCombatUnitCommand;
+            @CombatUnitCommand.canceled -= instance.OnCombatUnitCommand;
             @ToggleFactionColors.started -= instance.OnToggleFactionColors;
             @ToggleFactionColors.performed -= instance.OnToggleFactionColors;
             @ToggleFactionColors.canceled -= instance.OnToggleFactionColors;
@@ -1272,11 +1272,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnIncreaseSpeed(InputAction.CallbackContext context);
         void OnDecreaseSpeed(InputAction.CallbackContext context);
         void OnPauseSimulation(InputAction.CallbackContext context);
-        void OnAllCombatUnits(InputAction.CallbackContext context);
+        void OnDeselct(InputAction.CallbackContext context);
         void OnCenterCamera(InputAction.CallbackContext context);
         void OnFollowUnit(InputAction.CallbackContext context);
         void OnToggleZoomIndicators(InputAction.CallbackContext context);
-        void OnCreateFleet(InputAction.CallbackContext context);
+        void OnCombatUnitCommand(InputAction.CallbackContext context);
         void OnToggleFactionColors(InputAction.CallbackContext context);
     }
 }
