@@ -22,15 +22,39 @@ public class EventChainBuilder {
             this.delay = delay;
         }
     }
+    private class CommunicationButtonEventHolder {
+        public FactionCommManager commManager;
+        public Faction reciever;
+        public string text;
+        public string buttonText;
+        public float delay;
 
+        public CommunicationButtonEventHolder(FactionCommManager commManager, Faction reciever, string text, string buttonText, float delay) {
+            this.commManager = commManager;
+            this.reciever = reciever;
+            this.text = text;
+            this.buttonText = buttonText;
+            this.delay = delay;
+        }
+    }
+
+    /// <summary> Adds a regular communication event to be sent. </summary>
     public void AddCommEvent(FactionCommManager commManager, Faction reciever, string text, float delay = 0f) {
         events.Add(new CommunicationEventHolder(commManager, reciever, text, delay));
     }
 
+    /// <summary> Adds a comm event with one button. Pressing the button will continue the event chain. </summary>
+    public void AddButtonCommEvent(FactionCommManager commManager, Faction reciever, string text, string buttonText, float delay = 0f) {
+        events.Add(new CommunicationButtonEventHolder(commManager, reciever, text, buttonText, delay));
+    }
+
+    /// <summary> Adds a condition before proceding to the next event. </summary>
     public void AddCondition(EventCondition eventCondition) {
         events.Add(eventCondition);
     }
 
+    /// <summary> Invokes the action given when. </summary>
+    /// <param name="action"></param>
     public void AddAction(Action action) {
         events.Add(action);
     }
@@ -58,6 +82,19 @@ public class EventChainBuilder {
                 CommunicationEventHolder communicationEvent = (CommunicationEventHolder)events[i];
                 Action temp = lastAction;
                 lastAction = () => communicationEvent.commManager.SendCommunication(communicationEvent.reciever, communicationEvent.text, (communicationEvent) => temp(), communicationEvent.delay);
+            } else if (events[i].GetType() == typeof(CommunicationButtonEventHolder)) {
+                CommunicationButtonEventHolder communicationButtonEvent = (CommunicationButtonEventHolder)events[i];
+                Action temp = lastAction;
+                lastAction = () => communicationButtonEvent.commManager.SendCommunication(new CommunicationEvent(communicationButtonEvent.reciever.GetFactionCommManager(), communicationButtonEvent.text,
+                    new CommunicationEventOption[] {
+                        new(communicationButtonEvent.buttonText, (communicationEvent) => { return true; }, (communicationEvent) => {
+                            if (!communicationEvent.isActive)
+                                return false;
+                            communicationEvent.DeactivateEvent();
+                            temp();
+                            return true;
+                        })
+                    }, true), communicationButtonEvent.delay);
             } else if (events[i].GetType() == typeof(Action)) {
                 Action temp = lastAction;
                 Action tempAcion = (Action)events[i];

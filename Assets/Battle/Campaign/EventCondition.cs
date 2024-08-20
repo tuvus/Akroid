@@ -8,6 +8,7 @@ public class EventCondition {
     public enum ConditionType {
         Wait,
         WaitUntilShipsIdle,
+        ConditionalWait,
         SelectUnit,
         SelectUnits,
         SelectUnitsAmount,
@@ -44,46 +45,50 @@ public class EventCondition {
     public Faction faction { get; protected set; }
     public EventCondition eventCondition { get; protected set; }
     public Func<EventCondition> eventConditionFunction { get; protected set; }
+    private bool conditionalWait;
     public bool visualize;
 
-    private EventCondition() {
-        // No extenal instantiation allowed
+    /// <summary> No extenal instantiation allowed </summary>
+    private EventCondition(ConditionType conditionType) {
+        this.conditionType = conditionType;
     }
 
     public static EventCondition WaitEvent(float timeToWait) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.Wait;
+        EventCondition condition = new EventCondition(ConditionType.Wait);
         condition.floatValue = timeToWait;
         return condition;
     }
 
     public static EventCondition WaitUntilShipsIdle(List<Ship> shipsToIdle, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.WaitUntilShipsIdle;
+        EventCondition condition = new EventCondition(ConditionType.WaitUntilShipsIdle);
         condition.iObjects = shipsToIdle.Cast<IObject>().ToList();
         condition.visualize = visualise;
         return condition;
     }
 
+    public static Tuple<EventCondition, Action> ConditionalWait() {
+        EventCondition condition = new EventCondition(ConditionType.ConditionalWait);
+        condition.conditionalWait = true;
+        Action completer = () => { condition.conditionalWait = false; };
+        return new Tuple<EventCondition, Action>(condition, completer);
+    }
+
     public static EventCondition SelectUnitEvent(Unit unitToSelect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.SelectUnit;
+        EventCondition condition = new EventCondition(ConditionType.SelectUnit);
         condition.unitToSelect = unitToSelect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition SelectUnitsEvent(HashSet<Unit> unitsToSelect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.SelectUnits;
+        EventCondition condition = new EventCondition(ConditionType.SelectUnits);
         condition.units = unitsToSelect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition SelectUnitsAmountEvent(HashSet<Unit> unitsToSelect, int amount, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.SelectUnitsAmount;
+        EventCondition condition = new EventCondition(ConditionType.SelectUnitsAmount);
         condition.units = unitsToSelect;
         condition.intValue = amount;
         condition.visualize = visualise;
@@ -91,48 +96,42 @@ public class EventCondition {
     }
 
     public static EventCondition UnselectUnitsEvent(HashSet<Unit> unitsToUnselect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.UnSelectUnits;
+        EventCondition condition = new EventCondition(ConditionType.UnSelectUnits);
         condition.units = unitsToUnselect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition SelectFleetEvent(Fleet fleetToSelect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.SelectFleet;
+        EventCondition condition = new EventCondition(ConditionType.SelectFleet);
         condition.fleetToSelect = fleetToSelect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition OpenObjectPanelEvent(BattleObject objectToSelect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.OpenObjectPanel;
+        EventCondition condition = new EventCondition(ConditionType.OpenObjectPanel);
         condition.objectToSelect = objectToSelect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition OpenFactionPanelEvent(Faction factionToSelect, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.OpenFactionPanel;
+        EventCondition condition = new EventCondition(ConditionType.OpenFactionPanel);
         condition.faction = factionToSelect;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition FollowUnitEvent(Unit unitToFollow, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.FollowUnit;
+        EventCondition condition = new EventCondition(ConditionType.FollowUnit);
         condition.unitToSelect = unitToFollow;
         condition.visualize = visualise;
         return condition;
     }
 
     public static EventCondition DockShipsAtUnit(List<Ship> shipsToDock, Unit unitToDockAt, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.ShipsDockedAtUnit;
+        EventCondition condition = new EventCondition(ConditionType.ShipsDockedAtUnit);
         condition.iObjects = shipsToDock.Cast<IObject>().ToList();
         condition.unitToSelect = unitToDockAt;
         condition.visualize = visualise;
@@ -140,8 +139,7 @@ public class EventCondition {
     }
 
     public static EventCondition MoveShipToObject(Unit shipToMove, IObject objectToMoveTo, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.MoveShipToObject;
+        EventCondition condition = new EventCondition(ConditionType.MoveShipToObject);
         condition.unitToSelect = shipToMove;
         condition.iObject = objectToMoveTo;
         condition.visualize = visualise;
@@ -149,8 +147,7 @@ public class EventCondition {
     }
 
     public static EventCondition CommandMoveShipToObjectSequence(Unit shipToMove, List<IObject> objectToCommandToMoveTo, bool visualise = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.CommandMoveShipToObjectSequence;
+        EventCondition condition = new EventCondition(ConditionType.CommandMoveShipToObjectSequence);
         condition.unitToSelect = shipToMove;
         condition.iObjects = objectToCommandToMoveTo;
         condition.visualize = visualise;
@@ -158,24 +155,21 @@ public class EventCondition {
     }
 
     public static EventCondition CommandDockShipToUnit(Unit shipToMove, Unit unitToDockAt, bool visualize = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.CommandDockShipToUnit;
+        EventCondition condition = new EventCondition(ConditionType.CommandDockShipToUnit);
         condition.iObjects = new List<IObject>{ shipToMove, unitToDockAt };
         condition.visualize = visualize;
         return condition;
     }
 
     public static EventCondition CommandShipToCollectGas(Ship shipToMove, bool visualize = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.CommandShipToCollectGas;
+        EventCondition condition = new EventCondition(ConditionType.CommandShipToCollectGas);
         condition.iObjects = new List<IObject> { shipToMove };
         condition.visualize = visualize;
         return condition;
     }
 
     public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Station station, bool visualize = false) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.BuildShipAtStation;
+        EventCondition condition = new EventCondition(ConditionType.BuildShipAtStation);
         condition.shipBlueprint = shipBlueprint;
         condition.iObjects = new List<IObject> { station };
         condition.visualize = visualize;
@@ -184,16 +178,14 @@ public class EventCondition {
     }
 
     public static EventCondition PanEvent(float distanceToPan) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.Pan;
+        EventCondition condition = new EventCondition(ConditionType.Pan);
         condition.floatValue = distanceToPan;
         condition.floatValue2 = 0;
         return condition;
     }
 
     public static EventCondition ZoomEvent(float scrollTo) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.Zoom;
+        EventCondition condition = new EventCondition(ConditionType.Zoom);
         condition.floatValue = scrollTo;
         condition.floatValue2 = LocalPlayer.Instance.GetInputManager().GetCamera().orthographicSize;
         return condition;
@@ -204,8 +196,7 @@ public class EventCondition {
     /// The downside is that there is no way to visualise this condition.
     /// </summary>
     public static EventCondition PredicateEvent(Predicate<EventManager> predicate) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.Predicate;
+        EventCondition condition = new EventCondition(ConditionType.Predicate);
         condition.predicate = predicate;
         return condition;
     }
@@ -223,8 +214,7 @@ public class EventCondition {
     /// Then it will act like the condition it is wrapping until the condition is true.
     /// </summary>
     public static EventCondition LateConditionEvent(Func<EventCondition> eventConditionFunction) {
-        EventCondition condition = new EventCondition();
-        condition.conditionType = ConditionType.LateCondition;
+        EventCondition condition = new EventCondition(ConditionType.LateCondition);
         condition.eventConditionFunction = eventConditionFunction;
         condition.visualize = true;
         return condition;
@@ -242,6 +232,8 @@ public class EventCondition {
                     return true;
                 }
                 return false;
+            case ConditionType.ConditionalWait:
+                return !conditionalWait;
             case ConditionType.SelectUnit:
                 if (eventManager.playerGameInput.GetSelectedUnits().ContainsObject(unitToSelect)
                     && eventManager.playerGameInput.GetSelectedUnits().objects.Count == 1) {

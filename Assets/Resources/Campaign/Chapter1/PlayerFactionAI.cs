@@ -24,6 +24,11 @@ public class PlayerFactionAI : FactionAI {
 
     public override void UpdateFactionAI(float deltaTime) {
         ManageIdleShips();
+        foreach (var ship in playerMiningStation.GetHangar().ships) {
+            if (ship.IsScienceShip() && !ship.IsDamaged()) {
+                faction.AddScience(ship.GetResearchEquiptment().DownloadData());
+            }
+        }
     }
 
     void ManageIdleShips() {

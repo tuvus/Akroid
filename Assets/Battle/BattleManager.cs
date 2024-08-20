@@ -626,6 +626,10 @@ public class BattleManager : MonoBehaviour {
         return stationBlueprints.First(station => station.stationScriptableObject.stationType == stationType);
     }
 
+    public void EndBattle() {
+        battleState = BattleState.Ended;
+    }
+
     public Transform GetFactionsTransform() {
         return transform.GetChild(0);
     }

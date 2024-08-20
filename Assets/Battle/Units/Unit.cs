@@ -221,6 +221,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual void DestroyUnit() {
         SetGroup(null);
+        if (shieldGenerator != null)
+            shieldGenerator.DestroyShield();
         RemoveFromAllGroups();
     }
 
