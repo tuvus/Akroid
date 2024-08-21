@@ -3894,6 +3894,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 227994774}
     m_Modifications:
+    - target: {fileID: 2433509441528522819, guid: e2a0da9254ff982408527889046e1441,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441,
         type: 3}
       propertyPath: m_Name
@@ -3907,12 +3912,12 @@ PrefabInstance:
     - target: {fileID: 8198535041992587763, guid: e2a0da9254ff982408527889046e1441,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.09999999
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8198535041992587763, guid: e2a0da9254ff982408527889046e1441,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.09999999
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8198535041992587763, guid: e2a0da9254ff982408527889046e1441,
         type: 3}

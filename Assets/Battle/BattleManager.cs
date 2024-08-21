@@ -310,6 +310,14 @@ public class BattleManager : MonoBehaviour {
         return newPlanet;
     }
 
+    public Planet CreateNewMoon(PositionGiver positionGiver, Planet.PlanetData planetData) {
+        GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Moon");
+        Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
+        newPlanet.SetupPlanet(this, positionGiver, planetData);
+        planets.Add(newPlanet);
+        return newPlanet;
+    }
+
     public void CreateNewAsteroidField(Vector2 center, int count, float resourceModifier = 1) {
         CreateNewAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2), count, resourceModifier);
     }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -241,7 +240,9 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     public void UpdatePlanet(float deltaTime) {
         timeSinceStart += deltaTime;
-        population = (long)((carryingCapacity / (1 + ((carryingCapacity / startingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
+        if (population != 0) {
+            population = (long)((carryingCapacity / (1 + ((carryingCapacity / startingPop) - 1) * Mathf.Pow(math.E, (float)(-rateOfGrowth * timeSinceStart)))) * (-Mathf.Sin(timeSinceStart / 100) / 30.0 + 1));
+        }
         SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
     }
 
@@ -277,6 +278,12 @@ public class Planet : BattleObject, IPositionConfirmer {
         }
         foreach (var station in BattleManager.Instance.stations) {
             if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + GetSize()) {
+                return false;
+            }
+        }
+
+        foreach (var planet in BattleManager.Instance.planets) {
+            if (Vector2.Distance(position, planet.GetPosition()) <= minDistanceFromObject + planet.GetSize() + GetSize()) {
                 return false;
             }
         }

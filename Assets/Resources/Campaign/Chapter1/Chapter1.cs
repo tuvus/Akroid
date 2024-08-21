@@ -16,6 +16,7 @@ public class Chapter1 : CampaingController {
     Faction planetFaction;
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
+    public Planet moon { get; private set; }
     public Shipyard tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
@@ -62,8 +63,9 @@ public class Chapter1 : CampaingController {
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet(new BattleManager.PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), (long)Random.Range(500, 600) * 100000000, 0.01, Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
+        planet = battleManager.CreateNewPlanet(new PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), (long)Random.Range(500, 600) * 100000000, 0.01, Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
         planet.SetPopulationTarget((long)(planet.GetPopulation() * 1.1));
+        moon = battleManager.CreateNewMoon(new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5), new Planet.PlanetData(planetFaction, "Moon", Random.Range(0, 360), 0, 0.01, 0, 0.02f, 0.98f));
         tradeStation = (Shipyard)battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "Trade Station", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
         ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
