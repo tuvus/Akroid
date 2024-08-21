@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class StartMenu : MonoBehaviour {
@@ -14,6 +15,7 @@ public class StartMenu : MonoBehaviour {
 
     [SerializeField]
     private StartMenuState state;
+    [SerializeField] TMP_Text versionText;
 
     public void Awake() {
         if (Instance == null) {
@@ -23,6 +25,7 @@ public class StartMenu : MonoBehaviour {
         }
         HideAllMenues();
         SetStartMenu();
+        versionText.text = "Version: " + Application.version;
     }
 
     public void HideAllMenues() {
