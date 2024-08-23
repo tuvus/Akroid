@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
@@ -81,6 +80,11 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 GenerateTransportCommand();
                 actionType = ActionType.None;
                 break;
+            case ActionType.ColonizeCommand:
+                SelectOnlyControllableUnits();
+                GenerateColonizationCommand();
+                actionType = ActionType.None;
+                break;
         }
     }
 
@@ -130,8 +134,10 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 ToggleActionType(ActionType.ResearchCommand);
             } else if (selectedUnits.ContainsOnlyGasCollectionShips()) {
                 ToggleActionType(ActionType.CollectGasCommand);
-            } else if (selectedUnits.ContainsOntlyTransportShips()) {
+            } else if (selectedUnits.ContainsOnlyTransportShips()) {
                 ToggleActionType(ActionType.TransportCommand);
+            } else if (selectedUnits.ContainsOnlyColonizerShips()) {
+                ToggleActionType(ActionType.ColonizeCommand);
             } else {
                 ToggleActionType(ActionType.FormationCommand);
             }
@@ -282,6 +288,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 closestStarDistance = newStarDistance;
             }
         }
+        if (closestStar == null) return;
+
         List<Ship> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].IsScienceShip()) {
@@ -302,6 +310,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 closestGasCloudDistance = newGasCloud;
             }
         }
+        if (closestGasCloud != null) return;
+
         List<Ship> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].IsGasCollectorShip()) {
@@ -322,10 +332,33 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 closestStationDistance = newStationDistance;
             }
         }
+        if (closestProductionStation == null) return;
+
         List<Ship> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].IsTransportShip()) {
                 allShips[i].shipAI.AddUnitAICommand(Command.CreateTransportCommand(closestProductionStation, LocalPlayer.Instance.GetFaction().GetFleetCommand(), CargoBay.CargoTypes.Metal), GetCommandAction());
+                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+            }
+        }
+    }
+
+    void GenerateColonizationCommand() {
+        Vector2 mousePos = GetMouseWorldPosition();
+        Planet closestPlanet = null;
+        float closestPlanetDistance = 0;
+        foreach (Planet planet in BattleManager.Instance.planets) {
+            float newPlanetDistance = Vector2.Distance(mousePos, planet.position);
+            if (closestPlanet == null || newPlanetDistance < closestPlanetDistance) {
+                closestPlanet = planet;
+                closestPlanetDistance = newPlanetDistance;
+            }
+        }
+        if (closestPlanet == null) return;
+        List<Ship> allShips = selectedUnits.GetAllShips();
+        for (int i = 0; i < allShips.Count; i++) {
+            if (allShips[i].IsColonizerShip()) {
+                allShips[i].shipAI.AddUnitAICommand(Command.CreateColonizeCommand(closestPlanet), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }

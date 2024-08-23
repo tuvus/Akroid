@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
+  m_Name: ColonizerMKI
+  m_EditorClassIdentifier: 
+  cost: 11446
+  resourceTypes: 01000000
+  resourceCosts: ed07000000000000
+  prefabPath: Prefabs/ShipPrefabs/Colonizer
+  unitName: Colonizer
+  maxHealth: 850
+  sprite: {fileID: 2143475390, guid: 9256f3aff4adf1346aae1320292696a2, type: 3}
+  components: []
+  systems:
+  - name: LightTurrets
+    moduleCount: 3
+    component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
+  - name: MediumTurrets
+    moduleCount: 2
+    component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: d80c11f117c4d344d9a1ec6aa2cff43b, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: 6d8e7baca0bb6f548a75d96e88cb2c25, type: 2}
+  - name: Utility
+    moduleCount: 1
+    component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+  - name: Thrusters
+    moduleCount: 3
+    component: {fileID: 11400000, guid: a33a08d6956c46847aec3fa8de0f0be1, type: 2}
+  shipClass: 7
+  shipType: 9
+  turnSpeed: 30
+  combatRotation: 0

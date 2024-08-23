@@ -67,7 +67,7 @@ public class ModuleSystem : MonoBehaviour {
                 print(systems[modules[i].system].component.GetComponentType());
                 continue;
             }
-            newComponent.SetupComponent(modules[i], systems[modules[i].system].component);
+            newComponent.SetupComponent(modules[i], unit.faction, systems[modules[i].system].component);
         }
         RefreshSystemCounts();
 
@@ -238,7 +238,7 @@ public class ModuleSystem : MonoBehaviour {
             }
             //Upgrade the moduleComponents
             systems[systemIndex] = new System(system, system.component.upgrade);
-            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, systems[systemIndex].component));
+            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, unit.faction, systems[systemIndex].component));
         }
     }
     #endregion

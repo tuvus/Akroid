@@ -354,7 +354,11 @@ public class SelectionGroup {
         return objects.All(obj => obj.IsShip() && ((Ship)obj).IsGasCollectorShip());
     }
 
-    public bool ContainsOntlyTransportShips() {
+    public bool ContainsOnlyTransportShips() {
         return objects.All(obj => obj.IsShip() && ((Ship)obj).IsTransportShip());
+    }
+
+    public bool ContainsOnlyColonizerShips() {
+        return objects.All(obj => obj.IsShip() && ((Ship)obj).IsColonizerShip());
     }
 }

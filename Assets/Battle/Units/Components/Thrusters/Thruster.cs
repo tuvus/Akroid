@@ -10,8 +10,8 @@ public class Thruster : ModuleComponent, IParticleHolder {
     float targetBrightness;
     float baseThrustEmissionRate;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
         Instantiate(thrusterScriptableObject.thrustEffect, transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();

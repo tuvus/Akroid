@@ -17,6 +17,7 @@ public class Ship : Unit {
         Aterna,
         StationBuilder,
         Zarrack,
+        Eletera,
     }
     public enum ShipType {
         Civilian,
@@ -28,6 +29,7 @@ public class Ship : Unit {
         Cruiser,
         Dreadnaught,
         GasCollector,
+        Colonizer,
     }
     public enum ShipAction {
         Idle,
@@ -504,6 +506,10 @@ public class Ship : Unit {
 
     public bool IsGasCollectorShip() {
         return ShipScriptableObject.shipType == ShipType.GasCollector;
+    }
+
+    public bool IsColonizerShip() {
+        return ShipScriptableObject.shipType == ShipType.Colonizer;
     }
 
     public bool IsCivilianShip() {

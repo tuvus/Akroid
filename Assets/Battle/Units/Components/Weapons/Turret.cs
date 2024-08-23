@@ -27,8 +27,8 @@ public class Turret : ModuleComponent {
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         turretScriptableObject = (TurretScriptableObject)ComponentScriptableObject;
         GetComponent<SpriteRenderer>().sprite = turretScriptableObject.turretSprite;
         GetComponent<SpriteRenderer>().enabled = true;

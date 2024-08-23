@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ZarrackMkI
   m_EditorClassIdentifier: 
-  cost: 11172
+  cost: 9115
   resourceTypes: 01000000
-  resourceCosts: c708000000000000
+  resourceCosts: 0b06000000000000
   prefabPath: Prefabs/ShipPrefabs/Zarrack
   unitName: Zarrack
-  maxHealth: 850
+  maxHealth: 650
   sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
   components:
   - name: TopLeftTurret

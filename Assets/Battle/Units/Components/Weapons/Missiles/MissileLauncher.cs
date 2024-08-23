@@ -26,8 +26,8 @@ public class MissileLauncher : ModuleComponent {
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
     }
 

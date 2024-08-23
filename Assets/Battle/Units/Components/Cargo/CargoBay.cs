@@ -18,8 +18,8 @@ public class CargoBay : ModuleComponent {
     public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
     public List<long> cargoBays = new List<long>();
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
     }
 

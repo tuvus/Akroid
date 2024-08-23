@@ -24,6 +24,7 @@ public class Command {
         Research,
         CollectGas,
         DisbandFleet,
+        Colonize,
     }
 
     public enum CommandAction {
@@ -42,6 +43,7 @@ public class Command {
     public Unit protectUnit;
     public Star targetStar;
     public GasCloud targetGasCloud;
+    public Planet targetPlanet;
     public bool useAlternateCommandOnceDone;
     public CargoBay.CargoTypes cargoType;
 
@@ -204,6 +206,12 @@ public class Command {
 
     public static Command CreateDisbandFleetCommand() {
         Command newCommand = new Command(CommandType.DisbandFleet);
+        return newCommand;
+    }
+
+    public static Command CreateColonizeCommand(Planet planet) {
+        Command newCommand = new Command(CommandType.Colonize);
+        newCommand.targetPlanet = planet;
         return newCommand;
     }
 

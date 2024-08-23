@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -100,6 +101,7 @@ public class ShipAI : MonoBehaviour {
             CommandType.TransportDelay => DoTransportDelayCommand(command, deltaTime),
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
+            CommandType.Colonize => DoColonizeCommand(command, deltaTime),
             _ => CommandResult.Stop,
         };
     }
@@ -650,6 +652,25 @@ public class ShipAI : MonoBehaviour {
         }
         return CommandResult.Stop;
     }
+
+    /// <summary> Moves the ship to the planet to colonize, then initiates colonization of the planet. </summary>
+    CommandResult DoColonizeCommand(Command command, float deltaTime) {
+        if (newCommand) {
+            currentCommandState = CommandType.Move;
+            ship.SetMovePosition(command.targetPlanet.position, command.targetPlanet.size + ship.size + 100);
+            command.targetPosition = ship.GetTargetMovePosition();
+            ship.SetMaxSpeed(command.maxSpeed);
+            newCommand = false;
+        }
+        if (Vector2.Distance(ship.transform.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
+            foreach (var habitationModule in ship.moduleSystem.modules.Select((m) => m.moduleComponent).Where((c) => c.GetType() == typeof(HabitationArea)).Cast<HabitationArea>()) {
+                habitationModule.ColonizePlanet(command.targetPlanet);   
+            }
+            ship.Explode();
+            return CommandResult.StopRemove;
+        }
+        return CommandResult.Stop;
+    }
     #endregion
 
 
@@ -724,7 +745,7 @@ public class ShipAI : MonoBehaviour {
                     if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
                 } else {
-                    positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetStar.GetPosition(), 
+                    positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetStar.GetPosition(),
                         Vector2.Distance(ship.GetPosition(), command.targetStar.GetPosition()) - (ship.GetSize() + command.targetStar.GetSize() * 2)));
                 }
             } else if (command.commandType == CommandType.CollectGas) {
@@ -734,6 +755,10 @@ public class ShipAI : MonoBehaviour {
                 } else {
                     positions.Add(command.targetGasCloud.GetPosition());
                 }
+            } else if (command.commandType == CommandType.Colonize) {
+                if (command.targetPlanet == null) continue;
+                positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetPlanet.GetPosition(),
+                    Vector2.Distance(ship.GetPosition(), command.targetPlanet.GetPosition()) - (ship.GetSize() + command.targetPlanet.GetSize() + 100)));
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
                 || command.commandType == CommandType.TurnToRotation || command.commandType == CommandType.TurnToPosition) {
 
@@ -755,7 +780,7 @@ public class ShipAI : MonoBehaviour {
             } else if (command.commandType == CommandType.Dock) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
-            } else if (command.commandType == CommandType.Transport || command.commandType == CommandType.TransportDelay) { 
+            } else if (command.commandType == CommandType.Transport || command.commandType == CommandType.TransportDelay) {
                 if (commands.First() == command) {
                     if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                         if (command.destinationStation != null)
@@ -773,6 +798,7 @@ public class ShipAI : MonoBehaviour {
                         positions.Add(command.destinationStation.GetPosition());
                 }
             } else {
+                if (command.targetPosition == null) continue;
                 positions.Add(command.targetPosition);
             }
         }

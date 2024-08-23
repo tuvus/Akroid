@@ -371,6 +371,10 @@ MonoBehaviour:
     faction: {fileID: 0}
     shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
       type: 2}
+  - name: Colonizer
+    faction: {fileID: 0}
+    shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
+      type: 2}
   stationBlueprints:
   - name: Fleet Command
     factionIndex: 0

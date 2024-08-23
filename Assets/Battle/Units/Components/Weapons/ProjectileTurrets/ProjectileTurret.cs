@@ -8,8 +8,8 @@ public class ProjectileTurret : Turret {
     static float flashSpeed = 0.5f;
     private float flashTime;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
     }
 

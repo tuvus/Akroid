@@ -7,8 +7,8 @@ public class Generator : ModuleComponent {
     private Unit unit;
     private float consumptionTime;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;
     }
 

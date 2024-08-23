@@ -119,6 +119,10 @@ public class Planet : BattleObject, IPositionConfirmer {
 
             return new PlanetTerritory(highQualityTerritoryGained, mediumQualityTerritoryGained, lowQualityTerritoryGained);
         }
+
+        public void AddPopulation(long population) {
+            force += population;
+        }
     }
 
     public class PlanetTerritory {

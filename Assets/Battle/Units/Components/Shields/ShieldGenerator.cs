@@ -12,8 +12,8 @@ public class ShieldGenerator : ModuleComponent {
     private float timeTillShieldCount;
 	private Shield shield;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
 		shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
 	}
 

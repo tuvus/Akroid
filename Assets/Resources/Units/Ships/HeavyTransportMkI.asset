@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: HeavyTransportMkI
   m_EditorClassIdentifier: 
-  cost: 19874
+  cost: 15374
   resourceTypes: 01000000
-  resourceCosts: 8c11000000000000
+  resourceCosts: ca0f000000000000
   prefabPath: Prefabs/ShipPrefabs/HeavyTransport
   unitName: Heavy Transport
-  maxHealth: 1650
+  maxHealth: 1200
   sprite: {fileID: -990215070, guid: 2af62a375a8f1e74481182a65dad00d4, type: 3}
   components:
   - name: LeftTopCenterTurret

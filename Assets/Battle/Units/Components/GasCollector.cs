@@ -8,8 +8,8 @@ public class GasCollector : ModuleComponent {
     GasCollectorScriptableObject gasCollectorScriptableObject;
     float collectionTime;
 
-    public override void SetupComponent(Module module, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, componentScriptableObject);
+    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, faction, componentScriptableObject);
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
     }
 

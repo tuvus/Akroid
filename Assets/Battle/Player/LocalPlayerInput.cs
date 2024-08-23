@@ -20,6 +20,7 @@ public class LocalPlayerInput : MonoBehaviour {
         ResearchCommand,
         CollectGasCommand,
         TransportCommand,
+        ColonizeCommand,
     }
     [SerializeField] protected ActionType actionType;
 
