@@ -18,7 +18,7 @@ public class HabitationArea : ModuleComponent {
             planet.planetFactions[faction].AddPopulation(population);
             population = 0;
         } else {
-            planet.AddFaction(faction, new Planet.PlanetTerritory(), population, "Colony");
+            planet.AddColony(faction, population, "Colony");
         }
     }
 }

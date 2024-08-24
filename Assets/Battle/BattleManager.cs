@@ -131,10 +131,6 @@ public class BattleManager : MonoBehaviour {
             CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
         }
 
-        CreateNewPlanet(new PositionGiver(Vector2.zero, 1000, 1000000, 1000, 100, 3), new Planet.PlanetData(null, "afasdf", 0, 0, 0, .2f, .2f, .2f));
-        CreateNewPlanet(new PositionGiver(Vector2.zero, 1000, 1000000, 1000, 100, 3), new Planet.PlanetData(null, "afasdf", 0, 0, 0, .2f, .2f, .2f));
-        CreateNewPlanet(new PositionGiver(Vector2.zero, 1000, 1000000, 1000, 100, 3), new Planet.PlanetData(null, "afasdf", 0, 0, 0, .2f, .2f, .2f));
-
         for (int i = 0; i < factionDatas.Count; i++) {
             CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
         }

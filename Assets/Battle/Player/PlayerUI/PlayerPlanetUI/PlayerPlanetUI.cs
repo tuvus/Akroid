@@ -54,7 +54,7 @@ public class PlayerPlanetUI : MonoBehaviour {
             } else {
                 planetFactionName.text = "Faction" + "Unowned";
             }
-            planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedPlanet.population);
+            planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedPlanet.GetPopulation());
             highQualityPercentLand.text = "High Quality Land: " + (displayedPlanet.areas.highQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
             mediumQualityPercentLand.text = "Medium Quality Land: " + (displayedPlanet.areas.mediumQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
             lowQualityPercentLand.text = "Low Quality Land: " + (displayedPlanet.areas.lowQualityArea * 100 / displayedPlanet.totalArea).ToString() + "%";
@@ -66,14 +66,15 @@ public class PlayerPlanetUI : MonoBehaviour {
     }
 
     public void UpdatePlanetFactions() {
-        int i = 0;
-        List<Planet.PlanetFaction> planetFactions = displayedPlanet.planetFactions.Select(entry => entry.Value).ToList();
+        List<PlanetFaction> planetFactions = displayedPlanet.planetFactions.Select(entry => entry.Value).ToList();
         planetFactions.Add(displayedPlanet.GetUnclaimedFaction());
-        foreach (Planet.PlanetFaction planetFaction in planetFactions) {
+        int i = 0;
+        foreach (PlanetFaction planetFaction in planetFactions) {
             if (planetFactionsList.childCount <= i) {
                 Instantiate(planetFactionButton, planetFactionsList);
             }
             Transform constructionBayButtonTransform = planetFactionsList.GetChild(i);
+            constructionBayButtonTransform.gameObject.SetActive(true);
             if (planetFaction.faction != null) {
                 constructionBayButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.faction.name.ToString();
                 constructionBayButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = planetFaction.faction.abbreviatedName.ToString();
@@ -81,7 +82,7 @@ public class PlayerPlanetUI : MonoBehaviour {
                 constructionBayButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Unclaimed Territory";
                 constructionBayButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
             }
-            constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
+            constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = "Population: " + NumFormatter.ConvertNumber(planetFaction.population);
             constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = "Territory: " + NumFormatter.ConvertNumber(planetFaction.territory.GetTotalAreas());
             constructionBayButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = (planetFaction.territory.GetTotalAreas() * 100 / displayedPlanet.areas.GetTotalAreas()).ToString() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;

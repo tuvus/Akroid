@@ -30,7 +30,7 @@ public class FactionAI : MonoBehaviour {
         if (attackTime <= 0) {
             foreach (Faction enemy in faction.enemyFactions) {
                 foreach (Planet planet in faction.planets) {
-                    Planet.PlanetFaction planetFaction = planet.planetFactions[faction];
+                    PlanetFaction planetFaction = planet.planetFactions[faction];
                     if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) && planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
                         planet.planetFactions[faction].FightFactionForTerritory(enemy, .3f, deltaTime);
                     }
