@@ -168,10 +168,11 @@ public class EventCondition {
         return condition;
     }
 
-    public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Station station, bool visualize = false) {
+    public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station, bool visualize = false) {
         EventCondition condition = new EventCondition(ConditionType.BuildShipAtStation);
         condition.shipBlueprint = shipBlueprint;
         condition.iObjects = new List<IObject> { station };
+        condition.faction = faction;
         condition.visualize = visualize;
         condition.intValue = 0;
         return condition;
@@ -326,7 +327,7 @@ public class EventCondition {
                     // If this is the first time the condition is active we need to subscibe to the station ship building
                     StationAI stationAI = ((Station)iObjects.First()).stationAI;
                     stationAI.onBuildShip += (ship) => { 
-                        if (ship.ShipScriptableObject == shipBlueprint.shipScriptableObject)
+                        if (ship.ShipScriptableObject == shipBlueprint.shipScriptableObject && ship.faction == faction)
                             intValue = 2; 
                     };
                     intValue = 1;

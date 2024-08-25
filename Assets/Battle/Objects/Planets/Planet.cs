@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
     /// <summary> Determines the base amount of population that one territory value can hold. </summary>
-    public static readonly long populationPerTerritoryValue = 10000;
+    public static readonly long populationPerTerritoryValue = 15000;
 
     public float rotationSpeed;
     [SerializeField] long startingPop;

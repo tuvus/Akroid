@@ -142,6 +142,7 @@ public class Chapter1 : CampaingController {
         LocalPlayer.Instance.GetLocalPlayerInput().StartFollowingUnit(setupFleetShip2);
 
         StartTutorial();
+        AddMoonQuestLine();
     }
 
     /// <summary>
@@ -207,13 +208,12 @@ public class Chapter1 : CampaingController {
                             playerFactionAI.AddTradeRouteToStation(tradeStation);
                             playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
-                            EscapeShipQuestLine(true);
+                            AddResearchQuestLine();
                         });
                     }, 20);
                 }
             }), 10 * GetTimeScale());
     }
-
 
     private void AddTutorial1() {
         Fleet setupFleet = playerFaction.fleets.First();
@@ -314,7 +314,6 @@ public class Chapter1 : CampaingController {
                     return true; })
         }, 10 * GetTimeScale())(); // Don't forget the last set of parenthesis to call the function.
     }
-
 
     void AddTutorial2() {
         FactionCommManager commManager = playerFaction.GetFactionCommManager();
@@ -484,7 +483,7 @@ public class Chapter1 : CampaingController {
         researchChain.AddCondition(EventCondition.OpenObjectPanelEvent(shipyard, true));
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Now click on the ship blueprint named GasCollector to order the contract to build the ship.", 1 * GetTimeScale());
-        researchChain.AddCondition(EventCondition.BuildShipAtStation(battleManager.shipBlueprints.First((b) => b.shipScriptableObject.shipType == Ship.ShipType.GasCollector), shipyard, true));
+        researchChain.AddCondition(EventCondition.BuildShipAtStation(battleManager.shipBlueprints.First((b) => b.shipScriptableObject.shipType == Ship.ShipType.GasCollector), playerFaction, shipyard, true));
         Ship gasCollector = null;
         researchChain.AddAction(() => gasCollector = playerFaction.ships.First((s) => s.IsGasCollectorShip()));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
@@ -502,7 +501,7 @@ public class Chapter1 : CampaingController {
             "It would be a great help if you could build one for our research missions.");
         Ship researchShip = null;
         researchChain.AddCondition(EventCondition.LateConditionEvent(() => EventCondition.BuildShipAtStation(
-            battleManager.shipBlueprints.First((b) => b.shipScriptableObject.shipType == Ship.ShipType.Research), shipyard, true)));
+            battleManager.shipBlueprints.First((b) => b.shipScriptableObject.shipType == Ship.ShipType.Research), playerFaction, shipyard, true)));
         researchChain.AddAction(() => researchShip = playerFaction.ships.First((s) => s.IsScienceShip()));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "We heard that " + shipyardFaction.name + " finished your contract to build the research ship we requested! " +
@@ -556,24 +555,24 @@ public class Chapter1 : CampaingController {
             "Do we have your permission to install the old hyperdrive onto this ship for an experiment? " +
             "I can't guarantee that it will be able to come back.",
             new CommunicationEventOption[] {
-                        new CommunicationEventOption("Donate Ship", (communicationEvent) => { return true; }, (communicationEvent) => {
-                            if (!communicationEvent.isActive)
-                                return false;
-                            communicationEvent.DeactivateEvent();
-                            playerComm.SendCommunication(researchFaction,
-                                "Sure! I hope the experiment goes well.");
-                            AddResearchDonateQuestLine(researchShip)();
-                            return true;
-                        }),
-                        new CommunicationEventOption("Keep Ship", (communicationEvent) => { return true; }, (communicationEvent) => {
-                            if (!communicationEvent.isActive)
-                                return false;
-                            communicationEvent.DeactivateEvent();
-                            playerComm.SendCommunication(researchFaction,
-                                "We would like to keep the ship if thats fine with you.");
-                            AddResearchKeepQuestLine(researchShip)();
-                            return true;
-                        })
+                new CommunicationEventOption("Donate Ship", (communicationEvent) => { return true; }, (communicationEvent) => {
+                    if (!communicationEvent.isActive)
+                        return false;
+                    communicationEvent.DeactivateEvent();
+                    playerComm.SendCommunication(researchFaction,
+                        "Sure! I hope the experiment goes well.");
+                    AddResearchDonateQuestLine(researchShip)();
+                    return true;
+                }),
+                new CommunicationEventOption("Keep Ship", (communicationEvent) => { return true; }, (communicationEvent) => {
+                    if (!communicationEvent.isActive)
+                        return false;
+                    communicationEvent.DeactivateEvent();
+                    playerComm.SendCommunication(researchFaction,
+                        "We would like to keep the ship if thats fine with you.");
+                    AddResearchKeepQuestLine(researchShip)();
+                    return true;
+                })
             }, 4 * GetTimeScale()
         );
     }
@@ -741,7 +740,7 @@ public class Chapter1 : CampaingController {
         buildEscapeShipChain.AddCommEvent(playerComm, playerFaction,
             "Build the Aterna ship at the shipyard.", GetTimeScale() * 16);
 
-        buildEscapeShipChain.AddCondition(EventCondition.BuildShipAtStation(battleManager.shipBlueprints.First((s) => s.shipScriptableObject.shipClass == Ship.ShipClass.Aterna), shipyard));
+        buildEscapeShipChain.AddCondition(EventCondition.BuildShipAtStation(battleManager.shipBlueprints.First((s) => s.shipScriptableObject.shipClass == Ship.ShipClass.Aterna), playerFaction, shipyard));
         Ship colonizer = null;
         buildEscapeShipChain.AddAction(() => colonizer = playerFaction.ships.First((s) => s.GetShipClass() == Ship.ShipClass.Aterna));
         buildEscapeShipChain.AddCommEvent(shipyardCommManager, planetFaction,
@@ -780,6 +779,40 @@ public class Chapter1 : CampaingController {
             battleManager.EndBattle();
         });
         buildEscapeShipChain.Build(eventManager)();
+    }
+
+    void AddMoonQuestLine() {
+        FactionCommManager planetCommManager = planetFaction.GetFactionCommManager();
+        FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
+        FactionCommManager playerComm = playerFaction.GetFactionCommManager();
+
+        EventChainBuilder moonColonyChain = new EventChainBuilder();
+        moonColonyChain.AddCondition(EventCondition.PredicateEvent((_) => playerMiningStation.IsBuilt()));
+        moonColonyChain.AddCondition(EventCondition.WaitEvent(200));
+        moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
+            "We would like to order a colony ship to the moon.");
+        moonColonyChain.AddCommEvent(shipyardCommManager, planetFaction,
+            "Understood, it will take some time to build.");
+        moonColonyChain.AddAction(() => shipyard.GetConstructionBay().AddConstructionToBeginningQueue(
+            new Ship.ShipConstructionBlueprint(planetFaction, battleManager.shipBlueprints.First((b) => b.shipScriptableObject.shipType == Ship.ShipType.Colonizer))));
+        moonColonyChain.AddCondition(EventCondition.BuildShipAtStation(battleManager.shipBlueprints
+            .First((b) => b.shipScriptableObject.shipType == Ship.ShipType.Colonizer), planetFaction, shipyard));
+        Ship colonizer = null;
+        moonColonyChain.AddAction(() => colonizer = planetFaction.ships.First((s) => s.IsColonizerShip()));
+        moonColonyChain.AddAction(() => colonizer.shipAI.AddUnitAICommand(Command.CreateDockCommand(tradeStation), Command.CommandAction.Replace));
+        moonColonyChain.AddCommEvent(shipyardCommManager, planetFaction,
+            "The colony ship has been built and is heading to the trade station.");
+        moonColonyChain.AddCondition(EventCondition.LateConditionEvent(() => EventCondition.DockShipsAtUnit(new List<Ship> { colonizer }, tradeStation)));
+        moonColonyChain.AddCondition(EventCondition.WaitEvent(160));
+        moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
+            "Our colony ship is loaded and is ready to head to the moon!");
+        moonColonyChain.AddAction(() => colonizer.shipAI.AddUnitAICommand(Command.CreateColonizeCommand(moon), Command.CommandAction.Replace));
+        moonColonyChain.AddCondition(EventCondition.PredicateEvent((_) => moon.planetFactions.ContainsKey(planetFaction)));
+        moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
+            "We have started a colony on the moon! This is great progress for space travel!", 8);
+        moonColonyChain.AddCommEvent(planetCommManager, playerFaction,
+            "We have started a colony on the moon! This is great progress for space travel!");
+        moonColonyChain.Build(eventManager)();
     }
 
     public override void UpdateController(float deltaTime) {

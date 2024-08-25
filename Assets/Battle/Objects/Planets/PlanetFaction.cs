@@ -33,7 +33,7 @@ public class PlanetFaction {
 
     private void UpdateExpansion(float deltaTime) { 
         if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
-            territoryExpansionProgress += force * deltaTime / 30;
+            territoryExpansionProgress += force * deltaTime / 500;
             if (territoryExpansionProgress >= 4) {
                 float randomValue = Random.Range(0, 100);
                 if (randomValue <= 50 && planet.GetUnclaimedFaction().territory.highQualityArea > 0) {
@@ -62,9 +62,9 @@ public class PlanetFaction {
             populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 100);
         } else {
             populationCapacityRatio = -population * 50 / (populationCapacity + 1);
-            populationGrowthPercent = math.max(-50,-math.pow(-populationCapacityRatio, 2.2) / 100);
+            populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
         }
-        double populationGained = populationGrowthPercent * population * deltaTime / 800 + populationGainFraction;
+        double populationGained = populationGrowthPercent * population * deltaTime / 200000 + populationGainFraction;
         population = math.max(0, population + (long)populationGained);
         populationGainFraction = populationGained - (long)populationGained;
     }

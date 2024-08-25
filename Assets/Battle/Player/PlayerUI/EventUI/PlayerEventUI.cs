@@ -140,7 +140,7 @@ public class PlayerEventUI : MonoBehaviour {
                 }
                 break;
             case EventCondition.ConditionType.LateCondition:
-                if (VisualizedEvent.eventConditionFunction != null && VisualizedEvent.eventCondition.visualize) {
+                if (VisualizedEvent.eventCondition != null && VisualizedEvent.eventCondition.visualize) {
                     VisualizedEvent = VisualizedEvent.eventCondition;
                     VisualizeEvent(newEvent);
                 }
