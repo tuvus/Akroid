@@ -11,6 +11,7 @@ public class PlanetFaction {
     public long population { get; private set; }
     public long force { get; private set; }
     public string special { get; private set; }
+    private double forceGainFraction;
     private double populationGainFraction;
     private double territoryExpansionProgress;
 
@@ -27,11 +28,44 @@ public class PlanetFaction {
     public void UpdateFaction(float deltaTime) {
         if (faction == null) return;
 
-        UpdateExpansion(deltaTime);
+        UpdateForce(deltaTime);
         UpdatePopulation(deltaTime);
+        UpdateExpansion(deltaTime);
     }
 
-    private void UpdateExpansion(float deltaTime) { 
+    
+    private void UpdateForce(float deltaTime) {
+        if (force > population) {
+            force = population;
+            return;
+        }
+        long desiredForce = population / 200;
+        if (desiredForce > force) {
+            long forceDifference = desiredForce - force;
+            double forceRecruited = math.min(forceDifference, population / 1000 + forceGainFraction);
+            force += (long)forceRecruited;
+            forceGainFraction = forceRecruited - (long)forceRecruited;
+        }
+    }
+
+    private void UpdatePopulation(float deltaTime) {
+        long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
+        double populationCapacityRatio = 0;
+        double populationGrowthPercent = 0;
+        if (populationCapacity >= population) {
+            populationCapacityRatio = populationCapacity * 50 / (population + 1);
+            populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 100);
+        } else {
+            populationCapacityRatio = -population * 50 / (populationCapacity + 1);
+            populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
+        }
+        double populationGained = populationGrowthPercent * population * deltaTime / 200000 + populationGainFraction;
+        population = math.max(0, population + (long)populationGained);
+        populationGainFraction = populationGained - (long)populationGained;
+    }
+
+
+    private void UpdateExpansion(float deltaTime) {
         if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
             territoryExpansionProgress += force * deltaTime / 500;
             if (territoryExpansionProgress >= 4) {
@@ -52,23 +86,6 @@ public class PlanetFaction {
             }
         }
     }
-
-    private void UpdatePopulation(float deltaTime) {
-        long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
-        double populationCapacityRatio = 0;
-        double populationGrowthPercent = 0;
-        if (populationCapacity >= population) {
-            populationCapacityRatio = populationCapacity * 50 / (population + 1);
-            populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 100);
-        } else {
-            populationCapacityRatio = -population * 50 / (populationCapacity + 1);
-            populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
-        }
-        double populationGained = populationGrowthPercent * population * deltaTime / 200000 + populationGainFraction;
-        population = math.max(0, population + (long)populationGained);
-        populationGainFraction = populationGained - (long)populationGained;
-    }
-
 
     /// <summary>
     /// Makes this faction fight the defender in order to take their land. Both sides will loose forces and the planet will loose population.

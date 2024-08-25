@@ -83,7 +83,7 @@ public class PlayerPlanetUI : MonoBehaviour {
                 constructionBayButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
             }
             constructionBayButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = "Population: " + NumFormatter.ConvertNumber(planetFaction.population);
-            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = "Territory: " + NumFormatter.ConvertNumber(planetFaction.territory.GetTotalAreas());
+            constructionBayButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
             constructionBayButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = (planetFaction.territory.GetTotalAreas() * 100 / displayedPlanet.areas.GetTotalAreas()).ToString() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
             constructionBayButtonTransform.GetChild(0).GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));
