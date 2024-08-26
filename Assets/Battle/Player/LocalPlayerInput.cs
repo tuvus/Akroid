@@ -242,6 +242,11 @@ public class LocalPlayerInput : MonoBehaviour {
         }
     }
 
+    public void ResetTimeScale() {
+        timeStepIndex = 1;
+        Time.timeScale = timeSteps[timeStepIndex];
+    }
+
     void AltButtonDown() {
         AltButtonPressed = true;
     }

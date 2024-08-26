@@ -14,6 +14,10 @@ public class Chapter1 : CampaingController {
     OtherMiningFactionAI otherMiningFactionAI;
     MiningStation otherMiningStation;
     Faction planetFaction;
+    Faction planetEmpire;
+    Faction planetDemocracy;
+    Faction planetOligarchy;
+
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
     public Planet moon { get; private set; }
@@ -122,18 +126,15 @@ public class Chapter1 : CampaingController {
         }
 
 
-        planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), Random.Range(12, 35) * 1000000l, Random.Range(0.01f, 0.02f), "Increases space production");
-        Faction planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(18, 24) * 100000000l, Random.Range(0.002f, 0.004f), "Increases unit production");
-        Faction planetDemocracy = battleManager.CreateNewFaction(new Faction.FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(22, 36) * 100000000l, Random.Range(0.0014f, 0.003f), "Increases research rate");
-        Faction planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetOligarchy, Random.Range(0.70f, 0.80f), Random.Range(12, 20) * 100000000l, Random.Range(0.0025f, 0.0035f), "Increases mining speed");
+        planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), Random.Range(12, 35) * 1000000L, Random.Range(0.01f, 0.02f), "Increases space production");
+        planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(18, 24) * 100000000L, Random.Range(0.002f, 0.004f), "Increases unit production");
+        planetDemocracy = battleManager.CreateNewFaction(new Faction.FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(22, 36) * 100000000L, Random.Range(0.0014f, 0.003f), "Increases research rate");
+        planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        planet.AddFaction(planetOligarchy, Random.Range(0.65f, 0.75f), Random.Range(12, 20) * 100000000L, Random.Range(0.0025f, 0.0035f), "Increases mining speed");
         Faction minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(minorFactions, Random.Range(0.70f, 0.80f), Random.Range(8, 14) * 100000000l, Random.Range(0.001f, 0.003f), "All base stats improved");
-        //planetEmpire.StartWar(planetDemocracy);
-        //planetDemocracy.StartWar(planetOligarchy);
-        //planetOligarchy.StartWar(planetEmpire);
+        planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L, Random.Range(0.001f, 0.003f), "All base stats improved");
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
         LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
@@ -143,6 +144,7 @@ public class Chapter1 : CampaingController {
 
         StartTutorial();
         AddMoonQuestLine();
+        AddWarEscalationEventLine();
     }
 
     /// <summary>
@@ -813,6 +815,50 @@ public class Chapter1 : CampaingController {
         moonColonyChain.AddCommEvent(planetCommManager, playerFaction,
             "We have started a colony on the moon! This is great progress for space travel!");
         moonColonyChain.Build(eventManager)();
+    }
+
+    void AddWarEscalationEventLine() {
+        FactionCommManager planetCommManager = planetFaction.GetFactionCommManager();
+        FactionCommManager playerComm = playerFaction.GetFactionCommManager();
+        FactionCommManager researchCommManager = researchFaction.GetFactionCommManager();
+        FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
+
+        EventChainBuilder planetEscalationChain = new EventChainBuilder();
+        planetEscalationChain.AddCondition(EventCondition.PredicateEvent((_) => playerMiningStation.IsBuilt()));
+        //planetEscalationChain.AddCondition(EventCondition.WaitEvent(600));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(6));
+        planetEscalationChain.AddAction(() => {
+            planetOligarchy.GetFactionAI().attackSpeed = 3f;
+            planetOligarchy.GetFactionAI().attackStrength = .1f;
+            planetDemocracy.GetFactionAI().attackSpeed = 6f;
+            planetOligarchy.GetFactionAI().attackStrength = .06f;
+        });
+        planetEscalationChain.AddAction(() => planetOligarchy.StartWar(planetDemocracy));
+        planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
+            $"Warning: The {planetOligarchy.name} has declared war on {planetDemocracy.name}");
+        planetEscalationChain.AddCommEvent(planetCommManager, researchFaction,
+            $"Warning: The {planetOligarchy.name} has declared war on {planetDemocracy.name}");
+        planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
+            $"Warning: The {planetOligarchy.name} has declared war on {planetDemocracy.name}");
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(300));
+        planetEscalationChain.AddAction(() => {
+            planetEmpire.StartWar(planetDemocracy);
+            planetEmpire.StartWar(planetOligarchy);
+            planetEmpire.GetFactionAI().attackSpeed = 2.5f;
+            planetEmpire.GetFactionAI().attackStrength = .04f;
+            planetOligarchy.GetFactionAI().attackSpeed = 4f;
+            planetOligarchy.GetFactionAI().attackStrength = .08f;
+            planetDemocracy.GetFactionAI().attackSpeed = 5f;
+            planetOligarchy.GetFactionAI().attackStrength = .08f;
+        });
+        planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
+            $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
+        planetEscalationChain.AddCommEvent(planetCommManager, researchFaction,
+            $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
+        planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
+            $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(50));
+        planetEscalationChain.Build(eventManager)();
     }
 
     public override void UpdateController(float deltaTime) {

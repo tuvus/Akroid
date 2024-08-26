@@ -26,7 +26,8 @@ public class OtherMiningFactionAI : FactionAI {
             long metalToUse = shipBlueprint.shipScriptableObject.resourceCosts[shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
             long metalCost = (long)(metalToUse * chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2f);
             long transportCost = shipBlueprint.shipScriptableObject.cost + metalCost;
-            if (faction.credits > 10000 * (faction.ships.Count + chapter1.shipyard.GetConstructionBay().buildQueue.Count((s) => s.faction == faction)) + transportCost) {
+            long transportCount = faction.ships.Count + chapter1.shipyard.GetConstructionBay().buildQueue.Count((s) => s.faction == faction);
+            if (transportCount < 4 && faction.credits > 10000 * transportCount + transportCost) {
                 chapter1.shipyard.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction, shipBlueprint));
                 faction.TransferCredits(metalCost, chapter1.shipyardFaction);
             }

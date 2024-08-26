@@ -382,6 +382,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void QuitSimulation() {
+        localPlayerInput.ResetTimeScale();
         SceneManager.LoadScene("Start");
     }
     #endregion

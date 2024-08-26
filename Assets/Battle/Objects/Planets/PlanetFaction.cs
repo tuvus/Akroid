@@ -42,7 +42,7 @@ public class PlanetFaction {
         long desiredForce = population / 200;
         if (desiredForce > force) {
             long forceDifference = desiredForce - force;
-            double forceRecruited = math.min(forceDifference, population / 1000 + forceGainFraction);
+            double forceRecruited = math.min(forceDifference, population * deltaTime / 10 + forceGainFraction);
             force += (long)forceRecruited;
             forceGainFraction = forceRecruited - (long)forceRecruited;
         }
@@ -54,7 +54,7 @@ public class PlanetFaction {
         double populationGrowthPercent = 0;
         if (populationCapacity >= population) {
             populationCapacityRatio = populationCapacity * 50 / (population + 1);
-            populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 100);
+            populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 200);
         } else {
             populationCapacityRatio = -population * 50 / (populationCapacity + 1);
             populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);

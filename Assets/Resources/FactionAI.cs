@@ -7,7 +7,9 @@ public class FactionAI : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public Faction faction { get; protected set; }
     public bool autoResearch;
+    public float attackSpeed = 3f;
     public float attackTime;
+    public float attackStrength = 0.1f;
 
     [field:SerializeField] public HashSet<Ship> idleShips { get; protected set; }
     [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
@@ -32,11 +34,11 @@ public class FactionAI : MonoBehaviour {
                 foreach (Planet planet in faction.planets) {
                     PlanetFaction planetFaction = planet.planetFactions[faction];
                     if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) && planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
-                        planet.planetFactions[faction].FightFactionForTerritory(enemy, .3f, deltaTime);
+                        planet.planetFactions[faction].FightFactionForTerritory(enemy, attackStrength, deltaTime);
                     }
                 }
             }
-            attackTime = .5f;
+            attackTime = attackSpeed;
         }
     }
 
