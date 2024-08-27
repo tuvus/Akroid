@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
   cost: 19098
-  resourceTypes: 01000000
-  resourceCosts: 600f000000000000
+  resourceTypes: 0100000002000000
+  resourceCosts: 7e0f0000000000008201000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   unitName: Heavy Transport
   maxHealth: 1650

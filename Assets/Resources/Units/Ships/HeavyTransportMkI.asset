@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: HeavyTransportMkI
   m_EditorClassIdentifier: 
-  cost: 15374
-  resourceTypes: 01000000
-  resourceCosts: ca0f000000000000
+  cost: 15282
+  resourceTypes: 0100000002000000
+  resourceCosts: 440f000000000000f401000000000000
   prefabPath: Prefabs/ShipPrefabs/HeavyTransport
   unitName: Heavy Transport
   maxHealth: 1200

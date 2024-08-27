@@ -46,6 +46,7 @@ class MissileLauncherScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(GetDamagePerSecond() * 22);
-        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 26));
+        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 4));
+        AddResourceCost(CargoBay.CargoTypes.Gas, (long)(GetDamagePerSecond() * 14));
     }
 }

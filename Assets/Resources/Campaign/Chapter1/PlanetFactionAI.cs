@@ -69,7 +69,7 @@ public class PlanetFactionAI : FactionAI {
 
         if (sellResourcesToPlanetTime <= 0) {
             foreach (var type in CargoBay.allCargoTypes) {
-                long amount = math.min(100, tradeStation.GetAllCargoOfType(type, true) - 2400);
+                long amount = math.min(100, tradeStation.GetAllCargoOfType(type, true) - 4800);
                 if (amount <= 0) continue;
                 tradeStation.UseCargo(amount, type);
                 faction.AddCredits((long)(amount * chapter1.resourceCosts[type] * .5f));

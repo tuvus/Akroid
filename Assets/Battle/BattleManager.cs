@@ -140,6 +140,7 @@ public class BattleManager : MonoBehaviour {
         }
 
         foreach (var faction in factions) {
+            faction.GetFleetCommand().LoadCargo(2400, CargoBay.CargoTypes.Gas);
             foreach (var faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);

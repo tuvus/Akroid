@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AternaMkI
   m_EditorClassIdentifier: 
-  cost: 40126
-  resourceTypes: 01000000
-  resourceCosts: 851a000000000000
+  cost: 40709
+  resourceTypes: 0100000002000000
+  resourceCosts: ff150000000000009806000000000000
   prefabPath: Prefabs/ShipPrefabs/Aterna
   unitName: Aterna
   maxHealth: 3400

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AriaMkI
   m_EditorClassIdentifier: 
-  cost: 3487
-  resourceTypes: 01000000
-  resourceCosts: 4a02000000000000
+  cost: 3575
+  resourceTypes: 0100000002000000
+  resourceCosts: 51020000000000003601000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   unitName: Aria
   maxHealth: 224

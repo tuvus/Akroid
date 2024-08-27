@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CivilianMKI
   m_EditorClassIdentifier: 
   cost: 1674
-  resourceTypes: 01000000
-  resourceCosts: 1201000000000000
+  resourceTypes: 0100000002000000
+  resourceCosts: 2601000000000000ea00000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   unitName: Civilian
   maxHealth: 60

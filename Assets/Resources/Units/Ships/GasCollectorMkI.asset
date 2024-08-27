@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: GasCollectorMkI
   m_EditorClassIdentifier: 
-  cost: 7613
-  resourceTypes: 01000000
-  resourceCosts: 7d05000000000000
+  cost: 7569
+  resourceTypes: 0100000002000000
+  resourceCosts: 5305000000000000be01000000000000
   prefabPath: Prefabs/ShipPrefabs/GasCollector
   unitName: GasCollector
   maxHealth: 560

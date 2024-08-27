@@ -80,7 +80,7 @@ public class UnitScriptableObject : ScriptableObject {
             if (t.moduleCount == 0) Debug.Log("Error");
             cost += t.component.cost * t.moduleCount;
             for (int f = 0; f < t.component.resourceTypes.Count; f++) {
-                AddResourceCost(t.component.resourceTypes[f], t.component.resourceCosts[f] * t.moduleCount);
+                AddResourceCost(t.component.resourceTypes[f], t.component.resourceCosts[f] * t.moduleCount + 10);
             }
         });
     }

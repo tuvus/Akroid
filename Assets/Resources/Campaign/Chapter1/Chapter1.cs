@@ -71,6 +71,7 @@ public class Chapter1 : CampaingController {
         moon = battleManager.CreateNewMoon(new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5), new Planet.PlanetData(planetFaction, "Moon", Random.Range(0, 360), 0, 0.02f, 0.98f));
         tradeStation = (Shipyard)battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "Trade Station", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
+        tradeStation.LoadCargo(2400, CargoBay.CargoTypes.Gas);
         ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
         tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
@@ -78,6 +79,7 @@ public class Chapter1 : CampaingController {
 
         shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), (long)(2400 * resourceCosts[CargoBay.CargoTypes.Metal] * 1.4f), 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Solar Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
+        shipyard.LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport);
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ColonizerMKI
   m_EditorClassIdentifier: 
-  cost: 11446
-  resourceTypes: 01000000
-  resourceCosts: ed07000000000000
+  cost: 11416
+  resourceTypes: 0100000002000000
+  resourceCosts: d9070000000000001202000000000000
   prefabPath: Prefabs/ShipPrefabs/Colonizer
   unitName: Colonizer
   maxHealth: 850

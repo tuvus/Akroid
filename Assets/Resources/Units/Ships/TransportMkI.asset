@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TransportMkI
   m_EditorClassIdentifier: 
   cost: 8830
-  resourceTypes: 01000000
-  resourceCosts: c804000000000000
+  resourceTypes: 0100000002000000
+  resourceCosts: e604000000000000f200000000000000
   prefabPath: Prefabs/ShipPrefabs/Transport
   unitName: Transport
   maxHealth: 762
