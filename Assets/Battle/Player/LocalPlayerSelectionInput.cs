@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class LocalPlayerSelectionInput : LocalPlayerInput {
-
     public bool AdditiveButtonPressed { get; private set; }
     public bool SetButtonPressed { get; private set; }
 
@@ -172,7 +171,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         selectionBox.gameObject.SetActive(true);
         float boxWidth = mousePosition.x - boxStartPosition.x;
         float boxHeight = mousePosition.y - boxStartPosition.y;
-        selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight)) * GetScreenScale();
+        selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight)) / GetScreenScale();
         //selectionBox.anchoredPosition = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
         selectionBox.position = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
         Vector2 bottomLeft = new Vector2(Mathf.Min(boxStartPosition.x, mousePosition.x), Mathf.Min(boxStartPosition.y, mousePosition.y));
@@ -194,7 +193,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     Vector2 GetScreenScale() {
-        return new Vector2(3840f / Screen.width, 2160f / Screen.height);
+        return canvasScaler.GetComponent<RectTransform>().localScale;
     }
 
     void EndBoxSelection() {
