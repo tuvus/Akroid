@@ -55,6 +55,14 @@ public class Planet : BattleObject, IPositionConfirmer {
             mediumQualityArea -= territory.mediumQualityArea;
             lowQualityArea -= territory.lowQualityArea;
         }
+
+        public void AddRandomTerritory(long value) {
+            highQualityArea = (long)(Random.Range(.2f, .5f) * value / 4.0);
+            value -= highQualityArea * 4;
+            mediumQualityArea = (long)(Random.Range(.4f, .7f) * value / 2.0);
+            value -= mediumQualityArea * 2;
+            lowQualityArea = value;
+        }
     }
 
     public struct PlanetData {
@@ -128,6 +136,12 @@ public class Planet : BattleObject, IPositionConfirmer {
         long mediumQualityTerritories = math.min(GetUnclaimedFaction().territory.mediumQualityArea, teritoryValue / 2);
         teritoryValue -= mediumQualityTerritories * 2;
         AddFaction(faction, new PlanetTerritory(highQualityTerritories, mediumQualityTerritories, teritoryValue), population, population / 10, special);
+    }
+
+    public void RemoveFaction(Faction faction) {
+        GetUnclaimedFaction().territory.AddFrom(planetFactions[faction].territory);
+        planetFactions.Remove(faction);
+        faction.RemovePlanet(this);
     }
 
     public PlanetFaction GetUnclaimedFaction() {

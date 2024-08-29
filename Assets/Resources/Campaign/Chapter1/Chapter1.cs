@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using static BattleManager;
 using static CommunicationEvent;
+using static Faction;
 using Random = UnityEngine.Random;
 
 public class Chapter1 : CampaingController {
@@ -27,7 +28,11 @@ public class Chapter1 : CampaingController {
     public Shipyard shipyard { get; private set; }
     public Faction researchFaction { get; private set; }
     public Station researchStation { get; private set; }
+    public Faction robotFaction { get; private set; }
+    public RobotFactionAI robotFactionAI { get; private set; }
+    Faction minorFactions;
     public Dictionary<CargoBay.CargoTypes, double> resourceCosts;
+    ColorPicker colorPicker;
 
     public DifficultyLevel difficultyLevel { get; private set; }
 
@@ -48,7 +53,7 @@ public class Chapter1 : CampaingController {
             { CargoBay.CargoTypes.Gas, 13.9f }
         };
         battleManager.CreateNewStar("Sun");
-        ColorPicker colorPicker = new ColorPicker();
+        colorPicker = new ColorPicker();
         playerFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
@@ -135,7 +140,7 @@ public class Chapter1 : CampaingController {
         planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(22, 36) * 100000000L, Random.Range(0.0014f, 0.003f), "Increases research rate");
         planetOligarchy = battleManager.CreateNewFaction(new Faction.FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetOligarchy, Random.Range(0.65f, 0.75f), Random.Range(12, 20) * 100000000L, Random.Range(0.0025f, 0.0035f), "Increases mining speed");
-        Faction minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+        minorFactions = battleManager.CreateNewFaction(new Faction.FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L, Random.Range(0.001f, 0.003f), "All base stats improved");
 
         LocalPlayer.Instance.lockedOwnedUnits = true;
@@ -827,8 +832,7 @@ public class Chapter1 : CampaingController {
 
         EventChainBuilder planetEscalationChain = new EventChainBuilder();
         planetEscalationChain.AddCondition(EventCondition.PredicateEvent((_) => playerMiningStation.IsBuilt()));
-        //planetEscalationChain.AddCondition(EventCondition.WaitEvent(600));
-        planetEscalationChain.AddCondition(EventCondition.WaitEvent(6));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(600));
         planetEscalationChain.AddAction(() => {
             planetOligarchy.GetFactionAI().attackSpeed = 3f;
             planetOligarchy.GetFactionAI().attackStrength = .1f;
@@ -851,7 +855,7 @@ public class Chapter1 : CampaingController {
             planetOligarchy.GetFactionAI().attackSpeed = 4f;
             planetOligarchy.GetFactionAI().attackStrength = .08f;
             planetDemocracy.GetFactionAI().attackSpeed = 5f;
-            planetOligarchy.GetFactionAI().attackStrength = .08f;
+            planetDemocracy.GetFactionAI().attackStrength = .08f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
@@ -859,7 +863,120 @@ public class Chapter1 : CampaingController {
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
-        planetEscalationChain.AddCondition(EventCondition.WaitEvent(50));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(500));
+
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(500));
+        planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
+            $"The {planetOligarchy.name} has developed a new war robot technology, it will probably tip the war in their favor.");
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(20000));
+        planetEscalationChain.AddAction(() => {
+            robotFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 2000, 0, 0), new BattleManager.PositionGiver(planet.GetPosition()), 100);
+            robotFactionAI = (RobotFactionAI)robotFaction.GetFactionAI();
+            for (int i = 0; i < 200; i++) {
+                robotFaction.DiscoverResearchArea((ResearchAreas)Random.Range(0, 3), true);
+            }
+            planet.AddFaction(robotFaction, 0, 0, 0, 70000000L, 20000, "Robot Uprising");
+            Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;
+            planet.planetFactions[robotFaction].territory.AddFrom(new Planet.PlanetTerritory(oligarchyTerritory.highQualityArea / 5, oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5));
+            oligarchyTerritory.SubtractFrom(planet.planetFactions[robotFaction].territory);
+        });
+        for (int i = 0; i < 5; i++) {
+            planetEscalationChain.AddCondition(EventCondition.WaitEvent(30));
+            planetEscalationChain.AddAction(() => {
+                planet.planetFactions[planetOligarchy].AddForce(20000);
+                Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;
+                Planet.PlanetTerritory territoryInfiltrated = new Planet.PlanetTerritory(oligarchyTerritory.highQualityArea / 5, oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5);
+            });
+        }
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(30));
+        // Uprising Occurs
+        planetEscalationChain.AddCommEvent(planetCommManager, playerFaction, $"A robot uprising has begun within the {planetOligarchy.name}");
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(30));
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(30));
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(30));
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(20));
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(20));
+        planetEscalationChain.AddAction(() => {
+            planet.planetFactions[robotFaction].AddForce(30000000L);
+            robotFaction.StartWar(planetOligarchy);
+            eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[planetOligarchy].force < 1000000), () => {
+                planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetOligarchy].territory);
+                planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetOligarchy].force);
+                planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[planetOligarchy].population);
+                planet.planetFactions[planetOligarchy].territory.SubtractFrom(planet.planetFactions[planetOligarchy].territory);
+                planet.RemoveFaction(planetOligarchy);
+            });
+        });
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(80));
+        planetEscalationChain.AddAction(() => { 
+            planet.planetFactions[robotFaction].AddForce(40000000L);
+            robotFaction.StartWar(planetDemocracy);
+            eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[planetDemocracy].force < 1000000), () => {
+                planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetDemocracy].territory);
+                planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetDemocracy].force);
+                planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[planetDemocracy].population);
+                planet.planetFactions[planetDemocracy].territory.SubtractFrom(planet.planetFactions[planetDemocracy].territory);
+                planet.RemoveFaction(planetDemocracy);
+            });
+        });
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(80));
+        planetEscalationChain.AddAction(() => {
+            planet.planetFactions[robotFaction].AddForce(30000000L);
+            robotFaction.StartWar(planetEmpire);
+            eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[planetEmpire].force < 1000000), () => {
+                planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetEmpire].territory);
+                planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetEmpire].force);
+                planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[planetEmpire].population);
+                planet.planetFactions[planetEmpire].territory.SubtractFrom(planet.planetFactions[planetEmpire].territory);
+                planet.RemoveFaction(planetEmpire);
+            });
+        }); 
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
+        planetEscalationChain.AddAction(() => {
+            planet.planetFactions[robotFaction].AddForce(40000000L);
+            robotFaction.StartWar(minorFactions);
+            eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[minorFactions].force < 1000000), () => {
+                planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[minorFactions].territory);
+                planet.planetFactions[planetFaction].AddForce(planet.planetFactions[minorFactions].force);
+                planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[minorFactions].population);
+                planet.planetFactions[minorFactions].territory.SubtractFrom(planet.planetFactions[minorFactions].territory);
+                planet.RemoveFaction(minorFactions);
+            });
+        });
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
+        planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
+        planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
+        planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
+        planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
+        planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
+        planetEscalationChain.AddCondition(EventCondition.PredicateEvent((_) => {
+            long alliedForce = 0;
+            if (planet.planetFactions.ContainsKey(planetDemocracy)) alliedForce += planet.planetFactions[planetDemocracy].force;
+            if (planet.planetFactions.ContainsKey(planetOligarchy)) alliedForce += planet.planetFactions[planetOligarchy].force;
+            if (planet.planetFactions.ContainsKey(planetEmpire)) alliedForce += planet.planetFactions[planetEmpire].force;
+            if (planet.planetFactions.ContainsKey(minorFactions)) alliedForce += planet.planetFactions[minorFactions].force;
+            return alliedForce < 6000000000L;
+        }));
+        planetEscalationChain.AddAction(() => {
+            eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[planetOligarchy].force < 100), () => {
+                planet.RemoveFaction(planetOligarchy);
+            });
+            planet.planetFactions[robotFaction].AddForce(200000000L);
+            robotFaction.StartWar(planetFaction);
+            planetEmpire.EndWar(planetDemocracy);
+            planetEmpire.EndWar(planetOligarchy);
+            planetDemocracy.EndWar(planetOligarchy);
+            robotFaction.GetFactionAI().attackSpeed = 4f;
+            robotFaction.GetFactionAI().attackStrength = .1f;
+        });
+        planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
+            $"The {planetFaction.name}, {planetDemocracy.name} and {planetOligarchy.name} have reached a peace agreement due to the robot threat.");
         planetEscalationChain.Build(eventManager)();
     }
 

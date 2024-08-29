@@ -201,6 +201,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000)
                 return false;
         }
+        foreach (var planet in battleManager.planets) {
+            if (Vector2.Distance(position, planet.position) <= minDistanceFromObject + planet.GetSize() + 200)
+                return false;
+        }
         foreach (var asteroidField in battleManager.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize())
                 return false;
@@ -220,8 +224,20 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         otherFaction.AddEnemyFaction(this);
     }
 
+    public void EndWar(Faction otherFaction) {
+        RemoveEnemyFaction(otherFaction);
+        otherFaction.RemoveEnemyFaction(this);
+    }
+
     public void AddEnemyFaction(Faction otherFaction) {
         enemyFactions.Add(otherFaction);
+        if (LocalPlayer.Instance.faction == this) {
+            LocalPlayer.Instance.UpdateFactionColors();
+        }
+    }
+
+    public void RemoveEnemyFaction(Faction otherFaction) {
+        enemyFactions.Remove(otherFaction);
         if (LocalPlayer.Instance.faction == this) {
             LocalPlayer.Instance.UpdateFactionColors();
         }

@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using static Planet;
@@ -42,7 +43,8 @@ public class PlanetFaction {
         long desiredForce = population / 200;
         if (desiredForce > force) {
             long forceDifference = desiredForce - force;
-            double forceRecruited = math.min(forceDifference, population * deltaTime / 10 + forceGainFraction);
+            int factionsAtWarWith = 1 + planet.planetFactions.ToList().Count((f) => faction.IsAtWarWithFaction(f.Key));
+            double forceRecruited = math.min(forceDifference, population * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
             force += (long)forceRecruited;
             forceGainFraction = forceRecruited - (long)forceRecruited;
         }
@@ -109,9 +111,15 @@ public class PlanetFaction {
 
         // Random factor of the fight, a higher value means the attackers are doing better
         float bias = Random.Range(-.3f, .3f);
+        float attackerModifiers = -5 + faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) + faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
+            + faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) + faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
+            + faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) + faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
+        float defenderModifiers = -5 + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
+            + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
+            + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
         // Attackers get to attack with more force but defenders will loose less per force
-        long attackersKilled = math.min(attackingForce, (long)(defenseForce * (1 + math.min(-bias, 0)) / 20));
-        long defendersKilled = math.min(defenseForce, (long)(attackingForce * (1 + math.min(bias, 0)) / 50));
+        long attackersKilled = math.min(attackingForce, (long)(defenseForce * defenderModifiers * (1 + math.min(-bias, 0)) / 20));
+        long defendersKilled = math.min(defenseForce, (long)(attackingForce * attackerModifiers * (1 + math.min(bias, 0)) / 50));
         force -= attackersKilled;
         defender.force -= defendersKilled;
 
@@ -128,8 +136,8 @@ public class PlanetFaction {
             Debug.LogError($"{faction.name} is attacking but the defender {defender.faction.name} doesn't have any territory {defender.territory.highQualityArea}, {defender.territory.mediumQualityArea}, {defender.territory.lowQualityArea}.");
         }
         // War is bad for everyone
-        population -= (long)((attackersKilled + defendersKilled) * 10 * (1 + math.abs(bias) * 2));
-        defender.population -= (long)((attackersKilled + defendersKilled) * 10 * (1 + math.abs(bias) * 2));
+        population -= (long)(attackersKilled * 10 * (1 + math.abs(bias) * 2));
+        defender.population -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
     }
 
     /// <summary> 
@@ -156,7 +164,7 @@ public class PlanetFaction {
 
         // The attacker will try to take the remaining contested territory based on the force ratio
         long territoryValueContested = warZone.GetTerritoryValue() - territoryValueDefended;
-        long territoryGainedValue = (long)(territoryValueContested * math.max(1, attackerDefenderRatio - 1.5));
+        long territoryGainedValue = (long)(territoryValueContested * math.min(1, attackerDefenderRatio - 1.5));
 
         long highQualityTerritoryGained = math.min(warZone.highQualityArea, territoryGainedValue / 6);
         territoryGainedValue -= highQualityTerritoryGained * 2;
@@ -167,7 +175,18 @@ public class PlanetFaction {
         return new PlanetTerritory(highQualityTerritoryGained, mediumQualityTerritoryGained, lowQualityTerritoryGained);
     }
 
+    public void AddForce(long force) {
+        this.population += force;
+        this.force += force;
+    }
+
+    public long RemoveForce(long force) {
+        force = math.min(this.force, force);
+        this.force -= force;
+        return force;
+    }
+
     public void AddPopulation(long population) {
-        force += population;
+        this.population += population;
     }
 }
