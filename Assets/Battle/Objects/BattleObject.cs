@@ -175,4 +175,12 @@ Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer
     public bool IsStar() {
         return this is Star;
     }
+
+    public bool IsAsteroid() {
+        return this is Asteroid;
+    }
+
+    public bool IsGasCloud() {
+        return this is GasCloud;
+    }
 }

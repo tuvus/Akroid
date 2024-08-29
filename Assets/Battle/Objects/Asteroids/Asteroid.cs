@@ -8,12 +8,14 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public CargoBay.CargoTypes asteroidType;
 
     public struct AsteroidData {
+        public string name;
         public float rotation;
         public float size;
         public long resources;
         public CargoBay.CargoTypes asteroidType;
 
-        public AsteroidData(float rotation, float size, long resources, CargoBay.CargoTypes asteroidType) {
+        public AsteroidData(string name, float rotation, float size, long resources, CargoBay.CargoTypes asteroidType) {
+            this.name = name;
             this.rotation = rotation;
             this.size = size;
             this.resources = resources;
@@ -25,6 +27,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
         this.asteroidField = asteroidField;
         base.SetupBattleObject(battleManager, positionGiver, asteroidData.rotation);
+        this.objectName = asteroidData.name;
         this.resources = asteroidData.resources;
         asteroidField.totalResources += this.resources;
         this.asteroidType = asteroidData.asteroidType;

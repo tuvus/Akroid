@@ -215,6 +215,15 @@ public class LocalPlayerInput : MonoBehaviour {
                 } else if (rightClickedBattleObject.IsPlanet()) {
                     LocalPlayer.Instance.GetPlayerUI().SetDisplayedPlanet((Planet)rightClickedBattleObject);
                     rightClickedBattleObject = null;
+                } else if (rightClickedBattleObject.IsStar()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedStar((Star)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
+                } else if (rightClickedBattleObject.IsAsteroid()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedAsteroid((Asteroid)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
+                } else if (rightClickedBattleObject.IsGasCloud()) {
+                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedGasCloud((GasCloud)rightClickedBattleObject);
+                    rightClickedBattleObject = null;
                 }
             }
         } else {
@@ -289,13 +298,17 @@ public class LocalPlayerInput : MonoBehaviour {
                 continue;
             }
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.transform.position);
-            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, (targetUnit).GetZoomIndicatorSize()) && tempDistance < distance) {
+            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
                 battleObject = targetUnit;
                 distance = tempDistance;
             }
         }
-        List<BattleObject> battleObjects = new List<BattleObject>(new List<BattleObject>(BattleManager.Instance.stars));
+        List<BattleObject> battleObjects = new List<BattleObject>(BattleManager.Instance.stars);
         battleObjects.AddRange(BattleManager.Instance.planets);
+        foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
+            battleObjects.AddRange(asteroidField.battleObjects);
+        }
+        battleObjects.AddRange(BattleManager.Instance.gasClouds);
         foreach (BattleObject targetObject in battleObjects) {
             if (!targetObject.IsSelectable()) {
                 continue;

@@ -18,6 +18,9 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerStationUI playerStationUI;
     [SerializeField] private PlayerPlanetUI playerPlanetUI;
     [SerializeField] private PlayerShipUI playerShipUI;
+    [SerializeField] private PlayerStarUI playerStarUI;
+    [SerializeField] private PlayerAsteroidUI playerAsteroidUI;
+    [SerializeField] private PlayerGasCloudUI playerGasCloudUI;
     [field: SerializeField] public PlayerFactionOverviewUI playerFactionOverviewUI { get; private set; }
     [field:SerializeField] public PlayerEventUI playerEventUI { get; protected set; }
     [SerializeField] private GameObject factionUI;
@@ -41,6 +44,10 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject planetUI;
     [SerializeField] private GameObject factionOverviewUI;
     [SerializeField] private LineRenderer commandRenderer;
+    [SerializeField] private GameObject starUI;
+    [SerializeField] private GameObject asteroidUI;
+    [SerializeField] private GameObject gasCloudUI;
+
 
 
     public bool showUnitZoomIndicators;
@@ -70,6 +77,9 @@ public class PlayerUI : MonoBehaviour {
         playerPlanetUI.SetupPlayerPlanetUI(this);
         playerFactionOverviewUI.SetupFactionOverviewUI(this);
         playerEventUI.SetupEventUI(this);
+        playerStarUI.SetupPlayerStarUI(this);
+        playerAsteroidUI.SetupPlayerAsteroidUI(this);
+        playerGasCloudUI.SetupPlayerGasCloudUI(this);
     }
 
     public void UpdatePlayerUI() {
@@ -114,6 +124,15 @@ public class PlayerUI : MonoBehaviour {
         if (factionOverviewUI.activeSelf) {
             playerFactionOverviewUI.UpdateFactionOverviewUI();
         }
+        if (starUI.activeSelf) {
+            playerStarUI.UpdateStarUI();
+        }
+        if (asteroidUI.activeSelf) {
+            playerAsteroidUI.UpdateAsteroidUI();
+        }
+        if (gasCloudUI.activeSelf) {
+            playerGasCloudUI.UpdateGasCloudUI();
+        }
         timeSpeed.text = "Time: " + Time.timeScale;
         playerEventUI.UpdateEventUI();
         Profiler.EndSample();
@@ -153,7 +172,7 @@ public class PlayerUI : MonoBehaviour {
             }
         } else if (battleObject.IsPlanet()) {
             objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
-        } else if (battleObject.IsStar()) {
+        } else if (battleObject.IsStar() || battleObject.IsAsteroid() || battleObject.IsGasCloud()) {
             objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
         }
     }
@@ -275,22 +294,59 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
+    public void SetDisplayedStar(Star star) {
+        if (!starUI.activeSelf) {
+            CloseAllMenus();
+            starUI.SetActive(true);
+            playerStarUI.DisplayStar(star);
+            return;
+        }
+        if (playerStarUI.displayedStar == star) {
+            playerStarUI.UpdateStarUI();
+        } else {
+            playerStarUI.DisplayStar(star);
+        }
+    }
+
+    public void SetDisplayedAsteroid(Asteroid asteroid) {
+        if (!asteroidUI.activeSelf) {
+            CloseAllMenus();
+            asteroidUI.SetActive(true);
+            playerAsteroidUI.DisplayAsteroid(asteroid);
+            return;
+        }
+        if (playerAsteroidUI.displayedAsteroid == asteroid) {
+            playerAsteroidUI.UpdateAsteroidDisplay();
+        } else {
+            playerAsteroidUI.DisplayAsteroid(asteroid);
+        }
+    }
+
+    public void SetDisplayedGasCloud(GasCloud gasCloud) {
+        if (!gasCloudUI.activeSelf) {
+            CloseAllMenus();
+            gasCloudUI.SetActive(true);
+            playerGasCloudUI.DisplayGasCloud(gasCloud);
+            return;
+        }
+        if (playerGasCloudUI.displayedGasCloud == gasCloud) {
+            playerGasCloudUI.UpdateGasCloudUI();
+        } else {
+            playerGasCloudUI.DisplayGasCloud(gasCloud);
+        }
+    }
+
     public void CloseAllMenus() {
         menuUI.SetActive(false);
         controlsListUI.SetActive(false);
         victoryUI.SetActive(false);
-        if (stationUI.activeSelf) {
-            stationUI.SetActive(false);
-        }
-        if (shipUI.activeSelf) {
-            shipUI.SetActive(false);
-        }
-        if (planetUI.activeSelf) {
-            planetUI.SetActive(false);
-        }
-        if (factionOverviewUI.activeSelf) {
-            factionOverviewUI.SetActive(false);
-        }
+        if (stationUI.activeSelf) stationUI.SetActive(false);
+        if (shipUI.activeSelf) shipUI.SetActive(false);
+        if (planetUI.activeSelf) planetUI.SetActive(false);
+        if (factionOverviewUI.activeSelf) factionOverviewUI.SetActive(false);
+        if (starUI.activeSelf) starUI.SetActive(false);
+        if (asteroidUI.activeSelf) asteroidUI.SetActive(false);
+        if (gasCloudUI.activeSelf) gasCloudUI.SetActive(false);
     }
 
     public void ToggleUnitZoomIndicators() {
@@ -358,7 +414,9 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf;
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf 
+            || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf || starUI.activeSelf
+            || asteroidUI.activeSelf || gasCloudUI.activeSelf;
     }
 
     public bool IsAnObjectMenuShown() {
