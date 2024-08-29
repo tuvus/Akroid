@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DefaultExecutionOrder(-1)]
 public class LocalPlayerInput : MonoBehaviour {
@@ -51,6 +52,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     private int[] timeSteps = new int[] { 0, 1, 2, 5, 10, 15, 20, 25 };
     int timeStepIndex;
+    protected CanvasScaler canvasScaler;
 
     public virtual void Setup() {
         mainCamera = transform.GetChild(0).GetComponent<Camera>();
@@ -81,6 +83,7 @@ public class LocalPlayerInput : MonoBehaviour {
         playerInput.Enable();
         timeStepIndex = 1;
         doingUnitClickAction = false;
+        canvasScaler = LocalPlayer.Instance.playerUI.GetComponentInParent<CanvasScaler>();
     }
 
     public virtual void ChangeFaction() {
@@ -196,7 +199,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseHeld() {
         if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
-            MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / 422);
+            MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() / 1200);
             OnPanEvent(oldPosition, GetCamera().transform.position);
 
         }
@@ -353,6 +356,10 @@ public class LocalPlayerInput : MonoBehaviour {
 
     public Vector2 GetMouseWorldPosition() {
         return mainCamera.ScreenToWorldPoint(playerInput.Player.MousePosition.ReadValue<Vector2>());
+    }
+
+    protected Vector2 GetScreenScale() {
+        return canvasScaler.GetComponent<RectTransform>().localScale;
     }
 
     public Camera GetCamera() {

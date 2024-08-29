@@ -15,7 +15,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     [SerializeField] protected SelectionGroup selectedUnits;
     private SelectionGroup objectsInSelectionBox;
-    private CanvasScaler canvasScaler;
 
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
@@ -33,7 +32,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
         GetPlayerInput().Player.Deselct.performed += context => DeselectButtonPerformed();
         GetPlayerInput().Player.CombatUnitCommand.performed += context => CombatUnitButtonPerformed();
-        canvasScaler = LocalPlayer.Instance.playerUI.GetComponentInParent<CanvasScaler>();
     }
 
     public override void ChangeFaction() {
@@ -192,9 +190,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Highlighted);
     }
 
-    Vector2 GetScreenScale() {
-        return canvasScaler.GetComponent<RectTransform>().localScale;
-    }
+
 
     void EndBoxSelection() {
         actionType = ActionType.None;
