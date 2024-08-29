@@ -21,6 +21,13 @@ public class OtherMiningFactionAI : FactionAI {
 
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
+        if (otherMiningStation.faction == faction) {
+            BuyMinningShips();
+        }
+        ManageIdleShips();
+    }
+
+    void BuyMinningShips() {
         if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() > shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             Ship.ShipBlueprint shipBlueprint = battleManager.GetShipBlueprint(Ship.ShipClass.Transport);
             long metalToUse = shipBlueprint.shipScriptableObject.resourceCosts[shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
@@ -32,7 +39,6 @@ public class OtherMiningFactionAI : FactionAI {
                 faction.TransferCredits(metalCost, chapter1.shipyardFaction);
             }
         }
-        ManageIdleShips();
     }
 
     void ManageIdleShips() {

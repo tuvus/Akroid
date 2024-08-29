@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
@@ -263,6 +264,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         factionAI.RemoveShip(ship);
     }
 
+    public void TransferShipTo(Ship ship, Faction to) {
+        if (!ships.Contains(ship)) throw new InvalidOperationException("The ship to transfer from this faction isn't owned by this faction.");
+        if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
+            LocalPlayer.Instance.RemoveOwnedUnit(ship);
+        }
+        RemoveShip(ship);
+        to.AddShip(ship);
+        ship.SetFaction(to);
+        if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
+            LocalPlayer.Instance.AddOwnedUnit(ship);
+        }
+    }
+
     public void AddStation(Station station) {
         AddUnit(station);
         stations.Add(station);
@@ -271,6 +285,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void RemoveStation(Station station) {
         RemoveUnit(station);
         stations.Remove(station);
+    }
+
+    public void TransferStationTo(Station station, Faction to) {
+        if (!stations.Contains(station)) throw new InvalidOperationException("The station to transfer from this faction isn't owned by this faction.");
+        if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(station)) {
+            LocalPlayer.Instance.RemoveOwnedUnit(station);
+        }
+        RemoveStation(station);
+        to.AddStation(station);
+        station.SetFaction(to);
+        if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
+            LocalPlayer.Instance.AddOwnedUnit(station);
+        }
     }
 
     public void AddStationBlueprint(Station station) {

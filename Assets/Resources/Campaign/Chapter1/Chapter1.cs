@@ -18,6 +18,7 @@ public class Chapter1 : CampaingController {
     Faction planetEmpire;
     Faction planetDemocracy;
     Faction planetOligarchy;
+    Faction pirateFaction;
 
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
@@ -132,6 +133,7 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewGasCloud(new PositionGiver(Vector2.zero, 10000, 100000, 20000, 1000, 3));
         }
 
+        pirateFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(planet.position), 100);
 
         planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), Random.Range(12, 35) * 1000000L, Random.Range(0.01f, 0.02f), "Increases space production");
         planetEmpire = battleManager.CreateNewFaction(new Faction.FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0), new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
@@ -152,6 +154,7 @@ public class Chapter1 : CampaingController {
         StartTutorial();
         AddMoonQuestLine();
         AddWarEscalationEventLine();
+        AddPiratesEventLine();
     }
 
     /// <summary>
@@ -531,7 +534,7 @@ public class Chapter1 : CampaingController {
                     if (!communicationEvent.isActive)
                         return false;
                     communicationEvent.DeactivateEvent();
-                    LocalPlayer.Instance.RemoveOwnedUnit(researchShip);
+                    playerFaction.TransferShipTo(researchShip, researchFaction);
                     playerFaction.AddScience(300);
                     AddResearchInvestigationQuestLine(researchShip)();
                     return true; 
@@ -625,7 +628,8 @@ public class Chapter1 : CampaingController {
             "We have recovered the hyperdrive and are giving you back control of your research ship.", GetTimeScale() * 3);
         keepChain.AddCommEvent(playerComm, researchFaction,
             "Thanks! Hopefully you can make good use of it!", GetTimeScale() * 3);
-        keepChain.AddAction(() => { 
+        keepChain.AddAction(() => {
+            researchFaction.TransferShipTo(researchShip, playerFaction);
             LocalPlayer.Instance.AddOwnedUnit(researchShip);
         });
         return keepChain.Build(eventManager, () => EscapeShipQuestLine(false));
@@ -788,6 +792,45 @@ public class Chapter1 : CampaingController {
             battleManager.EndBattle();
         });
         buildEscapeShipChain.Build(eventManager)();
+    }
+
+    void AddPiratesEventLine() {
+        FactionCommManager planetCommManager = planetFaction.GetFactionCommManager();
+        FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
+        FactionCommManager playerComm = playerFaction.GetFactionCommManager();
+        List<Ship> pirateShips = new List<Ship>();
+
+        EventChainBuilder pirateChain = new EventChainBuilder();
+        pirateChain.AddCondition(EventCondition.PredicateEvent(_ => playerMiningStation.IsBuilt()));
+        pirateChain.AddCondition(EventCondition.WaitEvent(300));
+        pirateChain.AddCondition(EventCondition.PredicateEvent(_ => tradeStation.GetHangar().ships.Any(s => s.faction == planetFaction && s.IsCivilianShip())));
+        pirateChain.AddAction(() => {
+            Ship newPirateShip = tradeStation.GetHangar().ships.First(s => s.faction == planetFaction && s.IsCivilianShip());
+            planetFaction.TransferShipTo(newPirateShip, pirateFaction);
+            pirateShips.Add(newPirateShip);
+            newPirateShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(20), Command.CommandAction.Replace);
+            newPirateShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(otherMiningStation), Command.CommandAction.AddToEnd);
+        });
+        pirateChain.AddCondition(EventCondition.LateConditionEvent(() => EventCondition.DockShipsAtUnit(pirateShips, otherMiningStation)));
+        pirateChain.AddCondition(EventCondition.WaitEvent(15));
+        pirateChain.AddAction(() => {
+            otherMiningFaction.TransferStationTo(otherMiningStation, pirateFaction);
+            otherMiningStation.GetHangar().ships.ForEach(s => {
+                if (s.faction != pirateFaction) {
+                    s.faction.TransferShipTo(s, pirateFaction);
+                    pirateShips.Add(s);
+                }
+            });
+            pirateFaction.StartWar(planetFaction);
+            pirateFaction.StartWar(researchFaction);
+            pirateFaction.StartWar(playerFaction);
+            pirateFaction.StartWar(shipyardFaction);
+            resourceCosts[CargoBay.CargoTypes.Metal] *= 1.25;
+        });
+        pirateChain.AddCommEvent(planetCommManager, playerFaction,
+            $"Pirates have siezed the {otherMiningFaction.name}'s minning station!\n" +
+            "We will have a harder time securing metal for the planet at this rate!", 3 * GetTimeScale());
+        pirateChain.Build(eventManager)();
     }
 
     void AddMoonQuestLine() {

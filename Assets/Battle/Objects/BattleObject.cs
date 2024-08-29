@@ -128,6 +128,10 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
         return IsSpawned();
     }
 
+    public void SetFaction(Faction faction) {
+        this.faction = faction;
+    }
+
     [ContextMenu("GetObjectSize")]
     private void ManualLogSize() {
         spriteRenderer = GetComponent<SpriteRenderer>();
