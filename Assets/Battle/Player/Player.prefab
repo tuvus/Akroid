@@ -279,6 +279,7 @@ GameObject:
   - component: {fileID: 1120957211}
   - component: {fileID: 1120957213}
   - component: {fileID: 1120957212}
+  - component: {fileID: 3112278010934807735}
   m_Layer: 5
   m_Name: Science
   m_TagString: Untagged
@@ -344,6 +345,62 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3112278010934807735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120957210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1120957212}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8714345815927367769}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
+        m_MethodName: ShowLocalFaction
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &2142195002
 GameObject:
   m_ObjectHideFlags: 0
@@ -5637,9 +5694,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3cd524c1d01e646890e014573eac6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stationStatusUI: {fileID: 2889823401270230916}
-  stationConstructionUI: {fileID: 2083717572168342858}
-  stationHangarUI: {fileID: 601062711040852069}
+  updateSpeed: 1
+  middlePanel: {fileID: 2889823401270230916}
+  leftPanel: {fileID: 2083717572168342858}
+  rightPanel: {fileID: 601062711040852069}
   stationName: {fileID: 3491433633692491039}
   stationFaction: {fileID: 6246821196309107388}
   stationType: {fileID: 3826948115742546217}
@@ -5657,7 +5715,6 @@ MonoBehaviour:
   shipButtonPrefab: {fileID: 6917939575041792617, guid: 24e4ee27584b2474db3f56aa4c880e1e,
     type: 3}
   shipsInHangar: []
-  updateSpeed: 0
   autoBuildShips: {fileID: 84209206596427748}
   shipYardSelection: {fileID: 6895498698358203164}
   upgradeSelection: {fileID: 4579255356529078684}
@@ -8548,7 +8605,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0271fedcc7c7ae849886d5483f47b615, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  asteroidStatsUI: {fileID: 7428355072417109734}
+  updateSpeed: 1
+  middlePanel: {fileID: 7428355072417109734}
+  leftPanel: {fileID: 0}
+  rightPanel: {fileID: 0}
   asteroidName: {fileID: 8552013491009733665}
   resourceType: {fileID: 1455559580337599969}
   resourceAmount: {fileID: 1325499462405277001}
@@ -12397,7 +12457,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14afa8457c7791248acbc2466e363c65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gasCloudStatsUI: {fileID: 5496914364965425074}
+  updateSpeed: 1
+  middlePanel: {fileID: 5496914364965425074}
+  leftPanel: {fileID: 0}
+  rightPanel: {fileID: 0}
   gasCloudName: {fileID: 4020176052988065184}
   resourceType: {fileID: 194660206604634520}
   resourceAmount: {fileID: 7683687072607053891}
@@ -22651,7 +22714,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf90792f816185742858c2deaa5aa049, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  starStatsUI: {fileID: 4688661812075452548}
+  updateSpeed: 1
+  middlePanel: {fileID: 4688661812075452548}
+  leftPanel: {fileID: 0}
+  rightPanel: {fileID: 0}
   starName: {fileID: 4337751862546133671}
 --- !u!1 &4614675108540889667
 GameObject:
@@ -27296,12 +27362,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f0901cd07869249b6a09ba8a5e01b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateSpeed: 1
+  middlePanel: {fileID: 7576776369313551898}
+  leftPanel: {fileID: 739310528705086384}
+  rightPanel: {fileID: 4188279746673251188}
   factionName: {fileID: 4802504255527385326}
   unitCount: {fileID: 289336072850392684}
   shipCount: {fileID: 2757771237127120280}
   stationCount: {fileID: 3585171022936889621}
   autoCommandFleets: {fileID: 351554024947477718}
-  factionResearchUI: {fileID: 739310528705086384}
   autoResearch: {fileID: 8341924445935794691}
   nextDiscoveryCost: {fileID: 8085580830299377526}
   totalDiscoveries: {fileID: 1275437703248426957}
@@ -30265,7 +30334,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e51f8f4c75c4c64c83cfad3f7a05d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipStatusUI: {fileID: 8837151095832562887}
+  updateSpeed: 1
+  middlePanel: {fileID: 8837151095832562887}
+  leftPanel: {fileID: 0}
+  rightPanel: {fileID: 0}
   shipName: {fileID: 2886060364870343798}
   shipFaction: {fileID: 3050760634109497803}
   shipClass: {fileID: 6189141222820093029}
@@ -30283,7 +30355,6 @@ MonoBehaviour:
   cargoBayList: {fileID: 2324629049485743111}
   cargoBayButtonPrefab: {fileID: 1291711641006979735, guid: 962cb35921d15bd4697730959add4a34,
     type: 3}
-  updateSpeed: 0
 --- !u!1 &6528151954486204694
 GameObject:
   m_ObjectHideFlags: 0
@@ -38347,9 +38418,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af032270f3db6064a8b2c4f54d43a125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateSpeed: 0
-  planetStatusUI: {fileID: 5400501495813693303}
-  planetFactionsUI: {fileID: 2570621816068070312}
+  updateSpeed: 1
+  middlePanel: {fileID: 5400501495813693303}
+  leftPanel: {fileID: 2570621816068070312}
+  rightPanel: {fileID: 0}
   planetName: {fileID: 5487667805444958190}
   planetFactionName: {fileID: 8350775794514007052}
   planetType: {fileID: 6751726966067386571}
@@ -41936,6 +42008,14 @@ MonoBehaviour:
   starUI: {fileID: 4614315296740033955}
   asteroidUI: {fileID: 1711304197212547219}
   gasCloudUI: {fileID: 2595696733551425799}
+  uIMenusInput:
+  - {fileID: 3947678777219265419}
+  - {fileID: 5037967006063210199}
+  - {fileID: 6118173523353972393}
+  - {fileID: 2220549231309651276}
+  - {fileID: 3637885339814343555}
+  - {fileID: 7870897310388169718}
+  - {fileID: 6097438988437884183}
   showUnitZoomIndicators: 1
   showUnitCombatIndicators: 1
   updateUnitZoomIndicators: 1
@@ -42752,8 +42832,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 8714345815927367769}
         m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
-        m_MethodName: ShowResearchUI
-        m_Mode: 6
+        m_MethodName: ShowLocalFaction
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

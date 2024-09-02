@@ -209,25 +209,8 @@ public class LocalPlayerInput : MonoBehaviour {
         secondaryMousePressed = false;
         if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
             if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
-                if (rightClickedBattleObject.IsShip()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayShip((Ship)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                } else if (rightClickedBattleObject.IsStation()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayStation((Station)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                } else if (rightClickedBattleObject.IsPlanet()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedPlanet((Planet)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                } else if (rightClickedBattleObject.IsStar()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedStar((Star)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                } else if (rightClickedBattleObject.IsAsteroid()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedAsteroid((Asteroid)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                } else if (rightClickedBattleObject.IsGasCloud()) {
-                    LocalPlayer.Instance.GetPlayerUI().SetDisplayedGasCloud((GasCloud)rightClickedBattleObject);
-                    rightClickedBattleObject = null;
-                }
+                LocalPlayer.Instance.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
+                rightClickedBattleObject = null;
             }
         } else {
             LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();

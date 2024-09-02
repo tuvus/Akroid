@@ -170,7 +170,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         float boxWidth = mousePosition.x - boxStartPosition.x;
         float boxHeight = mousePosition.y - boxStartPosition.y;
         selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight)) / GetScreenScale();
-        //selectionBox.anchoredPosition = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
         selectionBox.position = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
         Vector2 bottomLeft = new Vector2(Mathf.Min(boxStartPosition.x, mousePosition.x), Mathf.Min(boxStartPosition.y, mousePosition.y));
         Vector2 topRight = new Vector2(Mathf.Max(boxStartPosition.x, mousePosition.x), Mathf.Max(boxStartPosition.y, mousePosition.y));
