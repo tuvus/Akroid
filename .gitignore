@@ -475,5 +475,8 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
+# Intellij
+.idea/
+
 #MyAdditions
 Akroid_BurstDebugInformation_DoNotShip
