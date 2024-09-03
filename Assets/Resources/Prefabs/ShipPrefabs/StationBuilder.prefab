@@ -109,9 +109,9 @@ GameObject:
   - component: {fileID: 8113073670915643597}
   - component: {fileID: 2222407536126563405}
   - component: {fileID: 8113073670915643593}
+  - component: {fileID: 1519955397534576237}
   - component: {fileID: 8237055795355298684}
   - component: {fileID: 2038612867028490211}
-  - component: {fileID: 3482319267384695098}
   m_Layer: 7
   m_Name: StationBuilder
   m_TagString: Units/Ship
@@ -238,6 +238,36 @@ MonoBehaviour:
   commands: []
   newCommand: 0
   currentCommandState: 0
+--- !u!114 &1519955397534576237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8113073670915643603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThruster
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: SubThrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 6186396870660440489}
+  - {fileID: 7401110993754742268}
+  - {fileID: 1823371741227072400}
+  - {fileID: 405282082469805427}
 --- !u!61 &8237055795355298684
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -310,36 +340,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &3482319267384695098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8113073670915643603}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: MainThruster
-    type: 4
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: SubThrusters
-    type: 4
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 6186396870660440489}
-  - {fileID: 7401110993754742268}
-  - {fileID: 1823371741227072400}
-  - {fileID: 405282082469805427}
 --- !u!1 &8113073671352550726
 GameObject:
   m_ObjectHideFlags: 0

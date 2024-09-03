@@ -26,7 +26,7 @@ public class ShipAI : MonoBehaviour {
     }
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
-        if ((command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) && ship.GetTurrets().Count == 0) {
+        if ((command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Protect) && !ship.HasWeapons()) {
             return;
         }
         if (commandAction == CommandAction.AddToBegining) {
@@ -472,7 +472,7 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.StopRemove;
         }
         if (newCommand) {
-            if (ship.GetResearchEquiptment().WantsMoreData()) {
+            if (ship.moduleSystem.Get<ResearchEquipment>().Any(r => r.WantsMoreData())) {
                 ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
                 currentCommandState = CommandType.Move;
             } else {
@@ -487,16 +487,19 @@ public class ShipAI : MonoBehaviour {
                 currentCommandState = CommandType.Research;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Research) {
-                if (!ship.GetResearchEquiptment().GatherData(command.targetStar, deltaTime)) {
-                    ship.SetDockTarget(command.destinationStation);
-                    currentCommandState = CommandType.Dock;
+                foreach (var researchEquipment in ship.moduleSystem.Get<ResearchEquipment>()) {
+                    if (!researchEquipment.GatherData(command.targetStar, deltaTime)) {
+                        return CommandResult.Stop;
+                    }
                 }
+                ship.SetDockTarget(command.destinationStation);
+                currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Dock) {
                 currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Wait) {
-                if (ship.GetResearchEquiptment().WantsMoreData()) {
+                if (ship.moduleSystem.Get<ResearchEquipment>().Any(r => r.WantsMoreData())) {
                     ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
                     currentCommandState = CommandType.Move;
                 }
@@ -514,7 +517,7 @@ public class ShipAI : MonoBehaviour {
             return CommandResult.StopRemove;
         }
         if (newCommand) {
-            if (ship.GetGasCollector().WantsMoreGas()) {
+            if (ship.moduleSystem.Get<GasCollector>().Any(g => g.WantsMoreGas())) {
                 ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
                 currentCommandState = CommandType.Move;
             } else {
@@ -530,10 +533,13 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.CollectGas) {
                 if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
-                if (!ship.GetGasCollector().CollectGas(command.targetGasCloud, deltaTime)) {
-                    ship.SetDockTarget(command.destinationStation);
-                    currentCommandState = CommandType.Dock;
+                foreach (var gasCollector in ship.moduleSystem.Get<GasCollector>()) {
+                    if (!gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
+                        return CommandResult.Stop;
+                    }
                 }
+                ship.SetDockTarget(command.destinationStation);
+                currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Dock) {
                 currentCommandState = CommandType.Wait;

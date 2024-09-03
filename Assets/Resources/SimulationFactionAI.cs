@@ -241,14 +241,13 @@ public class SimulationFactionAI : FactionAI {
     void ManageDockedShips() {
         if (faction.HasEnemy()) {
             if (fleetCommand.enemyUnitsInRange.Count > 0) {
-                HashSet<Ship> combatShips = fleetCommand.GetHangar().GetAllCombatShips();
                 Vector2 position = fleetCommand.enemyUnitsInRange[0].GetPosition();
-                foreach (var combatShip in combatShips) {
+                foreach (var combatShip in fleetCommand.GetAllDockedShips().Where(s => s.IsCombatShip())) {
                     combatShip.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(position), Command.CommandAction.AddToEnd);
                     combatShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.AddToEnd);
                 }
             } else {
-                HashSet<Ship> combatShips = fleetCommand.GetHangar().GetAllUndamagedCombatShips().Take(maxCombatShips).ToHashSet();
+                HashSet<Ship> combatShips = fleetCommand.GetAllDockedShips().Where(s => s.IsCombatShip() && !s.IsDamaged()).Take(maxCombatShips).ToHashSet();
                 if (combatShips.Count > 8) {
                     int totalHealth = combatShips.Sum(s => s.GetTotalHealth());
                     if (totalHealth > 3000) {
@@ -308,7 +307,7 @@ public class SimulationFactionAI : FactionAI {
     }
 
     void ManageStationUpgrades() {
-        if (fleetCommand.GetCargoBay().GetAllCargo(CargoBay.CargoTypes.Metal) > 30000) {
+        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 30000) {
             for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
                 if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
                     fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);

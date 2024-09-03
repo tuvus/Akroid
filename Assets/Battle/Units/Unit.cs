@@ -5,21 +5,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-[RequireComponent(typeof(ModuleSystem))]
+[RequireComponent(typeof(ComponentModuleSystem))]
 public abstract class Unit : BattleObject, IParticleHolder {
     public UnitScriptableObject UnitScriptableObject { get; private set; }
-    [field: SerializeField] public ModuleSystem moduleSystem { get; private set; }
+    [field: SerializeField] public ComponentModuleSystem moduleSystem { get; private set; }
     private UnitGroup group;
 
     protected int health;
     [SerializeField] protected int followDist;
     private UnitSelection unitSelection;
     protected List<Collider2D> colliders;
-    private ShieldGenerator shieldGenerator;
-    protected List<Generator> generators;
-    protected List<CargoBay> cargoBays;
-    protected List<Turret> turrets;
-    protected List<MissileLauncher> missileLaunchers;
     private float maxWeaponRange;
     private float minWeaponRange;
     protected Vector2 velocity;
@@ -32,7 +27,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         this.UnitScriptableObject = unitScriptableObject;
         this.faction = faction;
         base.SetupBattleObject(battleManager, positionGiver, rotation);
-        moduleSystem = GetComponent<ModuleSystem>();
+        moduleSystem = GetComponent<ComponentModuleSystem>();
         moduleSystem.SetupModuleSystem(this, unitScriptableObject);
         this.objectName = name;
         gameObject.name = name;
@@ -40,23 +35,13 @@ public abstract class Unit : BattleObject, IParticleHolder {
         transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
-        cargoBays = new List<CargoBay>(GetComponentsInChildren<CargoBay>());
-        turrets = new List<Turret>(GetComponentsInChildren<Turret>());
-        missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
         unitSelection = GetComponentInChildren<UnitSelection>();
         destroyEffect = GetComponentInChildren<DestroyEffect>();
         destroyEffect.SetupDestroyEffect(this, spriteRenderer);
-        shieldGenerator = GetComponentInChildren<ShieldGenerator>();
-        generators = new List<Generator>(GetComponentsInChildren<Generator>());
         colliders = new List<Collider2D>(GetComponents<Collider2D>());
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
-        turrets.ForEach(turret => turret.SetupTurret(this));
-        missileLaunchers.ForEach(missileLauncher => missileLauncher.SetupMissileLauncher(this));
         SetupWeaponRanges();
-        if (shieldGenerator != null)
-            shieldGenerator.SetupShieldGenerator(this);
-        generators.ForEach(generator => generator.SetupGenerator(this));
         unitSelection.SetupSelection(this);
         SetParticleSpeed(particleSpeed);
         followDist = (int)(GetSize() * 2);
@@ -64,11 +49,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public void SetupWeaponRanges() {
-        foreach (var turret in turrets) {
+        foreach (var turret in moduleSystem.Get<Turret>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, turret.GetRange());
             minWeaponRange = Mathf.Min(minWeaponRange, turret.GetRange());
         }
-        foreach (var missileLuancher in missileLaunchers) {
+        foreach (var missileLuancher in moduleSystem.Get<MissileLauncher>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, missileLuancher.GetRange() / 2);
             minWeaponRange = Mathf.Min(minWeaponRange, missileLuancher.GetRange() / 2);
         }
@@ -81,10 +66,8 @@ public abstract class Unit : BattleObject, IParticleHolder {
             UpdateWeapons(deltaTime);
         }
         if (IsSpawned()) {
-            if (shieldGenerator != null) {
-                shieldGenerator.UpdateShieldGenerator(deltaTime);
-            }
-            generators.ForEach(generator => generator.UpdateGenerator(deltaTime));
+            moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
+            moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
         }
     }
 
@@ -127,12 +110,9 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     protected virtual void UpdateWeapons(float deltaTime) {
         Profiler.BeginSample("Weapons");
-        foreach (var turret in turrets) {
-            turret.UpdateTurret(deltaTime);
-        }
-        foreach (var missileLauncher in missileLaunchers) {
-            missileLauncher.UpdateMissileLauncher(deltaTime);
-        }
+        
+        moduleSystem.Get<Turret>().ForEach(t => t.UpdateTurret(deltaTime));
+        moduleSystem.Get<MissileLauncher>().ForEach(m => m.UpdateMissileLauncher(deltaTime));
         Profiler.EndSample();
     }
 
@@ -190,9 +170,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         for (int i = 0; i < colliders.Count; i++) {
             colliders[i].enabled = active;
         }
-        if (shieldGenerator != null) {
-            shieldGenerator.ShowShield(active);
-        }
+        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.ShowShield(active));
     }
 
     protected override void Despawn(bool removeImmediately) {
@@ -208,11 +186,9 @@ public abstract class Unit : BattleObject, IParticleHolder {
             return;
         if (BattleManager.Instance.GetParticlesShown())
             destroyEffect.Explode();
-        if (shieldGenerator != null)
-            shieldGenerator.DestroyShield();
-        for (int i = 0; i < turrets.Count; i++) {
-            turrets[i].StopFiring();
-        }
+        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.DestroyShield());
+        moduleSystem.Get<Turret>().ForEach(s => s.StopFiring());
+        moduleSystem.Get<Hangar>().ForEach(h => h.UndockAll());
         float value = UnityEngine.Random.Range(0.2f, 0.6f);
         GetSpriteRenderers().ForEach(r => { r.color = new Color(value, value, value, 1); });
         Despawn(false);
@@ -220,8 +196,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual void DestroyUnit() {
         SetGroup(null);
-        if (shieldGenerator != null)
-            shieldGenerator.DestroyShield();
+        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.DestroyShield());
         RemoveFromAllGroups();
     }
 
@@ -263,7 +238,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     /// <returns>The leftover amount that couldn't be used, or 0 if all of it was used</returns>
     public long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToUse = amount;
-        foreach (var cargoBay in GetCargoBays()) {
+        foreach (var cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
             if (totalCargoToUse <= 0) return 0;
         }
@@ -276,7 +251,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
     public long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToLoad = amount;
-        foreach (var cargoBay in GetCargoBays()) {
+        foreach (var cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
             if (totalCargoToLoad <= 0) return 0;
         }
@@ -310,11 +285,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
                 reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
             }
         }
-        return cargoBays.Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
+        return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
     }
 
     public long GetAvailableCargoSpace(CargoBay.CargoTypes cargoType) {
-        return GetCargoBays().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
+        return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
     }
 
     public Dictionary<CargoBay.CargoTypes, long> GetReservedCargoSpace() {
@@ -359,15 +334,11 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public int GetShields() {
-        if (shieldGenerator == null)
-            return 0;
-        return shieldGenerator.GetShieldStrength();
+        return moduleSystem.Get<ShieldGenerator>().Sum(s => s.GetShieldStrength());
     }
 
     public int GetMaxShields() {
-        if (shieldGenerator == null)
-            return 0;
-        return shieldGenerator.GetMaxShieldStrength();
+        return moduleSystem.Get<ShieldGenerator>().Sum(s => s.GetMaxShieldStrength());
     }
 
     public int GetFollowDistance() {
@@ -375,19 +346,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public abstract bool Destroyed();
-
-    public List<Turret> GetTurrets() {
-        return turrets;
-    }
-
-    public List<CargoBay> GetCargoBays() {
-        return cargoBays;
-    }
-
-    public ShieldGenerator GetShieldGenerator() {
-        return shieldGenerator;
-    }
-
+    
     public float GetCombinedFollowDistance(Unit unit) {
         return GetFollowDistance() + unit.GetFollowDistance();
     }
@@ -404,7 +363,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public bool HasWeapons() {
-        return turrets.Count > 0 || missileLaunchers.Count > 0;
+        return moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
     }
 
     public virtual List<Unit> GetEnemyUnitsInRange() {
@@ -413,6 +372,12 @@ public abstract class Unit : BattleObject, IParticleHolder {
 
     public virtual List<float> GetEnemyUnitsInRangeDistance() {
         return enemyUnitsInRangeDistance;
+    }
+
+    public List<Ship> GetAllDockedShips() {
+        List<Ship> dockedShips = new();
+        moduleSystem.Get<Hangar>().ForEach(h => dockedShips.AddRange(h.ships));
+        return dockedShips;
     }
 
     public virtual void ShowEffects(bool shown) {
@@ -459,26 +424,22 @@ public abstract class Unit : BattleObject, IParticleHolder {
     }
 
     public float GetUnitDamagePerSecond() {
-        float dps = 0;
-        foreach (var projectileTurret in turrets) {
-            dps += projectileTurret.GetDamagePerSecond();
-        }
-
-        foreach (var missileLauncher in missileLaunchers) {
-            dps += missileLauncher.GetDamagePerSecond();
-        }
-        return dps;
+        return moduleSystem.Get<Turret>().Sum(t => t.GetDamagePerSecond())
+            + moduleSystem.Get<LaserTurret>().Sum(t => t.GetDamagePerSecond())
+            + moduleSystem.Get<MissileLauncher>().Sum(t => t.GetDamagePerSecond());
     }
 
     public int GetWeaponCount() {
-        return turrets.Count + missileLaunchers.Count;
+        return moduleSystem.Get<Turret>().Count
+               + moduleSystem.Get<LaserTurret>().Count
+               + moduleSystem.Get<MissileLauncher>().Count;   
     }
 
     public override List<SpriteRenderer> GetSpriteRenderers() {
         List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer> {
             spriteRenderer
         };
-        spriteRenderers.AddRange(turrets.Select(t => t.GetSpriteRenderer()));
+        spriteRenderers.AddRange(moduleSystem.Get<Turret>().Select(t => t.GetSpriteRenderer()));
         return spriteRenderers;
     }
 

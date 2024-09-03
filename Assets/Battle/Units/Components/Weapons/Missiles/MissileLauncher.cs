@@ -15,7 +15,6 @@ public class MissileLauncher : ModuleComponent {
     }
     MissileLauncherScriptableObject missileLauncherScriptableObject;
 
-    protected Unit unit;
     private ReloadController reloadController;
     public float range;
     public TargetingBehaviors targeting;
@@ -26,13 +25,10 @@ public class MissileLauncher : ModuleComponent {
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupMissileLauncher(Unit unit) {
-        this.unit = unit;
+        
         reloadController = GetComponent<ReloadController>();
         reloadController.SetupReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed, missileLauncherScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);

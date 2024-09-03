@@ -8,12 +8,10 @@ public class Hangar : ModuleComponent {
     public List<Ship> ships { get; private set; }
     [SerializeField] int dockSpace;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         hangarScriptableObject = (HangarScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupHangar() {
+        
         ships = new List<Ship>(hangarScriptableObject.maxDockSpace);
     }
 
@@ -29,6 +27,10 @@ public class Hangar : ModuleComponent {
     public void RemoveShip(Ship ship) {
         ships.Remove(ship);
         dockSpace--;
+    }
+
+    public bool CanDockShip() {
+        return dockSpace < hangarScriptableObject.maxDockSpace;
     }
 
     public void UndockAll() {

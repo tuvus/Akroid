@@ -3,24 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Thruster : ModuleComponent, IParticleHolder {
-    Unit unit;
     ThrusterScriptableObject thrusterScriptableObject;
     [SerializeField] ParticleSystem particle;
     [SerializeField] LensFlare thrusterFlare;
     float targetBrightness;
     float baseThrustEmissionRate;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
         Instantiate(thrusterScriptableObject.thrustEffect, transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
         baseThrustEmissionRate = particle.emission.rateOverTime.constant;
-    }
-
-    public void SetupThruster(Unit unit) {
-        this.unit = unit;
+        
         thrusterFlare.brightness = 5 * unit.GetSpriteSize();
         targetBrightness = thrusterFlare.brightness;
         thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();

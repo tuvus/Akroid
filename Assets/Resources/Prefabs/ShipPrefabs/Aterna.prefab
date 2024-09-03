@@ -109,7 +109,7 @@ GameObject:
   - component: {fileID: 8328976631515970220}
   - component: {fileID: 8328976631515970261}
   - component: {fileID: 6622392364773092372}
-  - component: {fileID: 5244651990944294162}
+  - component: {fileID: 6784614788486399069}
   - component: {fileID: -2775981026067670770}
   - component: {fileID: 7874422398996792089}
   m_Layer: 7
@@ -214,10 +214,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
-  unitName: Aterna
-  <moduleSystem>k__BackingField: {fileID: 0}
+  <objectName>k__BackingField: 
+  <size>k__BackingField: 0
+  <position>k__BackingField: {x: 0, y: 0}
   <faction>k__BackingField: {fileID: 0}
+  <moduleSystem>k__BackingField: {fileID: 0}
   followDist: 30
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -245,8 +246,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commands: []
   newCommand: 0
-  currentCommandType: 0
---- !u!114 &5244651990944294162
+  currentCommandState: 0
+--- !u!114 &6784614788486399069
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -255,7 +256,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8328976631515970221}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:

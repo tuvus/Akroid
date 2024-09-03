@@ -7,9 +7,10 @@ public class HabitationArea : ModuleComponent {
     [field: SerializeField] public long population { get; private set; }
 
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         habitationAreaScriptableObject = (HabitationAreaScriptableObject)componentScriptableObject;
+        
         population = habitationAreaScriptableObject.populationSpace;
     }
 

@@ -47,7 +47,7 @@ public class MiningStationAI : StationAI {
     }
 
     void ManageMinningStationCargo() {
-        foreach (var ship in station.GetHangar().GetShips()) {
+        foreach (var ship in station.GetAllDockedShips()) {
             if (ship.GetShipType() == Ship.ShipType.Transport) {
                 ship.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.All, station);
                 cargoTime += cargoSpeed;

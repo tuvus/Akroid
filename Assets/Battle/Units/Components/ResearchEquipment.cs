@@ -3,23 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ResearchEquipment : ModuleComponent {
-    Ship ship;
     ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
     [SerializeField] int data;
     float researchTime;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         researchEquipmentScriptableObject = (ResearchEquipmentScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupResearchEquipment(Ship ship) {
-        this.ship = ship;
+        
         researchTime = researchEquipmentScriptableObject.researchSpeed;
         data = 0;
     }
 
-    /// <returns>False if we done collecting data, true otherwise</returns>
+    /// <returns> False if we done collecting data, true otherwise </returns>
     public bool GatherData(Star star, float time) {
         researchTime -= time;
         if (researchTime <= 0) {

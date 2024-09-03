@@ -1,23 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Shipyard : Station {
-    private ConstructionBay constructionBay;
-
-    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
-        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
-        constructionBay = GetComponentInChildren<ConstructionBay>();
-        constructionBay.SetupConstructionBay(this);
-    }
 
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
-        if (constructionBay != null && built)
-            constructionBay.UpdateConstructionBay(deltaTime);
+        if (built) moduleSystem.Get<ConstructionBay>().ForEach(c => c.UpdateConstructionBay(deltaTime));
     }
 
     public ConstructionBay GetConstructionBay() {
-        return constructionBay;
+        return moduleSystem.Get<ConstructionBay>().FirstOrDefault();
     }
 }

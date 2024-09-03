@@ -112,11 +112,13 @@ public class Missile : BattleObject, IParticleHolder {
             return;
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.IsSpawned() && unit.faction != faction) {
-            if (unit.GetShieldGenerator() != null && unit.GetShieldGenerator().GetShield().health > 0) {
-                damage = unit.GetShieldGenerator().GetShield().TakeDamage(damage);
-                Explode();
-                velocity = unit.GetVelocity();
-                return;
+            foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
+                if (shieldGenerator.GetShield().health > 0) {
+                    damage = shieldGenerator.GetShield().TakeDamage(damage);
+                    Explode();
+                    velocity = unit.GetVelocity();
+                    return;
+                }
             }
             damage = unit.TakeDamage(damage);
             Explode();

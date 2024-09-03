@@ -110,9 +110,9 @@ GameObject:
   - component: {fileID: 831600065110085477}
   - component: {fileID: 831600065110085478}
   - component: {fileID: 2119983916170409296}
+  - component: {fileID: 7377311387753126947}
   - component: {fileID: 3457495768788648788}
   - component: {fileID: -3571867724185488838}
-  - component: {fileID: 2177431211079556175}
   m_Layer: 6
   m_Name: MiningStation
   m_TagString: Untagged
@@ -237,6 +237,37 @@ MonoBehaviour:
   <cargoAmount>k__BackingField: 300
   transportShips: []
   wantedTransports: 0
+--- !u!114 &7377311387753126947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831600065110085484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: Turrets
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 6162160207633974841}
+  - {fileID: 866394140924723967}
+  - {fileID: 8722201221679710835}
+  - {fileID: 5474822065016376058}
+  - {fileID: 1848661247200616616}
 --- !u!58 &3457495768788648788
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -299,37 +330,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2177431211079556175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 831600065110085484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: Turrets
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 6162160207633974841}
-  - {fileID: 866394140924723967}
-  - {fileID: 8722201221679710835}
-  - {fileID: 5474822065016376058}
-  - {fileID: 1848661247200616616}
 --- !u!1 &6430685081454762431
 GameObject:
   m_ObjectHideFlags: 0

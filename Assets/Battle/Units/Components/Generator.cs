@@ -4,16 +4,11 @@ using Unity.Mathematics;
 
 public class Generator : ModuleComponent {
     GeneratorScriptableObject generatorScriptableObject;
-    private Unit unit;
     private float consumptionTime;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupGenerator(Unit unit) {
-        this.unit = unit;
     }
 
     public void UpdateGenerator(float deltaTime) {

@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static ModuleSystem;
 
+/// <summary>
+/// A template that holds general information about a ModuleComponent and connects it to a system in the ModuleSystem.
+/// Information held by the Module is set in the prefab before the game begins and probably aren't going to change during the game.
+/// </summary>
 public class Module : MonoBehaviour {
     public ModuleSystem moduleSystem { get; private set; }
 

@@ -6,13 +6,10 @@ public class LaserTurret : Turret {
     LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
-    }
-
-    public override void SetupTurret(Unit unit) {
-        base.SetupTurret(unit);
+        
         laser = Instantiate(laserTurretScriptableObject.laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
         laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
     }

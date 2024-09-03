@@ -3,23 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GasCollector : ModuleComponent {
-    Unit unit;
-
     GasCollectorScriptableObject gasCollectorScriptableObject;
     float collectionTime;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupGasCollector(Unit unit) {
-        this.unit = unit;
+        
         collectionTime = gasCollectorScriptableObject.collectionSpeed;
     }
 
-
-    /// <returns>False if we are finished collecting gas, true otherwise</returns>
+    /// <returns> False if we are finished collecting gas, true otherwise </returns>
     public bool CollectGas(GasCloud gasCloud, float deltaTime) {
         collectionTime -= deltaTime;
         if (collectionTime <= 0) {

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ShieldGenerator : ModuleComponent {
 	ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
-	private Unit unit;
     //ShieldStats
     public Shield shieldPrefab;
 
@@ -12,13 +11,10 @@ public class ShieldGenerator : ModuleComponent {
     private float timeTillShieldCount;
 	private Shield shield;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+	public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+		base.SetupComponent(module, unit, componentScriptableObject);
 		shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
-	}
-
-	public void SetupShieldGenerator(Unit unit) {
-		this.unit = unit;
+		
 		shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
 		shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
 		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);

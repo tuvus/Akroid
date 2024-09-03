@@ -15,25 +15,11 @@ public class DecoyUnit : Unit {
     }
 
     public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale, UnitScriptableObject unitScriptableObject) {
-        turrets = new List<Turret>(GetComponentsInChildren<Turret>());
-        foreach (var turret in turrets) {
-            turret.SetupTurret(this);
-        }
-        missileLaunchers = new List<MissileLauncher>(GetComponentsInChildren<MissileLauncher>());
-        foreach (var missileLauncher in missileLaunchers) {
-            missileLauncher.SetupMissileLauncher(this); ;
-        }
         enemyUnitsInRange = new List<Unit>() { target };
     }
 
     public void FixedUpdate() {
         velocity = inputVelocity;
-        foreach (var turret in turrets) {
-            turret.UpdateTurret(Time.fixedDeltaTime);
-        }
-        foreach (var missileLauncher in missileLaunchers) {
-            missileLauncher.UpdateMissileLauncher(Time.fixedDeltaTime);
-        }
     }
 
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -66,10 +67,7 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-
     public StationAI stationAI { get; protected set; }
-    private Hangar hangar;
-    private CargoBay cargoBay;
     public int repairAmount;
     public float repairSpeed;
     public float rotationSpeed;
@@ -79,19 +77,14 @@ public class Station : Unit, IPositionConfirmer {
     public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
         base.SetupUnit(battleManager, name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
         stationAI = GetComponent<StationAI>();
-        hangar = GetComponentInChildren<Hangar>();
-        cargoBay = GetComponentInChildren<CargoBay>();
         stationAI.SetupStationAI(this);
-        hangar.SetupHangar();
         this.built = built;
         if (!built) {
             faction.AddStationBlueprint(this);
             health = 0;
             ActivateColliders(false);
             spriteRenderer.color = new Color(.3f, 1f, .3f, .5f);
-            for (int i = 0; i < turrets.Count; i++) {
-                turrets[i].ShowTurret(false);
-            }
+            moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(false));
         } else {
             faction.AddStation(this);
             Spawn();
@@ -227,7 +220,6 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public override void Explode() {
-        hangar.UndockAll();
         if (!built)
             Spawn();
         base.Explode();
@@ -239,7 +231,8 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public bool DockShip(Ship ship) {
-        if (IsSpawned() && IsBuilt() && hangar.DockShip(ship)) {
+        Hangar openHangar = moduleSystem.Get<Hangar>().FirstOrDefault(h => h.CanDockShip());
+        if (IsSpawned() && IsBuilt() && openHangar != null && openHangar.DockShip(ship)) {
             ship.transform.position = transform.position;
             ship.transform.eulerAngles = new Vector3(0, 0, 0);
             return true;
@@ -248,7 +241,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public void UndockShip(Ship ship, float rotation) {
-        hangar.RemoveShip(ship);
+        moduleSystem.Get<Hangar>().First(h => h.ships.Contains(ship)).RemoveShip(ship);
         Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, GetSize() + ship.GetSize());
         ship.transform.position = new Vector2(transform.position.x + undockPos.x, transform.position.y + undockPos.y);
         ship.transform.eulerAngles = new Vector3(0, 0, rotation);
@@ -267,9 +260,7 @@ public class Station : Unit, IPositionConfirmer {
             faction.AddStation(this);
             built = true;
             health = GetMaxHealth();
-            for (int i = 0; i < turrets.Count; i++) {
-                turrets[i].ShowTurret(true);
-            }
+            moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(true));
             ShowUnit(true);
             spriteRenderer.color = new Color(1, 1, 1, 1);
             Spawn();
@@ -288,14 +279,6 @@ public class Station : Unit, IPositionConfirmer {
         } else {
             return true;
         }
-    }
-
-    public CargoBay GetCargoBay() {
-        return cargoBay;
-    }
-
-    public Hangar GetHangar() {
-        return hangar;
     }
 
     public bool IsBuilt() {

@@ -803,9 +803,9 @@ public class Chapter1 : CampaingController {
         EventChainBuilder pirateChain = new EventChainBuilder();
         pirateChain.AddCondition(EventCondition.PredicateEvent(_ => playerMiningStation.IsBuilt()));
         pirateChain.AddCondition(EventCondition.WaitEvent(300));
-        pirateChain.AddCondition(EventCondition.PredicateEvent(_ => tradeStation.GetHangar().ships.Any(s => s.faction == planetFaction && s.IsCivilianShip())));
+        pirateChain.AddCondition(EventCondition.PredicateEvent(_ => tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())));
         pirateChain.AddAction(() => {
-            Ship newPirateShip = tradeStation.GetHangar().ships.First(s => s.faction == planetFaction && s.IsCivilianShip());
+            Ship newPirateShip = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
             planetFaction.TransferShipTo(newPirateShip, pirateFaction);
             pirateShips.Add(newPirateShip);
             newPirateShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(20), Command.CommandAction.Replace);
@@ -815,7 +815,7 @@ public class Chapter1 : CampaingController {
         pirateChain.AddCondition(EventCondition.WaitEvent(15));
         pirateChain.AddAction(() => {
             otherMiningFaction.TransferStationTo(otherMiningStation, pirateFaction);
-            otherMiningStation.GetHangar().ships.ForEach(s => {
+            otherMiningStation.GetAllDockedShips().ForEach(s => {
                 if (s.faction != pirateFaction) {
                     s.faction.TransferShipTo(s, pirateFaction);
                     pirateShips.Add(s);

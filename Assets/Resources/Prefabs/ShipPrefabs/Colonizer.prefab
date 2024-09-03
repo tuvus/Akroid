@@ -110,9 +110,9 @@ GameObject:
   - component: {fileID: 4268936986182817263}
   - component: {fileID: 4268936986182817262}
   - component: {fileID: 4268936986182817259}
+  - component: {fileID: 7747930487841754260}
   - component: {fileID: 3049327884886133802}
   - component: {fileID: 697873143071377945}
-  - component: {fileID: 7007796534626796146}
   m_Layer: 7
   m_Name: Colonizer
   m_TagString: Units/Ship
@@ -245,6 +245,55 @@ MonoBehaviour:
   commands: []
   newCommand: 0
   currentCommandState: 0
+--- !u!114 &7747930487841754260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4268936986182817265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: LightTurrets
+    type: 2
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MediumTurrets
+    type: 2
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Thrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 8353090238792306558}
+  - {fileID: 8204143582608511372}
+  - {fileID: 2260248044547217568}
+  - {fileID: 7490545191699034044}
+  - {fileID: 5801500494763941687}
+  - {fileID: 7902536115194966036}
+  - {fileID: 3558168425780458815}
+  - {fileID: 5875564912352614132}
+  - {fileID: 8688116659977134875}
+  - {fileID: 5849792540068752237}
+  - {fileID: 7085855064063255120}
 --- !u!61 &3049327884886133802
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -317,55 +366,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &7007796534626796146
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4268936986182817265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: LightTurrets
-    type: 2
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: MediumTurrets
-    type: 2
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Thrusters
-    type: 4
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 8353090238792306558}
-  - {fileID: 8204143582608511372}
-  - {fileID: 2260248044547217568}
-  - {fileID: 7490545191699034044}
-  - {fileID: 5801500494763941687}
-  - {fileID: 7902536115194966036}
-  - {fileID: 3558168425780458815}
-  - {fileID: 5875564912352614132}
-  - {fileID: 8688116659977134875}
-  - {fileID: 5849792540068752237}
-  - {fileID: 7085855064063255120}
 --- !u!1 &5882679849120031814
 GameObject:
   m_ObjectHideFlags: 0

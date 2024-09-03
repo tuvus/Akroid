@@ -7,26 +7,21 @@ using static Ship;
 
 public class ConstructionBay : ModuleComponent {
     ConstructionBayScriptableObject constructionBayScriptableObject;
-    private Shipyard shipyard;
 
     private float constructionTime;
 
     [SerializeField]
     public List<ShipConstructionBlueprint> buildQueue;
 
-    public override void SetupComponent(Module module, Faction faction, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, faction, componentScriptableObject);
+    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
+        base.SetupComponent(module, unit, componentScriptableObject);
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
-    }
-
-    public void SetupConstructionBay(Shipyard fleetCommand) {
-        this.shipyard = fleetCommand;
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
 
     public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {
-        if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, shipyard.faction)) {
-            shipyard.faction.UseCredits(shipBlueprint.cost);
+        if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) {
+            unit.faction.UseCredits(shipBlueprint.cost);
             buildQueue.Add(shipBlueprint);
             return true;
         }
@@ -39,8 +34,8 @@ public class ConstructionBay : ModuleComponent {
 
     public void RemoveBlueprintFromQueue(int index) {
         ShipConstructionBlueprint shipBlueprint = buildQueue[index];
-        shipyard.faction.AddCredits(shipBlueprint.cost);
-        shipyard.faction.TransferCredits(shipBlueprint.cost, shipBlueprint.GetFaction());
+        unit.faction.AddCredits(shipBlueprint.cost);
+        unit.faction.TransferCredits(shipBlueprint.cost, shipBlueprint.GetFaction());
         buildQueue.RemoveAt(index);
     }
 
@@ -66,10 +61,10 @@ public class ConstructionBay : ModuleComponent {
 
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
             foreach (var resourceCost in shipBlueprint.resourceCosts.ToList()) {
-                long availableCargo = math.max(0, shipyard.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
+                long availableCargo = math.max(0, unit.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
                 shipBlueprint.resourceCosts[resourceCost.Key] -= amountToUse;
-                shipyard.GetCargoBay().UseCargo(amountToUse, resourceCost.Key);
+                unit.UseCargo(amountToUse, resourceCost.Key);
 
                 if (shipBlueprint.resourceCosts[resourceCost.Key] <= 0) {
                     shipBlueprint.resourceCosts.Remove(resourceCost.Key);
@@ -84,10 +79,10 @@ public class ConstructionBay : ModuleComponent {
     }
 
     bool BuildBlueprint(ShipConstructionBlueprint shipBlueprint) {
-        Ship ship = shipyard.BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject, shipBlueprint.cost);
-        if (ship == null)
-            return false;
-        shipyard.stationAI.OnShipBuilt(ship);
+        if (!unit.IsStation()) return false;
+        Ship ship = ((Station)unit).BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject, shipBlueprint.cost);
+        if (ship == null) return false;
+        if (unit.IsStation()) ((Station)unit).stationAI.OnShipBuilt(ship);
         return true;
     }
 

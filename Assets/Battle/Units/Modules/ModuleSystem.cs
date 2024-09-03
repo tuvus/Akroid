@@ -3,8 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
+/// <summary>
+/// Manages a list of systems for a unit.
+/// Each system is holds a component and a list of modules which will use that component.
+/// The ModuleSystem is set up in the prefab before compiling.
+/// The system components are set in the Unit scriptable objects.
+/// </summary>
 [Serializable]
 public class ModuleSystem : MonoBehaviour {
     public enum SystemType {
@@ -52,7 +57,7 @@ public class ModuleSystem : MonoBehaviour {
     [field: SerializeField] public List<System> systems { get; private set; } = new List<System>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
-    public void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
+    public virtual void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
         List<ComponentScriptableObject> systemComponents = unitScriptableObject.GetSystemComponents();
         for (int i = 0; i < systems.Count; i++) {
@@ -67,7 +72,7 @@ public class ModuleSystem : MonoBehaviour {
                 print(systems[modules[i].system].component.GetComponentType());
                 continue;
             }
-            newComponent.SetupComponent(modules[i], unit.faction, systems[modules[i].system].component);
+            newComponent.SetupComponent(modules[i], unit, systems[modules[i].system].component);
         }
         RefreshSystemCounts();
 
@@ -238,7 +243,7 @@ public class ModuleSystem : MonoBehaviour {
             }
             //Upgrade the moduleComponents
             systems[systemIndex] = new System(system, system.component.upgrade);
-            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, unit.faction, systems[systemIndex].component));
+            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, unit, systems[systemIndex].component));
         }
     }
     #endregion

@@ -57,7 +57,7 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
             maxWeaponRange.gameObject.SetActive(false);
         }
         shipAction.text = "Ship Action: " + displayedObject.shipAction.ToString();
-        UpdateCargoBayUI(displayedObject.GetCargoBay(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.faction));
+        UpdateCargoBayUI(displayedObject.moduleSystem.Get<CargoBay>().FirstOrDefault(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.faction));
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {

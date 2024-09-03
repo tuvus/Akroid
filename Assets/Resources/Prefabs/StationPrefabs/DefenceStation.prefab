@@ -207,9 +207,9 @@ GameObject:
   - component: {fileID: 7158030276076730611}
   - component: {fileID: 7158030276076730610}
   - component: {fileID: 6248176320533745593}
+  - component: {fileID: 4889944666307254900}
   - component: {fileID: 1618325064340801017}
   - component: {fileID: 2029104748059842636}
-  - component: {fileID: 7294208208888323901}
   m_Layer: 6
   m_Name: DefenceStation
   m_TagString: Untagged
@@ -303,10 +303,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3288064bce0faf4680d45bb8f76c916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
-  unitName: DefenceStation
-  <moduleSystem>k__BackingField: {fileID: 0}
+  <objectName>k__BackingField: 
+  <size>k__BackingField: 0
+  <position>k__BackingField: {x: 0, y: 0}
   <faction>k__BackingField: {fileID: 0}
+  <moduleSystem>k__BackingField: {fileID: 0}
   followDist: 30
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -328,7 +329,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitSpeed: 0
   cargoSpeed: 0
-  cargoAmmount: 0
+  <cargoAmount>k__BackingField: 0
+--- !u!114 &4889944666307254900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158030276076730609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: Turrets
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 6483972884786808197}
+  - {fileID: 4469434307216006608}
+  - {fileID: 8246228794775569001}
+  - {fileID: 8781300304675031237}
+  - {fileID: 959286110286733378}
 --- !u!58 &1618325064340801017
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -391,37 +423,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &7294208208888323901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7158030276076730609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: Turrets
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 6483972884786808197}
-  - {fileID: 4469434307216006608}
-  - {fileID: 8246228794775569001}
-  - {fileID: 8781300304675031237}
-  - {fileID: 959286110286733378}
 --- !u!1001 &1498170370403692956
 PrefabInstance:
   m_ObjectHideFlags: 0

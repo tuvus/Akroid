@@ -48,7 +48,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
 
     protected override bool ShouldShowRightPanel() {
         bool isEnemy = LocalPlayer.Instance.GetRelationToUnit(displayedObject) == LocalPlayer.RelationType.Enemy;
-        return !isEnemy && displayedObject.GetHangar() != null;
+        return !isEnemy && displayedObject.moduleSystem.Get<Hangar>().Any();
     }
 
     protected override void RefreshMiddlePanel() {
@@ -65,7 +65,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
             stationTotalDPS.gameObject.SetActive(false);
             maxWeaponRange.gameObject.SetActive(false);
         }
-        UpdateCargoBayUI(displayedObject.GetCargoBay(), LocalPlayer.Instance.GetRelationToUnit(displayedObject) != LocalPlayer.RelationType.Enemy);
+        UpdateCargoBayUI(displayedObject.moduleSystem.Get<CargoBay>().FirstOrDefault(), LocalPlayer.Instance.GetRelationToUnit(displayedObject) != LocalPlayer.RelationType.Enemy);
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
@@ -235,7 +235,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
     }
 
     protected override void RefreshRightPanel() {
-        Hangar hangar = displayedObject.GetHangar();
+        Hangar hangar = displayedObject.moduleSystem.Get<Hangar>().First();
         shipsInHangar.Clear();
         LocalPlayerSelectionInput localPlayerSelection = null;
         if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {

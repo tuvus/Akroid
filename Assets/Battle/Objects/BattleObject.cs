@@ -31,8 +31,6 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     /// Uses the given positionGiver and rotation to set the position and the rotation of the BattleObject.
     /// Also sets up the size.
     /// </summary>
-    /// <param name="positionGiver"></param>
-    /// <param name="rotation"></param>
     protected void SetupBattleObject(BattleManager battleManager, BattleManager.PositionGiver positionGiver, float rotation) {
         this.battleManager = battleManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -143,6 +141,7 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     /// </summary>
     /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
+        if (spriteRenderer.sprite == null) return 0;
         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
 Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2 * transform.localScale.y;

@@ -47,10 +47,6 @@ public class Ship : Unit {
     public Fleet fleet;
     [field: SerializeField] private ShipClass shipClass;
     [field: SerializeField] private ShipType shipType;
-    private CargoBay cargoBay;
-    private ResearchEquipment researchEquipment;
-    private GasCollector gasCollector;
-    private List<Thruster> thrusters;
     public float turnSpeed;
     public float combatRotation;
     public Station dockedStation;
@@ -142,22 +138,8 @@ public class Ship : Unit {
     public override void SetupUnit(BattleManager battleManager, string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
         this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
         faction.AddShip(this);
-        thrusters = new List<Thruster>();
         base.SetupUnit(battleManager, shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
         shipAI = GetComponent<ShipAI>();
-        cargoBay = GetComponentInChildren<CargoBay>();
-        if (IsScienceShip()) {
-            researchEquipment = GetComponentInChildren<ResearchEquipment>();
-            researchEquipment.SetupResearchEquipment(this);
-        }
-        if (IsGasCollectorShip()) {
-            gasCollector = GetComponentInChildren<GasCollector>();
-            gasCollector.SetupGasCollector(this);
-        }
-        thrusters = new List<Thruster>(GetComponentsInChildren<Thruster>());
-        foreach (var thruster in thrusters) {
-            thruster.SetupThruster(this);
-        }
         SetParticleSpeed(particleSpeed);
         SetupThrusters();
         shipAI.SetupShipAI(this);
@@ -168,10 +150,7 @@ public class Ship : Unit {
 
     public void SetupThrusters() {
         thrusting = false;
-        thrust = 0;
-        foreach (var thruster in thrusters) {
-            thrust += thruster.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower);
-        }
+        thrust = moduleSystem.Get<Thruster>().Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
     }
 
     #region Update
@@ -253,7 +232,7 @@ public class Ship : Unit {
             if (GetEnemyUnitsInRangeDistance().Count != 0)
                 speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
             float thrust = speed * deltaTime;
-            thrusters.ForEach(thruster => thruster.SetThrustSize(speed / GetSpeed()));
+            moduleSystem.Get<Thruster>().ForEach(thruster => thruster.SetThrustSize(speed / GetSpeed()));
 
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
@@ -396,21 +375,18 @@ public class Ship : Unit {
     public void SetThrusters(bool trueOrFalse) {
         if (trueOrFalse != thrusting) {
             thrusting = trueOrFalse;
-            for (int i = 0; i < thrusters.Count; i++) {
-                if (thrusting) {
-                    thrusters[i].BeginThrust();
-                } else {
-                    thrusters[i].EndThrust();
-                }
+            if (thrusting) {
+                moduleSystem.Get<Thruster>().ForEach(t => t.BeginThrust());
+            } else {
+                moduleSystem.Get<Thruster>().ForEach(t => t.EndThrust());
+
             }
         }
     }
 
     public override void ShowUnit(bool show) {
         base.ShowUnit(show);
-        foreach (var turret in turrets) {
-            turret.ShowTurret(show);
-        }
+        moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(show));
     }
 
     public override void ActivateColliders(bool active) {
@@ -450,9 +426,7 @@ public class Ship : Unit {
 
     public override void Explode() {
         base.Explode();
-        for (int i = 0; i < thrusters.Count; i++) {
-            thrusters[i].EndThrust();
-        }
+        moduleSystem.Get<Thruster>().ForEach(t => t.EndThrust());
     }
     #endregion
 
@@ -520,10 +494,6 @@ public class Ship : Unit {
         return mass;
     }
 
-    public CargoBay GetCargoBay() {
-        return cargoBay;
-    }
-
     public override List<Unit> GetEnemyUnitsInRange() {
         if (fleet != null) {
             return fleet.enemyUnitsInRange;
@@ -538,14 +508,6 @@ public class Ship : Unit {
         return base.GetEnemyUnitsInRangeDistance();
     }
 
-    public ResearchEquipment GetResearchEquiptment() {
-        return researchEquipment;
-    }
-
-    public GasCollector GetGasCollector() {
-        return gasCollector;
-    }
-
 
     public bool IsIdle() {
         return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
@@ -553,24 +515,18 @@ public class Ship : Unit {
 
     public override void ShowEffects(bool shown) {
         base.ShowEffects(shown);
-        foreach (var thruster in thrusters) {
-            thruster.ShowEffects(shown);
-        }
+        moduleSystem.Get<Thruster>().ForEach(t => t.ShowEffects(shown));
     }
 
     public override void SetParticleSpeed(float speed) {
         base.SetParticleSpeed(speed);
-        foreach (var thruster in thrusters) {
-            thruster.SetParticleSpeed(speed);
-        }
+        moduleSystem.Get<Thruster>().ForEach(t => t.SetParticleSpeed(speed));
     }
 
     public override void ShowParticles(bool shown) {
         base.ShowParticles(shown);
         if (thrusting || !IsSpawned()) {
-            foreach (var thruster in thrusters) {
-                thruster.ShowParticles(shown);
-            }
+            moduleSystem.Get<Thruster>().ForEach(t => t.ShowParticles(shown));
         }
     }
 

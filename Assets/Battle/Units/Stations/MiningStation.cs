@@ -70,7 +70,7 @@ public class MiningStation : Station {
             UpdateMiningStationAsteroids();
         }
         if (nearbyAsteroids.Count > 0) {
-            GetCargoBay().LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min(GetCargoBay().GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal), GetMiningAmount())), CargoBay.CargoTypes.Metal);
+            LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())), CargoBay.CargoTypes.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
             }

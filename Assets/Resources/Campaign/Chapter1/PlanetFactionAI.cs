@@ -54,7 +54,7 @@ public class PlanetFactionAI : FactionAI {
     }
 
     void UpdateTradeStation() {
-        foreach (var transportShip in tradeStation.GetHangar().GetTransportShips()) {
+        foreach (var transportShip in tradeStation.GetAllDockedShips().Where(s => s.IsTransportShip())) {
             if (transportShip.faction != faction && transportShip.faction != shipyardFactionAI.faction) {
                 long amountToTransfer = tradeStation.stationAI.cargoAmount;
                 foreach (var type in CargoBay.allCargoTypes) {

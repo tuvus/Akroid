@@ -207,9 +207,9 @@ GameObject:
   - component: {fileID: 4870678752167284643}
   - component: {fileID: 4870678752167284698}
   - component: {fileID: 5795164312177159081}
+  - component: {fileID: 3573205530496864730}
   - component: {fileID: 3764139915803677542}
   - component: {fileID: 6028221437076145912}
-  - component: {fileID: 2807156122023997047}
   m_Layer: 7
   m_Name: Lancer
   m_TagString: Units/Ship
@@ -309,10 +309,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
-  unitName: Lancer
-  <moduleSystem>k__BackingField: {fileID: 0}
+  <objectName>k__BackingField: 
+  <size>k__BackingField: 0
+  <position>k__BackingField: {x: 0, y: 0}
   <faction>k__BackingField: {fileID: 0}
+  <moduleSystem>k__BackingField: {fileID: 0}
   followDist: 12
   <enemyUnitsInRange>k__BackingField: []
   <enemyUnitsInRangeDistance>k__BackingField: []
@@ -340,7 +341,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   commands: []
   newCommand: 0
-  currentCommandType: 0
+  currentCommandState: 0
+--- !u!114 &3573205530496864730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4870678752167284642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: CenterTurret
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Turrets
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Weapon
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: SubThrusters
+    type: 4
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 803359359897940453}
+  - {fileID: 8962504745911631139}
+  - {fileID: 8358788382121513258}
+  - {fileID: 3041646090677689256}
+  - {fileID: 766598121884062072}
+  - {fileID: 5517178295639194853}
+  - {fileID: 6788737943232039606}
+  - {fileID: 5936578563201865195}
+  - {fileID: 7466768863211548142}
+  - {fileID: 6353654539444030825}
+  - {fileID: 1611968647441517600}
 --- !u!61 &3764139915803677542
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -413,55 +463,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2807156122023997047
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4870678752167284642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: CenterTurret
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Turrets
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Weapon
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 1
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: MainThrusters
-    type: 4
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: SubThrusters
-    type: 4
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 803359359897940453}
-  - {fileID: 8962504745911631139}
-  - {fileID: 8358788382121513258}
-  - {fileID: 3041646090677689256}
-  - {fileID: 766598121884062072}
-  - {fileID: 5517178295639194853}
-  - {fileID: 6788737943232039606}
-  - {fileID: 5936578563201865195}
-  - {fileID: 7466768863211548142}
-  - {fileID: 6353654539444030825}
-  - {fileID: 1611968647441517600}
 --- !u!1001 &82654540179217947
 PrefabInstance:
   m_ObjectHideFlags: 0

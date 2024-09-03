@@ -207,9 +207,9 @@ GameObject:
   - component: {fileID: 5023812487943957022}
   - component: {fileID: 5023812487943957095}
   - component: {fileID: 5081699456061906015}
+  - component: {fileID: 7613442593696818420}
   - component: {fileID: 8839863084617687937}
   - component: {fileID: 2209295241726882495}
-  - component: {fileID: 8261022325014511525}
   m_Layer: 7
   m_Name: Zarrack
   m_TagString: Units/Ship
@@ -341,6 +341,50 @@ MonoBehaviour:
   commands: []
   newCommand: 0
   currentCommandState: 0
+--- !u!114 &7613442593696818420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5023812487943957023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <systems>k__BackingField:
+  - name: Turrets
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: Utility
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: MainThrusters
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  - name: SubThrusters
+    type: 3
+    component: {fileID: 0}
+    moduleSize: 0
+  <modules>k__BackingField:
+  - {fileID: 5782568355488251122}
+  - {fileID: 5811991438112056351}
+  - {fileID: 3330884825179758953}
+  - {fileID: 2918520121784913900}
+  - {fileID: 7597116274549948740}
+  - {fileID: 4796266522902057094}
+  - {fileID: 4703249343305877503}
+  - {fileID: 1434150307775635816}
+  - {fileID: 6350871528138981996}
+  - {fileID: 8071935001585812157}
 --- !u!61 &8839863084617687937
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -413,50 +457,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &8261022325014511525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5023812487943957023}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b496786b6dde5dd44839e84381c8d16c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <systems>k__BackingField:
-  - name: Turrets
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: Utility
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: MainThrusters
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  - name: SubThrusters
-    type: 3
-    component: {fileID: 0}
-    moduleSize: 0
-  <modules>k__BackingField:
-  - {fileID: 5782568355488251122}
-  - {fileID: 5811991438112056351}
-  - {fileID: 3330884825179758953}
-  - {fileID: 2918520121784913900}
-  - {fileID: 7597116274549948740}
-  - {fileID: 4796266522902057094}
-  - {fileID: 4703249343305877503}
-  - {fileID: 1434150307775635816}
-  - {fileID: 6350871528138981996}
-  - {fileID: 8071935001585812157}
 --- !u!1001 &876681764997796469
 PrefabInstance:
   m_ObjectHideFlags: 0
