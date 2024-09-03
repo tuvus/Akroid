@@ -218,11 +218,6 @@ public class BattleManager : MonoBehaviour {
     /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
     /// If the center location is an asteroid or station isCenterObject should be true.
     /// </summary>
-    /// <param name="centerLocation">The position to be close to</param>
-    /// <param name="minDistanceFromStationOrAsteroid">The minimum distance to stations and asteroids</param>
-    /// <param name="maxDistance">The maximum distance from the center location</param>
-    /// <param name="isCenterObject">Is the centerLocation on a station or asteroid?</param>
-    /// <param name="tyCount">The amount of times to try</param>
     /// <returns></returns>
     public Vector2? FindFreeLocation(PositionGiver positionGiver, IPositionConfirmer positionConfirmer, float minRange, float maxRange) {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
@@ -240,13 +235,6 @@ public class BattleManager : MonoBehaviour {
     /// If the center location is an asteroid or station isCenterObject should be true.
     /// If the point cannot be found then it increases the search distance.
     /// </summary>
-    /// <param name="centerLocation">The position to be close to</param>
-    /// <param name="minDistanceFromStationOrAsteroid">The minimum distance to stations and asteroids</param>
-    /// <param name="startingDistance">The starting distance to check</param>
-    /// <param name="maxDistance">The maximum amount that the distance can be incremented</param>
-    /// <param name="incrementValue">The amount to increment by</param>
-    /// <param name="isCenterObject">Is the centerLocation on a station or asteroid?</param>
-    /// <param name="tyCount">The amount of times to try for each increment</param>
     /// <returns></returns>
     public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
         float distance = positionGiver.minDistance * systemSizeModifier;

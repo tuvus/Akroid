@@ -378,7 +378,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Adds a discovery in the an improvement area in the given research area.
+    /// Adds a discovery in the improvement area in the given research area.
     /// </summary>
     /// <param name="researchArea">the given research area to improve</param>
     /// <param name="free">should the discovery cost science or not?</param>
