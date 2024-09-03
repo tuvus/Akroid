@@ -28,7 +28,7 @@ public class Turret : ModuleComponent {
 
     public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
         base.SetupComponent(module, unit, componentScriptableObject);
-        turretScriptableObject = (TurretScriptableObject)ComponentScriptableObject;
+        turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
 
         spriteRenderer.sprite = turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
@@ -71,7 +71,7 @@ public class Turret : ModuleComponent {
             ChangeTargetUnit(null);
             SetTargetRotation(module.rotation);
             if (findNewTargetUpdateTime <= 0) {
-                FindNewTarget(range, unit.faction);
+                FindNewTarget(range);
                 findNewTargetUpdateTime += findNewTargetUpdateSpeed;
             }
         }
@@ -112,7 +112,7 @@ public class Turret : ModuleComponent {
         return false;
     }
 
-    public virtual void FindNewTarget(float range, Faction faction) {
+    public virtual void FindNewTarget(float range) {
         Unit newTarget = null;
         for (int i = 0; i < unit.GetEnemyUnitsInRange().Count; i++) {
             Unit targetUnit = unit.GetEnemyUnitsInRange()[i];

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents an object that can exist in the scene.
+/// Holds functionality that is common to most objects.
+/// </summary>
 public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer {
     public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
@@ -18,8 +22,9 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     /// Sets up the BattleObject with default position and rotation.
     /// Sets up the size as normal
     /// </summary>
-    protected void SetupBattleObject(BattleManager battleManager) {
+    protected void SetupBattleObject(BattleManager battleManager, Faction faction = null) {
         this.battleManager = battleManager;
+        this.faction = faction;
         faction = null;
         spriteRenderer = GetComponent<SpriteRenderer>();
         position = transform.position;

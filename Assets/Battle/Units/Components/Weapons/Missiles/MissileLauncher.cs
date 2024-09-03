@@ -43,7 +43,7 @@ public class MissileLauncher : ModuleComponent {
         }
         hibernating = false;
         Profiler.BeginSample("UpdateMissileLauncher");
-        reloadController.UpdateReloadController(deltaTime, unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
+        reloadController.UpdateReloadController(deltaTime, faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
         if (!reloadController.ReadyToFire()) {
             Profiler.EndSample();
             return;
@@ -122,22 +122,22 @@ public class MissileLauncher : ModuleComponent {
         reloadController.Fire();
         if (!BattleManager.Instance.instantHit) {
             Missile missile = BattleManager.Instance.GetNewMissile();
-            missile.SetMissile(unit.faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
+            missile.SetMissile(faction, this, transform.position, transform.eulerAngles.z, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
         } else {
             targetUnit.TakeDamage(GetDamage());
         }
     }
 
     public int GetDamage() {
-        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
+        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
     }
 
     public float GetRange() {
-        return missileLauncherScriptableObject.range * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.range * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetFuelRange() {
-        return missileLauncherScriptableObject.missileFuelRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.missileFuelRange * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetDamagePerSecond() {
