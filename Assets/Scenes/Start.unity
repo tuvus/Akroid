@@ -4899,7 +4899,7 @@ PrefabInstance:
     - target: {fileID: 8558737945508175324, guid: 83433631c06bb1245a4c334f162a0c67,
         type: 3}
       propertyPath: m_Name
-      value: Title
+      value: Akroid
       objectReference: {fileID: 0}
     - target: {fileID: 8558737945508175324, guid: 83433631c06bb1245a4c334f162a0c67,
         type: 3}

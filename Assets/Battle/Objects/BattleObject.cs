@@ -25,7 +25,6 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     protected void SetupBattleObject(BattleManager battleManager, Faction faction = null) {
         this.battleManager = battleManager;
         this.faction = faction;
-        faction = null;
         spriteRenderer = GetComponent<SpriteRenderer>();
         position = transform.position;
         //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
