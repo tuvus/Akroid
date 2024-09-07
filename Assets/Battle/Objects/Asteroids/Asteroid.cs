@@ -60,7 +60,6 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     }
 
     public void AdjustPosition(Vector2 position) {
-        transform.position += (Vector3)position;
-        this.position = transform.position;
+        this.position += position;
     }
 }

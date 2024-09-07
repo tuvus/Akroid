@@ -6,7 +6,7 @@ using UnityEngine;
 /// Represents an object that can exist in the scene.
 /// Holds functionality that is common to most objects.
 /// </summary>
-public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer {
+public abstract class BattleObject : IObject, IPositionConfirmer {
     public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
     [field: SerializeField] public float size { get; protected set; }
@@ -96,13 +96,8 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
         return position;
     }
 
-
-    public float GetRotation() {
-        return transform.eulerAngles.z;
-    }
-
     public void SetRotation(float rotation) {
-        transform.eulerAngles = new Vector3(0, 0, rotation);
+        this.rotation = rotation;
     }
 
     public virtual void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
@@ -124,9 +119,6 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     protected virtual void Despawn(bool removeImmediately) {
         spawned = false;
         visible = false;
-        if (removeImmediately) {
-            Destroy(gameObject);
-        }
     }
 
     public virtual bool IsSpawned() {

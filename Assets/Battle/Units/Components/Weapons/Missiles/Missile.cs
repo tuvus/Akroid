@@ -26,8 +26,8 @@ public class Missile : BattleObject {
     }
 
     public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target, Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {
-        transform.position = position;
-        transform.eulerAngles = new Vector3(0, 0, rotation);
+        this.position = position;
+        this.rotation = rotation;
         this.faction = faction;
         this.missileLauncher = missileLauncher;
         this.target = target;
@@ -73,22 +73,22 @@ public class Missile : BattleObject {
     }
 
     void RotateMissile(float deltaTime) {
-        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(transform.position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
-        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(transform.position, targetPosition));
-        float angle = Calculator.ConvertTo180DegRotation(targetAngle - transform.eulerAngles.z);
+        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
+        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(position, targetPosition));
+        float angle = Calculator.ConvertTo180DegRotation(targetAngle - rotation);
         float turnAmmont = turnSpeed * deltaTime;
         if (Mathf.Abs(angle) < turnAmmont) {
-            transform.eulerAngles = new Vector3(0, 0, targetAngle);
+            rotation = targetAngle;
         } else if (angle > turnAmmont) {
-            transform.Rotate(Vector3.forward * turnAmmont);
+            rotation += turnAmmont;
         } else if (angle < turnAmmont) {
-            transform.Rotate(Vector3.forward * -turnAmmont);
+            rotation -= turnAmmont;
         }
     }
 
     void MoveMissile(float deltaTime) {
-        transform.Translate(velocity * deltaTime);
-        transform.Translate(deltaTime * thrustSpeed * Vector2.up);
+        position += velocity * deltaTime;
+        position += Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * thrustSpeed);
         distance += thrustSpeed * deltaTime;
         if (distance >= fuelRange) {
             Expire();
@@ -124,7 +124,7 @@ public class Missile : BattleObject {
 
     public void Explode() {
         hit = true;
-        transform.eulerAngles = Vector3.zero;
+        rotation = 0;
         visible = false;
     }
 

@@ -82,7 +82,7 @@ public class MiningStation : Station {
         foreach (var asteroidField in battleManager.asteroidFields) {
             if (asteroidField.totalResources <= 0)
                 continue;
-            float tempDistance = Vector2.Distance(transform.position, asteroidField.GetPosition());
+            float tempDistance = Vector2.Distance(position, asteroidField.GetPosition());
             if (tempDistance <= GetMiningRange() + asteroidField.GetSize()) {
                 foreach (var asteroid in asteroidField.battleObjects) {
                     tempAsteroids.Add(asteroid);
@@ -93,7 +93,7 @@ public class MiningStation : Station {
             Asteroid closest = null;
             float closestDist = 0;
             for (int i = 0; i < tempAsteroids.Count; i++) {
-                float tempDist = Vector2.Distance(transform.position, tempAsteroids[i].GetPosition());
+                float tempDist = Vector2.Distance(position, tempAsteroids[i].GetPosition());
                 if (closest == null || tempDist < closestDist) {
                     closest = tempAsteroids[i];
                     closestDist = tempDist;

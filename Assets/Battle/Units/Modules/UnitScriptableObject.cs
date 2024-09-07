@@ -104,20 +104,20 @@ public class UnitScriptableObject : ScriptableObject {
 
     [ContextMenu("ConvertUnitComponents")]
     public void ConvertUnitComponents() {
-        Unit unit = Resources.Load<Unit>(prefabPath);
-        ModuleSystem moduleSystem = unit.GetComponent<ModuleSystem>();
-        List<ModuleSystem.System > oldSystems = new List<ModuleSystem.System>(moduleSystem.systems);
-        moduleSystem.systems.Clear();
-        List<SystemData> newSystems = new List<SystemData>();
-        for (int i = 0; i < components.Length;) {
-            moduleSystem.AddSystem(GenerateName(components[i].name), oldSystems[moduleSystem.modules[i].system].type);
-            newSystems.Add(new SystemData(moduleSystem.systems.Last().name, -1, components[i].component));
-            do {
-                moduleSystem.modules[i].SetSystem(moduleSystem.systems.Count - 1);
-                i++;
-            } while (i < components.Length && components[i].component == newSystems.Last().component);
-        }
-        systems = newSystems.ToArray();
+        // Unit unit = Resources.Load<Unit>(prefabPath);
+        // ModuleSystem moduleSystem = unit.moduleSystem;
+        // List<ModuleSystem.System > oldSystems = new List<ModuleSystem.System>(moduleSystem.systems);
+        // moduleSystem.systems.Clear();
+        // List<SystemData> newSystems = new List<SystemData>();
+        // for (int i = 0; i < components.Length;) {
+        //     moduleSystem.AddSystem(GenerateName(components[i].name), oldSystems[moduleSystem.modules[i].system].type);
+        //     newSystems.Add(new SystemData(moduleSystem.systems.Last().name, -1, components[i].component));
+        //     do {
+        //         moduleSystem.modules[i].SetSystem(moduleSystem.systems.Count - 1);
+        //         i++;
+        //     } while (i < components.Length && components[i].component == newSystems.Last().component);
+        // }
+        // systems = newSystems.ToArray();
     }
 
     public List<ComponentScriptableObject> GetSystemComponents() {

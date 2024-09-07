@@ -20,7 +20,6 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
             asteroid.AdjustPosition(-GetPosition());
         }
         SetPosition(GetSetupPosition(positionGiver));
-        transform.position = GetPosition();
     }
 
     private Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

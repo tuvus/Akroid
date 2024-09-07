@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -63,12 +64,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
 
 
     public List<Unit> ConvertShipsToUnits(List<Ship> shipList) {
-        List<Unit> unitList = new List<Unit>();
-        foreach (var ship in shipList) {
-            if (ship != null)
-                unitList.Add(ship.GetComponent<Unit>());
-        }
-        return unitList;
+        return shipList.Cast<Unit>().ToList();
     }
 
     public void SetGroupToUnits(SelectionGroup newGroup, int groupNumber) {

@@ -102,7 +102,7 @@ public class LocalPlayerInput : MonoBehaviour {
             SecondaryMouseHeld();
         pastMousePosition = GetMousePosition();
         if (followUnit != null)
-            transform.position = followUnit.transform.position;
+            transform.position = followUnit.position;
     }
 
     void UpdateZoom(float scroll) {
@@ -164,7 +164,7 @@ public class LocalPlayerInput : MonoBehaviour {
         } else if (displayedBattleObject != null) {
             SetCameraPosition(displayedBattleObject.GetPosition());
         } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
-            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations.First().transform.position);
+            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations.First().position);
         }
     }
 
@@ -283,7 +283,7 @@ public class LocalPlayerInput : MonoBehaviour {
             if (!targetUnit.IsSelectable()) {
                 continue;
             }
-            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.transform.position);
+            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.position);
             // if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
             //     battleObject = targetUnit;
             //     distance = tempDistance;
@@ -299,7 +299,7 @@ public class LocalPlayerInput : MonoBehaviour {
             if (!targetObject.IsSelectable()) {
                 continue;
             }
-            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.transform.position);
+            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.position);
             if (tempDistance < targetObject.GetSize() && tempDistance < distance) {
                 battleObject = targetObject;
                 distance = tempDistance;

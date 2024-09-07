@@ -92,7 +92,7 @@ public class PlanetFactionAI : FactionAI {
                     if (idleShip.dockedStation != null)
                         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), Random.Range(6000, 12000))));
                     else
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.GetRotation() + Random.Range(-120, 120), Random.Range(1000, 5000))));
+                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(idleShip.rotation + Random.Range(-120, 120), Random.Range(1000, 5000))));
                     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
                 }
             }

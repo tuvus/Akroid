@@ -14,7 +14,7 @@ public class TestBattleManager : BattleManager {
 
     public override void FixedUpdate() {
         if (LocalPlayer.Instance.GetLocalPlayerInput().GetPlayerInput().Player.PrimaryMouseButton.IsPressed()) {
-            target.transform.position = LocalPlayer.Instance.GetLocalPlayerInput().GetMouseWorldPosition();
+            // target.position = LocalPlayer.Instance.GetLocalPlayerInput().GetMouseWorldPosition();
         }
         foreach (var usedProjectile in usedProjectiles) {
             usedProjectile.UpdateProjectile(Time.fixedDeltaTime);

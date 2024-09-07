@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-[RequireComponent(typeof(ReloadController))]
 public class Turret : ModuleComponent {
     public enum TargetingBehaviors {
         closest = 1,
@@ -86,15 +85,15 @@ public class Turret : ModuleComponent {
     }
 
     public bool IsTargetViable(Unit targetUnit, float range) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(transform.position, targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(position, targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
 
     public virtual bool IsTargetRotationViable(Unit targetUnit, out Vector2 targetLocation, out float localShipAngle) {
         targetLocation = GetTargetPosition(targetUnit);
-        float realAngle = Calculator.GetAngleOutOfTwoPositions(transform.position, targetLocation);
-        localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.transform.localRotation.eulerAngles.z);
+        float realAngle = Calculator.GetAngleOutOfTwoPositions(position, targetLocation);
+        localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.rotation);
         if (module.minRotate < module.maxRotate) {
             if (localShipAngle <= module.maxRotate && localShipAngle >= module.minRotate) {
                 return true;
@@ -140,7 +139,7 @@ public class Turret : ModuleComponent {
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (turretScriptableObject.targeting == TargetingBehaviors.closest) {
-                if (Vector2.Distance(newTarget.transform.position, transform.position) <= Vector2.Distance(oldTarget.transform.position, transform.position)) {
+                if (Vector2.Distance(newTarget.position, position) <= Vector2.Distance(oldTarget.position, position)) {
                     return true;
                 }
             } else if (turretScriptableObject.targeting == TargetingBehaviors.strongest) {
@@ -172,7 +171,7 @@ public class Turret : ModuleComponent {
         if (targetRotation == newTargetRotation && aimed)
             return;
         targetRotation = newTargetRotation;
-        if (newTargetRotation == transform.localRotation.eulerAngles.z) {
+        if (newTargetRotation == rotation) {
             aimed = true;
 
         } else {
@@ -183,12 +182,12 @@ public class Turret : ModuleComponent {
     void RotateTowards(float deltaTime) {
         float localRotateSpeed = turretScriptableObject.rotateSpeed * deltaTime;
 
-        float rotation = transform.localRotation.eulerAngles.z;
-        float target = Calculator.ConvertTo180DegRotation(targetRotation - rotation);
-        rotation = Calculator.ConvertTo180DegRotation(rotation);
+        float tempRotation = rotation;
+        float target = Calculator.ConvertTo180DegRotation(targetRotation - tempRotation);
+        tempRotation = Calculator.ConvertTo180DegRotation(tempRotation);
 
-        float localMin = Calculator.ConvertTo180DegRotation(module.maxRotate - rotation);
-        float localMax = Calculator.ConvertTo180DegRotation(module.minRotate - rotation);
+        float localMin = Calculator.ConvertTo180DegRotation(module.maxRotate - tempRotation);
+        float localMax = Calculator.ConvertTo180DegRotation(module.minRotate - tempRotation);
 
         //Changes the path towards the target if the target is on the other side of the deadzone.
         if (module.minRotate < module.maxRotate) {
@@ -218,18 +217,18 @@ public class Turret : ModuleComponent {
         //If target equals zero the turret is aimed.
         if (0 < target) {
             if (0 > target - localRotateSpeed) {
-                transform.localEulerAngles = new Vector3(0, 0, targetRotation);
+                rotation = targetRotation;
                 aimed = true;
             } else {
-                transform.Rotate(Vector3.forward * localRotateSpeed);
+                rotation += localRotateSpeed;
                 aimed = false;
             }
         } else if (0 > target) {
             if (0 < target + localRotateSpeed) {
-                transform.localEulerAngles = new Vector3(0, 0, targetRotation);
+                rotation = targetRotation;
                 aimed = true;
             } else {
-                transform.Rotate(Vector3.forward * -localRotateSpeed);
+                rotation -= localRotateSpeed;
                 aimed = false;
             }
         } else {
@@ -271,12 +270,8 @@ public class Turret : ModuleComponent {
         return unit;
     }
 
-    public float GetUnitScale() {
-        return unit.transform.localScale.y;
-    }
-
     public float GetTurretOffSet() {
-        return turretScriptableObject.turretOffset * GetUnitScale();
+        return turretScriptableObject.turretOffset * scale.y;
     }
 
     public virtual float GetReloadTimeModifier() {

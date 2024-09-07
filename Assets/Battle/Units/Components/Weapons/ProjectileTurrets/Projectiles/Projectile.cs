@@ -20,16 +20,13 @@ public class Projectile : BattleObject {
 
     public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage, float projectileRange, float offset, float scale) {
         this.faction = faction;
-        transform.position = position;
-        transform.eulerAngles = new Vector3(0, 0, rotation);
+        this.position = position;
+        this.rotation = rotation;
         this.speed = speed;
-        transform.Translate(Vector2.up * offset);
+        this.position += Calculator.GetPositionOutOfAngleAndDistance(rotation, offset);
         this.shipVelocity = shipVelocity;
         this.damage = damage;
         this.projectileRange = projectileRange;
-        transform.position = new Vector3(transform.position.x, transform.position.y, -5);
-        transform.localScale = this.startingScale;
-        transform.localScale *= scale;
         distance = 0;
         hit = false;
 
@@ -42,11 +39,11 @@ public class Projectile : BattleObject {
             if (particleSystem.isPlaying == false) {
                 RemoveProjectile();
             } else {
-                transform.Translate(shipVelocity * deltaTime);
+                position += shipVelocity * deltaTime;
             }
         } else {
-            transform.position += new Vector3(shipVelocity.x * deltaTime, shipVelocity.y * deltaTime, 0);
-            transform.Translate(deltaTime * speed * Vector2.up);
+            position += shipVelocity * deltaTime;
+            position += Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed);
             distance += speed * deltaTime;
             if (distance >= projectileRange) {
                 RemoveProjectile();
@@ -83,8 +80,8 @@ public class Projectile : BattleObject {
     public void Explode(Unit unit) {
         hit = true;
         highlight.enabled = false;
-        transform.position = new Vector3(transform.position.x, transform.position.y, 10);
-        transform.localScale = new Vector2(.5f, .5f);
+        position = new Vector3(position.x, position.y, 10);
+        scale = new Vector2(.5f, .5f);
         if (unit != null) {
             shipVelocity = unit.GetVelocity();
         } else {
@@ -108,7 +105,7 @@ public class Projectile : BattleObject {
     }
 
     public void RemoveProjectile() {
-        transform.localScale = startingScale;
+        scale = startingScale;
         particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         hit = false;
         highlight.enabled = false;

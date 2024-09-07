@@ -10,7 +10,7 @@ public class LaserTurret : Turret {
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
         
-        laser = Instantiate(laserTurretScriptableObject.laserPrefab, transform.position, transform.rotation, transform).GetComponent<Laser>();
+        // laser = Instantiate(laserTurretScriptableObject.laserPrefab, position, transform.rotation, transform).GetComponent<Laser>();
         laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
     }
 
@@ -64,7 +64,7 @@ public class LaserTurret : Turret {
 
 
     public override float GetDamagePerSecond() {
-        reloadController = GetComponent<ReloadController>();
+        reloadController = new ReloadController(laserTurretScriptableObject.fireSpeed, laserTurretScriptableObject.reloadSpeed, laserTurretScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
@@ -75,7 +75,7 @@ public class LaserTurret : Turret {
 
     public override void StopFiring() {
         base.StopFiring();
-        Destroy(laser.gameObject);
+        // Destroy(laser.gameObject);
     }
     public override void ShowEffects(bool shown) {
         base.ShowEffects(shown);
@@ -84,6 +84,6 @@ public class LaserTurret : Turret {
 
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {
-        print(GetDamagePerSecond());
+        Debug.Log(GetDamagePerSecond());
     }
 }

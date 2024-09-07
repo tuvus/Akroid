@@ -83,7 +83,6 @@ public class Fleet : ShipGroup {
         UpdateObjectGroup();
         FindEnemies();
         FleetAI.UpdateAI(deltaTime);
-        transform.position = GetPosition();
         for (int i = sentFleets.Count - 1; i >= 0; i--) {
             if (sentFleets[i] == null) {
                 sentFleets.RemoveAt(i);

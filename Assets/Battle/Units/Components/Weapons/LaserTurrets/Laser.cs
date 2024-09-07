@@ -145,16 +145,16 @@ public class Laser : MonoBehaviour {
     }
 
     void SetDistance() {
-        transform.Translate(Vector2.up * translateAmount * laserTurret.transform.localScale.y);
+        transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
         if (hitPoint.HasValue) {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (hitPoint.Value.distance / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
             endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
         } else {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.transform.localScale.y - translateAmount) / laserTurret.GetUnitScale());
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             endHighlight.enabled = false;
         }
-        transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.transform.localScale.y * laserTurret.GetUnitScale());
+        transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
         startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
     }
 

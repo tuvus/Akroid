@@ -13,17 +13,17 @@ public class ProjectileTurret : Turret {
         base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
         
-        flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
-        flash.transform.localScale = new Vector2(.2f,.2f);
-        flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);
-        flash.enabled = false;
+        // flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
+        // flash.transform.localScale = new Vector2(.2f,.2f);
+        // flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);
+        // flash.enabled = false;
     }
 
     public override bool Fire() {
         base.Fire();
         if (!BattleManager.Instance.instantHit) {
             Projectile projectile = BattleManager.Instance.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, transform.position, transform.eulerAngles.z + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy), unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * transform.localScale.y, transform.localScale.y * GetUnitScale());
+            projectile.SetProjectile(unit.faction, position, rotation + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy), unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
             flashTime = flashSpeed;
             flash.enabled = BattleManager.Instance.GetEffectsShown();
             flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
@@ -62,7 +62,7 @@ public class ProjectileTurret : Turret {
     }
 
     public override float GetDamagePerSecond() {
-        reloadController = GetComponent<ReloadController>();
+        reloadController = new ReloadController(projectileTurretScriptableObject.fireSpeed, projectileTurretScriptableObject.reloadSpeed, projectileTurretScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
@@ -85,6 +85,6 @@ public class ProjectileTurret : Turret {
 
     [ContextMenu("GetDamagePerSecond")]
     public void PrintDamagePerSecond() {
-        print(GetDamagePerSecond());
+        Debug.Log(GetDamagePerSecond());
     }
 }

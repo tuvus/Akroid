@@ -13,7 +13,7 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * transform.localScale.x;
+        return GetSpriteSize() * scale.x;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

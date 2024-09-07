@@ -121,7 +121,7 @@ public class Station : Unit, IPositionConfirmer {
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
             Profiler.BeginSample("UpdateRotation");
-            SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
+            SetRotation(rotation + rotationSpeed * deltaTime);
             Profiler.EndSample();
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
@@ -167,7 +167,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {
-        return BuildShip(new BattleObjectData(shipName, transform.position, Random.Range(0, 360), faction), shipScriptableObject, cost, undock);
+        return BuildShip(new BattleObjectData(shipName, position, Random.Range(0, 360), faction), shipScriptableObject, cost, undock);
     }
 
     /// <summary>
@@ -205,21 +205,17 @@ public class Station : Unit, IPositionConfirmer {
         BattleManager.Instance.DestroyStation(this);
     }
 
+    /// <summary> Docks a ship to the staiton, should only be called from the ship. /// </summary>
     public bool DockShip(Ship ship) {
         Hangar openHangar = moduleSystem.Get<Hangar>().FirstOrDefault(h => h.CanDockShip());
         if (IsSpawned() && IsBuilt() && openHangar != null && openHangar.DockShip(ship)) {
-            ship.transform.position = transform.position;
-            ship.transform.eulerAngles = new Vector3(0, 0, 0);
             return true;
         }
         return false;
     }
 
-    public void UndockShip(Ship ship, float rotation) {
+    public void UndockShip(Ship ship) {
         moduleSystem.Get<Hangar>().First(h => h.ships.Contains(ship)).RemoveShip(ship);
-        Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(rotation, GetSize() + ship.GetSize());
-        ship.transform.position = new Vector2(transform.position.x + undockPos.x, transform.position.y + undockPos.y);
-        ship.transform.eulerAngles = new Vector3(0, 0, rotation);
     }
 
     public int RepairUnit(Unit unit, int amount) {

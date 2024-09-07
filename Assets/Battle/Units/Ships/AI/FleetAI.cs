@@ -533,11 +533,11 @@ public class FleetAI : MonoBehaviour {
     }
 
     public void AddFormationCommand(CommandAction commandAction = CommandAction.Replace) {
-        AddFleetAICommand(CreateFormationCommand(fleet.GetShips()[0].GetRotation()), commandAction);
+        AddFleetAICommand(CreateFormationCommand(fleet.GetShips()[0].rotation), commandAction);
     }
 
     public void AddFormationCommand(Vector2 position, CommandAction commandAction = CommandAction.Replace) {
-        AddFleetAICommand(CreateFormationCommand(position, fleet.GetShips()[0].GetRotation()), commandAction);
+        AddFleetAICommand(CreateFormationCommand(position, fleet.GetShips()[0].rotation), commandAction);
     }
 
     public void AddFormationCommand(Vector2 position, float rotation, CommandAction commandAction = CommandAction.Replace) {

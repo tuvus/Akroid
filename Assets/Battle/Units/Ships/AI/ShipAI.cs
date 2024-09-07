@@ -404,14 +404,14 @@ public class ShipAI {
         if (command.targetUnit == null) {
             return CommandResult.ContinueRemove;
         }
-        float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition);
+        float distance = Vector2.Distance(ship.position, (Vector2)command.targetUnit.position + command.targetPosition);
         if (distance > ship.GetTurnSpeed() * deltaTime / 10) {
-            CommandResult result = ResolveCommand(CreateMoveCommand(Vector3.MoveTowards(ship.transform.position, (Vector2)command.targetUnit.transform.position + command.targetPosition, distance)), deltaTime);
+            CommandResult result = ResolveCommand(CreateMoveCommand(Vector3.MoveTowards(ship.position, (Vector2)command.targetUnit.position + command.targetPosition, distance)), deltaTime);
             if (result == CommandResult.ContinueRemove || result == CommandResult.Continue) {
                 return CommandResult.Continue;
             }
         }
-        ship.transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
+        ship.SetMovePosition(command.targetUnit.position + command.targetPosition);
         return CommandResult.Continue;
     }
 
@@ -421,18 +421,18 @@ public class ShipAI {
             return CommandResult.ContinueRemove;
         }
 
-        float targetAngle = command.targetRotation - command.targetUnit.GetRotation();
+        float targetAngle = command.targetRotation - command.targetUnit.rotation;
         float distanceToTargetAngle = Calculator.GetDistanceToPosition(command.targetPosition);
         Vector2 targetOffsetPosition = Calculator.GetPositionOutOfAngleAndDistance(targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition), distanceToTargetAngle);
-        float distance = Vector2.Distance(ship.transform.position, (Vector2)command.targetUnit.transform.position + targetOffsetPosition);
+        float distance = Vector2.Distance(ship.position, (Vector2)command.targetUnit.position + targetOffsetPosition);
         if (distance > ship.GetThrust() * deltaTime / 10) {
-            CommandResult result = ResolveCommand(CreateMoveCommand((Vector2)command.targetUnit.transform.position + targetOffsetPosition), deltaTime);
+            CommandResult result = ResolveCommand(CreateMoveCommand((Vector2)command.targetUnit.position + targetOffsetPosition), deltaTime);
             if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
                 return CommandResult.Stop;
             }
         }
-        ship.transform.position = (Vector2)command.targetUnit.transform.position + targetOffsetPosition;
-        CommandResult rotationResult = ResolveCommand(CreateRotationCommand(command.targetUnit.GetRotation()), deltaTime);
+        ship.SetMovePosition(command.targetUnit.position + targetOffsetPosition);
+        CommandResult rotationResult = ResolveCommand(CreateRotationCommand(command.targetUnit.rotation), deltaTime);
         if (rotationResult == CommandResult.ContinueRemove || rotationResult == CommandResult.Continue) {
             return CommandResult.Continue;
         }
@@ -670,7 +670,7 @@ public class ShipAI {
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
-        if (Vector2.Distance(ship.transform.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
+        if (Vector2.Distance(ship.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
             foreach (var habitationModule in ship.moduleSystem.modules.Select((m) => m.moduleComponent).Where((c) => c.GetType() == typeof(HabitationArea)).Cast<HabitationArea>()) {
                 habitationModule.ColonizePlanet(command.targetPlanet);   
             }
@@ -690,7 +690,7 @@ public class ShipAI {
         float distance = 0;
         for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
             Unit tempUnit = ship.GetEnemyUnitsInRange()[i];
-            float tempDistance = Vector2.Distance(ship.transform.position, tempUnit.transform.position);
+            float tempDistance = Vector2.Distance(ship.position, tempUnit.position);
             if (targetUnit == null || tempDistance < distance) {
                 targetUnit = tempUnit;
                 distance = tempDistance;
@@ -719,7 +719,7 @@ public class ShipAI {
         float distance = 0;
         for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
             Unit tempUnit = ship.GetEnemyUnitsInRange()[i];
-            float tempDistance = Vector2.Distance(ship.transform.position, tempUnit.transform.position);
+            float tempDistance = Vector2.Distance(ship.position, tempUnit.position);
             if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
                 targetUnit = tempUnit;
                 distance = tempDistance;
@@ -734,7 +734,7 @@ public class ShipAI {
 
         foreach (var faction in ship.faction.enemyFactions) {
             foreach (var tempShip in faction.ships) {
-                float tempDistance = Vector2.Distance(ship.transform.position, tempShip.transform.position);
+                float tempDistance = Vector2.Distance(ship.position, tempShip.position);
                 if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
                     targetUnit = tempShip;
                     distance = tempDistance;

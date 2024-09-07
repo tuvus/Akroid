@@ -182,7 +182,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         foreach (Unit unit in BattleManager.Instance.units) {
             if (!unit.IsSelectable() || unit == rightClickedBattleObject || unit == mouseOverBattleObject)
                 continue;
-            Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.transform.position);
+            Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.position);
             if (screenPosition.x > bottomLeft.x && screenPosition.x < topRight.x && screenPosition.y > bottomLeft.y && screenPosition.y < topRight.y)
                 objectsInSelectionBox.AddUnit(unit);
         }

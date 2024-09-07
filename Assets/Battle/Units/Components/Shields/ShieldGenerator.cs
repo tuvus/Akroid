@@ -16,7 +16,7 @@ public class ShieldGenerator : ModuleComponent {
 		base(battleManager, module, unit, componentScriptableObject) {
 		shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
 		
-		shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
+		// shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
 		// shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
 		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
 		CreateShield(true);

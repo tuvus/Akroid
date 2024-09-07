@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-[RequireComponent(typeof(ComponentModuleSystem))]
 public abstract class Unit : BattleObject {
     public UnitScriptableObject unitScriptableObject { get; private set; }
     [field: SerializeField] public ComponentModuleSystem moduleSystem { get; private set; }
@@ -316,17 +315,17 @@ public abstract class Unit : BattleObject {
 
     [ContextMenu("GetUnitDamagePerSecond")]
     public void GetEditorUnitDamagePerSecond() {
-        float dps = 0;
-        foreach (var projectileTurret in GetComponentsInChildren<ProjectileTurret>()) {
-            dps += projectileTurret.GetDamagePerSecond();
-        }
-        foreach (var laserTurret in GetComponentsInChildren<LaserTurret>()) {
-            dps += laserTurret.GetDamagePerSecond();
-        }
-        foreach (var missileLauncher in GetComponentsInChildren<MissileLauncher>()) {
-            dps += missileLauncher.GetDamagePerSecond();
-        }
-        print(objectName + "Dps:" + dps);
+        // float dps = 0;
+        // foreach (var projectileTurret in GetComponentsInChildren<ProjectileTurret>()) {
+        //     dps += projectileTurret.GetDamagePerSecond();
+        // }
+        // foreach (var laserTurret in GetComponentsInChildren<LaserTurret>()) {
+        //     dps += laserTurret.GetDamagePerSecond();
+        // }
+        // foreach (var missileLauncher in GetComponentsInChildren<MissileLauncher>()) {
+        //     dps += missileLauncher.GetDamagePerSecond();
+        // }
+        // print(objectName + "Dps:" + dps);
     }
 
     [ContextMenu("ForceDestroy")]

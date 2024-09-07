@@ -782,7 +782,7 @@ public class Chapter1 : CampaingController {
             "Installation complete. The colonizer is ready to leave. Activating the hyperdrive on your mark.", "Leave");
 
         buildEscapeShipChain.AddAction(() => {
-            colonizer.shipAI.AddUnitAICommand(Command.CreateMoveCommand((Vector2)colonizer.transform.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), 500)));
+            colonizer.shipAI.AddUnitAICommand(Command.CreateMoveCommand(colonizer.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360), 500)));
         });
         buildEscapeShipChain.AddCondition(EventCondition.LateConditionEvent(() => EventCondition.WaitUntilShipsIdle(new List<Ship> { colonizer })));
         buildEscapeShipChain.AddCondition(EventCondition.WaitEvent(GetTimeScale() * 3));

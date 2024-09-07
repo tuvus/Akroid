@@ -150,7 +150,7 @@ public class Ship : Unit {
                 timeUntilCheckRotation -= deltaTime;
             if (timeUntilCheckRotation <= 0) {
                 targetRotation = Calculator.GetAngleOutOfTwoPositions(GetPosition(), movePosition);
-                if (Mathf.Abs(transform.eulerAngles.z - targetRotation) > 0.00001) {
+                if (Mathf.Abs(rotation - targetRotation) > 0.00001) {
                     if (shipAction == ShipAction.Move) {
                         shipAction = ShipAction.MoveRotate;
                     } else if (shipAction == ShipAction.DockMove) {
@@ -161,7 +161,7 @@ public class Ship : Unit {
             }
         }
         if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate || shipAction == ShipAction.MoveAndRotate) {
-            float localRotation = Calculator.GetLocalTargetRotation(transform.eulerAngles.z, targetRotation);
+            float localRotation = Calculator.GetLocalTargetRotation(rotation, targetRotation);
             float turnSpeed = GetTurnSpeed() * deltaTime;
             if (shipAction == ShipAction.MoveAndRotate && GetEnemyUnitsInRangeDistance().Count != 0)
                     turnSpeed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
@@ -180,13 +180,13 @@ public class Ship : Unit {
                     SetThrusters(true);
                 }
             } else if (localRotation > 0) {
-                SetRotation(transform.eulerAngles.z + turnSpeed);
+                SetRotation(rotation + turnSpeed);
                 if (shipAction != ShipAction.MoveAndRotate) {
                     SetThrusters(false);
                     return;
                 }
             } else {
-                SetRotation(transform.eulerAngles.z - turnSpeed);
+                SetRotation(rotation - turnSpeed);
                 if (shipAction == ShipAction.MoveAndRotate) {
                     SetThrusters(false);
                     return;
@@ -195,7 +195,7 @@ public class Ship : Unit {
         }
 
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove || shipAction == ShipAction.MoveAndRotate) {
-            float distance = Calculator.GetDistanceToPosition((Vector2)transform.position - movePosition);
+            float distance = Calculator.GetDistanceToPosition(position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
             if (GetEnemyUnitsInRangeDistance().Count != 0)
                 speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
@@ -207,7 +207,7 @@ public class Ship : Unit {
                 return;
             }
             if (distance <= thrust + 2) {
-                transform.position = movePosition;
+                position = movePosition;
                 position = movePosition;
                 if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveAndRotate) {
                     SetIdle();
@@ -215,9 +215,8 @@ public class Ship : Unit {
                     shipAction = ShipAction.Dock;
                 }
             } else {
-                transform.Translate(Vector2.up * thrust); // Most of ShipAction computation cost
-                velocity = transform.up * speed;
-                position = transform.position;
+                position += Calculator.GetPositionOutOfAngleAndDistance(rotation, thrust);
+                velocity = Calculator.GetPositionOutOfAngleAndDistance(rotation, speed);
                 return;
             }
         }
@@ -228,14 +227,12 @@ public class Ship : Unit {
             SetThrusters(false);
             float speed = math.min(maxSetSpeed, GetSpeed()) / 2;
             if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
-                transform.position = movePosition;
                 position = movePosition;
                 SetIdle();
                 return;
             } else {
                 Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, speed * deltaTime) - GetPosition();
-                transform.Translate(temp, Space.World);
-                position = transform.position;
+                position += (Vector2)temp;
                 return;
             }
         }
@@ -307,7 +304,7 @@ public class Ship : Unit {
             SetIdle();
             return;
         }
-        if (Vector2.Distance(transform.position, targetStation.GetPosition()) < GetSize() + targetStation.GetSize()) {
+        if (Vector2.Distance(position, targetStation.GetPosition()) < GetSize() + targetStation.GetSize()) {
             DockShip(targetStation);
             return;
         }
@@ -363,6 +360,8 @@ public class Ship : Unit {
         if (station.DockShip(this)) {
             visible = false;
             dockedStation = station;
+            position = station.position;
+            rotation = 0;
         }
         SetIdle();
     }
@@ -373,13 +372,15 @@ public class Ship : Unit {
     }
 
     public void UndockShip(Vector2 position) {
-        UndockShip(Calculator.GetAngleOutOfTwoPositions(transform.position, position));
+        UndockShip(Calculator.GetAngleOutOfTwoPositions(position, position));
     }
 
     public void UndockShip(float angle) {
-        dockedStation.UndockShip(this, angle);
-        position = transform.position;
+        dockedStation.UndockShip(this);
         visible = true;
+        Vector2 undockPos = Calculator.GetPositionOutOfAngleAndDistance(angle, GetSize() + dockedStation.GetSize());
+        position += undockPos;
+        rotation = angle;
         dockedStation = null;
     }
 
@@ -478,7 +479,7 @@ public class Ship : Unit {
 
         mass = SetupSize() * 100;
         thrust /= mass;
-        print(objectName + "Thrust:" + thrust);
+        Debug.Log(objectName + "Thrust:" + thrust);
     }
     #endregion
 }

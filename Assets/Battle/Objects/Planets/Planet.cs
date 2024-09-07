@@ -140,12 +140,12 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * transform.localScale.x;
+        return GetSpriteSize() * scale.x;
     }
 
     public void UpdatePlanet(float deltaTime) {
         timeSinceStart += deltaTime;
-        SetRotation(transform.eulerAngles.z + rotationSpeed * deltaTime);
+        SetRotation(rotation + rotationSpeed * deltaTime);
         foreach (var faction in planetFactions) {
             faction.Value.UpdateFaction(deltaTime);
         }

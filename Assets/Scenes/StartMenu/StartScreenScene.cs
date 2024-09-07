@@ -12,7 +12,7 @@ public class StartScreenScene : MonoBehaviour {
     }
 
     void Update() {
-        station.SetRotation(station.GetRotation() + Time.deltaTime * 5);
-        planet.SetRotation(planet.GetRotation() + Time.deltaTime / 5);
+        station.SetRotation(station.rotation + Time.deltaTime * 5);
+        planet.SetRotation(planet.rotation + Time.deltaTime / 5);
     }
 }
