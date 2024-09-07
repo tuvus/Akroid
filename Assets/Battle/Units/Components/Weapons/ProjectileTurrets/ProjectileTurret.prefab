@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 206751011823210789}
   - component: {fileID: 206751011823210778}
-  - component: {fileID: 206751011823210779}
-  - component: {fileID: 206751011823210776}
   m_Layer: 7
   m_Name: ProjectileTurret
   m_TagString: Untagged
@@ -86,38 +84,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &206751011823210779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206751011823210777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97afe09d70b36074f9d3c651723bd1c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  module: {fileID: 0}
-  targetRotation: 0
-  targetVector: {x: 0, y: 0}
-  targetUnit: {fileID: 0}
---- !u!114 &206751011823210776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206751011823210777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireSpeed: 0
-  reloadSpeed: 0
-  maxAmmo: 0

@@ -10,8 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4126327603824354413}
   - component: {fileID: 382537978245162242}
-  - component: {fileID: 1605860134803161696}
-  - component: {fileID: 3510382784562204586}
   m_Layer: 7
   m_Name: LaserTurret
   m_TagString: Untagged
@@ -26,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2384951984288714591}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &382537978245162242
 SpriteRenderer:
@@ -86,48 +84,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1605860134803161696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2384951984288714591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19ea2d2d6cab7654fad3eba09f713a5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: 0
-  targetRotation: 0
-  startRotation: 0
-  turretOffset: 0
-  range: 0
-  rotateSpeed: 0
-  targeting: 1
-  minRotate: 0
-  maxRotate: 0
-  targetVector: {x: 0, y: 0}
-  targetUnit: {fileID: 0}
-  fireDuration: 0
-  fadeDuration: 0
-  laserDamagePerSecond: 0
-  laserRange: 0
-  laserSize: 0
-  laserPrefab: {fileID: 1437537882386788958, guid: 3e215d6ee23291f4ba5266f31cb4413d,
-    type: 3}
---- !u!114 &3510382784562204586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2384951984288714591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d347cd426256d6c42bd963af60b4dd2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireSpeed: 0
-  reloadSpeed: 0
-  maxAmmo: 0
