@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 7274955351370502569}
   - component: {fileID: 556627383120806656}
   - component: {fileID: -4865812879161602523}
-  - component: {fileID: 3008014366362831078}
   - component: {fileID: 2445289106320017055}
   - component: {fileID: 1207885898710320155}
   m_Layer: 8
@@ -246,25 +245,6 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!114 &3008014366362831078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9150894555189845616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01a7cc407a0c6ca4fafd6df8bf9e7f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  highlight: {fileID: 8399030365535755716}
-  particleSystem: {fileID: 1207885898710320155}
-  boxCollider2D: {fileID: 556627383120806656}
 --- !u!199 &2445289106320017055
 ParticleSystemRenderer:
   serializedVersion: 6

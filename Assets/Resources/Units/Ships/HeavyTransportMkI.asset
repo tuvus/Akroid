@@ -41,21 +41,26 @@ MonoBehaviour:
   - name: RightSubThruster
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
   systems:
-  - name: TopCenterTurrets
-    moduleCount: 2
+  - name: MainTurrets
+    type: 3
     component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: TopTurrets
-    moduleCount: 4
+    moduleSize: 0
+  - name: SideTurrets
+    type: 3
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 5e2601f20f399754c93fef5990ff8038, type: 2}
+    moduleSize: 0
   - name: MainThruster
-    moduleCount: 1
+    type: 4
     component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+    moduleSize: 0
   - name: SubThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+    moduleSize: 0
   shipClass: 1
   shipType: 1
   turnSpeed: 30

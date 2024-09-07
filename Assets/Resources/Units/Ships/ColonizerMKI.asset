@@ -21,24 +21,30 @@ MonoBehaviour:
   sprite: {fileID: 2143475390, guid: 9256f3aff4adf1346aae1320292696a2, type: 3}
   components: []
   systems:
-  - name: LightTurrets
-    moduleCount: 3
+  - name: SecondaryTurrets
+    type: 3
     component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
-  - name: MediumTurrets
-    moduleCount: 2
+    moduleSize: 0
+  - name: TopTurrets
+    type: 3
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: d80c11f117c4d344d9a1ec6aa2cff43b, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 6d8e7baca0bb6f548a75d96e88cb2c25, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+    moduleSize: 0
   - name: Thrusters
-    moduleCount: 3
+    type: 4
     component: {fileID: 11400000, guid: a33a08d6956c46847aec3fa8de0f0be1, type: 2}
+    moduleSize: 0
   shipClass: 7
   shipType: 9
   turnSpeed: 30

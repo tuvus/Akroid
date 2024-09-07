@@ -108,11 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4268936986182817260}
   - component: {fileID: 4268936986182817263}
-  - component: {fileID: 4268936986182817262}
-  - component: {fileID: 4268936986182817259}
-  - component: {fileID: 4318228008749234136}
-  - component: {fileID: 3049327884886133802}
-  - component: {fileID: 697873143071377945}
+  - component: {fileID: 7210286657868339673}
   m_Layer: 7
   m_Name: HeavyTransport
   m_TagString: Units/Ship
@@ -199,7 +195,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4268936986182817262
+--- !u!114 &7210286657868339673
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -208,75 +204,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 4268936986182817265}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36b107f6a79e3984cb1c17a14b5f990e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  <moduleSystem>k__BackingField: {fileID: 0}
-  followDist: 30
-  <enemyUnitsInRange>k__BackingField: []
-  <enemyUnitsInRangeDistance>k__BackingField: []
-  fleet: {fileID: 0}
-  shipClass: 0
-  shipType: 0
-  turnSpeed: 0
-  combatRotation: 0
-  dockedStation: {fileID: 0}
-  shipAction: 0
-  targetRotation: 0
-  movePosition: {x: 0, y: 0}
-  targetStation: {fileID: 0}
---- !u!114 &4268936986182817259
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4268936986182817265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0fab863235fcad47a4d2849d0f02d39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  commands: []
-  newCommand: 0
-  currentCommandState: 0
---- !u!114 &4318228008749234136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4268936986182817265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Script: {fileID: 11500000, guid: a5ad2a734b18c0b40bde137238b00789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
-  - name: TopCenterTurrets
+  - name: MainTurrets
     type: 3
-    component: {fileID: 0}
     moduleSize: 0
-  - name: TopTurrets
+    moduleCount: 2
+  - name: SideTurrets
     type: 3
-    component: {fileID: 0}
     moduleSize: 0
+    moduleCount: 4
   - name: Utility
     type: 1
-    component: {fileID: 0}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThruster
     type: 4
-    component: {fileID: 0}
     moduleSize: 0
+    moduleCount: 1
   - name: SubThrusters
     type: 4
-    component: {fileID: 0}
     moduleSize: 0
+    moduleCount: 2
   <modules>k__BackingField:
   - {fileID: 3627654876002232859}
   - {fileID: 9126261858479124748}
@@ -288,78 +239,6 @@ MonoBehaviour:
   - {fileID: 234094519969203278}
   - {fileID: 8544111063899082878}
   - {fileID: 8771061040873583279}
---- !u!61 &3049327884886133802
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4268936986182817265}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 10.82, y: 32.7}
-    newSize: {x: 10.823523, y: 32.7}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 10, y: 32}
-  m_EdgeRadius: 0
---- !u!50 &697873143071377945
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4268936986182817265}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 1
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1 &5882679849120031814
 GameObject:
   m_ObjectHideFlags: 0

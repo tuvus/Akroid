@@ -205,11 +205,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8198535041992587763}
   - component: {fileID: 8198535041992587760}
-  - component: {fileID: 8325539151718107570}
-  - component: {fileID: -4755380862419528990}
-  - component: {fileID: 3151812320851516818}
-  - component: {fileID: 2433509441528522819}
-  - component: {fileID: -313724104179287376}
+  - component: {fileID: 342532574777567342}
   m_Layer: 6
   m_Name: Shipyard
   m_TagString: Untagged
@@ -296,7 +292,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8325539151718107570
+--- !u!114 &342532574777567342
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -305,74 +301,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 8198535041992587762}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4e27cddd28eac4e8f01505017c2ac2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  <moduleSystem>k__BackingField: {fileID: 0}
-  followDist: 0
-  <enemyUnitsInRange>k__BackingField: []
-  <enemyUnitsInRangeDistance>k__BackingField: []
-  stationType: 4
-  repairAmount: 500
-  repairSpeed: 5
-  rotationSpeed: 0.1
---- !u!114 &-4755380862419528990
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198535041992587762}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5be8dc562954aa94b99eaa4d483b4d4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  waitSpeed: 1
-  cargoSpeed: 0.2
-  <cargoAmount>k__BackingField: 300
-  autoCollectCargo: 0
---- !u!114 &3151812320851516818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198535041992587762}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41a4e6d85bd9f9c4083c26d758d56264, type: 3}
+  m_Script: {fileID: 11500000, guid: a5ad2a734b18c0b40bde137238b00789, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <systems>k__BackingField:
   - name: LowerTurrets
     type: 3
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 3
   - name: UpperTurrets
     type: 3
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 3
   - name: Utility
     type: 1
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 1
   - name: Utility
     type: 1
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 1
   - name: Utility
     type: 1
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 1
   - name: Utility
     type: 1
-    component: {fileID: 0}
     moduleSize: 0
+    <moduleCount>k__BackingField: 1
   <modules>k__BackingField:
   - {fileID: 5120937104390473954}
   - {fileID: 3200888380791347285}
@@ -384,68 +340,6 @@ MonoBehaviour:
   - {fileID: 6618773732313746010}
   - {fileID: 6200344398223106344}
   - {fileID: 6007532465051499261}
---- !u!58 &2433509441528522819
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198535041992587762}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 40
---- !u!50 &-313724104179287376
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198535041992587762}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1001 &2426268461300759319
 PrefabInstance:
   m_ObjectHideFlags: 0

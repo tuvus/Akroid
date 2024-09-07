@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StationAI : MonoBehaviour {
+public class StationAI {
     protected Station station;
     [SerializeField] protected float waitSpeed;
     [SerializeField] protected float cargoSpeed;

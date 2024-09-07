@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: LancerMkI
   m_EditorClassIdentifier: 
-  cost: 9149
+  cost: 9245
   resourceTypes: 0100000002000000
-  resourceCosts: 2f06000000000000f302000000000000
+  resourceCosts: 2907000000000000f302000000000000
   prefabPath: Prefabs/ShipPrefabs/Lancer
   unitName: Lancer
   maxHealth: 580
@@ -44,23 +44,33 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
   systems:
   - name: CenterTurret
-    moduleCount: 1
+    type: 3
     component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: Turrets
-    moduleCount: 4
+    moduleSize: 0
+  - name: SideTurrets
+    type: 3
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: Weapon
-    moduleCount: 1
+    moduleSize: 0
+  - name: MissileLauncher
+    type: 2
     component: {fileID: 11400000, guid: 25438419514bf3a41887042280c4c1b3, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 224954adaa671324fbea934b4c985cd6, type: 2}
+    moduleSize: 0
+  - name: Utility
+    type: 1
+    component: {fileID: 11400000, guid: a7c57986cc84479488bde523e2323a5f, type: 2}
+    moduleSize: 0
   - name: MainThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+    moduleSize: 0
   - name: SubThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+    moduleSize: 0
   shipClass: 3
   shipType: 4
   turnSpeed: 40

@@ -34,20 +34,25 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   systems:
   - name: TopTurret
-    moduleCount: 1
+    type: 3
     component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
+    moduleSize: 0
   - name: BottomTurret
-    moduleCount: 1
+    type: 3
     component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
-  - name: MainThrusters
-    moduleCount: 1
+    moduleSize: 0
+  - name: MainThruster
+    type: 4
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+    moduleSize: 0
   - name: SubThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+    moduleSize: 0
   shipClass: 2
   shipType: 4
   turnSpeed: 60

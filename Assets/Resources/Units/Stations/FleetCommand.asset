@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: FleetCommand
   m_EditorClassIdentifier: 
-  cost: 138435
-  resourceTypes: 01000000
-  resourceCosts: 0e5a000000000000
+  cost: 138282
+  resourceTypes: 0100000002000000
+  resourceCosts: 18590000000000006f01000000000000
   prefabPath: Prefabs/StationPrefabs/FleetCommand
   unitName: FleetCommand
   maxHealth: 13000
@@ -40,23 +40,29 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
   systems:
   - name: LowerTurrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
+    moduleSize: 0
   - name: UpperTurrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: c894325743034634288ca3b5d5112419, type: 2}
+    moduleSize: 0
   stationType: 1
   repairAmount: 1000
   repairSpeed: 10

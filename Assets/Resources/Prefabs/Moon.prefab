@@ -178,7 +178,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1589787851617070000}
   - component: {fileID: 5661863180689348050}
-  - component: {fileID: 3828450036091293305}
   - component: {fileID: 4616947880355518711}
   m_Layer: 0
   m_Name: Moon
@@ -256,29 +255,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3828450036091293305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9195870571848260563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4db9af9f574082f4fb966308c3d98bef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  <population>k__BackingField: 0
-  rotationSpeed: 0.1
-  rateOfGrowth: 0
-  carryingCapacity: 0
-  startingPop: 0
-  <totalArea>k__BackingField: 0
-  timeSinceStart: 0
 --- !u!58 &4616947880355518711
 CircleCollider2D:
   m_ObjectHideFlags: 0

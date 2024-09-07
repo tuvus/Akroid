@@ -14,7 +14,7 @@ public class ModuleEditor : Editor {
 
         VisualElement myInspector = new VisualElement();
         InspectorElement.FillDefaultInspector(myInspector, serializedObject, this);
-        Button removeModule = new Button(() => module.moduleSystem.RemoveModule(module)) {
+        Button removeModule = new Button(() => module.prefabModuleSystem.RemoveModule(module)) {
             text = "RemoveModule"
         };
 

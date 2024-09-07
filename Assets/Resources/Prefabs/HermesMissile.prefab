@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6973132868627845795}
   - component: {fileID: 6973132868627845796}
-  - component: {fileID: 6973132868627845794}
   - component: {fileID: 4014236436237770866}
   - component: {fileID: 2168814717399675792}
   m_Layer: 8
@@ -90,32 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6973132868627845794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6973132868627845797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86e575b052a9b6b4db5832e4957d32b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  highlight: {fileID: 3092384830821924026}
-  destroyEffect: {fileID: 2312831284555659598}
-  thrustParticleSystem: {fileID: 6973132870048437460}
-  boxCollider2D: {fileID: 4014236436237770866}
-  missileType: 0
-  damage: 0
-  thrustSpeed: 0
-  maxTurnSpeed: 0
-  fuelRange: 0
-  retarget: 0
 --- !u!61 &4014236436237770866
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5347,15 +5320,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1136227200768620934}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2312831284555659598 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3448740622132478152, guid: 101b7af4909279d4680b9c9be40ba8b0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1136227200768620934}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ec7ba581c985b84b85cd6ba34e1052d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

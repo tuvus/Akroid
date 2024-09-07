@@ -30,14 +30,17 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   systems:
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: a7c57986cc84479488bde523e2323a5f, type: 2}
+    moduleSize: 0
   - name: MainThruster
-    moduleCount: 1
+    type: 4
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+    moduleSize: 0
   - name: SubThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+    moduleSize: 0
   shipClass: 0
   shipType: 1
   turnSpeed: 20

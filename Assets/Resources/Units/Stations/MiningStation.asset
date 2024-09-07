@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d21f91b94093424e9925688a4c0db5b, type: 3}
   m_Name: MiningStation
   m_EditorClassIdentifier: 
-  cost: 23958
-  resourceTypes: 01000000
-  resourceCosts: f80e000000000000
+  cost: 23865
+  resourceTypes: 0100000002000000
+  resourceCosts: 5c0e000000000000e200000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   unitName: MiningStation
   maxHealth: 2300
@@ -32,14 +32,17 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
   systems:
   - name: Turrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: 72d96165e47ea4548a9335c78cbbf5b6, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
+    moduleSize: 0
   stationType: 3
   repairAmount: 100
   repairSpeed: 5

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using static CargoBay;
 
@@ -15,7 +16,7 @@ public class UnitScriptableObject : ScriptableObject {
     public Sprite sprite;
 
     [SerializeField] private ComponentData[] components;
-    [SerializeField] private SystemData[] systems;
+    [SerializeField] private ModuleSystem.System[] systems;
 
     [Serializable]
     private class ComponentData {
@@ -29,37 +30,21 @@ public class UnitScriptableObject : ScriptableObject {
         }
     }
 
-    [Serializable]
-    private class SystemData {
-        [HideInInspector]
-        public string name;
-        public int moduleCount;
-        public ComponentScriptableObject component;
-
-        public SystemData(string name, int moduleCount, ComponentScriptableObject component) {
-            this.name = name;
-            this.moduleCount = moduleCount;
-            this.component = component;
-        }
-    }
-
     public void OnValidate() {
         if (systems == null) {
-            systems = new SystemData[0];
+            systems = Array.Empty<ModuleSystem.System>();
         }
         GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
         if (targetPrefab != null) {
-            SystemData[] oldSystems = systems;
-            ModuleSystem moduleSystem = targetPrefab.GetComponent<ModuleSystem>();
-            systems = new SystemData[moduleSystem.systems.Count];
+            ModuleSystem.System[] oldSystems = systems;
+            PrefabModuleSystem prefabModuleSystem = targetPrefab.GetComponent<PrefabModuleSystem>();
+            systems = new ModuleSystem.System[prefabModuleSystem.systems.Count];
             for (int i = 0; i < Mathf.Min(oldSystems.Length, systems.Length); i++) {
                 systems[i] = oldSystems[i];
             }
-            for (int i = 0; i < moduleSystem.systems.Count; i++) {
+            for (int i = 0; i < prefabModuleSystem.systems.Count; i++) {
                 if (systems[i] != null) {
-                    systems[i].name = moduleSystem.systems[i].name;
-                    int systemModuleCount = moduleSystem.modules.Count(t => t.system == i);
-                    systems[i] = new SystemData(moduleSystem.systems[i].name, systemModuleCount, systems[i].component);
+                    systems[i] = new ModuleSystem.System(prefabModuleSystem.systems[i], systems[i].component);
                 }
             }
         }
@@ -72,17 +57,17 @@ public class UnitScriptableObject : ScriptableObject {
         resourceTypes.Clear();
         resourceCosts.Clear();
         AddResourceCost(CargoTypes.Metal, maxHealth);
-        systems.ToList().ForEach(t => {
-            if (t == null || t.component == null) {
+        foreach (var system in systems.ToList()) {
+            if (system == null || system.component == null) {
                 Debug.Log("Null Component " + unitName);
-                return;
+                continue;
             }
-            if (t.moduleCount == 0) Debug.Log("Error");
-            cost += t.component.cost * t.moduleCount;
-            for (int f = 0; f < t.component.resourceTypes.Count; f++) {
-                AddResourceCost(t.component.resourceTypes[f], t.component.resourceCosts[f] * t.moduleCount + 10);
+            if (system.moduleCount == 0) Debug.Log($"{unitName} system {system.name} has a moduleCount of 0!");
+            cost += system.component.cost * system.moduleCount;
+            for (int f = 0; f < system.component.resourceTypes.Count; f++) {
+                AddResourceCost(system.component.resourceTypes[f], system.component.resourceCosts[f] * system.moduleCount + 10);
             }
-        });
+        }
     }
 
     protected void AddResourceCost(CargoTypes type, long cost) {
@@ -97,7 +82,7 @@ public class UnitScriptableObject : ScriptableObject {
 
     public void ApplyComponentsToSystems(List<ModuleSystem.System> moduleSystems) {
         for (int i = 0; i < moduleSystems.Count; i++) {
-            moduleSystems[i] = new ModuleSystem.System(moduleSystems[i], systems[i].component);
+            moduleSystems[i] = new ModuleSystem.System(systems[i], systems[i].component);
         }
     }
 

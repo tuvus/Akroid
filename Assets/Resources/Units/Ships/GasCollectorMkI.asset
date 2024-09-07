@@ -22,20 +22,25 @@ MonoBehaviour:
   components: []
   systems:
   - name: Turrets
-    moduleCount: 4
+    type: 3
     component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: e38e059c39986f04c81366ab1f6fdeeb, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 7353c4549b3029f4bafe064928171027, type: 2}
+    moduleSize: 0
   - name: MainThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: c0ec4a137cddba946b65a204f849f966, type: 2}
+    moduleSize: 0
   - name: SubThrusters
-    moduleCount: 2
+    type: 4
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+    moduleSize: 0
   shipClass: 6
   shipType: 8
   turnSpeed: 40

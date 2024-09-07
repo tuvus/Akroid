@@ -346,7 +346,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6480528276499720427}
   - component: {fileID: 6480528276499720426}
-  - component: {fileID: 6480528276499720425}
   - component: {fileID: 6480528276499720424}
   m_Layer: 0
   m_Name: Planet
@@ -427,29 +426,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6480528276499720425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6480528276499720429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4db9af9f574082f4fb966308c3d98bef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <objectName>k__BackingField: 
-  <size>k__BackingField: 0
-  <position>k__BackingField: {x: 0, y: 0}
-  <faction>k__BackingField: {fileID: 0}
-  <population>k__BackingField: 0
-  rotationSpeed: 0.1
-  rateOfGrowth: 0
-  carryingCapacity: 0
-  startingPop: 0
-  <totalArea>k__BackingField: 0
-  timeSinceStart: 0
 --- !u!58 &6480528276499720424
 CircleCollider2D:
   m_ObjectHideFlags: 0
