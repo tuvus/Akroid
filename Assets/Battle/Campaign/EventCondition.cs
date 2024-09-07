@@ -327,7 +327,7 @@ public class EventCondition {
                     // If this is the first time the condition is active we need to subscibe to the station ship building
                     StationAI stationAI = ((Station)iObjects.First()).stationAI;
                     stationAI.onBuildShip += (ship) => { 
-                        if (ship.ShipScriptableObject == shipBlueprint.shipScriptableObject && ship.faction == faction)
+                        if (ship.shipScriptableObject == shipBlueprint.shipScriptableObject && ship.faction == faction)
                             intValue = 2; 
                     };
                     intValue = 1;

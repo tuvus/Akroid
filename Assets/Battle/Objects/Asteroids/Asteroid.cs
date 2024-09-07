@@ -7,38 +7,17 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public long resources;
     public CargoBay.CargoTypes asteroidType;
 
-    public struct AsteroidData {
-        public string name;
-        public float rotation;
-        public float size;
-        public long resources;
-        public CargoBay.CargoTypes asteroidType;
-
-        public AsteroidData(string name, float rotation, float size, long resources, CargoBay.CargoTypes asteroidType) {
-            this.name = name;
-            this.rotation = rotation;
-            this.size = size;
-            this.resources = resources;
-            this.asteroidType = asteroidType;
-        }
-    }
-
-    public void SetupAsteroid(AsteroidField asteroidField, BattleManager.PositionGiver positionGiver, AsteroidData asteroidData) {
-        transform.localScale = new Vector2(asteroidData.size, asteroidData.size);
+    public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources, CargoBay.CargoTypes asteroidType): base(battleObjectData, battleManager) {
         this.asteroidField = asteroidField;
-        base.SetupBattleObject(battleManager, positionGiver, asteroidData.rotation);
-        this.objectName = asteroidData.name;
-        this.resources = asteroidData.resources;
+        this.resources = resources;
+        this.asteroidType = asteroidType;
         asteroidField.totalResources += this.resources;
-        this.asteroidType = asteroidData.asteroidType;
-        this.position = transform.position;
-        float greyColor = Random.Range(0.3f, 0.7f);
-        spriteRenderer.color = new Color(greyColor, greyColor, greyColor, 1);
         Spawn();
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * transform.localScale.x;
+        // return GetSpriteSize() * transform.localScale.x;
+        return 0;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -83,9 +62,5 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public void AdjustPosition(Vector2 position) {
         transform.position += (Vector3)position;
         this.position = transform.position;
-    }
-
-    public override float GetSpriteSize() {
-        return spriteRenderer.sprite.bounds.size.x / 2;
     }
 }

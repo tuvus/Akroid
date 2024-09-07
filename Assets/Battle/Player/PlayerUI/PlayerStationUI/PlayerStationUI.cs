@@ -262,7 +262,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
             hangarBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text = ship.faction.abbreviatedName;
             hangarBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text = ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangarInfoButtonPressed(f)));
-            hangarBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
+            // hangarBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
         }
         for (int i = shipsInHangar.Count; i < hangarList.childCount; i++) {
             hangarList.GetChild(i).gameObject.SetActive(false);

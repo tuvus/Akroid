@@ -17,8 +17,8 @@ public class ComponentModuleSystem : ModuleSystem {
         typeof(EmptyComponent)
     };
 
-    public override void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
-        base.SetupModuleSystem(unit, unitScriptableObject);
+    public ComponentModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject):
+        base(battleManager, unit, unitScriptableObject){
 
         components = new Dictionary<Type, List<ModuleComponent>>();
         foreach (var moduleComponent in modules.Select(m => m.moduleComponent)) {

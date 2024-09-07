@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class Ship : Unit {
-    public ShipScriptableObject ShipScriptableObject { get; private set; }
+    public ShipScriptableObject shipScriptableObject { get; private set; }
 
     public enum ShipClass {
         Transport,
@@ -45,10 +45,6 @@ public class Ship : Unit {
 
     public ShipAI shipAI { get; private set; }
     public Fleet fleet;
-    [field: SerializeField] private ShipClass shipClass;
-    [field: SerializeField] private ShipType shipType;
-    public float turnSpeed;
-    public float combatRotation;
     public Station dockedStation;
     private float mass;
     private float thrust;
@@ -60,31 +56,7 @@ public class Ship : Unit {
     [SerializeField] private Vector2 movePosition;
     [SerializeField] private Station targetStation;
     private float timeUntilCheckRotation;
-    private float checkRotationSpeed = 0.2f;
-
-    public struct ShipData {
-        public Faction faction;
-        public ShipScriptableObject shipScriptableObject;
-        public string shipName;
-        public Vector2 position;
-        public float rotation;
-
-        public ShipData(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, Vector2 position, float rotation) {
-            this.faction = faction;
-            this.shipScriptableObject = shipScriptableObject;
-            this.shipName = shipName;
-            this.position = position;
-            this.rotation = rotation;
-        }
-
-        public ShipData(Faction faction, ShipData shipData) {
-            this.faction = faction;
-            this.shipScriptableObject = shipData.shipScriptableObject;
-            this.shipName = shipData.shipName;
-            this.position = shipData.position;
-            this.rotation = shipData.rotation;
-        }
-    }
+    private readonly float checkRotationSpeed = 0.2f;
 
     [System.Serializable]
     public class ShipBlueprint {
@@ -93,10 +65,9 @@ public class Ship : Unit {
         public ShipScriptableObject shipScriptableObject;
 
         protected ShipBlueprint(Faction faction, ShipScriptableObject shipScriptableObject, string name = null) {
-            if (name == null)
-                this.name = shipScriptableObject.name;
-            else
-                this.name = name;
+            if (name == null) this.name = shipScriptableObject.name;
+            else this.name = name;
+            
             this.faction = faction;
             this.shipScriptableObject = shipScriptableObject;
         }
@@ -113,7 +84,7 @@ public class Ship : Unit {
         public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
         public long totalResourcesRequired { get; private set; }
 
-        public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, String name = null) : base(faction, shipBlueprint.shipScriptableObject, name) {
+        public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
             resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
             totalResourcesRequired = 0;
@@ -135,16 +106,13 @@ public class Ship : Unit {
             return faction;
         }
     }
-    public override void SetupUnit(BattleManager battleManager, string shipName, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
-        this.ShipScriptableObject = (ShipScriptableObject)unitScriptableObject;
+
+    public Ship(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject): 
+        base(battleObjectData, battleManager, shipScriptableObject) {
         faction.AddShip(this);
-        base.SetupUnit(battleManager, shipName, faction, positionGiver, rotation, particleSpeed, unitScriptableObject);
-        shipAI = GetComponent<ShipAI>();
-        SetParticleSpeed(particleSpeed);
-        SetupThrusters();
-        shipAI.SetupShipAI(this);
+        shipAI = new ShipAI(this);
         mass = GetSize() * 100;
-        Spawn();
+        SetupThrusters();
         SetIdle();
     }
 
@@ -384,15 +352,6 @@ public class Ship : Unit {
         }
     }
 
-    public override void ShowUnit(bool show) {
-        base.ShowUnit(show);
-        moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(show));
-    }
-
-    public override void ActivateColliders(bool active) {
-        base.ActivateColliders(active);
-    }
-
     public override void DestroyUnit() {
         base.DestroyUnit();
         if (fleet != null) fleet.RemoveShip(this);
@@ -402,7 +361,7 @@ public class Ship : Unit {
 
     public void DockShip(Station station) {
         if (station.DockShip(this)) {
-            ShowUnit(false);
+            visible = false;
             dockedStation = station;
         }
         SetIdle();
@@ -420,7 +379,7 @@ public class Ship : Unit {
     public void UndockShip(float angle) {
         dockedStation.UndockShip(this, angle);
         position = transform.position;
-        ShowUnit(true);
+        visible = true;
         dockedStation = null;
     }
 
@@ -432,11 +391,11 @@ public class Ship : Unit {
 
     #region GetMethods
     public float GetTurnSpeed() {
-        return ShipScriptableObject.turnSpeed;
+        return shipScriptableObject.turnSpeed;
     }
 
     public float GetCombatRotation() {
-        return ShipScriptableObject.combatRotation;
+        return shipScriptableObject.combatRotation;
     }
     public Vector2 GetTargetMovePosition() {
         return movePosition;
@@ -447,11 +406,11 @@ public class Ship : Unit {
     }
 
     public ShipClass GetShipClass() {
-        return ShipScriptableObject.shipClass;
+        return shipScriptableObject.shipClass;
     }
 
     public ShipType GetShipType() {
-        return ShipScriptableObject.shipType;
+        return shipScriptableObject.shipType;
     }
 
     public override bool IsSelectable() {
@@ -463,31 +422,31 @@ public class Ship : Unit {
     }
 
     public bool IsCombatShip() {
-        return ShipScriptableObject.shipType == ShipType.Fighter || ShipScriptableObject.shipType == ShipType.Cruiser || ShipScriptableObject.shipType == ShipType.Frigate || ShipScriptableObject.shipType == ShipType.Dreadnaught;
+        return shipScriptableObject.shipType == ShipType.Fighter || shipScriptableObject.shipType == ShipType.Cruiser || shipScriptableObject.shipType == ShipType.Frigate || shipScriptableObject.shipType == ShipType.Dreadnaught;
     }
 
     public bool IsTransportShip() {
-        return ShipScriptableObject.shipType == ShipType.Transport;
+        return shipScriptableObject.shipType == ShipType.Transport;
     }
 
     public bool IsConstructionShip() {
-        return ShipScriptableObject.shipType == ShipType.Construction;
+        return shipScriptableObject.shipType == ShipType.Construction;
     }
 
     public bool IsScienceShip() {
-        return ShipScriptableObject.shipType == ShipType.Research;
+        return shipScriptableObject.shipType == ShipType.Research;
     }
 
     public bool IsGasCollectorShip() {
-        return ShipScriptableObject.shipType == ShipType.GasCollector;
+        return shipScriptableObject.shipType == ShipType.GasCollector;
     }
 
     public bool IsColonizerShip() {
-        return ShipScriptableObject.shipType == ShipType.Colonizer;
+        return shipScriptableObject.shipType == ShipType.Colonizer;
     }
 
     public bool IsCivilianShip() {
-        return ShipScriptableObject.shipType == ShipType.Civilian;
+        return shipScriptableObject.shipType == ShipType.Civilian;
     }
 
     public float GetMass() {
@@ -513,30 +472,9 @@ public class Ship : Unit {
         return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
     }
 
-    public override void ShowEffects(bool shown) {
-        base.ShowEffects(shown);
-        moduleSystem.Get<Thruster>().ForEach(t => t.ShowEffects(shown));
-    }
-
-    public override void SetParticleSpeed(float speed) {
-        base.SetParticleSpeed(speed);
-        moduleSystem.Get<Thruster>().ForEach(t => t.SetParticleSpeed(speed));
-    }
-
-    public override void ShowParticles(bool shown) {
-        base.ShowParticles(shown);
-        if (thrusting || !IsSpawned()) {
-            moduleSystem.Get<Thruster>().ForEach(t => t.ShowParticles(shown));
-        }
-    }
-
     [ContextMenu("GetShipThrust")]
     public void GetShipThrust() {
-        float thrust = 0;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        foreach (var thruster in GetComponentsInChildren<Thruster>()) {
-            thrust += thruster.GetThrust();
-        }
+        float thrust = moduleSystem.Get<Thruster>().Sum(t => t.GetThrust());
 
         mass = SetupSize() * 100;
         thrust /= mass;

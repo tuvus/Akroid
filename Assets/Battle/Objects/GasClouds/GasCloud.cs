@@ -7,31 +7,11 @@ public class GasCloud : BattleObject, IPositionConfirmer {
     public long resources;
     public CargoBay.CargoTypes gasCloudType;
 
-    public struct GasCloudData {
-        public string name;
-        public float rotation;
-        public float size;
-        public long resources;
-        public CargoBay.CargoTypes gasCloudType;
-
-        public GasCloudData(string name, float rotation, float size, long resources, CargoBay.CargoTypes gasCloudType) {
-            this.name = name;
-            this.rotation = rotation;
-            this.size = size;
-            this.resources = resources;
-            this.gasCloudType = gasCloudType;
-        }
-    }
-
-    public void SetupGasCloud(BattleManager battleManager, BattleManager.PositionGiver positionGiver, GasCloudData gasCloudData) {
-        transform.localScale = new Vector2(gasCloudData.size, gasCloudData.size);
-        base.SetupBattleObject(battleManager, positionGiver, Random.Range(0, 360));
-        this.objectName = gasCloudData.name;
+    public GasCloud(BattleObjectData battleObjectData, BattleManager battleManager, long resources, CargoBay.CargoTypes gasCloudType): base(battleObjectData, battleManager) {
+        this.resources = resources;
+        this.gasCloudType = gasCloudType;
         UnityEngine.Color temp = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
-        SetRotation(gasCloudData.rotation);
-        this.resources = gasCloudData.resources;
-        this.gasCloudType = gasCloudData.gasCloudType;
-        GetSpriteRenderer().color = new UnityEngine.Color(temp.r, temp.g, temp.b, Random.Range(0.15f, 0.3f));
+
         Spawn();
     }
 

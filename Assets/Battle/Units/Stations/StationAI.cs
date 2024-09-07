@@ -12,7 +12,7 @@ public class StationAI : MonoBehaviour {
     protected float cargoTime;
     public event Action<Ship> onBuildShip;
 
-    public virtual void SetupStationAI(Station station) {
+    public StationAI(Station station) {
         this.station = station;
         onBuildShip = delegate { };
     }

@@ -8,8 +8,7 @@ public class MiningStationAI : StationAI {
     public List<Ship> transportShips;
     [SerializeField] int wantedTransports;
 
-    public override void SetupStationAI(Station station) {
-        base.SetupStationAI(station);
+    public MiningStationAI(Station station): base(station) {
         transportShips = new List<Ship>(10);
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());

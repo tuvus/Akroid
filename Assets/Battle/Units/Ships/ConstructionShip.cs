@@ -5,12 +5,17 @@ using UnityEngine;
 public class ConstructionShip : Ship {
     public Station targetStationBlueprint;
 
+    public ConstructionShip(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject): 
+        base(battleObjectData, battleManager, shipScriptableObject) {
+        // this.targetStationBlueprint = targetStationBlueprint;
+    }
+
     public Station CreateStation(Vector2 position) {
         if (targetStationBlueprint != null) {
             targetStationBlueprint.Explode();
         }
         //TODO: Add stationscriptableobject here!
-        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new Station.StationData(faction, BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", position, Random.Range(0, 360), false));
+        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new BattleObjectData("MiningStation", new BattleManager.PositionGiver(position), Random.Range(0, 360), faction),  BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
         return targetStationBlueprint;
     }
 

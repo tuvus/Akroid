@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : BattleObject, IParticleHolder {
-    public int projectileIndex { get; private set; }
+public class Projectile : BattleObject {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
     [SerializeField] private BoxCollider2D boxCollider2D;
@@ -15,12 +14,7 @@ public class Projectile : BattleObject, IParticleHolder {
     private Vector2 startingScale;
     private bool hit;
 
-    public void PrespawnProjectile(BattleManager battleManger, int projectileIndex, float particleSpeed) {
-        base.SetupBattleObject(battleManager);
-        this.projectileIndex = projectileIndex;
-        startingScale = transform.localScale;
-        SetParticleSpeed(particleSpeed);
-        highlight.enabled = false;
+    public Projectile(BattleManager battleManager): base(new BattleObjectData("Projectile"), battleManager) {
         Activate(false);
     }
 
@@ -97,7 +91,7 @@ public class Projectile : BattleObject, IParticleHolder {
             shipVelocity = Vector2.zero;
         }
 
-        spriteRenderer.enabled = false;
+        visible = false;
         boxCollider2D.enabled = false;
         if (BattleManager.Instance.GetParticlesShown())
             particleSystem.Play();
@@ -109,7 +103,7 @@ public class Projectile : BattleObject, IParticleHolder {
         } else {
             BattleManager.Instance.RemoveProjectile(this);
         }
-        spriteRenderer.enabled = activate;
+        visible = activate;
         boxCollider2D.enabled = activate;
     }
 
@@ -119,21 +113,5 @@ public class Projectile : BattleObject, IParticleHolder {
         hit = false;
         highlight.enabled = false;
         Activate(false);
-    }
-
-    public void ShowEffects(bool shown) {
-        if (highlight.enabled)
-            highlight.enabled = shown;
-    }
-
-    public void SetParticleSpeed(float speed) {
-        var main = particleSystem.main;
-        main.simulationSpeed = speed;
-    }
-
-    public void ShowParticles(bool shown) {
-        if (hit && !shown) {
-            particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        }
     }
 }

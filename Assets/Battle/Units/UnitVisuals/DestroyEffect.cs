@@ -73,7 +73,6 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
             case FlareState.KeepNormal:
                 flare.brightness = getBaseFlareSize();
                 if (!explosion.isEmitting) {
-                    battleObject.GetSpriteRenderers().ForEach(r => r.enabled = false);
                     flareState = FlareState.Fade;
                     flareTime = 0;
                 }

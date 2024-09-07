@@ -60,22 +60,22 @@ public class Chapter1 : CampaingController {
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        playerMiningStation = (MiningStation)battleManager.CreateNewStation(new Station.StationData(playerFaction, battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "Mining Station", playerFaction.GetPosition(), Random.Range(0, 360), false));
+        playerMiningStation = (MiningStation)battleManager.CreateNewStation(new BattleObject.BattleObjectData("Mining Station", new PositionGiver(playerFaction.GetPosition()),  Random.Range(0, 360), playerFaction), battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, false);
 
         otherMiningFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(), 1000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10), 10);
         }
-        otherMiningStation = (MiningStation)battleManager.CreateNewStation(new Station.StationData(otherMiningFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/MiningStation"), "Mining Station", otherMiningFaction.GetPosition(), Random.Range(0, 360), true));
+        otherMiningStation = (MiningStation)battleManager.CreateNewStation(new BattleObject.BattleObjectData("Mining Station", new PositionGiver(otherMiningFaction.GetPosition()),  Random.Range(0, 360), otherMiningFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/MiningStation"), true);
         otherMiningStation.BuildShip(Ship.ShipClass.Transport);
         otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
 
 
         planetFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        planet = battleManager.CreateNewPlanet(new PositionGiver(planetFaction.GetPosition()), new Planet.PlanetData(planetFaction, "Home", Random.Range(0,360), Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
-        moon = battleManager.CreateNewMoon(new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5), new Planet.PlanetData(planetFaction, "Moon", Random.Range(0, 360), 0, 0.02f, 0.98f));
-        tradeStation = (Shipyard)battleManager.CreateNewStation(new Station.StationData(planetFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), "Trade Station", planet.GetPosition(), Random.Range(0, 360)), new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5));
+        planet = battleManager.CreateNewPlanet(new Planet.PlanetData(new BattleObject.BattleObjectData("Home", new PositionGiver(planetFaction.GetPosition()), Random.Range(0,360), planetFaction), Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
+        moon = battleManager.CreateNewMoon(new Planet.PlanetData(new BattleObject.BattleObjectData("Moon", new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5), Random.Range(0, 360), planetFaction), 0, 0.02f, 0.98f));
+        tradeStation = (Shipyard)battleManager.CreateNewStation(new BattleObject.BattleObjectData("Trade Station", new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5), Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/TradeStation"), true);
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
         tradeStation.LoadCargo(2400, CargoBay.CargoTypes.Gas);
         ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
@@ -83,8 +83,8 @@ public class Chapter1 : CampaingController {
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.onBuildShip += (ship) => { if (ship.faction == LocalPlayer.Instance.GetFaction()) LocalPlayer.Instance.AddOwnedUnit(ship); };
 
-        shipyardFaction = battleManager.CreateNewFaction(new Faction.FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), (long)(2400 * resourceCosts[CargoBay.CargoTypes.Metal] * 1.4f), 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
-        shipyard = (Shipyard)battleManager.CreateNewStation(new Station.StationData(shipyardFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), "Solar Shipyard", shipyardFaction.GetPosition(), Random.Range(0, 360)));
+        shipyardFaction = battleManager.CreateNewFaction(new FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(), (long)(2400 * resourceCosts[CargoBay.CargoTypes.Metal] * 1.4f), 0, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        shipyard = (Shipyard)battleManager.CreateNewStation(new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()), Random.Range(0, 360), shipyardFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/Shipyard"), true);
         shipyard.LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport);
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
@@ -93,7 +93,7 @@ public class Chapter1 : CampaingController {
         
 
         researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("Frontier Research", "FRO", colorPicker.PickColor(), 3000, 36, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
-        researchStation = battleManager.CreateNewStation(new Station.StationData(researchFaction, Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), "Frontier Station", researchFaction.GetPosition(), Random.Range(0, 360)));
+        researchStation = battleManager.CreateNewStation(new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()), Random.Range(0, 360), researchFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), true);
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         Ship setupFleetShip1 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);

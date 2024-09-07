@@ -94,7 +94,7 @@ public class PlayerUI : MonoBehaviour {
         commandClick.UpdateCommandClick();
         if (UpdateUnitZoomIndicators()) {
             foreach (var unit in BattleManager.Instance.units) {
-                unit.UpdateUnitUI(showUnitZoomIndicators);
+                // unit.UpdateUnitUI(showUnitZoomIndicators);
             }
         }
         uIMenusInput.ForEach(m => {

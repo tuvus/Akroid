@@ -6,8 +6,7 @@ public class ShipyardAI : StationAI {
 
     public bool autoCollectCargo;
 
-    public override void SetupStationAI(Station station) {
-        base.SetupStationAI(station);
+    public ShipyardAI(Station station): base(station) {
         autoCollectCargo = true;
     }
 

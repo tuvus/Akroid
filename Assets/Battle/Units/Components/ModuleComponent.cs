@@ -6,12 +6,9 @@ public abstract class ModuleComponent : BattleObject {
     public Module module;
     protected Unit unit { get; private set; }
     public ComponentScriptableObject componentScriptableObject { get; private set; }
-    
-    public virtual void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupBattleObject(unit.battleManager, unit.faction);
-        module.moduleComponent = this;
+
+    public ModuleComponent(BattleManager battleManager, Module module, Unit unit, ComponentScriptableObject componentScriptableObject): 
+        base(new BattleObjectData(componentScriptableObject.name, new BattleManager.PositionGiver(module.transform.position), module.rotation, unit.faction), battleManager) {
         this.module = module;
-        this.unit = unit;
-        this.componentScriptableObject = componentScriptableObject;
     }
 }

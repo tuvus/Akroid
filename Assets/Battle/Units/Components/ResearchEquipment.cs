@@ -7,8 +7,9 @@ public class ResearchEquipment : ModuleComponent {
     [SerializeField] int data;
     float researchTime;
 
-    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, unit, componentScriptableObject);
+    public ResearchEquipment(BattleManager battleManager, Module module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
+        base(battleManager, module, unit, componentScriptableObject) {
         researchEquipmentScriptableObject = (ResearchEquipmentScriptableObject)componentScriptableObject;
         
         researchTime = researchEquipmentScriptableObject.researchSpeed;

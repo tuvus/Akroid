@@ -26,15 +26,12 @@ public class Turret : ModuleComponent {
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, unit, componentScriptableObject);
+    public Turret(BattleManager battleManager, Module module, Unit unit, ComponentScriptableObject componentScriptableObject): 
+        base(battleManager, module, unit, componentScriptableObject) {
         turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
 
-        spriteRenderer.sprite = turretScriptableObject.turretSprite;
-        spriteRenderer.enabled = true;
         SetSize(GetSpriteSize());
-        reloadController = GetComponent<ReloadController>();
-        reloadController.SetupReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
+        reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -267,7 +264,7 @@ public class Turret : ModuleComponent {
     }
 
     public void ShowTurret(bool show) {
-        spriteRenderer.enabled = show;
+        visible = show;
     }
 
     public Unit GetUnit() {

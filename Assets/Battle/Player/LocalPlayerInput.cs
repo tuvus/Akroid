@@ -284,10 +284,10 @@ public class LocalPlayerInput : MonoBehaviour {
                 continue;
             }
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.transform.position);
-            if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
-                battleObject = targetUnit;
-                distance = tempDistance;
-            }
+            // if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
+            //     battleObject = targetUnit;
+            //     distance = tempDistance;
+            // }
         }
         List<BattleObject> battleObjects = new List<BattleObject>(BattleManager.Instance.stars);
         battleObjects.AddRange(BattleManager.Instance.planets);

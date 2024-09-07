@@ -6,8 +6,9 @@ public class GasCollector : ModuleComponent {
     GasCollectorScriptableObject gasCollectorScriptableObject;
     float collectionTime;
 
-    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, unit, componentScriptableObject);
+    public GasCollector(BattleManager battleManager, Module module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
+        base(battleManager, module, unit, componentScriptableObject) {
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
         
         collectionTime = gasCollectorScriptableObject.collectionSpeed;

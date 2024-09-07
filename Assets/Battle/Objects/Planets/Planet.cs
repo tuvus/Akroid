@@ -66,29 +66,20 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     public struct PlanetData {
-        public Faction faction;
-        public string name;
-        public float rotation;
+        public BattleObjectData battleObjectData;
         public float highQualityLandFactor;
         public float mediumQualityLandFactor;
         public float lowQualityLandFactor;
 
-        public PlanetData(Faction faction, string name, float rotation, float highQualityLandFactor, float mediumQualityLandFactor, float lowQualityLandFactor) {
-            this.faction = faction;
-            this.name = name;
-            this.rotation = rotation;
+        public PlanetData(BattleObjectData battleObjectData, float highQualityLandFactor, float mediumQualityLandFactor, float lowQualityLandFactor) {
+            this.battleObjectData = battleObjectData;
             this.highQualityLandFactor = highQualityLandFactor;
             this.mediumQualityLandFactor = mediumQualityLandFactor;
             this.lowQualityLandFactor = lowQualityLandFactor;
         }
     }
 
-    public void SetupPlanet(BattleManager battleManager, BattleManager.PositionGiver positionGiver, PlanetData planetData) {
-        this.faction = planetData.faction;
-        float scale = Random.Range(.9f, 1.3f);
-        transform.localScale = new Vector3(transform.localScale.x * scale, transform.localScale.y * scale, 1);
-        base.SetupBattleObject(battleManager, positionGiver, planetData.rotation);
-        objectName = planetData.name;
+    public Planet(PlanetData planetData, BattleManager battleManager): base(planetData.battleObjectData, battleManager) {
         rotationSpeed *= Random.Range(.5f, 1.5f);
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
@@ -192,10 +183,6 @@ public class Planet : BattleObject, IPositionConfirmer {
             }
         }
         return true;
-    }
-
-    public override float GetSpriteSize() {
-        return spriteRenderer.sprite.bounds.size.x / 2;
     }
 
     public long GetPopulation() {

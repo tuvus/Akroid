@@ -2,15 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : BattleObject, IParticleHolder {
+public class Missile : BattleObject {
     public enum MissileType {
         Hermes,
     }
     public int missileIndex { get; private set; }
-    [SerializeField] private SpriteRenderer highlight;
-    [SerializeField] private DestroyEffect destroyEffect;
-    [SerializeField] private ParticleSystem thrustParticleSystem;
-    [SerializeField] private BoxCollider2D boxCollider2D;
     public MissileType missileType;
     private MissileLauncher missileLauncher;
     private Unit target;
@@ -25,11 +21,7 @@ public class Missile : BattleObject, IParticleHolder {
     bool hit;
     bool expired;
 
-    public void PrespawnMissile(BattleManager battleManager, int missileIndex, float particleSpeed) {
-        base.SetupBattleObject(battleManager);
-        this.missileIndex = missileIndex;
-        SetParticleSpeed(particleSpeed);
-        highlight.enabled = false;
+    public Missile(BattleManager battleManager) : base(new BattleObjectData("Missile"), battleManager) {
         Activate(false);
     }
 
@@ -48,28 +40,24 @@ public class Missile : BattleObject, IParticleHolder {
         this.retarget = retarget;
         hit = false;
         expired = false;
-        destroyEffect.SetupDestroyEffect(this, spriteRenderer);
-        if (BattleManager.Instance.GetParticlesShown())
-            thrustParticleSystem.Play();
         distance = 0;
-        highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
     }
 
     public void UpdateMissile(float deltaTime) {
         if (hit) {
-            if (!destroyEffect.IsPlaying() && thrustParticleSystem.isPlaying == false) {
-                RemoveMissile();
-            } else {
-                destroyEffect.UpdateExplosion(deltaTime);
-                transform.Translate(velocity * deltaTime);
-            }
+            // if (!destroyEffect.IsPlaying() && thrustParticleSystem.isPlaying == false) {
+            //     RemoveMissile();
+            // } else {
+            //     destroyEffect.UpdateExplosion(deltaTime);
+            //     transform.Translate(velocity * deltaTime);
+            // }
         } else if (expired) {
-            if (thrustParticleSystem.isPlaying == false) {
-                RemoveMissile();
-            } else {
-                transform.Translate(velocity * deltaTime);
-            }
+            // if (thrustParticleSystem.isPlaying == false) {
+            //     RemoveMissile();
+            // } else {
+            //     transform.Translate(velocity * deltaTime);
+            // }
         } else {
             turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
             if (target != null && target.IsTargetable()) {
@@ -136,27 +124,17 @@ public class Missile : BattleObject, IParticleHolder {
 
     public void Explode() {
         hit = true;
-        highlight.enabled = false;
         transform.eulerAngles = Vector3.zero;
-        spriteRenderer.enabled = false;
-        thrustParticleSystem.Stop(false);
-        if (BattleManager.Instance.GetParticlesShown())
-            destroyEffect.Explode();
+        visible = false;
     }
 
 
     public void Expire() {
-        thrustParticleSystem.Stop();
-        spriteRenderer.enabled = false;
+        visible = false;
         expired = true;
-        boxCollider2D.enabled = false;
-        highlight.enabled = false;
     }
 
     public void RemoveMissile() {
-        thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        destroyEffect.ShowEffects(false);
-        destroyEffect.ShowParticles(false);
         Activate(false);
     }
 
@@ -166,28 +144,7 @@ public class Missile : BattleObject, IParticleHolder {
         } else {
             BattleManager.Instance.RemoveMissile(this);
         }
-        spriteRenderer.enabled = activate;
-        boxCollider2D.enabled = activate;
-    }
 
-    public void ShowEffects(bool shown) {
-        if (highlight.enabled)
-            highlight.enabled = shown;
-    }
-
-    public void SetParticleSpeed(float speed) {
-        destroyEffect.SetParticleSpeed(speed);
-        var main = thrustParticleSystem.main;
-        main.simulationSpeed = speed;
-    }
-
-    public void ShowParticles(bool shown) {
-        if (hit && !shown)
-            destroyEffect.ShowEffects(shown);
-
-        if (!shown)
-            thrustParticleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        else if (spriteRenderer.enabled)
-            thrustParticleSystem.Play();
+        visible = activate;
     }
 }

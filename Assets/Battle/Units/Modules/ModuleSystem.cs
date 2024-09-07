@@ -57,7 +57,7 @@ public class ModuleSystem : MonoBehaviour {
     [field: SerializeField] public List<System> systems { get; private set; } = new List<System>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
-    public virtual void SetupModuleSystem(Unit unit, UnitScriptableObject unitScriptableObject) {
+    public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
         List<ComponentScriptableObject> systemComponents = unitScriptableObject.GetSystemComponents();
         for (int i = 0; i < systems.Count; i++) {
@@ -65,14 +65,14 @@ public class ModuleSystem : MonoBehaviour {
         }
         unitScriptableObject.ApplyComponentsToSystems(systems);
 
-        for (int i = 0; i < modules.Count; i++) {
-            if (systems[modules[i].system].component == null) continue;
-            ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[modules[i].system].component.GetComponentType()).GetComponent<ModuleComponent>();
+        foreach (var module in modules) {
+            if (systems[module.system].component == null) continue;
+            // ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[module.system].component.GetComponentType()).GetComponent<ModuleComponent>();
+            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(systems[module.system].component.GetComponentType(), new List<object>(){battleManager, module, systems[module.system].component});
             if (newComponent == null) {
-                print(systems[modules[i].system].component.GetComponentType());
-                continue;
+                print(systems[module.system].component.GetComponentType());
             }
-            newComponent.SetupComponent(modules[i], unit, systems[modules[i].system].component);
+            // newComponent.SetupComponent(battleManager, module, unit, systems[module.system].component);
         }
         RefreshSystemCounts();
 
@@ -243,7 +243,16 @@ public class ModuleSystem : MonoBehaviour {
             }
             //Upgrade the moduleComponents
             systems[systemIndex] = new System(system, system.component.upgrade);
-            GetModulesOfSystem(systemIndex).ForEach(a => a.moduleComponent.SetupComponent(a, unit, systems[systemIndex].component));
+            for (int i = 0; i < modules.Count; i++) {
+                if (modules[i].system == systemIndex) {
+                    modules[i].moduleComponent = (ModuleComponent)Activator.CreateInstance(
+                        systems[modules[systemIndex].system].component.GetComponentType(),
+                        new List<object>() {
+                            upgrader.battleManager, modules[systemIndex], systems[modules[systemIndex].system].component
+                        }
+                    );
+                }
+            }
         }
     }
     #endregion

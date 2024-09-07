@@ -6,46 +6,30 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ComponentModuleSystem))]
-public abstract class Unit : BattleObject, IParticleHolder {
-    public UnitScriptableObject UnitScriptableObject { get; private set; }
+public abstract class Unit : BattleObject {
+    public UnitScriptableObject unitScriptableObject { get; private set; }
     [field: SerializeField] public ComponentModuleSystem moduleSystem { get; private set; }
     private UnitGroup group;
 
     protected int health;
-    [SerializeField] protected int followDist;
-    private UnitSelection unitSelection;
-    protected List<Collider2D> colliders;
     private float maxWeaponRange;
     private float minWeaponRange;
     protected Vector2 velocity;
-    private DestroyEffect destroyEffect;
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float particleSpeed, UnitScriptableObject unitScriptableObject) {
-        this.UnitScriptableObject = unitScriptableObject;
-        this.faction = faction;
-        base.SetupBattleObject(battleManager, positionGiver, rotation);
-        moduleSystem = GetComponent<ComponentModuleSystem>();
-        moduleSystem.SetupModuleSystem(this, unitScriptableObject);
-        this.objectName = name;
-        gameObject.name = name;
+    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject): 
+        base(battleObjectData, battleManager) {
+        this.unitScriptableObject = unitScriptableObject;
+        moduleSystem = new ComponentModuleSystem(battleManager,this, unitScriptableObject);
         health = GetMaxHealth();
-        transform.eulerAngles = new Vector3(0, 0, rotation);
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
-        unitSelection = GetComponentInChildren<UnitSelection>();
-        destroyEffect = GetComponentInChildren<DestroyEffect>();
-        destroyEffect.SetupDestroyEffect(this, spriteRenderer);
-        colliders = new List<Collider2D>(GetComponents<Collider2D>());
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
         SetupWeaponRanges();
-        unitSelection.SetupSelection(this);
-        SetParticleSpeed(particleSpeed);
-        followDist = (int)(GetSize() * 2);
-        ShowFactionColor(battleManager.GetFactionColoringShown(), true);
+        Spawn();
     }
 
     public void SetupWeaponRanges() {
@@ -116,21 +100,15 @@ public abstract class Unit : BattleObject, IParticleHolder {
         Profiler.EndSample();
     }
 
-    public void UpdateUnitUI(bool showIndicators) {
-        if (spriteRenderer.enabled) {
-            unitSelection.UpdateUnitSelection(showIndicators);
-        }
-    }
-
     public void UpdateDestroyedUnit(float deltaTime) {
-        if (destroyEffect.IsPlaying() == false && GetHealth() <= 0) {
-            BattleManager.Instance.RemoveDestroyedUnit(this);
-            //if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
-            //    return;
-            Destroy(gameObject);
-        } else {
-            destroyEffect.UpdateExplosion(deltaTime);
-        }
+        // if (destroyEffect.IsPlaying() == false && GetHealth() <= 0) {
+        //     BattleManager.Instance.RemoveDestroyedUnit(this);
+        //     //if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
+        //     //    return;
+        //     Destroy(gameObject);
+        // } else {
+        //     destroyEffect.UpdateExplosion(deltaTime);
+        // }
     }
     #endregion
 
@@ -150,47 +128,18 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return 0;
     }
 
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        if (IsSpawned())
-            unitSelection.SetSelected(selectionStrength);
-    }
-
-    public override void UnselectObject() {
-        if (IsSpawned())
-            SelectObject(UnitSelection.SelectionStrength.Unselected);
-    }
-
-    public virtual void ShowUnit(bool show) {
-        spriteRenderer.enabled = show;
-        ActivateColliders(show);
-        unitSelection.ShowUnitSelection(show);
-    }
-
-    public virtual void ActivateColliders(bool active) {
-        for (int i = 0; i < colliders.Count; i++) {
-            colliders[i].enabled = active;
-        }
-        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.ShowShield(active));
-    }
-
     protected override void Despawn(bool removeImmediately) {
         base.Despawn(removeImmediately);
         health = 0;
-        ActivateColliders(false);
-        unitSelection.ShowUnitSelection(false);
         DestroyUnit();
     }
 
     public virtual void Explode() {
         if (!IsSpawned())
             return;
-        if (BattleManager.Instance.GetParticlesShown())
-            destroyEffect.Explode();
         moduleSystem.Get<ShieldGenerator>().ForEach(s => s.DestroyShield());
         moduleSystem.Get<Turret>().ForEach(s => s.StopFiring());
         moduleSystem.Get<Hangar>().ForEach(h => h.UndockAll());
-        float value = UnityEngine.Random.Range(0.2f, 0.6f);
-        GetSpriteRenderers().ForEach(r => { r.color = new Color(value, value, value, 1); });
         Despawn(false);
     }
 
@@ -307,7 +256,7 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return health;
     }
     public int GetMaxHealth() {
-        return Mathf.RoundToInt(UnitScriptableObject.maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return Mathf.RoundToInt(unitScriptableObject.maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public int GetTotalHealth() {
@@ -341,25 +290,10 @@ public abstract class Unit : BattleObject, IParticleHolder {
         return moduleSystem.Get<ShieldGenerator>().Sum(s => s.GetMaxShieldStrength());
     }
 
-    public int GetFollowDistance() {
-        return followDist;
-    }
-
     public abstract bool Destroyed();
     
-    public float GetCombinedFollowDistance(Unit unit) {
-        return GetFollowDistance() + unit.GetFollowDistance();
-    }
-
     public virtual Vector2 GetVelocity() {
         return velocity;
-    }
-
-    public float GetZoomIndicatorSize() {
-        return unitSelection.GetSize();
-    }
-    public UnitSelection GetUnitSelection() {
-        return unitSelection;
     }
 
     public bool HasWeapons() {
@@ -378,29 +312,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
         List<Ship> dockedShips = new();
         moduleSystem.Get<Hangar>().ForEach(h => dockedShips.AddRange(h.ships));
         return dockedShips;
-    }
-
-    public virtual void ShowEffects(bool shown) {
-        destroyEffect.ShowEffects(shown);
-    }
-
-    public virtual void SetParticleSpeed(float speed) {
-        destroyEffect.SetParticleSpeed(speed);
-    }
-
-    public virtual void ShowParticles(bool shown) {
-        destroyEffect.ShowParticles(shown);
-    }
-
-    public void ShowFactionColor(bool shown, bool initialising = false) {
-        if (!initialising && !IsSpawned()) return;
-        if (shown) {
-            GetSpriteRenderer().color = faction.GetColorTint();
-            GetSpriteRenderers().ForEach(r => r.color = faction.GetColorTint());
-        } else {
-            GetSpriteRenderers().ForEach(r => r.color = Color.white);
-        }
-        unitSelection.UpdateFactionColor();
     }
 
     [ContextMenu("GetUnitDamagePerSecond")]
@@ -434,15 +345,6 @@ public abstract class Unit : BattleObject, IParticleHolder {
                + moduleSystem.Get<LaserTurret>().Count
                + moduleSystem.Get<MissileLauncher>().Count;   
     }
-
-    public override List<SpriteRenderer> GetSpriteRenderers() {
-        List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer> {
-            spriteRenderer
-        };
-        spriteRenderers.AddRange(moduleSystem.Get<Turret>().Select(t => t.GetSpriteRenderer()));
-        return spriteRenderers;
-    }
-
     #endregion
 
 }

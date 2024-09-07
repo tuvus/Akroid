@@ -11,38 +11,50 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     [field: SerializeField] public string objectName { get; protected set; }
     [field: SerializeField] public float size { get; protected set; }
     [field: SerializeField] public Vector2 position { get; protected set; }
-    protected SpriteRenderer spriteRenderer;
+    [field: SerializeField] public float rotation { get; protected set; }
+    [field: SerializeField] public Vector2 scale { get; protected set; }
+
     private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     [field: SerializeField] public Faction faction { get; protected set; }
-    private bool spawned;
+    public bool spawned { get; protected set; }
+    public bool visible { get; protected set;}
+    
+    public struct BattleObjectData {
+        public string objectName;
+        public BattleManager.PositionGiver positionGiver;
+        public float rotation;
+        public Vector2 scale;
+        public Faction faction;
 
-    //Transform sizeIndicator;
-
-    /// <summary>
-    /// Sets up the BattleObject with default position and rotation.
-    /// Sets up the size as normal
-    /// </summary>
-    protected void SetupBattleObject(BattleManager battleManager, Faction faction = null) {
-        this.battleManager = battleManager;
-        this.faction = faction;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        position = transform.position;
-        //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
-        SetSize(SetupSize());
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Vector2 scale, Faction faction = null) {
+            this.objectName = objectName;
+            this.positionGiver = positionGiver;
+            this.rotation = rotation;
+            this.scale = scale;
+            this.faction = faction;
+        }
+        
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null):
+            this(objectName, positionGiver, rotation, Vector2.one, faction) {
+        }
+        
+        public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null): 
+            this(objectName, new BattleManager.PositionGiver(position), rotation, faction) { }
+        
+        public BattleObjectData(string objectName): 
+            this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0) { }
     }
 
-    /// <summary>
-    /// Uses the given positionGiver and rotation to set the position and the rotation of the BattleObject.
-    /// Also sets up the size.
-    /// </summary>
-    protected void SetupBattleObject(BattleManager battleManager, BattleManager.PositionGiver positionGiver, float rotation) {
+    public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
         this.battleManager = battleManager;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        transform.eulerAngles = new Vector3(0, 0, rotation);
-        //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
+        this.objectName = battleObjectData.objectName;
+        this.position = GetSetupPosition(battleObjectData.positionGiver);
+        this.rotation = battleObjectData.rotation;
+        this.scale = battleObjectData.scale;
+        this.faction = battleObjectData.faction;
+        spawned = false;
+        visible = false;
         SetSize(SetupSize());
-        transform.position = GetSetupPosition(positionGiver);
-        position = transform.position;
     }
 
     public bool IsInGroup(IObjectGroupLink newGroup) {
@@ -60,12 +72,6 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
     public void RemoveFromAllGroups() {
         for (int i = battleObjectInGroups.Count - 1; i >= 0; i--) {
             battleObjectInGroups[i].RemoveBattleObject(this);
-        }
-    }
-
-    public void UpdateGroups() {
-        for (int i = 0; i < battleObjectInGroups.Count; i++) {
-            battleObjectInGroups[i].UpdateObjectGroup();
         }
     }
 
@@ -117,6 +123,7 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
 
     protected virtual void Despawn(bool removeImmediately) {
         spawned = false;
+        visible = false;
         if (removeImmediately) {
             Destroy(gameObject);
         }
@@ -134,29 +141,16 @@ public abstract class BattleObject : MonoBehaviour, IObject, IPositionConfirmer 
         this.faction = faction;
     }
 
-    [ContextMenu("GetObjectSize")]
-    private void ManualLogSize() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        Debug.Log(SetupSize());
-    }
-
     /// <summary>
     /// Returns the size of the sprite not including any scale modifications specific to the BattleObject.
     /// </summary>
     /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
-        if (spriteRenderer.sprite == null) return 0;
-        return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
-Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2 * transform.localScale.y;
-    }
-
-    public SpriteRenderer GetSpriteRenderer() {
-        return spriteRenderer;
-    }
-
-    public virtual List<SpriteRenderer> GetSpriteRenderers() {
-        return new List<SpriteRenderer> { spriteRenderer };
+        return 0;
+//         if (spriteRenderer.sprite == null) return 0;
+//         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
+// Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
+// Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2 * transform.localScale.y;
     }
 
     public bool IsUnit() {

@@ -7,15 +7,16 @@ public class DecoyUnit : Unit {
     public Faction tempFaction;
     public Vector2 inputVelocity;
 
+    public DecoyUnit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject, Unit target, Faction tempFaction, Vector2 inputVelocity) : base(battleObjectData, battleManager, unitScriptableObject) {
+        this.target = target;
+        this.tempFaction = tempFaction;
+        this.inputVelocity = inputVelocity;
+    }
+
     private void Start() {
         faction = tempFaction;
         enemyUnitsInRange = new List<Unit>() { target };
         Spawn();
-        SetupUnit(null, "Test", tempFaction, new BattleManager.PositionGiver(), 0, 1, null);
-    }
-
-    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, float timeScale, UnitScriptableObject unitScriptableObject) {
-        enemyUnitsInRange = new List<Unit>() { target };
     }
 
     public void FixedUpdate() {
@@ -33,7 +34,7 @@ public class DecoyUnit : Unit {
     public override int TakeDamage(int damage) {
         //print(damage);
         health -= damage;
-        UnitScriptableObject.maxHealth -= damage;
+        unitScriptableObject.maxHealth -= damage;
         return 0;
     }
 

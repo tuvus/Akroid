@@ -13,9 +13,11 @@ public class ConstructionBay : ModuleComponent {
     [SerializeField]
     public List<ShipConstructionBlueprint> buildQueue;
 
-    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, unit, componentScriptableObject);
+    public ConstructionBay(BattleManager battleManager, Module module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
+        base(battleManager, module, unit, componentScriptableObject) {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
+        
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
 

@@ -166,9 +166,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            battleManager.CreateNewStation(new Station.StationData(this, battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, "FleetCommand", GetPosition(), Random.Range(0, 360)));
+            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = battleManager.CreateNewStation(new Station.StationData(this, battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, "MiningStation", GetPosition(), Random.Range(0, 360))).GetComponent<MiningStation>();
+                MiningStation newStation = battleManager.createNewMiningStation(new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -189,8 +189,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 } else if (randomNum <= 10) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
-            } else
-                BattleManager.Instance.CreateNewShip(new Ship.ShipData(this, BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject, "Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360)));
+            } else BattleManager.Instance.CreateNewShip(new BattleObject.BattleObjectData("Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
         }
     }
 

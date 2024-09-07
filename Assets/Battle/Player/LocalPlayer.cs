@@ -53,7 +53,7 @@ public class LocalPlayer : MonoBehaviour {
     /// </summary>
     public void UpdateFactionColors() {
         foreach (var unit in BattleManager.Instance.units) {
-            unit.GetUnitSelection().UpdateFactionColor();
+            // unit.GetUnitSelection().UpdateFactionColor();
         }
     }
 
@@ -114,12 +114,12 @@ public class LocalPlayer : MonoBehaviour {
     #region HelperMethods
     public void AddOwnedUnit(Unit unit) {
         ownedUnits.Add(unit);
-        unit.GetUnitSelection().UpdateFactionColor();
+        // unit.GetUnitSelection().UpdateFactionColor();
     }
 
     public void RemoveOwnedUnit(Unit unit) {
         ownedUnits.Remove(unit);
-        unit.GetUnitSelection().UpdateFactionColor();
+        // unit.GetUnitSelection().UpdateFactionColor();
     }
 
     public LocalPlayerInput GetInputManager() {

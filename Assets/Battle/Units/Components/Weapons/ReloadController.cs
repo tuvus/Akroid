@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ReloadController : MonoBehaviour {
+public class ReloadController {
     public float fireSpeed;
     public float reloadSpeed;
     public int maxAmmo;
-    float firetime;
-    float reloadTime;
-    int ammo;
+    private float firetime;
+    private float reloadTime;
+    private int ammo;
 
-    public void SetupReloadController(float fireSpeed, float reloadSpeed, int maxAmmo) {
+    public ReloadController(float fireSpeed, float reloadSpeed, int maxAmmo) {
         this.fireSpeed = fireSpeed;
         this.reloadSpeed = reloadSpeed;
         this.maxAmmo = maxAmmo;

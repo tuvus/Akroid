@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using static Command;
 
-public class ShipAI : MonoBehaviour {
+public class ShipAI {
     enum CommandResult {
         Stop = 0,
         StopRemove = 1,
@@ -14,15 +14,17 @@ public class ShipAI : MonoBehaviour {
         Continue = 3,
     }
 
-    Ship ship;
+    private readonly Ship ship;
+    private bool newCommand;
 
-    public List<Command> commands;
-    public bool newCommand;
+    public readonly List<Command> commands;
     public CommandType currentCommandState;
 
-    public void SetupShipAI(Ship ship) {
+    public ShipAI(Ship ship) {
         this.ship = ship;
         commands = new List<Command>(10);
+        newCommand = false;
+        currentCommandState = CommandType.Idle;
     }
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
@@ -409,7 +411,7 @@ public class ShipAI : MonoBehaviour {
                 return CommandResult.Continue;
             }
         }
-        transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
+        ship.transform.position = (Vector2)command.targetUnit.transform.position + command.targetPosition;
         return CommandResult.Continue;
     }
 

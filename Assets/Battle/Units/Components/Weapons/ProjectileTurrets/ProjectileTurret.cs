@@ -8,8 +8,9 @@ public class ProjectileTurret : Turret {
     static float flashSpeed = 0.5f;
     private float flashTime;
 
-    public override void SetupComponent(Module module, Unit unit, ComponentScriptableObject componentScriptableObject) {
-        base.SetupComponent(module, unit, componentScriptableObject);
+    public ProjectileTurret(BattleManager battleManager, Module module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
+        base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
         
         flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();

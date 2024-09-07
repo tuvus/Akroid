@@ -258,24 +258,30 @@ public class BattleManager : MonoBehaviour {
         return newFaction;
     }
 
-    public Ship CreateNewShip(ShipData shipData) {
-        Ship shipPrefab = Resources.Load<Ship>(shipData.shipScriptableObject.prefabPath);
-        Ship newShip = Instantiate(shipPrefab.gameObject, shipData.faction.GetShipTransform()).GetComponent<Ship>();
+    public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject) {
+        // Ship shipPrefab = Resources.Load<Ship>(shipScriptableObject.prefabPath);
+        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject);
         units.Add(newShip);
         ships.Add(newShip);
-        newShip.SetupUnit(this, shipData.shipName, shipData.faction, new PositionGiver(shipData.position), shipData.rotation, timeScale, shipData.shipScriptableObject);
         return newShip;
     }
 
-    public Station CreateNewStation(StationData stationData) {
-        return CreateNewStation(stationData, new PositionGiver(stationData.wantedPosition, 0, 1000, 20, 100, 2));
+    public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
+        GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
+        Station newStation = new Station(battleObjectData, this, stationScriptableObject, built);
+        if (built) {
+            units.Add(newStation);
+            stations.Add(newStation);
+        } else {
+            stationsInProgress.Add(newStation);
+        }
+        return newStation;
     }
-
-    public Station CreateNewStation(StationData stationData, PositionGiver positionGiver) {
-        GameObject stationPrefab = (GameObject)Resources.Load(stationData.stationScriptableObject.prefabPath);
-        Station newStation = Instantiate(stationPrefab, stationData.faction.GetStationTransform()).GetComponent<Station>();
-        newStation.SetupUnit(this, stationData.stationName, stationData.faction, positionGiver, stationData.rotation, stationData.built, timeScale, stationData.stationScriptableObject);
-        if (stationData.built) {
+    
+    public MiningStation createNewMiningStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
+        GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
+        MiningStation newStation = new MiningStation(battleObjectData, this, stationScriptableObject, built);
+        if (built) {
             units.Add(newStation);
             stations.Add(newStation);
         } else {
@@ -284,25 +290,23 @@ public class BattleManager : MonoBehaviour {
         return newStation;
     }
 
-    public void CreateNewStar(string name) {
+    public Star CreateNewStar(string name) {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
-        Star newStar = Instantiate(starPrefab, GetStarTransform()).GetComponent<Star>();
-        newStar.SetupStar(this, name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
+        Star newStar = new Star(new BattleObject.BattleObjectData(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4), Random.Range(0, 360), Vector2.one * Random.Range(0.6f, 1.4f)), this);
         stars.Add(newStar);
+        return newStar;
     }
 
-    public Planet CreateNewPlanet(PositionGiver positionGiver, Planet.PlanetData planetData) {
+    public Planet CreateNewPlanet(Planet.PlanetData planetData) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
-        Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(this, positionGiver, planetData);
+        Planet newPlanet = new Planet(planetData, this);
         planets.Add(newPlanet);
         return newPlanet;
     }
 
-    public Planet CreateNewMoon(PositionGiver positionGiver, Planet.PlanetData planetData) {
+    public Planet CreateNewMoon(Planet.PlanetData planetData) {
         GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Moon");
-        Planet newPlanet = Instantiate(planetPrefab, GetPlanetsTransform()).GetComponent<Planet>();
-        newPlanet.SetupPlanet(this, positionGiver, planetData);
+        Planet newPlanet = new Planet(planetData, this);
         planets.Add(newPlanet);
         return newPlanet;
     }
@@ -318,9 +322,10 @@ public class BattleManager : MonoBehaviour {
         newAsteroidField.SetupAsteroidField(this);
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
-            Asteroid newAsteroid = Instantiate(asteroidPrefab, newAsteroidField.transform).GetComponent<Asteroid>();
             float size = Random.Range(8f, 20f);
-            newAsteroid.SetupAsteroid(newAsteroidField, new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4), new AsteroidData("Asteroid", Random.Range(0, 360), size, (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal));
+            PositionGiver asteroidPositionGiver = new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4);
+            Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size), 
+                this, newAsteroidField, (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
         // The Asteroid field position must be set after the asteroids have been generated
@@ -330,9 +335,8 @@ public class BattleManager : MonoBehaviour {
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
-        GasCloud newGasCloud = Instantiate(gasCloudPrefab, Vector2.zero, Quaternion.identity, GetGasCloudsTransform()).GetComponent<GasCloud>();
         float size = Random.Range(25, 35);
-        newGasCloud.SetupGasCloud(this, positionGiver, new GasCloud.GasCloudData("Gas Cloud", Random.Range(0,360), size, (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas));
+        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", positionGiver, Random.Range(0, 360)), this,  (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
         gasClouds.Add(newGasCloud);
     }
     #endregion
@@ -391,8 +395,7 @@ public class BattleManager : MonoBehaviour {
 
     public void PreSpawnNewProjectile() {
         GameObject projectilePrefab = (GameObject)Resources.Load("Prefabs/Projectile");
-        Projectile newProjectile = Instantiate(projectilePrefab, Vector2.zero, Quaternion.identity, GetProjectileTransform()).GetComponent<Projectile>();
-        newProjectile.PrespawnProjectile(this, projectiles.Count, timeScale);
+        Projectile newProjectile = new Projectile(this);
         projectiles.Add(newProjectile);
     }
 
@@ -415,8 +418,7 @@ public class BattleManager : MonoBehaviour {
 
     public void PrespawnNewMissile() {
         GameObject missilePrefab = (GameObject)Resources.Load("Prefabs/HermesMissile");
-        Missile newMissile = Instantiate(missilePrefab, Vector2.zero, Quaternion.identity, GetMissileTransform()).GetComponent<Missile>();
-        newMissile.PrespawnMissile(this, missiles.Count, timeScale);
+        Missile newMissile = new Missile(this);
         missiles.Add(newMissile);
     }
 
@@ -528,15 +530,15 @@ public class BattleManager : MonoBehaviour {
     /// <param name="time"></param>
     public void SetSimulationTimeScale(float time) {
         timeScale = time;
-        foreach (var unit in units) {
-            unit.SetParticleSpeed(time);
-        }
-        foreach (var projectile in projectiles) {
-            projectile.SetParticleSpeed(time);
-        }
-        foreach (var missile in missiles) {
-            missile.SetParticleSpeed(time);
-        }
+        // foreach (var unit in units) {
+        //     unit.SetParticleSpeed(time);
+        // }
+        // foreach (var projectile in projectiles) {
+        //     projectile.SetParticleSpeed(time);
+        // }
+        // foreach (var missile in missiles) {
+        //     missile.SetParticleSpeed(time);
+        // }
         instantHit = time > 10;
     }
 
@@ -546,18 +548,18 @@ public class BattleManager : MonoBehaviour {
     /// <param name="shown"></param>
     public void ShowEffects(bool shown) {
         ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
-        foreach (var unit in units) {
-            unit.ShowEffects(shown);
-        }
-        foreach (var projectile in projectiles) {
-            projectile.ShowEffects(shown);
-        }
-        foreach (var missile in missiles) {
-            missile.ShowEffects(shown);
-        }
-        foreach (var destroyedUnit in destroyedUnits) {
-            destroyedUnit.ShowEffects(shown);
-        }
+        // foreach (var unit in units) {
+        //     unit.ShowEffects(shown);
+        // }
+        // foreach (var projectile in projectiles) {
+        //     projectile.ShowEffects(shown);
+        // }
+        // foreach (var missile in missiles) {
+        //     missile.ShowEffects(shown);
+        // }
+        // foreach (var destroyedUnit in destroyedUnits) {
+        //     destroyedUnit.ShowEffects(shown);
+        // }
     }
 
     /// <summary>
@@ -566,18 +568,18 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     /// <param name="shown"></param>
     public void ShowParticles(bool shown) {
-        foreach (var unit in units) {
-            unit.ShowParticles(shown);
-        }
-        foreach (var projectile in projectiles) {
-            projectile.ShowParticles(shown);
-        }
-        foreach (var missile in missiles) {
-            missile.ShowParticles(shown);
-        }
-        foreach (var destroyedUnits in destroyedUnits) {
-            destroyedUnits.ShowParticles(shown);
-        }
+        // foreach (var unit in units) {
+        //     unit.ShowParticles(shown);
+        // }
+        // foreach (var projectile in projectiles) {
+        //     projectile.ShowParticles(shown);
+        // }
+        // foreach (var missile in missiles) {
+        //     missile.ShowParticles(shown);
+        // }
+        // foreach (var destroyedUnits in destroyedUnits) {
+        //     destroyedUnits.ShowParticles(shown);
+        // }
     }
 
     /// <summary>
@@ -587,7 +589,7 @@ public class BattleManager : MonoBehaviour {
     /// <param name="shown"></param>
     public void ShowFactionColoring(bool shown) {
         foreach (var unit in units) {
-            unit.ShowFactionColor(shown);
+            // unit.ShowFactionColor(shown);
         }
     }
 

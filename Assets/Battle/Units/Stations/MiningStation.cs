@@ -10,10 +10,10 @@ public class MiningStation : Station {
     public bool activelyMining;
     public List<Asteroid> nearbyAsteroids;
     private float miningTime;
-        
-    public override void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
+
+    public MiningStation(BattleObjectData battleObjectData, BattleManager battleManager,
+        StationScriptableObject stationScriptableObject, bool built): base(battleObjectData, battleManager, stationScriptableObject, built) {
         MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
-        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, built, timeScale, unitScriptableObject);
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();
         activelyMining = true;

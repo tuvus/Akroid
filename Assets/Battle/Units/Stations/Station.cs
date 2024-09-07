@@ -20,24 +20,6 @@ public class Station : Unit, IPositionConfirmer {
 
     public StationType stationType;
 
-    public struct StationData {
-        public Faction faction;
-        public StationScriptableObject stationScriptableObject;
-        public string stationName;
-        public Vector2 wantedPosition;
-        public float rotation;
-        public bool built;
-
-        public StationData(Faction faction, StationScriptableObject stationScriptableObject, string stationName, Vector2 wantedPosition, float rotation, bool built = true) {
-            this.faction = faction;
-            this.stationScriptableObject = stationScriptableObject;
-            this.stationName = stationName;
-            this.wantedPosition = wantedPosition;
-            this.rotation = rotation;
-            this.built = built;
-        }
-    }
-
     [System.Serializable]
     public class StationBlueprint {
         public string name;
@@ -74,16 +56,14 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime { get; protected set; }
     protected bool built;
 
-    public virtual void SetupUnit(BattleManager battleManager, string name, Faction faction, BattleManager.PositionGiver positionGiver, float rotation, bool built, float timeScale, UnitScriptableObject unitScriptableObject) {
-        base.SetupUnit(battleManager, name, faction, positionGiver, rotation, timeScale, unitScriptableObject);
-        stationAI = GetComponent<StationAI>();
-        stationAI.SetupStationAI(this);
+    public Station(BattleObjectData battleObjectData, BattleManager battleManager,
+        StationScriptableObject stationScriptableObject, bool built) : base(battleObjectData, battleManager,
+        stationScriptableObject) {
+        stationAI = new StationAI(this);
         this.built = built;
         if (!built) {
             faction.AddStationBlueprint(this);
             health = 0;
-            ActivateColliders(false);
-            spriteRenderer.color = new Color(.3f, 1f, .3f, .5f);
             moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(false));
         } else {
             faction.AddStation(this);
@@ -150,7 +130,7 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-    #region StationControlls
+    #region StationControls
     public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool? undock = false) {
         return BuildShip(faction, shipClass, cost, undock);
     }
@@ -165,12 +145,11 @@ public class Station : Unit, IPositionConfirmer {
 
     public virtual Ship BuildShip(Faction faction, ShipClass shipClass, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
-        return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
+        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
     public virtual Ship BuildShip(Faction faction, ShipClass shipClass, string shipName, long cost = 0, bool? undock = false) {
-        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
-        return BuildShip(faction, BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject, shipName, cost, undock);
+        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipName, cost, undock);
     }
 
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
@@ -188,11 +167,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0, bool? undock = false) {
-        return BuildShip(faction, new Ship.ShipData(faction, shipScriptableObject, shipName, transform.position, Random.Range(0, 360)), cost, undock);
-    }
-
-    public virtual Ship BuildShip(ShipData shipData, long cost = 0, bool? undock = false) {
-        return BuildShip(faction, shipData, cost, undock);
+        return BuildShip(new BattleObjectData(shipName, transform.position, Random.Range(0, 360), faction), shipScriptableObject, cost, undock);
     }
 
     /// <summary>
@@ -206,8 +181,8 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="cost"></param>
     /// <param name="undock"></param>
     /// <returns>The newly built ship</returns>
-    public virtual Ship BuildShip(Faction faction, ShipData shipData, long cost = 0, bool? undock = false) {
-        Ship newShip = BattleManager.Instance.CreateNewShip(new ShipData(faction, shipData));
+    public virtual Ship BuildShip(BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
+        Ship newShip = battleManager.CreateNewShip(battleObjectData, shipScriptableObject);
         if (undock == null) { 
             // The ship will be built at this station, however it's position is somewhere else in the system
         } else if ((bool)undock) {
@@ -261,10 +236,7 @@ public class Station : Unit, IPositionConfirmer {
             built = true;
             health = GetMaxHealth();
             moduleSystem.Get<Turret>().ForEach(t => t.ShowTurret(true));
-            ShowUnit(true);
-            spriteRenderer.color = new Color(1, 1, 1, 1);
             Spawn();
-            GetUnitSelection().UpdateFactionColor();
             faction.GetFactionAI().OnStationBuilt(this);
             return true;
         }
