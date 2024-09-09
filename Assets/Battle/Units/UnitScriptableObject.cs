@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using static CargoBay;
 
@@ -15,20 +14,7 @@ public class UnitScriptableObject : ScriptableObject {
     public int maxHealth;
     public Sprite sprite;
 
-    [SerializeField] private ComponentData[] components;
-    [SerializeField] private ModuleSystem.System[] systems;
-
-    [Serializable]
-    private class ComponentData {
-        [HideInInspector]
-        public string name;
-        public ComponentScriptableObject component;
-
-        public ComponentData(string name, ComponentScriptableObject component) {
-            this.name = name;
-            this.component = component;
-        }
-    }
+    [SerializeField] protected ModuleSystem.System[] systems;
 
     public void OnValidate() {
         if (systems == null) {

@@ -13,9 +13,9 @@ public class Thruster : ModuleComponent, IParticleHolder {
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
-        
+
         baseThrustEmissionRate = particle.emission.rateOverTime.constant;
-        
+
         // thrusterFlare.brightness = 5 * unit.GetSpriteSize();
         targetBrightness = thrusterFlare.brightness;
         thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();
