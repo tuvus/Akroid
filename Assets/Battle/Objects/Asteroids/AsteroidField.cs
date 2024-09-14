@@ -5,9 +5,7 @@ using UnityEngine;
 public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
 
-    public void SetupAsteroidField(BattleManager battleManager) {
-        SetupObjectGroup(battleManager, new HashSet<Asteroid>(), true);
-    }
+    public AsteroidField(BattleManager battleManager): base(battleManager, new HashSet<Asteroid>(), true) { }
 
     /// <summary>
     /// SetupAstroidFieldPosition needs to be called after all asteroids have been added and placed to determine it's size.

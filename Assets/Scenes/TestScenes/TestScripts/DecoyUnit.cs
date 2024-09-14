@@ -25,7 +25,7 @@ public class DecoyUnit : Unit {
 
 
     public override bool Destroyed() {
-        return faction;
+        return faction == null;
     }
 
     public override void Explode() {

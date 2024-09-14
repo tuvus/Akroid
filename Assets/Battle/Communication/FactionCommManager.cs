@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static CommunicationEvent;
 
-public class FactionCommManager : MonoBehaviour {
+public class FactionCommManager {
     public Faction faction { get; private set; }
     public List<CommunicationEvent> communicationLog;
     public List<DelayCommunication> delayedCommunications;
@@ -20,7 +20,7 @@ public class FactionCommManager : MonoBehaviour {
         }
     }
 
-    public void SetupCommunicationManager(Faction faction, Character character) {
+    public FactionCommManager(Faction faction, Character character) {
         this.faction = faction;
         this.character = character;
         delayedCommunications = new List<DelayCommunication>();

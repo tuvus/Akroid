@@ -155,7 +155,7 @@ public class BattleManager : MonoBehaviour {
 
         startOfSimulation = Time.unscaledTime;
         battleState = BattleState.Running;
-        if (CheckVictory())
+        if (CheckVictory() != null)
             battleState = BattleState.Ended;
     }
 
@@ -252,9 +252,8 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
-        Faction newFaction = Instantiate(Resources.Load<GameObject>("Prefabs/Faction"), GetFactionsTransform()).GetComponent<Faction>();
+        Faction newFaction = new Faction(this, factionData, positionGiver, startingResearchCost);
         factions.Add(newFaction);
-        newFaction.SetUpFaction(this, factionData, positionGiver, startingResearchCost);
         return newFaction;
     }
 
@@ -277,8 +276,8 @@ public class BattleManager : MonoBehaviour {
         }
         return newStation;
     }
-    
-    public MiningStation createNewMiningStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
+
+    public MiningStation CreateNewMiningStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
         MiningStation newStation = new MiningStation(battleObjectData, this, stationScriptableObject, built);
         if (built) {
@@ -317,14 +316,13 @@ public class BattleManager : MonoBehaviour {
 
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
-        AsteroidField newAsteroidField = Instantiate(asteroidFieldPrefab, Vector2.zero, Quaternion.identity, GetAsteroidFieldTransform()).GetComponent<AsteroidField>();
+        AsteroidField newAsteroidField = new AsteroidField(this);
         // The Asteroid field must be set up before the asteroids are generated
-        newAsteroidField.SetupAsteroidField(this);
         for (int i = 0; i < count; i++) {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             float size = Random.Range(8f, 20f);
             PositionGiver asteroidPositionGiver = new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4);
-            Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size), 
+            Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size),
                 this, newAsteroidField, (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
@@ -435,7 +433,7 @@ public class BattleManager : MonoBehaviour {
 
     /// <summary>
     /// Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
-    /// 
+    ///
     /// Also has profiling for most method calls.
     /// </summary>
     public virtual void FixedUpdate() {

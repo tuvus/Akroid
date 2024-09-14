@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class FactionAI : MonoBehaviour {
+public class FactionAI {
     public BattleManager battleManager { get; private set; }
     public Faction faction { get; protected set; }
     public bool autoResearch;
@@ -12,9 +12,8 @@ public class FactionAI : MonoBehaviour {
     public float attackStrength = 0.1f;
 
     [field:SerializeField] public HashSet<Ship> idleShips { get; protected set; }
-    [SerializeField] public List<SelectionGroup> newNearbyEnemyUnits;
 
-    public virtual void SetupFactionAI(BattleManager battleManager, Faction faction) {
+    public FactionAI(BattleManager battleManager, Faction faction) {
         this.battleManager = battleManager;
         this.faction = faction;
         idleShips = new HashSet<Ship>(40);

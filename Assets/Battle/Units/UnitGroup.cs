@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class UnitGroup : ObjectGroup<Unit>{
 
-    public override void SetupObjectGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
-        base.SetupObjectGroup(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
+    public UnitGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false):
+        base(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition){
     }
 
     public int GetTotalGroupHealth() {

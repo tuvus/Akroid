@@ -17,8 +17,8 @@ public class PlanetFactionAI : FactionAI {
     float updateTime;
     float sellResourcesToPlanetTime;
 
-    public void SetupPlanetFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Shipyard tradeStation, Shipyard shipyard, List<Ship> civilianShips, EventManager eventManager) {
-        base.SetupFactionAI(battleManger, faction);
+    public PlanetFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet,
+        Shipyard tradeStation, Shipyard shipyard, List<Ship> civilianShips, EventManager eventManager): base(battleManger, faction) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;

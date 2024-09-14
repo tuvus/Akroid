@@ -7,10 +7,10 @@ public class ShipGroup : UnitGroup {
     [field:SerializeField] public HashSet<Ship> ships { get; private set; }
     public List<Fleet> sentFleets;
 
-    public void SetupShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public ShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false):
+        base(battleManager, objects.Cast<Unit>().ToHashSet(), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition){
         ships = objects;
         sentFleets = new List<Fleet>();
-        base.SetupObjectGroup(battleManager, new HashSet<Unit>(objects), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition);
     }
 
     public void SetupTargetGroup(HashSet<Ship> ships, bool deleteWhenEmpty) {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ObjectGroup<T> : MonoBehaviour, IObject, IObjectGroupLink where T : BattleObject {
+public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
     [field: SerializeField] public BattleManager battleManager { get; private set; }
     [field: SerializeField] public HashSet<T> battleObjects { get; private set; }
     [field: SerializeField] public Vector2 position { get; private set; }
@@ -13,11 +13,11 @@ public class ObjectGroup<T> : MonoBehaviour, IObject, IObjectGroupLink where T :
     public bool deleteGroupWhenEmpty { get; private set; }
     //public Transform sizeIndicator { get; private set; }
 
-    public virtual void SetupObjectGroup() {
+    public ObjectGroup() {
         battleObjects = new HashSet<T>(10);
     }
 
-    public virtual void SetupObjectGroup(BattleManager battleManager, HashSet<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public ObjectGroup(BattleManager battleManager, HashSet<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
         this.battleManager = battleManager;
         battleObjects = objects;
         this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
@@ -77,10 +77,7 @@ public class ObjectGroup<T> : MonoBehaviour, IObject, IObjectGroupLink where T :
             battleObjects.Remove((T)battleObject);
             battleObject.RemoveGroup(this);
             if (battleObjects.Count == 0 && deleteGroupWhenEmpty) {
-                if (gameObject == null)
-                    print("AlreadyDestroyed");
                 deleteGroupWhenEmpty = false;
-                Destroy(gameObject);
             }
         }
     }

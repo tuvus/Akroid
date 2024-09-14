@@ -8,7 +8,7 @@ public class TestBattleManager : BattleManager {
         Instance = this;
         transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         foreach (var faction in GetComponentsInChildren<Faction>()) {
-            faction.SetUpFaction(this, new Faction.FactionData(), new PositionGiver(Vector2.zero), 0);
+            // faction.SetUpFaction(this, new Faction.FactionData(), new PositionGiver(Vector2.zero), 0);
         }
     }
 

@@ -119,9 +119,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
     }
 
-    public void SetUpFaction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost) {
-        units = new HashSet<Unit>((factionData.ships + factionData.stations) * 5);
-        base.SetupObjectGroup(battleManager, units, false);
+    public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost):
+        base(battleManager, new HashSet<Unit>((factionData.ships + factionData.stations) * 5), false) {
+        units = battleObjects;
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             SetPosition(targetPosition.Value);
@@ -139,17 +139,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
         baseGroup = CreateNewUnitGroup("BaseGroup", false, new HashSet<Unit>(100));
-        factionAI = (FactionAI)gameObject.AddComponent(factionData.factionAI);
-        factionAI.SetupFactionAI(battleManager, this);
+        factionAI = new FactionAI(battleManager, this);
         GenerateFaction(factionData, startingResearchCost);
         factionAI.GenerateFactionAI();
-        commManager = GetComponent<FactionCommManager>();
-        commManager.SetupCommunicationManager(this, factionData.leader);
+        commManager = new FactionCommManager(this, factionData.leader);
     }
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
         name = factionData.name;
-        gameObject.name = name;
         abbreviatedName = factionData.abbreviatedName;
         credits = factionData.credits;
         science = factionData.science;
@@ -168,7 +165,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (factionData.stations > 0) {
             battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = battleManager.createNewMiningStation(new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
+                MiningStation newStation = battleManager.CreateNewMiningStation(new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -323,8 +320,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public Fleet CreateNewFleet(string fleetName, HashSet<Ship> ships) {
-        Fleet newFleet = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"), GetFleetTransform()).GetComponent<Fleet>();
-        newFleet.SetupFleet(battleManager, this, fleetName, ships);
+        Fleet newFleet = new Fleet(battleManager, this, fleetName, ships);
         fleets.Add(newFleet);
         unitGroups.Add(newFleet);
         return newFleet;
@@ -337,10 +333,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, HashSet<Unit> units) {
-        GameObject newGroupObject = new GameObject(groupName);
-        newGroupObject.transform.SetParent(GetGroupTransform());
-        UnitGroup newUnitGroup = newGroupObject.AddComponent<UnitGroup>();
-        newUnitGroup.SetupObjectGroup(battleManager, units, deleteWhenEmpty, true);
+        UnitGroup newUnitGroup = new UnitGroup(battleManager, units, deleteWhenEmpty, true);
         unitGroups.Add(newUnitGroup);
         return newUnitGroup;
     }
@@ -736,23 +729,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public bool HasEnemy() {
         return enemyFactions.ToList().Any(e => e.units.Count > 0);
     }
-
-    public Transform GetShipTransform() {
-        return transform.GetChild(0);
-    }
-
-    public Transform GetStationTransform() {
-        return transform.GetChild(1);
-    }
-
-    public Transform GetFleetTransform() {
-        return transform.GetChild(2);
-    }
-
-    public Transform GetGroupTransform() {
-        return transform.GetChild(3);
-    }
-
 
     public Station GetFleetCommand() {
         return factionAI.GetFleetCommand();

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using static Command;
 
-public class FleetAI : MonoBehaviour {
+public class FleetAI {
     enum CommandResult {
         Stop = 0,
         StopRemove = 1,
@@ -19,7 +19,7 @@ public class FleetAI : MonoBehaviour {
     public CommandType currentCommandState;
     public FleetFormation.FormationType formationType;
 
-    public void SetupFleetAI(Fleet fleet) {
+    public FleetAI(Fleet fleet) {
         this.fleet = fleet;
         commands = new List<Command>(10);
         AddFormationCommand();
@@ -259,8 +259,8 @@ public class FleetAI : MonoBehaviour {
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
             AssignShipsToAttackFleet(command.targetFleet, fleet.minShipSpeed);
             currentCommandState = CommandType.Move;
-        } 
-        if (currentCommandState == CommandType.Move 
+        }
+        if (currentCommandState == CommandType.Move
             && Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) <= fleet.GetMaxTurretRange()) {
             SetAllShipsSpeed();
             currentCommandState = CommandType.AttackFleet;
@@ -307,8 +307,8 @@ public class FleetAI : MonoBehaviour {
                 ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, fleet.minShipSpeed));
             }
             currentCommandState = CommandType.Move;
-        } 
-        if (currentCommandState == CommandType.Move 
+        }
+        if (currentCommandState == CommandType.Move
             && Vector2.Distance(fleet.GetPosition(), command.targetUnit.GetPosition()) <= fleet.GetMaxTurretRange() * 1.2) {
             SetAllShipsSpeed();
             currentCommandState = CommandType.AttackMoveUnit;
@@ -484,7 +484,7 @@ public class FleetAI : MonoBehaviour {
 
 
     /// <summary>
-    /// Clears all other commands, rotates the ships towards the position 
+    /// Clears all other commands, rotates the ships towards the position
     /// and tells them to move toward the position at the same speed in a rotated formation.
     /// </summary>
     /// <param name="movePosition">the position to move to</param>
@@ -498,7 +498,7 @@ public class FleetAI : MonoBehaviour {
     }
 
     /// <summary>
-    /// Clears all other commands, sets the formation of the ships towards the position 
+    /// Clears all other commands, sets the formation of the ships towards the position
     /// and tells them to move toward the position at the same speed in the previous formation.
     /// </summary>
     /// <param name="movePosition">the position to move to</param>

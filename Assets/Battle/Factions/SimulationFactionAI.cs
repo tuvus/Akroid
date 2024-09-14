@@ -18,8 +18,8 @@ public class SimulationFactionAI : FactionAI {
     public int minCombatShips = 10;
     public int maxCombatShips = 20;
 
-    public override void SetupFactionAI(BattleManager battleManager, Faction faction) {
-        base.SetupFactionAI(battleManager, faction);
+    public SimulationFactionAI(BattleManager battleManager, Faction faction):
+        base(battleManager, faction){
         autoConstruction = true;
         autoCommandFleets = true;
         updateTime = Random.Range(0, 0.2f);

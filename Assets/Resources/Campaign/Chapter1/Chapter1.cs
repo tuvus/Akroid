@@ -90,7 +90,7 @@ public class Chapter1 : CampaingController {
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
         shipyard.stationAI.onBuildShip += (ship) => { if (ship.faction == LocalPlayer.Instance.GetFaction()) LocalPlayer.Instance.AddOwnedUnit(ship); };
-        
+
 
         researchFaction = battleManager.CreateNewFaction(new Faction.FactionData("Frontier Research", "FRO", colorPicker.PickColor(), 3000, 36, 0, 0), new BattleManager.PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
         researchStation = battleManager.CreateNewStation(new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()), Random.Range(0, 360), researchFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), true);
@@ -117,10 +117,10 @@ public class Chapter1 : CampaingController {
             civilianShips.Add(tradeStation.BuildShip(planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian"));
         }
 
-        playerFactionAI.SetupPlayerFactionAI(battleManager, playerFaction, this, playerMiningStation);
-        otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);
-        planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips, eventManager);
-        shipyardFactionAI.SetupShipyardFactionAI(battleManager, shipyardFaction, this, planetFactionAI, shipyard);
+        // playerFactionAI.SetupPlayerFactionAI(battleManager, playerFaction, this, playerMiningStation);
+        // otherMiningFactionAI.SetupOtherMiningFactionAI(battleManager, otherMiningFaction, this, shipyardFactionAI, otherMiningStation, tradeStation);
+        // planetFactionAI.SetupPlanetFactionAI(battleManager, planetFaction, this, shipyardFactionAI, planet, tradeStation, shipyard, civilianShips, eventManager);
+        // shipyardFactionAI.SetupShipyardFactionAI(battleManager, shipyardFaction, this, planetFactionAI, shipyard);
 
 
         int asteroidFieldCount = Random.Range(50, 80);
@@ -528,7 +528,7 @@ public class Chapter1 : CampaingController {
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "It looks like a very damaged long range exploration ship!", 4 * GetTimeScale());
         researchChain.Build(eventManager, researchCommManager, playerFaction,
-            "We'd like to take a closer look, could you give us control of the research ship?", 
+            "We'd like to take a closer look, could you give us control of the research ship?",
             new CommunicationEventOption[] {
                 new CommunicationEventOption("Investigate", (communicationEvent) => { return true; }, (communicationEvent) => {
                     if (!communicationEvent.isActive)
@@ -537,8 +537,8 @@ public class Chapter1 : CampaingController {
                     playerFaction.TransferShipTo(researchShip, researchFaction);
                     playerFaction.AddScience(300);
                     AddResearchInvestigationQuestLine(researchShip)();
-                    return true; 
-                }) 
+                    return true;
+                })
             }, 4 * GetTimeScale()
         )();
 
@@ -648,27 +648,27 @@ public class Chapter1 : CampaingController {
             buildEscapeShipChain.AddCondition(EventCondition.WaitEvent(GetTimeScale() * 200));
         }
 
-        buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction, 
+        buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"I have a message for {shipyardFaction.name}, {shipyardFaction.name}, {researchFaction.name}, {playerFaction.name}.");
         buildEscapeShipChain.AddCommEvent(planetCommManager, researchFaction,
             $"I have a message for {shipyardFaction.name}, {shipyardFaction.name}, {researchFaction.name}, {playerFaction.name}.");
         buildEscapeShipChain.AddCommEvent(planetCommManager, playerFaction,
             $"I have a message for {shipyardFaction.name}, {shipyardFaction.name}, {researchFaction.name}, {playerFaction.name}.");
-        
+
         buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction,
             "I think it is about time to develop a ship capable of colonizing plants in other solar systems.", GetTimeScale() * 12);
         buildEscapeShipChain.AddCommEvent(planetCommManager, researchFaction,
             "I think it is about time to develop a ship capable of colonizing plants in other solar systems.");
         buildEscapeShipChain.AddCommEvent(planetCommManager, playerFaction,
             "I think it is about time to develop a ship capable of colonizing plants in other solar systems.");
-        
+
         buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction,
             "We need a way to progress foward in these hard times, hopefully not as a last resort.", GetTimeScale() * 12);
         buildEscapeShipChain.AddCommEvent(planetCommManager, researchFaction,
             "We need a way to progress foward in these hard times, hopefully not as a last resort.");
         buildEscapeShipChain.AddCommEvent(planetCommManager, playerFaction,
             "We need a way to progress foward in these hard times, hopefully not as a last resort.");
-        
+
         buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction,
             "This is a project that can only be done with all of us working together.", GetTimeScale() * 12);
         buildEscapeShipChain.AddCommEvent(planetCommManager, researchFaction,
@@ -955,7 +955,7 @@ public class Chapter1 : CampaingController {
             });
         });
         planetEscalationChain.AddCondition(EventCondition.WaitEvent(80));
-        planetEscalationChain.AddAction(() => { 
+        planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);
             robotFaction.StartWar(planetDemocracy);
             eventManager.AddEvent(EventCondition.PredicateEvent((_) => planet.planetFactions[planetDemocracy].force < 1000000), () => {
@@ -977,7 +977,7 @@ public class Chapter1 : CampaingController {
                 planet.planetFactions[planetEmpire].territory.SubtractFrom(planet.planetFactions[planetEmpire].territory);
                 planet.RemoveFaction(planetEmpire);
             });
-        }); 
+        });
         planetEscalationChain.AddCondition(EventCondition.WaitEvent(40));
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);

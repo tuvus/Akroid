@@ -15,14 +15,14 @@ public class Fleet : ShipGroup {
     public List<Unit> enemyUnitsInRange { get; protected set; }
     public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public void SetupFleet(BattleManager battleManger, Faction faction, string fleetName, Ship ship) {
-        SetupFleet(battleManger, faction, fleetName, new HashSet<Ship>() { ship });
+    public Fleet(BattleManager battleManger, Faction faction, string fleetName, Ship ship):
+        this(battleManger, faction, fleetName, new HashSet<Ship>() { ship }) {
     }
 
-    public void SetupFleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships) {
+    public Fleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships):
+        base(battleManager, new HashSet<Ship>(), true){
         this.faction = faction;
         this.fleetName = fleetName;
-        SetupShipGroup(battleManager, new HashSet<Ship>(), true);
         foreach(Ship ship in ships) {
             AddShip(ship);
         }
@@ -30,8 +30,7 @@ public class Fleet : ShipGroup {
         enemyUnitsInRangeDistance = new List<float>(20);
         minShipSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
-        FleetAI = GetComponent<FleetAI>();
-        FleetAI.SetupFleetAI(this);
+        FleetAI = new FleetAI(this);
     }
 
     public void DisbandFleet() {
@@ -171,7 +170,7 @@ public class Fleet : ShipGroup {
     /// <returns>the closest Enemy fleet</returns>
     public Fleet GetNearbyEnemyFleet() {
         foreach (var enemyUnit in enemyUnitsInRange) {
-            if (enemyUnit.IsShip() && ((Ship)enemyUnit).fleet) {
+            if (enemyUnit.IsShip() && ((Ship)enemyUnit).fleet != null) {
                 return ((Ship)enemyUnit).fleet;
             }
         }

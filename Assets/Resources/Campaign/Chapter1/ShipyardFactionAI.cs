@@ -8,8 +8,8 @@ public class ShipyardFactionAI : FactionAI {
     Shipyard shipyard;
     float transportTime;
 
-    public void SetupShipyardFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard) {
-        base.SetupFactionAI(battleManager, faction);
+    public ShipyardFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, PlanetFactionAI planetFactionAI, Shipyard shipyard):
+        base(battleManager, faction) {
         this.chapter1 = chapter1;
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;

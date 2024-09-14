@@ -12,8 +12,8 @@ public class PlayerFactionAI : FactionAI {
     int nextStationToSendTo;
     private bool nextState;
 
-    public void SetupPlayerFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, MiningStation playerMiningStation) {
-        base.SetupFactionAI(battleManager, faction);
+    public PlayerFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, MiningStation playerMiningStation):
+        base(battleManager, faction) {
         this.chapter1 = chapter1;
         this.playerMiningStation = playerMiningStation;
         tradeRoutes = new List<Station>();
