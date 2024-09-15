@@ -212,27 +212,27 @@ MonoBehaviour:
   - name: SecondaryTurrets
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 3
+    moduleCount: 3
   - name: TopTurrets
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 2
+    moduleCount: 2
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Thrusters
     type: 4
     moduleSize: 0
-    <moduleCount>k__BackingField: 3
+    moduleCount: 3
   <modules>k__BackingField:
   - {fileID: 8353090238792306558}
   - {fileID: 8204143582608511372}

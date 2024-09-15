@@ -304,23 +304,23 @@ MonoBehaviour:
   - name: TopTurret
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: BottomTurret
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: MainThruster
     type: 4
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: SubThrusters
     type: 4
     moduleSize: 0
-    <moduleCount>k__BackingField: 2
+    moduleCount: 2
   <modules>k__BackingField:
   - {fileID: 3886802930279688786}
   - {fileID: 1252493416376976227}

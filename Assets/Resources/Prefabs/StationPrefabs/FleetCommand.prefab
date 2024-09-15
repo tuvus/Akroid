@@ -308,27 +308,27 @@ MonoBehaviour:
   - name: LowerTurrets
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 3
+    moduleCount: 3
   - name: UpperTurrets
     type: 3
     moduleSize: 0
-    <moduleCount>k__BackingField: 3
+    moduleCount: 3
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   - name: Utility
     type: 1
     moduleSize: 0
-    <moduleCount>k__BackingField: 1
+    moduleCount: 1
   <modules>k__BackingField:
   - {fileID: 663582259114771402}
   - {fileID: 6076792025483389646}

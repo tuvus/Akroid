@@ -21,7 +21,7 @@ public class PrefabModuleSystem : MonoBehaviour {
     }
 
     [Serializable]
-    public class PrefabSystem {
+    public struct PrefabSystem {
         public string name;
         public SystemType type;
         public int moduleSize;
