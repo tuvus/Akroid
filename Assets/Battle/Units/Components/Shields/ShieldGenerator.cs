@@ -11,11 +11,11 @@ public class ShieldGenerator : ModuleComponent {
     private float timeTillShieldCount;
 	private Shield shield;
 
-	public ShieldGenerator(BattleManager battleManager, Module module, Unit unit,
+	public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit,
 		ComponentScriptableObject componentScriptableObject) :
 		base(battleManager, module, unit, componentScriptableObject) {
 		shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
-		
+
 		// shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
 		// shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
 		shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);

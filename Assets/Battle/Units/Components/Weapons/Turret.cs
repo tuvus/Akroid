@@ -25,7 +25,7 @@ public class Turret : ModuleComponent {
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public Turret(BattleManager battleManager, Module module, Unit unit, ComponentScriptableObject componentScriptableObject): 
+    public Turret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
         base(battleManager, module, unit, componentScriptableObject) {
         turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
 
@@ -65,7 +65,7 @@ public class Turret : ModuleComponent {
             SetTargetRotation(localShipAngle);
         } else {
             ChangeTargetUnit(null);
-            SetTargetRotation(module.rotation);
+            SetTargetRotation(module.GetRotation());
             if (findNewTargetUpdateTime <= 0) {
                 FindNewTarget(range);
                 findNewTargetUpdateTime += findNewTargetUpdateSpeed;
@@ -94,12 +94,12 @@ public class Turret : ModuleComponent {
         targetLocation = GetTargetPosition(targetUnit);
         float realAngle = Calculator.GetAngleOutOfTwoPositions(position, targetLocation);
         localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.rotation);
-        if (module.minRotate < module.maxRotate) {
-            if (localShipAngle <= module.maxRotate && localShipAngle >= module.minRotate) {
+        if (module.GetMinRotation() < module.GetMaxRotation()) {
+            if (localShipAngle <= module.GetMaxRotation() && localShipAngle >= module.GetMinRotation()) {
                 return true;
             }
-        } else if (module.minRotate > module.maxRotate) {
-            if (localShipAngle <= module.maxRotate || localShipAngle >= module.minRotate) {
+        } else if (module.GetMinRotation() > module.GetMaxRotation()) {
+            if (localShipAngle <= module.GetMaxRotation() || localShipAngle >= module.GetMinRotation()) {
                 return true;
             }
         } else {
@@ -127,7 +127,7 @@ public class Turret : ModuleComponent {
             }
         }
         if (newTarget == null) {
-            SetTargetRotation(module.rotation);
+            SetTargetRotation(module.GetRotation());
         }
         ChangeTargetUnit(newTarget);
     }
@@ -186,11 +186,11 @@ public class Turret : ModuleComponent {
         float target = Calculator.ConvertTo180DegRotation(targetRotation - tempRotation);
         tempRotation = Calculator.ConvertTo180DegRotation(tempRotation);
 
-        float localMin = Calculator.ConvertTo180DegRotation(module.maxRotate - tempRotation);
-        float localMax = Calculator.ConvertTo180DegRotation(module.minRotate - tempRotation);
+        float localMin = Calculator.ConvertTo180DegRotation(module.GetMaxRotation() - tempRotation);
+        float localMax = Calculator.ConvertTo180DegRotation(module.GetMinRotation() - tempRotation);
 
         //Changes the path towards the target if the target is on the other side of the deadzone.
-        if (module.minRotate < module.maxRotate) {
+        if (module.GetMinRotation() < module.GetMaxRotation()) {
             if (localMax > 0 && localMin > 0) {
                 if (localMax < target && target > 0) {
                     target = -180 + (-target - 180);
@@ -201,7 +201,7 @@ public class Turret : ModuleComponent {
                     target = 180 + (-target + 180);
                 }
             }
-        } else if (module.minRotate > module.maxRotate) {
+        } else if (module.GetMinRotation() > module.GetMaxRotation()) {
             if (localMax > 0 && localMin > 0) {
                 if (localMin < target && target > 0) {
                     target = -180 + (-target - 180);

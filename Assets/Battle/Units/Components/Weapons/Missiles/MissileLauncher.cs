@@ -25,11 +25,11 @@ public class MissileLauncher : ModuleComponent {
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public MissileLauncher(BattleManager battleManager, Module module, Unit unit,
+    public MissileLauncher(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
-        
+
         reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed, missileLauncherScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }

@@ -7,15 +7,13 @@ using UnityEngine;
 /// A template that holds general information about a ModuleComponent and connects it to a system in the PrefabModuleSystem.
 /// Information held by the Module is set in the prefab before the game begins and probably aren't going to change during the game.
 /// </summary>
-public class Module : MonoBehaviour {
+public class Module : MonoBehaviour, IModule {
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
 
     [field: SerializeField] public int system { get; private set; }
     [field: SerializeField] public float rotation { get; private set; }
     [field: SerializeField] public float minRotate { get; private set; }
     [field: SerializeField] public float maxRotate { get; private set; }
-    public ModuleComponent moduleComponent;
-
 
     public void CreateModule(PrefabModuleSystem prefabModuleSystem, int system) {
         this.prefabModuleSystem = prefabModuleSystem;
@@ -36,5 +34,21 @@ public class Module : MonoBehaviour {
 
     public void SetSystem(int system) {
         this.system = system;
+    }
+
+    public Vector2 GetPosition() {
+        return transform.position;
+    }
+
+    public float GetRotation() {
+        return rotation;
+    }
+
+    public float GetMinRotation() {
+        return minRotate;
+    }
+
+    public float GetMaxRotation() {
+        return maxRotate;
     }
 }

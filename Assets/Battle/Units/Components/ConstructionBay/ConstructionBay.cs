@@ -13,11 +13,11 @@ public class ConstructionBay : ModuleComponent {
     [SerializeField]
     public List<ShipConstructionBlueprint> buildQueue;
 
-    public ConstructionBay(BattleManager battleManager, Module module, Unit unit,
+    public ConstructionBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
-        
+
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
 

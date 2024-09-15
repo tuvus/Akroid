@@ -7,11 +7,11 @@ public class ResearchEquipment : ModuleComponent {
     [SerializeField] int data;
     float researchTime;
 
-    public ResearchEquipment(BattleManager battleManager, Module module, Unit unit,
+    public ResearchEquipment(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         researchEquipmentScriptableObject = (ResearchEquipmentScriptableObject)componentScriptableObject;
-        
+
         researchTime = researchEquipmentScriptableObject.researchSpeed;
         data = 0;
     }

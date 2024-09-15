@@ -40,6 +40,13 @@ public class PrefabModuleSystem : MonoBehaviour {
             moduleSize = prefabSystem.moduleSize;
             this.moduleCount = moduleCount;
         }
+
+        public PrefabSystem(string name, SystemType type, int moduleSize, int moduleCount) {
+            this.name = name;
+            this.type = type;
+            this.moduleSize = moduleSize;
+            this.moduleCount = moduleCount;
+        }
     }
     [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();

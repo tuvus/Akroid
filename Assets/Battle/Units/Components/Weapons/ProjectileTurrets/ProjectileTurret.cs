@@ -8,11 +8,11 @@ public class ProjectileTurret : Turret {
     static float flashSpeed = 0.5f;
     private float flashTime;
 
-    public ProjectileTurret(BattleManager battleManager, Module module, Unit unit,
+    public ProjectileTurret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
-        
+
         // flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
         // flash.transform.localScale = new Vector2(.2f,.2f);
         // flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);

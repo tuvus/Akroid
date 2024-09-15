@@ -18,7 +18,7 @@ public class CargoBay : ModuleComponent {
     public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
     public List<long> cargoBays = new List<long>();
 
-    public CargoBay(BattleManager battleManager, Module module, Unit unit,
+    public CargoBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;

@@ -21,7 +21,7 @@ public class ComponentModuleSystem : ModuleSystem {
         base(battleManager, unit, unitScriptableObject){
 
         components = new Dictionary<Type, List<ModuleComponent>>();
-        foreach (var moduleComponent in modules.Select(m => m.moduleComponent)) {
+        foreach (var moduleComponent in modules) {
             Type currentType = moduleComponent.GetType();
             while (currentType != null) {
                 if (ComponentTypes.Contains(currentType)) {

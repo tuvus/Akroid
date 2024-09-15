@@ -1,6 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 /// <summary>
@@ -25,6 +26,14 @@ public class ModuleSystem {
             component = null;
         }
 
+        public System(System system) {
+            name = system.name;
+            type = system.type;
+            moduleCount = system.moduleCount;
+            moduleSize = system.moduleSize;
+            this.component = system.component;
+        }
+
         public System(System system, ComponentScriptableObject component) {
             name = system.name;
             type = system.type;
@@ -43,27 +52,33 @@ public class ModuleSystem {
     }
 
     private Unit unit;
-    [field: SerializeField] public List<System> systems { get; private set; } = new List<System>();
-    [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
+    [field: SerializeField] public List<System> systems { get; private set; }
+    [field: SerializeField] public List<ModuleComponent> modules { get; private set; }
+    public Dictionary<ModuleComponent, System> moduleToSystem { get; private set; }
 
     public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
         this.unit = unit;
-        List<ComponentScriptableObject> systemComponents = unitScriptableObject.GetSystemComponents();
-        for (int i = 0; i < systems.Count; i++) {
-            systems[i] = new System(systems[i], systemComponents[i]);
-        }
-        unitScriptableObject.ApplyComponentsToSystems(systems);
-
-        foreach (var module in modules) {
-            if (systems[module.system].component == null) continue;
-            // ModuleComponent newComponent = modules[i].gameObject.AddComponent(systems[module.system].component.GetComponentType()).GetComponent<ModuleComponent>();
-            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(systems[module.system].component.GetComponentType(), new List<object>(){battleManager, module, systems[module.system].component});
-            if (newComponent == null) {
-                Debug.Log(systems[module.system].component.GetComponentType());
+        var systemComponents = unitScriptableObject.GetSystems();
+        var prefabModules = unitScriptableObject.GetModules();
+        systems = new List<System>(systemComponents.Count);
+        modules = new List<ModuleComponent>();
+        moduleToSystem = new Dictionary<ModuleComponent, System>();
+        foreach (var system in systemComponents) {
+            if (system == null) {
+                Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
+                continue;
             }
-            // newComponent.SetupComponent(battleManager, module, unit, systems[module.system].component);
+            systems.Add(new System(system));
+            for (int i = 0; i < system.moduleCount; i++) {
+                IModule module = prefabModules[modules.Count()];
+                var args = new object[] {battleManager, module, unit, system.component};
+                var ctor = system.component.GetComponentType().GetConstructor(new Type[]
+                    { typeof(BattleManager), typeof(Module), typeof(Unit), typeof(ComponentScriptableObject) });
+                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(system.component.GetComponentType(), args);
+                modules.Add(newComponent);
+                moduleToSystem.Add(newComponent, system);
+            }
         }
-
     }
 
     #region SystemUpgrades
@@ -91,25 +106,28 @@ public class ModuleSystem {
         System system = systems[systemIndex];
         ComponentScriptableObject current = system.component;
         ComponentScriptableObject upgrade = current.upgrade;
-        if (CanUpgradeSystem(systemIndex, upgrader)) {
-            //Pay for the upgrade cost
-            upgrader.faction.UseCredits((upgrade.cost - current.cost) * system.moduleCount);
-            for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
-                long currentAmount = 0;
-                int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
-                upgrader.UseCargo(upgrade.resourceCosts[i] - currentAmount, upgrade.resourceTypes[i]);
-            }
-            //Upgrade the moduleComponents
-            systems[systemIndex] = new System(system, system.component.upgrade);
-            for (int i = 0; i < modules.Count; i++) {
-                if (modules[i].system == systemIndex) {
-                    modules[i].moduleComponent = (ModuleComponent)Activator.CreateInstance(
-                        systems[modules[systemIndex].system].component.GetComponentType(),
-                        new List<object>() {
-                            upgrader.battleManager, modules[systemIndex], systems[modules[systemIndex].system].component
-                        }
-                    );
-                }
+        if (!CanUpgradeSystem(systemIndex, upgrader)) return;
+
+        //Pay for the upgrade cost
+        upgrader.faction.UseCredits((upgrade.cost - current.cost) * system.moduleCount);
+        for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
+            upgrader.UseCargo(upgrade.resourceCosts[i] - current.resourceCosts[i] / 2, upgrade.resourceTypes[i]);
+        }
+        //Upgrade the system
+        systems[systemIndex].component = upgrade;
+
+        //Upgrade the moduleComponents
+        for (int i = 0; i < modules.Count(); i++) {
+            ModuleComponent oldModule = modules[i];
+            if (moduleToSystem[oldModule] == system) {
+                modules[i] = (ModuleComponent)Activator.CreateInstance(
+                    upgrade.GetComponentType(),
+                    new List<object>() {
+                        upgrader.battleManager, modules[systemIndex], upgrade
+                    }
+                );
+                moduleToSystem.Remove(oldModule);
+                moduleToSystem.Add(modules[i], system);
             }
         }
     }

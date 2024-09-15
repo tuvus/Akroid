@@ -8,7 +8,7 @@ using static Faction;
 using static Ship;
 using static Station;
 
-public class BattleManager : MonoBehaviour {
+public class BattleManager {
     public static BattleManager Instance { get; protected set; }
     CampaingController campaignController;
 
@@ -118,7 +118,6 @@ public class BattleManager : MonoBehaviour {
         if (Instance == null) {
             Instance = this;
         } else {
-            Destroy(gameObject);
             return;
         }
         this.systemSizeModifier = systemSizeModifier;
@@ -168,7 +167,6 @@ public class BattleManager : MonoBehaviour {
         if (Instance == null) {
             Instance = this;
         } else {
-            Destroy(gameObject);
             return;
         }
         this.campaignController = campaignControler;
@@ -176,7 +174,7 @@ public class BattleManager : MonoBehaviour {
         researchModifier = campaignControler.researchModifier;
         InitializeBattle();
         LocalPlayer.Instance.SetupFaction(null);
-        LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
+        // LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
         campaignControler.SetupBattle(this);
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
@@ -209,7 +207,7 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < 20; i++) {
             PrespawnNewMissile();
         }
-        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
     }
     #endregion
 
@@ -626,38 +624,38 @@ public class BattleManager : MonoBehaviour {
     public void EndBattle() {
         battleState = BattleState.Ended;
     }
-
-    public Transform GetFactionsTransform() {
-        return transform.GetChild(0);
-    }
-
-    public Transform GetAsteroidFieldTransform() {
-        return transform.GetChild(1);
-    }
-
-    public Transform GetGasCloudsTransform() {
-        return transform.GetChild(2);
-    }
-
-    public Transform GetStarTransform() {
-        return transform.GetChild(3);
-    }
-
-    public Transform GetPlanetsTransform() {
-        return transform.GetChild(4);
-    }
-
-    public Transform GetProjectileTransform() {
-        return transform.GetChild(5);
-    }
-
-    public Transform GetMissileTransform() {
-        return transform.GetChild(6);
-    }
-
-    public Transform GetEventVisulationTransform() {
-        return transform.GetChild(7);
-    }
+    //
+    // public Transform GetFactionsTransform() {
+    //     return transform.GetChild(0);
+    // }
+    //
+    // public Transform GetAsteroidFieldTransform() {
+    //     return transform.GetChild(1);
+    // }
+    //
+    // public Transform GetGasCloudsTransform() {
+    //     return transform.GetChild(2);
+    // }
+    //
+    // public Transform GetStarTransform() {
+    //     return transform.GetChild(3);
+    // }
+    //
+    // public Transform GetPlanetsTransform() {
+    //     return transform.GetChild(4);
+    // }
+    //
+    // public Transform GetProjectileTransform() {
+    //     return transform.GetChild(5);
+    // }
+    //
+    // public Transform GetMissileTransform() {
+    //     return transform.GetChild(6);
+    // }
+    //
+    // public Transform GetEventVisulationTransform() {
+    //     return transform.GetChild(7);
+    // }
 
     public static GameObject GetSizeIndicatorPrefab() {
         return Resources.Load<GameObject>("Prefabs/SizeIndicator");

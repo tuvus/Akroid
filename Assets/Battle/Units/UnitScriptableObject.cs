@@ -15,6 +15,7 @@ public class UnitScriptableObject : ScriptableObject {
     public Sprite sprite;
 
     [SerializeField] protected ModuleSystem.System[] systems;
+    [SerializeField] protected IModule[] modules;
 
     public void OnValidate() {
         if (systems == null) {
@@ -33,6 +34,8 @@ public class UnitScriptableObject : ScriptableObject {
                     systems[i] = new ModuleSystem.System(prefabModuleSystem.systems[i], systems[i].component);
                 }
             }
+
+            modules = prefabModuleSystem.modules.ToArray();
         }
 
         UpdateCosts();
@@ -66,12 +69,6 @@ public class UnitScriptableObject : ScriptableObject {
         resourceCosts[metalIndex] += cost;
     }
 
-    public void ApplyComponentsToSystems(List<ModuleSystem.System> moduleSystems) {
-        for (int i = 0; i < moduleSystems.Count; i++) {
-            moduleSystems[i] = new ModuleSystem.System(systems[i], systems[i].component);
-        }
-    }
-
 
     [ContextMenu("ConvertUnitComponents")]
     public void ConvertUnitComponents() {
@@ -91,14 +88,15 @@ public class UnitScriptableObject : ScriptableObject {
         // systems = newSystems.ToArray();
     }
 
-    public List<ComponentScriptableObject> GetSystemComponents() {
-        return systems.Select(a => a.component).ToList();
+    public List<ModuleSystem.System> GetSystems() {
+        return systems.ToList();
     }
 
-    string GenerateName(string name) {
-        if (name.StartsWith("Left")) {
-            return name.Substring(4) + "s";
-        }
-        return name;
+    public List<IModule> GetModules() {
+        return modules.ToList();
+    }
+
+    public List<ComponentScriptableObject> GetSystemComponents() {
+        return systems.Select(a => a.component).ToList();
     }
 }

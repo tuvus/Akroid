@@ -6,10 +6,10 @@ public class TestBattleManager : BattleManager {
     public Unit target;
     protected override void Start() {
         Instance = this;
-        transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
-        foreach (var faction in GetComponentsInChildren<Faction>()) {
+        // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        // foreach (var faction in GetComponentsInChildren<Faction>()) {
             // faction.SetUpFaction(this, new Faction.FactionData(), new PositionGiver(Vector2.zero), 0);
-        }
+        // }
     }
 
     public override void FixedUpdate() {

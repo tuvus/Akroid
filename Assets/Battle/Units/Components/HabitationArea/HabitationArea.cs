@@ -7,11 +7,11 @@ public class HabitationArea : ModuleComponent {
     [field: SerializeField] public long population { get; private set; }
 
 
-    public HabitationArea(BattleManager battleManager, Module module, Unit unit,
+    public HabitationArea(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         habitationAreaScriptableObject = (HabitationAreaScriptableObject)componentScriptableObject;
-        
+
         population = habitationAreaScriptableObject.populationSpace;
     }
 

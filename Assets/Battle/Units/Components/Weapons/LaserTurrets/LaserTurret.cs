@@ -6,10 +6,10 @@ public class LaserTurret : Turret {
     LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
 
-    public LaserTurret(BattleManager battleManager, Module module, Unit unit, ComponentScriptableObject componentScriptableObject): 
+    public LaserTurret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
-        
+
         // laser = Instantiate(laserTurretScriptableObject.laserPrefab, position, transform.rotation, transform).GetComponent<Laser>();
         laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
     }

@@ -1,0 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public interface IModule {
+    public Vector2 GetPosition();
+    public float GetRotation();
+    public float GetMinRotation();
+    public float GetMaxRotation();
+}

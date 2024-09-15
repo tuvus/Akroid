@@ -671,8 +671,8 @@ public class ShipAI {
             newCommand = false;
         }
         if (Vector2.Distance(ship.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
-            foreach (var habitationModule in ship.moduleSystem.modules.Select((m) => m.moduleComponent).Where((c) => c.GetType() == typeof(HabitationArea)).Cast<HabitationArea>()) {
-                habitationModule.ColonizePlanet(command.targetPlanet);   
+            foreach (var habitationModule in ship.moduleSystem.modules.Where((c) => c.GetType() == typeof(HabitationArea)).Cast<HabitationArea>()) {
+                habitationModule.ColonizePlanet(command.targetPlanet);
             }
             ship.Explode();
             return CommandResult.StopRemove;

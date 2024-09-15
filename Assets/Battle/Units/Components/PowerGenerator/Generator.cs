@@ -6,7 +6,7 @@ public class Generator : ModuleComponent {
     GeneratorScriptableObject generatorScriptableObject;
     private float consumptionTime;
 
-    public Generator(BattleManager battleManager, Module module, Unit unit,
+    public Generator(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;

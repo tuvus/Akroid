@@ -6,11 +6,11 @@ public class GasCollector : ModuleComponent {
     GasCollectorScriptableObject gasCollectorScriptableObject;
     float collectionTime;
 
-    public GasCollector(BattleManager battleManager, Module module, Unit unit,
+    public GasCollector(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
-        
+
         collectionTime = gasCollectorScriptableObject.collectionSpeed;
     }
 

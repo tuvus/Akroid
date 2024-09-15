@@ -9,17 +9,22 @@ public class Thruster : ModuleComponent, IParticleHolder {
     float targetBrightness;
     float baseThrustEmissionRate;
 
-    public Thruster(BattleManager battleManager, Module module, Unit unit,
-        ComponentScriptableObject componentScriptableObject) :
+    // public Thruster(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
+    //     base(battleManager, module, unit, componentScriptableObject) {
+    //     this.module = module;
+    //     this.unit = unit;
+    //     this.componentScriptableObject = componentScriptableObject;
+    // }
+    public Thruster(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
         base(battleManager, module, unit, componentScriptableObject) {
         thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
 
-        baseThrustEmissionRate = particle.emission.rateOverTime.constant;
+        // baseThrustEmissionRate = particle.emission.rateOverTime.constant;
 
         // thrusterFlare.brightness = 5 * unit.GetSpriteSize();
-        targetBrightness = thrusterFlare.brightness;
-        thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();
-        EndThrust();
+        // targetBrightness = thrusterFlare.brightness;
+        // thrusterFlare.enabled = BattleManager.Instance.GetEffectsShown();
+        // EndThrust();
     }
 
     public void BeginThrust() {

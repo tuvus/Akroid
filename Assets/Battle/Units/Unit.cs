@@ -18,7 +18,9 @@ public abstract class Unit : BattleObject {
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject): 
+    public Unit() {}
+
+    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject):
         base(battleObjectData, battleManager) {
         this.unitScriptableObject = unitScriptableObject;
         moduleSystem = new ComponentModuleSystem(battleManager,this, unitScriptableObject);
@@ -93,7 +95,7 @@ public abstract class Unit : BattleObject {
 
     protected virtual void UpdateWeapons(float deltaTime) {
         Profiler.BeginSample("Weapons");
-        
+
         moduleSystem.Get<Turret>().ForEach(t => t.UpdateTurret(deltaTime));
         moduleSystem.Get<MissileLauncher>().ForEach(m => m.UpdateMissileLauncher(deltaTime));
         Profiler.EndSample();
@@ -290,7 +292,7 @@ public abstract class Unit : BattleObject {
     }
 
     public abstract bool Destroyed();
-    
+
     public virtual Vector2 GetVelocity() {
         return velocity;
     }
@@ -342,7 +344,7 @@ public abstract class Unit : BattleObject {
     public int GetWeaponCount() {
         return moduleSystem.Get<Turret>().Count
                + moduleSystem.Get<LaserTurret>().Count
-               + moduleSystem.Get<MissileLauncher>().Count;   
+               + moduleSystem.Get<MissileLauncher>().Count;
     }
     #endregion
 

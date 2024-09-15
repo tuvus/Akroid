@@ -8,11 +8,11 @@ public class Hangar : ModuleComponent {
     public List<Ship> ships { get; private set; }
     [SerializeField] int dockSpace;
 
-    public Hangar(BattleManager battleManager, Module module, Unit unit,
+    public Hangar(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         hangarScriptableObject = (HangarScriptableObject)componentScriptableObject;
-        
+
         ships = new List<Ship>(hangarScriptableObject.maxDockSpace);
     }
 
