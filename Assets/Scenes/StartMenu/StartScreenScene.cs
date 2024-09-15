@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class StartScreenScene : MonoBehaviour {
-    [SerializeField] Station station;
-    [SerializeField] Planet planet;
+    [SerializeField] Transform station;
+    [SerializeField] Transform planet;
 
     private void Start() {
-        station.SetRotation(Random.Range(0, 360));
-        planet.SetRotation(Random.Range(0, 360));
+        station.Rotate(new Vector3(0, 0, Random.Range(0, 360)));
+        planet.Rotate(new Vector3(0, 0, Random.Range(0, 360)));
     }
 
     void Update() {
-        station.SetRotation(station.rotation + Time.deltaTime * 5);
-        planet.SetRotation(planet.rotation + Time.deltaTime / 5);
+        station.Rotate(new Vector3(0, 0, Time.deltaTime * 5));
+        planet.Rotate(new Vector3(0, 0, Time.deltaTime / 5));
     }
 }

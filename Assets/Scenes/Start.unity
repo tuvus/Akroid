@@ -1933,18 +1933,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 1
   versionText: {fileID: 1761976462}
---- !u!114 &324777043 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8325539151718107570, guid: e2a0da9254ff982408527889046e1441,
-    type: 3}
-  m_PrefabInstance: {fileID: 564798276}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b4e27cddd28eac4e8f01505017c2ac2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &324777045 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8198535041992587763, guid: e2a0da9254ff982408527889046e1441,
@@ -4720,8 +4708,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2faaab845ee715e45b50bf5761361190, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  station: {fileID: 324777043}
-  planet: {fileID: 1617432143}
+  station: {fileID: 324777045}
+  planet: {fileID: 1617432145}
 --- !u!1001 &867452423
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7833,18 +7821,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612242119}
   m_CullTransparentMesh: 1
---- !u!114 &1617432143 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6480528276499720425, guid: 67b5d68487ba27a49bde8f9afcc90435,
-    type: 3}
-  m_PrefabInstance: {fileID: 1518151468}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4db9af9f574082f4fb966308c3d98bef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1617432145 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
