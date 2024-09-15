@@ -289,7 +289,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9046208289571305099}
-  - component: {fileID: 9046208289571305098}
   m_Layer: 0
   m_Name: Battle
   m_TagString: Untagged
@@ -320,78 +319,3 @@ Transform:
   - {fileID: 66465339384046955}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9046208289571305098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9046208289571305109}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fb57881e4b6e1648a194659709ec7ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <researchModifier>k__BackingField: 0
-  <systemSizeModifier>k__BackingField: 0
-  shipBlueprints:
-  - name: Aria
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
-      type: 2}
-  - name: Lancer
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: 861654087bb19d64596b1dd3e9e603a7,
-      type: 2}
-  - name: Aterna
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
-      type: 2}
-  - name: Station Builder
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
-      type: 2}
-  - name: Gas Collector
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: 9e5dfb8892aab944481eb82a16720054,
-      type: 2}
-  - name: Transport
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
-      type: 2}
-  - name: Heavy Transport
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
-      type: 2}
-  - name: Science Ship
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
-      type: 2}
-  - name: Civilian Ship
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
-      type: 2}
-  - name: Colonizer
-    faction: {fileID: 0}
-    shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
-      type: 2}
-  stationBlueprints:
-  - name: Fleet Command
-    factionIndex: 0
-    stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
-      type: 2}
-    stationCost: 0
-    resourcesTypes: 
-    resources: 
-    totalResourcesRequired: 0
-  - name: MiningStation
-    factionIndex: 0
-    stationScriptableObject: {fileID: 11400000, guid: 93acbaa08c4a46e4ca8eaa8ed55b04b3,
-      type: 2}
-    stationCost: 3000
-    resourcesTypes: 01000000
-    resources: a00f000000000000
-    totalResourcesRequired: 0
-  instantHit: 0
-  timeScale: 1
-  <battleState>k__BackingField: 0

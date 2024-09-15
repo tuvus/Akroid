@@ -68,15 +68,15 @@ public class ModuleSystem {
                 Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
                 continue;
             }
-            systems.Add(new System(system));
-            for (int i = 0; i < system.moduleCount; i++) {
+
+            System newSystem = new System(system);
+            systems.Add(newSystem);
+            for (int i = 0; i < newSystem.moduleCount; i++) {
                 IModule module = prefabModules[modules.Count()];
-                var args = new object[] {battleManager, module, unit, system.component};
-                var ctor = system.component.GetComponentType().GetConstructor(new Type[]
-                    { typeof(BattleManager), typeof(Module), typeof(Unit), typeof(ComponentScriptableObject) });
-                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(system.component.GetComponentType(), args);
+                var args = new object[] {battleManager, module, unit, newSystem.component};
+                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(newSystem.component.GetComponentType(), args);
                 modules.Add(newComponent);
-                moduleToSystem.Add(newComponent, system);
+                moduleToSystem.Add(newComponent, newSystem);
             }
         }
     }
@@ -120,12 +120,8 @@ public class ModuleSystem {
         for (int i = 0; i < modules.Count(); i++) {
             ModuleComponent oldModule = modules[i];
             if (moduleToSystem[oldModule] == system) {
-                modules[i] = (ModuleComponent)Activator.CreateInstance(
-                    upgrade.GetComponentType(),
-                    new List<object>() {
-                        upgrader.battleManager, modules[systemIndex], upgrade
-                    }
-                );
+                var args = new object[] {unit.battleManager, oldModule.module, unit, upgrade};
+                modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
                 moduleToSystem.Remove(oldModule);
                 moduleToSystem.Add(modules[i], system);
             }

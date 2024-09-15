@@ -5714,7 +5714,6 @@ MonoBehaviour:
   hangarList: {fileID: 2731957324733364706}
   shipButtonPrefab: {fileID: 6917939575041792617, guid: 24e4ee27584b2474db3f56aa4c880e1e,
     type: 3}
-  shipsInHangar: []
   autoBuildShips: {fileID: 84209206596427748}
   shipYardSelection: {fileID: 6895498698358203164}
   upgradeSelection: {fileID: 4579255356529078684}
@@ -41288,7 +41287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d558f87400cfb749a6fe51a509427f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faction: {fileID: 0}
   lockedOwnedUnits: 0
 --- !u!114 &1340137321875934968
 MonoBehaviour:
@@ -41308,8 +41306,6 @@ MonoBehaviour:
   selectionBox: {fileID: 8714345815540280993}
   selectedUnits:
     groupType: 0
-    objects: []
-    fleet: {fileID: 0}
   groups: []
 --- !u!1 &8714345815520173843
 GameObject:
@@ -41976,12 +41972,6 @@ MonoBehaviour:
   shipFuelCellsUI: {fileID: 8714345816428262399}
   playerCommsManager: {fileID: 251416266922612947}
   playerMenueUI: {fileID: 3805286146913107314}
-  playerStationUI: {fileID: 3947678777219265419}
-  playerPlanetUI: {fileID: 2220549231309651276}
-  playerShipUI: {fileID: 5037967006063210199}
-  playerStarUI: {fileID: 3637885339814343555}
-  playerAsteroidUI: {fileID: 7870897310388169718}
-  playerGasCloudUI: {fileID: 6097438988437884183}
   <playerFactionOverviewUI>k__BackingField: {fileID: 6118173523353972393}
   <playerEventUI>k__BackingField: {fileID: 1953063344893737229}
   factionUI: {fileID: 8714345814573071572}

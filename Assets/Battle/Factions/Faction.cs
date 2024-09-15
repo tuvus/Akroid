@@ -10,14 +10,14 @@ using Random = UnityEngine.Random;
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
-    [field: SerializeField] public Color color { get; private set; }
-    [field: SerializeField] public new string name { get; private set; }
-    [field: SerializeField] public string abbreviatedName { get; private set; }
-    [field: SerializeField] public long credits { get; private set; }
-    [field: SerializeField] public long science { get; private set; }
-    public long researchCost { get; private set; }
+    [field: SerializeField] public Color color { get; protected set; }
+    [field: SerializeField] public new string name { get; protected set; }
+    [field: SerializeField] public string abbreviatedName { get; protected set; }
+    [field: SerializeField] public long credits { get; protected set; }
+    [field: SerializeField] public long science { get; protected set; }
+    public long researchCost { get; protected set; }
     private double researchCostExtra;
-    public int Discoveries { get; private set; }
+    public int Discoveries { get; protected set; }
 
     public enum ImprovementAreas {
         HullStrength,
@@ -117,6 +117,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.ships = ships;
             this.stations = stations;
         }
+    }
+
+    public Faction() {
+        credits = 0;
     }
 
     public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost):
