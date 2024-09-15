@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
-using static Asteroid;
 using static Faction;
 using static Ship;
 using static Station;
@@ -42,6 +40,7 @@ public class BattleManager {
     float startOfSimulation;
     double simulationTime;
     [field: SerializeField] public BattleState battleState { get; private set; }
+
     public enum BattleState {
         Setup,
         Running,
@@ -77,7 +76,8 @@ public class BattleManager {
             this.numberOfTries = oldPositionGiver.numberOfTries;
         }
 
-        public PositionGiver(Vector2 position, float minDistance, float maxDistance, float incrementDistance, float distanceFromObject, int numberOfTries) {
+        public PositionGiver(Vector2 position, float minDistance, float maxDistance, float incrementDistance, float distanceFromObject,
+            int numberOfTries) {
             this.position = position;
             this.isExactPosition = false;
             this.minDistance = minDistance;
@@ -89,6 +89,7 @@ public class BattleManager {
     }
 
     #region Setup
+
     /// <summary>
     /// Sets up the battle with only two factions, used for debugging.
     /// Two factions means better performance for faster debugging.
@@ -114,18 +115,21 @@ public class BattleManager {
     /// <param name="asteroidCountModifier"></param>
     /// <param name="researchModifier"></param>
     /// <param name="factionDatas"></param>
-    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, int gasCloudCount, float systemSizeModifier, float researchModifier, List<FactionData> factionDatas) {
+    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, int gasCloudCount, float systemSizeModifier,
+        float researchModifier, List<FactionData> factionDatas) {
         if (Instance == null) {
             Instance = this;
         } else {
             return;
         }
+
         this.systemSizeModifier = systemSizeModifier;
         this.researchModifier = researchModifier;
         InitializeBattle();
         for (int i = 0; i < starCount; i++) {
             CreateNewStar("Star" + (i + 1));
         }
+
         for (int i = 0; i < asteroidFieldCount; i++) {
             CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
         }
@@ -169,6 +173,7 @@ public class BattleManager {
         } else {
             return;
         }
+
         this.campaignController = campaignControler;
         systemSizeModifier = campaignControler.systemSizeModifier;
         researchModifier = campaignControler.researchModifier;
@@ -179,6 +184,7 @@ public class BattleManager {
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
         }
+
         startOfSimulation = Time.unscaledTime;
         battleState = BattleState.Running;
     }
@@ -204,14 +210,17 @@ public class BattleManager {
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
         }
+
         for (int i = 0; i < 20; i++) {
             PrespawnNewMissile();
         }
         // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
     }
+
     #endregion
 
     #region Spawning
+
     /// <summary>
     /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
     /// If the center location is an asteroid or station isCenterObject should be true.
@@ -225,6 +234,7 @@ public class BattleManager {
                 return tryPos;
             }
         }
+
         return null;
     }
 
@@ -238,10 +248,12 @@ public class BattleManager {
         float distance = positionGiver.minDistance * systemSizeModifier;
         if (positionGiver.numberOfTries == 0) return positionGiver.position;
         while (true) {
-            Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance, distance + positionGiver.incrementDistance * systemSizeModifier);
+            Vector2? targetPosition = FindFreeLocation(positionGiver, positionConfirmer, distance,
+                distance + positionGiver.incrementDistance * systemSizeModifier);
             if (targetPosition.HasValue) {
                 return targetPosition.Value;
             }
+
             distance += positionGiver.incrementDistance * systemSizeModifier;
             if (distance > (positionGiver.maxDistance - positionGiver.incrementDistance) * systemSizeModifier) {
                 return null;
@@ -263,7 +275,8 @@ public class BattleManager {
         return newShip;
     }
 
-    public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
+    public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject,
+        bool built) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
         Station newStation = new Station(battleObjectData, this, stationScriptableObject, built);
         if (built) {
@@ -272,10 +285,12 @@ public class BattleManager {
         } else {
             stationsInProgress.Add(newStation);
         }
+
         return newStation;
     }
 
-    public MiningStation CreateNewMiningStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject, bool built) {
+    public MiningStation CreateNewMiningStation(BattleObject.BattleObjectData battleObjectData,
+        StationScriptableObject stationScriptableObject, bool built) {
         GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
         MiningStation newStation = new MiningStation(battleObjectData, this, stationScriptableObject, built);
         if (built) {
@@ -284,12 +299,16 @@ public class BattleManager {
         } else {
             stationsInProgress.Add(newStation);
         }
+
         return newStation;
     }
 
     public Star CreateNewStar(string name) {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
-        Star newStar = new Star(new BattleObject.BattleObjectData(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4), Random.Range(0, 360), Vector2.one * Random.Range(0.6f, 1.4f)), this);
+        Star newStar =
+            new Star(
+                new BattleObject.BattleObjectData(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4), Random.Range(0, 360),
+                    Vector2.one * Random.Range(0.6f, 1.4f)), this);
         stars.Add(newStar);
         return newStar;
     }
@@ -320,10 +339,12 @@ public class BattleManager {
             GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             float size = Random.Range(8f, 20f);
             PositionGiver asteroidPositionGiver = new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4);
-            Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size),
+            Asteroid newAsteroid = new Asteroid(
+                new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size),
                 this, newAsteroidField, (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
+
         // The Asteroid field position must be set after the asteroids have been generated
         newAsteroidField.SetupAstroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
@@ -332,12 +353,15 @@ public class BattleManager {
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
         float size = Random.Range(25, 35);
-        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", positionGiver, Random.Range(0, 360)), this,  (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
+        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", positionGiver, Random.Range(0, 360)), this,
+            (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
         gasClouds.Add(newGasCloud);
     }
+
     #endregion
 
     #region ObjectLists
+
     public void BuildStationBlueprint(Station station) {
         stationsInProgress.Remove(station);
         units.Add(station);
@@ -363,8 +387,8 @@ public class BattleManager {
             stationsInProgress.Remove(station);
             if (station.faction != null)
                 station.faction.RemoveStationBlueprint(station);
-
         }
+
         destroyedUnits.Add(station);
     }
 
@@ -386,6 +410,7 @@ public class BattleManager {
         if (unusedProjectiles.Count == 0) {
             PreSpawnNewProjectile();
         }
+
         return unusedProjectiles.First();
     }
 
@@ -409,6 +434,7 @@ public class BattleManager {
         if (unusedMissiles.Count == 0) {
             PrespawnNewMissile();
         }
+
         return unusedMissiles.First();
     }
 
@@ -427,6 +453,7 @@ public class BattleManager {
         blockingObjects.AddRange(gasClouds);
         return blockingObjects;
     }
+
     #endregion
 
     /// <summary>
@@ -443,14 +470,17 @@ public class BattleManager {
             faction.EarlyUpdateFaction();
             Profiler.EndSample();
         }
+
         foreach (var faction in factions.ToList()) {
             Profiler.BeginSample("FactionUpdate");
             faction.UpdateFaction(deltaTime);
             Profiler.EndSample();
         }
+
         foreach (var faction in factions.ToList()) {
             faction.UpdateFleets(deltaTime);
         }
+
         foreach (var unit in units.ToList()) {
             Profiler.BeginSample("UnitUpdate");
             Profiler.BeginSample(unit.GetUnitName());
@@ -458,30 +488,36 @@ public class BattleManager {
             Profiler.EndSample();
             Profiler.EndSample();
         }
+
         Profiler.BeginSample("ProjectilesUpdate");
         foreach (var projectile in usedProjectiles.ToList()) {
             projectile.UpdateProjectile(deltaTime);
         }
+
         Profiler.EndSample();
         Profiler.BeginSample("MissilesUpdate");
         foreach (var missile in usedMissiles.ToList()) {
             missile.UpdateMissile(deltaTime);
         }
+
         Profiler.EndSample();
         Profiler.BeginSample("DestroyedUnitsUpdate");
         foreach (var destroyedUnit in destroyedUnits.ToList()) {
             destroyedUnit.UpdateDestroyedUnit(deltaTime);
         }
+
         Profiler.EndSample();
         Profiler.BeginSample("StarsUpdate");
         foreach (var star in stars.ToList()) {
             star.UpdateStar(deltaTime);
         }
+
         Profiler.EndSample();
         Profiler.BeginSample("PlanetsUpdate");
         foreach (var planet in planets) {
             planet.UpdatePlanet(deltaTime);
         }
+
         Profiler.EndSample();
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
@@ -489,6 +525,7 @@ public class BattleManager {
             battleState = BattleState.Ended;
             LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }
+
         if (campaignController != null) {
             campaignController.UpdateController(deltaTime);
         }
@@ -500,6 +537,7 @@ public class BattleManager {
     }
 
     #region HelperMethods
+
     public Faction CheckVictory() {
         if (battleState != BattleState.Running || campaignController != null)
             return null;
@@ -508,6 +546,7 @@ public class BattleManager {
                 return faction;
             }
         }
+
         return null;
     }
 
@@ -660,5 +699,6 @@ public class BattleManager {
     public static GameObject GetSizeIndicatorPrefab() {
         return Resources.Load<GameObject>("Prefabs/SizeIndicator");
     }
+
     #endregion
 }

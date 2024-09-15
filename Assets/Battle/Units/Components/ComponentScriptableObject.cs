@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CargoBay;
@@ -29,6 +28,7 @@ public abstract class ComponentScriptableObject : ScriptableObject {
             resourceCosts.Add(0);
             metalIndex = resourceTypes.Count - 1;
         }
+
         resourceCosts[metalIndex] += cost;
     }
 }

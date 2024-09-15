@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LocalPlayerSelectionInput : LocalPlayerInput {
     public bool AdditiveButtonPressed { get; private set; }
@@ -101,6 +99,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 }
             }
         }
+
         maxRightClickDistance = 0;
     }
 
@@ -143,6 +142,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                     selectedUnits.AddShip((Ship)unit);
                 }
             }
+
             selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
@@ -161,11 +161,13 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             objectsInSelectionBox.UnselectAllBattleObjects();
             selectedUnits.SelectAllBattleObjects();
         }
+
         objectsInSelectionBox.ClearGroup();
         if (Vector2.Distance(mousePosition, boxStartPosition) < 2) {
             selectionBox.gameObject.SetActive(false);
             return;
         }
+
         selectionBox.gameObject.SetActive(true);
         float boxWidth = mousePosition.x - boxStartPosition.x;
         float boxHeight = mousePosition.y - boxStartPosition.y;
@@ -183,12 +185,13 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             if (!unit.IsSelectable() || unit == rightClickedBattleObject || unit == mouseOverBattleObject)
                 continue;
             Vector2 screenPosition = GetCamera().WorldToScreenPoint(unit.position);
-            if (screenPosition.x > bottomLeft.x && screenPosition.x < topRight.x && screenPosition.y > bottomLeft.y && screenPosition.y < topRight.y)
+            if (screenPosition.x > bottomLeft.x && screenPosition.x < topRight.x && screenPosition.y > bottomLeft.y &&
+                screenPosition.y < topRight.y)
                 objectsInSelectionBox.AddUnit(unit);
         }
+
         objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Highlighted);
     }
-
 
 
     void EndBoxSelection() {
@@ -198,7 +201,9 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (Vector2.Distance(GetMousePosition(), boxStartPosition) < 25) {
             if (mouseOverBattleObject != null) {
                 selectedGroup = -1;
-                if (AdditiveButtonPressed && !(selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverBattleObject.IsShip() && ((Ship)mouseOverBattleObject).fleet == selectedUnits.fleet)) {
+                if (AdditiveButtonPressed && !(selectedUnits.groupType == SelectionGroup.GroupType.Fleet &&
+                                               mouseOverBattleObject.IsShip() &&
+                                               ((Ship)mouseOverBattleObject).fleet == selectedUnits.fleet)) {
                     ToggleSelectedUnit(mouseOverBattleObject);
                 } else {
                     SelectBattleObjects(mouseOverBattleObject);
@@ -213,14 +218,17 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                     SetDisplayedUnit();
                 }
             }
+
             return;
         }
+
         selectedGroup = -1;
         if (AdditiveButtonPressed) {
             AddSelectedBattleObjects(objectsInSelectionBox.objects);
         } else {
             SelectBattleObjects(objectsInSelectionBox.objects);
         }
+
         objectsInSelectionBox.ClearGroup();
     }
 
@@ -262,6 +270,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             if (selectedUnits.ContainsObject(newBattleObjects[i]))
                 newBattleObjects.RemoveAt(i);
         }
+
         selectedUnits.AddBattleObjects(newBattleObjects);
         selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
         SetDisplayedUnit();
@@ -279,6 +288,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             if (allShips[i].fleet != allShips[0].fleet)
                 return false;
         }
+
         return true;
     }
 
@@ -289,6 +299,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             if (strongestUnit == null || unit.GetMaxHealth() > strongestUnit.GetMaxHealth())
                 strongestUnit = unit;
         }
+
         displayedBattleObject = strongestUnit;
         if (displayedBattleObject == null && selectedUnits.objects.Count > 0) displayedBattleObject = selectedUnits.objects.First();
     }
@@ -324,6 +335,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             selectedUnits.fleet = null;
             selectedUnits.groupType = SelectionGroup.GroupType.None;
         }
+
         if (selectedUnits.GetAllUnits().Count == 0) {
             selectedUnits.fleet = null;
             selectedUnits.groupType = SelectionGroup.GroupType.None;
@@ -344,6 +356,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if ((displayedBattleObject == null || !displayedBattleObject.IsSpawned()) && displayedFleet != null) {
             SetDisplayedFleet(displayedFleet);
         }
+
         return base.GetDisplayedBattleObject();
     }
 

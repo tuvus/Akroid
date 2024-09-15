@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Asteroid : BattleObject, IPositionConfirmer {
@@ -7,7 +5,8 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public long resources;
     public CargoBay.CargoTypes asteroidType;
 
-    public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources, CargoBay.CargoTypes asteroidType): base(battleObjectData, battleManager) {
+    public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources,
+        CargoBay.CargoTypes asteroidType) : base(battleObjectData, battleManager) {
         this.asteroidField = asteroidField;
         this.resources = resources;
         this.asteroidType = asteroidType;
@@ -35,6 +34,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -49,6 +49,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
             asteroidField.totalResources -= amount;
             return amount;
         }
+
         long returnValue = resources;
         asteroidField.totalResources -= resources;
         resources = 0;

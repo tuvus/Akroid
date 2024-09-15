@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,9 +16,8 @@ public class ComponentModuleSystem : ModuleSystem {
         typeof(EmptyComponent)
     };
 
-    public ComponentModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject):
-        base(battleManager, unit, unitScriptableObject){
-
+    public ComponentModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) :
+        base(battleManager, unit, unitScriptableObject) {
         components = new Dictionary<Type, List<ModuleComponent>>();
         foreach (var moduleComponent in modules) {
             Type currentType = moduleComponent.GetType();
@@ -41,6 +39,7 @@ public class ComponentModuleSystem : ModuleSystem {
         if (components.ContainsKey(typeof(T))) {
             return components[typeof(T)].Cast<T>().ToList();
         }
+
         return new();
     }
 }

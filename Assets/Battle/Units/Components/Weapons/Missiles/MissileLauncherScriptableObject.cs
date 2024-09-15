@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 using static MissileLauncher;
 
@@ -26,6 +23,7 @@ class MissileLauncherScriptableObject : ComponentScriptableObject {
         if (maxAmmo > 1) {
             time += maxAmmo * fireSpeed;
         }
+
         float damage = missileDamage / 2f * maxAmmo;
         return damage / time;
     }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Projectile : BattleObject {
     [SerializeField] private SpriteRenderer highlight;
@@ -14,11 +12,12 @@ public class Projectile : BattleObject {
     private Vector2 startingScale;
     private bool hit;
 
-    public Projectile(BattleManager battleManager): base(new BattleObjectData("Projectile"), battleManager) {
+    public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) {
         Activate(false);
     }
 
-    public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage, float projectileRange, float offset, float scale) {
+    public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage,
+        float projectileRange, float offset, float scale) {
         this.faction = faction;
         this.position = position;
         this.rotation = rotation;
@@ -55,6 +54,7 @@ public class Projectile : BattleObject {
         if (hit) {
             return;
         }
+
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.IsSpawned() && unit.faction != faction) {
             foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
@@ -64,10 +64,12 @@ public class Projectile : BattleObject {
                     return;
                 }
             }
+
             damage = unit.TakeDamage(damage);
             Explode(unit);
             return;
         }
+
         Shield shield = coll.GetComponent<Shield>();
         if (shield != null && shield.GetUnit().faction != faction) {
             damage = shield.TakeDamage(damage);
@@ -100,6 +102,7 @@ public class Projectile : BattleObject {
         } else {
             BattleManager.Instance.RemoveProjectile(this);
         }
+
         visible = activate;
         boxCollider2D.enabled = activate;
     }

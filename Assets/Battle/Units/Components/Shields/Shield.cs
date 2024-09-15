@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Shield : MonoBehaviour {
     Unit unit;
@@ -8,6 +6,7 @@ public class Shield : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private Collider2D shieldCollider;
     public int health;
+
     public void SetShield(int health, ShieldGenerator shieldGenerator, Unit unit) {
         this.health = health;
         this.shieldGenerator = shieldGenerator;
@@ -31,7 +30,7 @@ public class Shield : MonoBehaviour {
             shieldGenerator.DestroyShield();
             health = 0;
             return returnValue;
-        } else { 
+        } else {
             RefreshSheild();
             return 0;
         }

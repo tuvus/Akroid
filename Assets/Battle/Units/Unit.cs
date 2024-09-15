@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,12 +17,12 @@ public abstract class Unit : BattleObject {
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public Unit() {}
+    public Unit() { }
 
-    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject):
+    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject) :
         base(battleObjectData, battleManager) {
         this.unitScriptableObject = unitScriptableObject;
-        moduleSystem = new ComponentModuleSystem(battleManager,this, unitScriptableObject);
+        moduleSystem = new ComponentModuleSystem(battleManager, this, unitScriptableObject);
         health = GetMaxHealth();
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
@@ -38,6 +37,7 @@ public abstract class Unit : BattleObject {
             maxWeaponRange = Mathf.Max(maxWeaponRange, turret.GetRange());
             minWeaponRange = Mathf.Min(minWeaponRange, turret.GetRange());
         }
+
         foreach (var missileLuancher in moduleSystem.Get<MissileLauncher>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, missileLuancher.GetRange() / 2);
             minWeaponRange = Mathf.Min(minWeaponRange, missileLuancher.GetRange() / 2);
@@ -45,11 +45,13 @@ public abstract class Unit : BattleObject {
     }
 
     #region Update
+
     public virtual void UpdateUnit(float deltaTime) {
         if (IsTargetable() && HasWeapons()) {
             FindEnemies();
             UpdateWeapons(deltaTime);
         }
+
         if (IsSpawned()) {
             moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
             moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
@@ -66,6 +68,7 @@ public abstract class Unit : BattleObject {
                 break;
             FindEnemyGroup(faction.closeEnemyGroups[i]);
         }
+
         Profiler.EndSample();
     }
 
@@ -87,6 +90,7 @@ public abstract class Unit : BattleObject {
                     return;
                 }
             }
+
             //Has not been added yet
             enemyUnitsInRange.Add(targetUnit);
             enemyUnitsInRangeDistance.Add(distance);
@@ -111,9 +115,11 @@ public abstract class Unit : BattleObject {
         //     destroyEffect.UpdateExplosion(deltaTime);
         // }
     }
+
     #endregion
 
     #region UnitControlls
+
     public virtual int TakeDamage(int damage) {
         if (IsSpawned()) {
             health -= damage;
@@ -123,8 +129,10 @@ public abstract class Unit : BattleObject {
                 Explode();
                 return returnValue;
             }
+
             return 0;
         }
+
         Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
         return 0;
     }
@@ -153,18 +161,22 @@ public abstract class Unit : BattleObject {
     public virtual bool IsTargetable() {
         return IsSpawned();
     }
+
     #endregion
 
     #region HelperMethods
+
     public void SetGroup(UnitGroup newGroup) {
         if (group != null) {
             UnitGroup oldGroup = group;
             group = null;
             oldGroup.RemoveBattleObject(this);
         }
+
         if (newGroup == null) {
             newGroup = faction.baseGroup;
         }
+
         group = newGroup;
         if (newGroup != null)
             group.AddBattleObject(this);
@@ -192,6 +204,7 @@ public abstract class Unit : BattleObject {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
             if (totalCargoToUse <= 0) return 0;
         }
+
         return totalCargoToUse;
     }
 
@@ -205,6 +218,7 @@ public abstract class Unit : BattleObject {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
             if (totalCargoToLoad <= 0) return 0;
         }
+
         return totalCargoToLoad;
     }
 
@@ -218,8 +232,10 @@ public abstract class Unit : BattleObject {
                 amount = LoadCargoFromUnit(amount, type, unit);
                 if (amount == 0) break;
             }
+
             return amount;
         }
+
         long cargoToLoad = Math.Min(amount, Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
         unit.UseCargo(cargoToLoad, cargoType);
         LoadCargo(cargoToLoad, cargoType);
@@ -235,6 +251,7 @@ public abstract class Unit : BattleObject {
                 reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
             }
         }
+
         return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
     }
 
@@ -243,9 +260,11 @@ public abstract class Unit : BattleObject {
     }
 
     public Dictionary<CargoBay.CargoTypes, long> GetReservedCargoSpace() {
-        if (IsStation() && ((Station)this).stationType == Station.StationType.Shipyard || ((Station)this).stationType == Station.StationType.FleetCommand) {
+        if (IsStation() && ((Station)this).stationType == Station.StationType.Shipyard ||
+            ((Station)this).stationType == Station.StationType.FleetCommand) {
             return ((Shipyard)this).GetConstructionBay().GetReservedResources();
         }
+
         return new Dictionary<CargoBay.CargoTypes, long>();
     }
 
@@ -256,6 +275,7 @@ public abstract class Unit : BattleObject {
     public int GetHealth() {
         return health;
     }
+
     public int GetMaxHealth() {
         return Mathf.RoundToInt(unitScriptableObject.maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
@@ -280,6 +300,7 @@ public abstract class Unit : BattleObject {
             health = GetMaxHealth();
             return returnValue;
         }
+
         return 0;
     }
 
@@ -337,8 +358,8 @@ public abstract class Unit : BattleObject {
 
     public float GetUnitDamagePerSecond() {
         return moduleSystem.Get<Turret>().Sum(t => t.GetDamagePerSecond())
-            + moduleSystem.Get<LaserTurret>().Sum(t => t.GetDamagePerSecond())
-            + moduleSystem.Get<MissileLauncher>().Sum(t => t.GetDamagePerSecond());
+               + moduleSystem.Get<LaserTurret>().Sum(t => t.GetDamagePerSecond())
+               + moduleSystem.Get<MissileLauncher>().Sum(t => t.GetDamagePerSecond());
     }
 
     public int GetWeaponCount() {
@@ -346,6 +367,6 @@ public abstract class Unit : BattleObject {
                + moduleSystem.Get<LaserTurret>().Count
                + moduleSystem.Get<MissileLauncher>().Count;
     }
-    #endregion
 
+    #endregion
 }

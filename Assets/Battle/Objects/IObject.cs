@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,5 +7,8 @@ using UnityEngine;
 public interface IObject {
     public float GetSize();
     public Vector2 GetPosition();
-    public bool IsGroup() { return false; }
+
+    public bool IsGroup() {
+        return false;
+    }
 }

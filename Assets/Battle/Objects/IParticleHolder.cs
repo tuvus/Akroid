@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public interface IParticleHolder : IEffectHolder {
     /// <summary>
     /// Sets the playback speed of all particle systems attached to this battleObject

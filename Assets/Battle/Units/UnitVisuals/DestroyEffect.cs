@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DestroyEffect : MonoBehaviour, IParticleHolder {
@@ -47,6 +44,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
             explosion.Play(false);
             fragments.Play(false);
         }
+
         if (BattleManager.Instance.GetEffectsShown())
             flare.enabled = true;
         flareTime = 0;
@@ -62,13 +60,16 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
                     flareState = FlareState.FadeToNormal;
                     flareTime = 0;
                 }
+
                 break;
             case FlareState.FadeToNormal:
-                flare.brightness = (targetBrightness - getBaseFlareSize() + 3) / Mathf.Pow(1 + 8 * flareTime / fadeSpeed, 3) + getBaseFlareSize() - 3;
+                flare.brightness = (targetBrightness - getBaseFlareSize() + 3) / Mathf.Pow(1 + 8 * flareTime / fadeSpeed, 3) +
+                    getBaseFlareSize() - 3;
                 if (flare.brightness <= getBaseFlareSize() * 1.01) {
                     flareState = FlareState.KeepNormal;
                     flareTime = 0;
                 }
+
                 break;
             case FlareState.KeepNormal:
                 flare.brightness = getBaseFlareSize();
@@ -76,6 +77,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
                     flareState = FlareState.Fade;
                     flareTime = 0;
                 }
+
                 break;
             case FlareState.Fade:
                 flare.brightness = getBaseFlareSize() * (1 / Mathf.Pow(1 + flareTime, 2));
@@ -84,6 +86,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
                     flare.enabled = false;
                     flareState = FlareState.End;
                 }
+
                 break;
         }
     }
@@ -107,6 +110,7 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
         if (!shown && explosion.IsAlive()) {
             explosion.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
+
         if (!shown && fragments.IsAlive()) {
             fragments.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }

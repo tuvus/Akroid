@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -70,7 +69,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         public int ships;
         public int stations;
 
-        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, Character leader, long credits, long science,
+            int ships, int stations) {
             this.factionAI = factionAI;
             this.name = name;
             this.abbreviatedName = abbreviatedName;
@@ -82,7 +82,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships, int stations) {
+        public FactionData(string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships,
+            int stations) {
             this.factionAI = typeof(SimulationFactionAI);
             this.name = name;
             this.abbreviatedName = abbreviatedName;
@@ -94,7 +95,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.stations = stations;
         }
 
-        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, long credits, long science, int ships, int stations) {
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, long credits, long science, int ships,
+            int stations) {
             this.factionAI = factionAI;
             this.name = name;
             this.abbreviatedName = abbreviatedName;
@@ -123,7 +125,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         credits = 0;
     }
 
-    public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver, int startingResearchCost):
+    public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver,
+        int startingResearchCost) :
         base(battleManager, new HashSet<Unit>((factionData.ships + factionData.stations) * 5), false) {
         units = battleObjects;
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
@@ -161,25 +164,32 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         for (int i = 0; i < improvementModifiers.Length; i++) {
             improvementModifiers[i] = 1;
         }
+
         improvementDiscoveryCount = new int[13];
         for (int i = 0; i < improvementDiscoveryCount.Length; i++) {
             improvementDiscoveryCount[i] = 0;
         }
+
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
+            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", GetPosition(), Random.Range(0, 360), this),
+                battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             for (int i = 0; i < factionData.stations - 1; i++) {
-                MiningStation newStation = battleManager.CreateNewMiningStation(new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this), battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
+                MiningStation newStation = battleManager.CreateNewMiningStation(
+                    new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this),
+                    battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
                 }
             }
         }
+
         for (int i = 0; i < math.min(shipCount, 3); i++) {
             GetFleetCommand().BuildShip(Ship.ShipType.GasCollector);
             shipCount--;
         }
+
         for (int i = 0; i < shipCount; i++) {
             if (GetFleetCommand() != null) {
                 int randomNum = Random.Range(0, 10);
@@ -190,7 +200,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 } else if (randomNum <= 10) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
-            } else BattleManager.Instance.CreateNewShip(new BattleObject.BattleObjectData("Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)), Random.Range(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
+            } else
+                BattleManager.Instance.CreateNewShip(
+                    new BattleObject.BattleObjectData("Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)),
+                        Random.Range(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
         }
     }
 
@@ -201,24 +214,29 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000)
                 return false;
         }
+
         foreach (var planet in battleManager.planets) {
             if (Vector2.Distance(position, planet.position) <= minDistanceFromObject + planet.GetSize() + 200)
                 return false;
         }
+
         foreach (var asteroidField in battleManager.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize())
                 return false;
         }
+
         foreach (var faction in battleManager.factions) {
             if (faction == this)
                 continue;
             if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000)
                 return false;
         }
+
         return true;
     }
 
     #region ObjectListControlls
+
     public void StartWar(Faction otherFaction) {
         AddEnemyFaction(otherFaction);
         otherFaction.AddEnemyFaction(this);
@@ -264,10 +282,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void TransferShipTo(Ship ship, Faction to) {
-        if (!ships.Contains(ship)) throw new InvalidOperationException("The ship to transfer from this faction isn't owned by this faction.");
+        if (!ships.Contains(ship))
+            throw new InvalidOperationException("The ship to transfer from this faction isn't owned by this faction.");
         if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
             LocalPlayer.Instance.RemoveOwnedUnit(ship);
         }
+
         RemoveShip(ship);
         to.AddShip(ship);
         ship.SetFaction(to);
@@ -287,10 +307,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void TransferStationTo(Station station, Faction to) {
-        if (!stations.Contains(station)) throw new InvalidOperationException("The station to transfer from this faction isn't owned by this faction.");
+        if (!stations.Contains(station))
+            throw new InvalidOperationException("The station to transfer from this faction isn't owned by this faction.");
         if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(station)) {
             LocalPlayer.Instance.RemoveOwnedUnit(station);
         }
+
         RemoveStation(station);
         to.AddStation(station);
         station.SetFaction(to);
@@ -345,6 +367,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     #endregion
 
     #region CreditsAndScience
+
     public void AddCredits(long credits) {
         this.credits += credits;
     }
@@ -354,6 +377,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             this.credits -= credits;
             return true;
         }
+
         return false;
     }
 
@@ -366,6 +390,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             faction.AddCredits(credits);
             return true;
         }
+
         return false;
     }
 
@@ -390,6 +415,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 researchCostExtra -= (int)researchCostExtra;
             }
         }
+
         Discoveries++;
         int improvementArea;
         switch (researchArea) {
@@ -409,6 +435,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     improvementDiscoveryCount[(int)ImprovementAreas.ProjectileRange]++;
                     UpdateUnitWeaponRanges();
                 }
+
                 break;
             case ResearchAreas.Electricity:
                 improvementArea = Random.Range(0, 5);
@@ -429,6 +456,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     improvementDiscoveryCount[(int)ImprovementAreas.LaserRange]++;
                     UpdateUnitWeaponRanges();
                 }
+
                 break;
             case ResearchAreas.Chemicals:
                 improvementArea = Random.Range(0, 4);
@@ -447,12 +475,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     improvementDiscoveryCount[(int)ImprovementAreas.MissileRange]++;
                     UpdateUnitWeaponRanges();
                 }
+
                 break;
         }
     }
+
     #endregion
 
     #region Update
+
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
         foreach (var unitGroup in unitGroups.ToList()) {
@@ -493,6 +524,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     return;
                 }
             }
+
             //Has not been added yet
             closeEnemyGroups.Add(targetGroup);
             closeEnemyGroupsDistance.Add(distance);
@@ -522,9 +554,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             ship.SetupThrusters();
         }
     }
+
     #endregion
 
     #region HelperMethods
+
     public bool IsAtWarWithFaction(Faction faction) {
         return enemyFactions.Contains(faction);
     }
@@ -549,6 +583,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                         distances.Add(distance);
                         break;
                     }
+
                     if (distance < Vector2.Distance(position, eligibleAsteroidFields[f].GetPosition())) {
                         eligibleAsteroidFields.Insert(f, targetAsteroidField);
                         distances.Insert(f, distance);
@@ -557,6 +592,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 }
             }
         }
+
         return eligibleAsteroidFields;
     }
 
@@ -564,15 +600,21 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (asteroidField.totalResources <= 0)
             return false;
         foreach (Station friendlyStation in stations) {
-            if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
+            if (friendlyStation.stationType == Station.StationType.MiningStation &&
+                Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
+                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
                 return false;
             }
         }
+
         foreach (Station friendlyStation in stationBlueprints) {
-            if (friendlyStation.stationType == Station.StationType.MiningStation && Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <= ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
+            if (friendlyStation.stationType == Station.StationType.MiningStation &&
+                Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
+                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -592,9 +634,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     station = targetStation;
                     distance = targetDistance;
                 }
-
             }
         }
+
         return station;
     }
 
@@ -614,9 +656,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     unit = targetUnit;
                     distance = targetDistance;
                 }
-
             }
         }
+
         return unit;
     }
 
@@ -630,8 +672,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 station = targetStation;
                 distance = targetDistance;
             }
-
         }
+
         return station;
     }
 
@@ -651,12 +693,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
             if (!targetWantedTransportShips.HasValue)
                 continue;
-            if ((targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0)) || (targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips)) {
+            if ((targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0)) ||
+                (targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips)) {
                 miningStation = targetMiningStation;
                 distance = targetDistance;
                 wantedTransportShips = targetWantedTransportShips.Value;
             }
         }
+
         return miningStation;
     }
 
@@ -699,6 +743,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 distance = targetDistance;
             }
         }
+
         return closestStar;
     }
 
@@ -718,6 +763,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 distance = targetDistance;
             }
         }
+
         return closestGasCloud;
     }
 
@@ -753,5 +799,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public Color GetColorBackgroundTint(float alpha = .1f) {
         return new Color(color.r, color.g, color.b, alpha);
     }
+
     #endregion
 }

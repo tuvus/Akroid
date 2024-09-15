@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -10,8 +9,7 @@ public class ConstructionBay : ModuleComponent {
 
     private float constructionTime;
 
-    [SerializeField]
-    public List<ShipConstructionBlueprint> buildQueue;
+    [SerializeField] public List<ShipConstructionBlueprint> buildQueue;
 
     public ConstructionBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -27,6 +25,7 @@ public class ConstructionBay : ModuleComponent {
             buildQueue.Add(shipBlueprint);
             return true;
         }
+
         return false;
     }
 
@@ -63,7 +62,8 @@ public class ConstructionBay : ModuleComponent {
 
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
             foreach (var resourceCost in shipBlueprint.resourceCosts.ToList()) {
-                long availableCargo = math.max(0, unit.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
+                long availableCargo = math.max(0,
+                    unit.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
                 shipBlueprint.resourceCosts[resourceCost.Key] -= amountToUse;
                 unit.UseCargo(amountToUse, resourceCost.Key);
@@ -76,6 +76,7 @@ public class ConstructionBay : ModuleComponent {
                     }
                 }
             }
+
             AddReservedResources(shipBlueprint, cargoReserved);
         }
     }
@@ -93,7 +94,8 @@ public class ConstructionBay : ModuleComponent {
             return ship.cost;
         } else if (faction != null) {
             // Other factions need to pay us for the metal
-            return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] * faction.GetFactionAI().GetSellCostOfMetal());
+            return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] *
+                                      faction.GetFactionAI().GetSellCostOfMetal());
         } else {
             return ship.cost;
         }
@@ -106,7 +108,8 @@ public class ConstructionBay : ModuleComponent {
     }
 
     /// <summary> Adds the resources to reserve from constructionBlueprint to the reservedResources Dictionary passed in. </summary>
-    private void AddReservedResources(ShipConstructionBlueprint constructionBlueprint, Dictionary<CargoBay.CargoTypes, long> reservedResources) {
+    private void AddReservedResources(ShipConstructionBlueprint constructionBlueprint,
+        Dictionary<CargoBay.CargoTypes, long> reservedResources) {
         foreach (var cost in constructionBlueprint.resourceCosts) {
             if (reservedResources.ContainsKey(cost.Key)) {
                 reservedResources[cost.Key] = reservedResources[cost.Key] + cost.Value;

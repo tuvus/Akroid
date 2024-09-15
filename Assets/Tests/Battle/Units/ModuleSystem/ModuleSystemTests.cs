@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
@@ -21,7 +20,8 @@ public class ModuleSystemTests {
         component.resourceCosts = new List<long>() { 55 };
         var mockModule = new MockModule();
         unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System>() {
-            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1), component),
+            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                component),
         }, new List<IModule>() { mockModule });
 
         // What is actually being tested
@@ -60,7 +60,8 @@ public class ModuleSystemTests {
         component.upgrade = upgradeComponent;
         var mockModule = new MockModule();
         unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System>() {
-            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1), component),
+            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                component),
         }, new List<IModule>() { mockModule });
 
         var moduleSystem = new ModuleSystem(battleMananger.Object, unit.Object, unitScriptableObject);
@@ -72,7 +73,8 @@ public class ModuleSystemTests {
         Assert.False(moduleSystem.moduleToSystem.Keys.Any(m => m.componentScriptableObject == component));
         Assert.True(moduleSystem.modules.Any(m => m.componentScriptableObject == upgradeComponent));
         Assert.True(moduleSystem.moduleToSystem.Keys.Any(m => m.componentScriptableObject == upgradeComponent));
-        Assert.True(moduleSystem.moduleToSystem[moduleSystem.modules.First(m => m.componentScriptableObject == upgradeComponent)] == moduleSystem.systems.First());
+        Assert.True(moduleSystem.moduleToSystem[moduleSystem.modules.First(m => m.componentScriptableObject == upgradeComponent)] ==
+                    moduleSystem.systems.First());
     }
 
     class MockUnitScriptableObject : UnitScriptableObject {
@@ -112,5 +114,4 @@ public class ModuleSystemTests {
             credits = 1000;
         }
     }
-
 }

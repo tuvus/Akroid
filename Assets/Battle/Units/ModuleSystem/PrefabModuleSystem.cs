@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -48,10 +47,12 @@ public class PrefabModuleSystem : MonoBehaviour {
             this.moduleCount = moduleCount;
         }
     }
+
     [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
     #region SystemsAndModules
+
     public void AddSystem() {
         systems.Add(new PrefabSystem("New System", SystemType.Any));
     }
@@ -75,6 +76,7 @@ public class PrefabModuleSystem : MonoBehaviour {
                 }
             }
         }
+
         systems.RemoveAt(system);
     }
 
@@ -117,5 +119,6 @@ public class PrefabModuleSystem : MonoBehaviour {
             systems[i] = new PrefabSystem(systems[i], modules.Count(t => t.system == i));
         }
     }
+
     #endregion
 }

@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ConstructionShip : Ship {
     public Station targetStationBlueprint;
 
-    public ConstructionShip(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject): 
+    public ConstructionShip(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject) :
         base(battleObjectData, battleManager, shipScriptableObject) {
         // this.targetStationBlueprint = targetStationBlueprint;
     }
@@ -14,14 +12,19 @@ public class ConstructionShip : Ship {
         if (targetStationBlueprint != null) {
             targetStationBlueprint.Explode();
         }
+
         //TODO: Add stationscriptableobject here!
-        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(new BattleObjectData("MiningStation", new BattleManager.PositionGiver(position), Random.Range(0, 360), faction),  BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
+        targetStationBlueprint = (MiningStation)BattleManager.Instance.CreateNewStation(
+            new BattleObjectData("MiningStation", new BattleManager.PositionGiver(position), Random.Range(0, 360), faction),
+            BattleManager.Instance.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
         return targetStationBlueprint;
     }
 
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
-        if (targetStationBlueprint != null && Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 && targetStationBlueprint.BuildStation()) {
+        if (targetStationBlueprint != null &&
+            Vector2.Distance(GetPosition(), targetStationBlueprint.GetPosition()) < targetStationBlueprint.GetSize() + GetSize() + 100 &&
+            targetStationBlueprint.BuildStation()) {
             targetStationBlueprint = null;
             Explode();
         }
@@ -39,6 +42,7 @@ public class ConstructionShip : Ship {
                 distance = targetDistance;
             }
         }
+
         return station;
     }
 
@@ -46,6 +50,7 @@ public class ConstructionShip : Ship {
         if (targetStationBlueprint != null) {
             targetStationBlueprint.Explode();
         }
+
         base.Explode();
     }
 }

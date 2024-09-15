@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class CargoBay : ModuleComponent {
     public enum CargoTypes {
@@ -32,12 +30,14 @@ public class CargoBay : ModuleComponent {
             if (cargoToLoad <= 0)
                 return 0;
         }
+
         //Puts Cargo in new cargo bays
         if (cargoToLoad > 0) {
             while (GetOpenCargoBays() > 0 && cargoToLoad > 0) {
                 cargoToLoad = AddNewCargoBay(cargoToLoad, cargoType);
             }
         }
+
         return cargoToLoad;
     }
 
@@ -49,6 +49,7 @@ public class CargoBay : ModuleComponent {
             cargoBays[cargoBayNumber] += cargoToAdd;
             return 0;
         }
+
         long returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBayScriptableObject.cargoBaySize;
         cargoBays[cargoBayNumber] = cargoBayScriptableObject.cargoBaySize;
         return returnValue;
@@ -67,6 +68,7 @@ public class CargoBay : ModuleComponent {
                 return cargoAmount - cargoBayScriptableObject.cargoBaySize;
             }
         }
+
         return cargoAmount;
     }
 
@@ -84,6 +86,7 @@ public class CargoBay : ModuleComponent {
             if (cargoToUse <= 0)
                 return 0;
         }
+
         return cargoToUse;
     }
 
@@ -121,6 +124,7 @@ public class CargoBay : ModuleComponent {
                 totalCargoCapacity += cargoBayScriptableObject.cargoBaySize - cargoBays[i];
             }
         }
+
         return totalCargoCapacity + (GetOpenCargoBays() * cargoBayScriptableObject.cargoBaySize);
     }
 
@@ -136,12 +140,14 @@ public class CargoBay : ModuleComponent {
         if (cargoType == CargoTypes.All) {
             return allCargoTypes.Sum((t) => GetAllCargo(t));
         }
+
         long totalCargo = 0;
         for (int i = 0; i < cargoBays.Count; i++) {
             if (cargoBayTypes[i] == cargoType) {
                 totalCargo += cargoBays[i];
             }
         }
+
         return totalCargo;
     }
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ResearchEquipment : ModuleComponent {
@@ -25,8 +23,10 @@ public class ResearchEquipment : ModuleComponent {
                 researchTime = researchEquipmentScriptableObject.researchSpeed;
                 return false;
             }
+
             researchTime += researchEquipmentScriptableObject.researchSpeed;
         }
+
         return true;
     }
 

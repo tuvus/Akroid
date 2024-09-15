@@ -1,14 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
 public class MiningStationAI : StationAI {
-
     public List<Ship> transportShips;
     [SerializeField] int wantedTransports;
 
-    public MiningStationAI(Station station): base(station) {
+    public MiningStationAI(Station station) : base(station) {
         transportShips = new List<Ship>(10);
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
@@ -42,6 +40,7 @@ public class MiningStationAI : StationAI {
                 transportShips.RemoveAt(i);
             }
         }
+
         Profiler.EndSample();
     }
 
@@ -52,7 +51,6 @@ public class MiningStationAI : StationAI {
                 cargoTime += cargoSpeed;
                 break;
             }
-
         }
     }
 
@@ -65,10 +63,13 @@ public class MiningStationAI : StationAI {
                 i--;
             }
         }
+
         if (!transportShips.Contains(ship)) {
             transportShips.Add(ship);
         }
-        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
+
+        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal),
+            Command.CommandAction.Replace);
     }
 
     public int? GetWantedTransportShips() {
@@ -77,6 +78,7 @@ public class MiningStationAI : StationAI {
                 transportShips.RemoveAt(i);
             }
         }
+
         if (!station.IsBuilt() || !GetMiningStation().activelyMining)
             return null;
         return wantedTransports - transportShips.Count;

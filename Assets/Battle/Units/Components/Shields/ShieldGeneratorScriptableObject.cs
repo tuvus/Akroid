@@ -6,7 +6,9 @@ class ShieldGeneratorScriptableObject : ComponentScriptableObject {
     //ShieldGenStats
     public float shieldRegenRate;
     public float shieldRecreateSpeed;
+
     public int shieldRegenHealth;
+
     //ShieldStats
     public Shield shieldPrefab;
     public int maxShieldHealth;

@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -32,7 +30,8 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
         shipClass.text = "Ship Class: " + displayedObject.GetShipClass();
         shipType.text = "Ship Type: " + displayedObject.GetShipType();
         if (displayedObject.shipAI.commands.Count > 0)
-            shipAI.text = "ShipAI: " + displayedObject.shipAI.commands.First().commandType.ToString() + ", " + displayedObject.shipAI.currentCommandState.ToString();
+            shipAI.text = "ShipAI: " + displayedObject.shipAI.commands.First().commandType.ToString() + ", " +
+                          displayedObject.shipAI.currentCommandState.ToString();
         else shipAI.text = "ShipAI: Idle";
 
         if (displayedObject.fleet != null) {
@@ -40,12 +39,14 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
             shipFleet.text = "Fleet: " + displayedObject.fleet.GetFleetName();
             shipFleetAI.gameObject.SetActive(true);
             if (displayedObject.fleet.FleetAI.commands.Count > 0)
-                shipFleetAI.text = "FleetAI: " + displayedObject.fleet.FleetAI.commands.First().commandType.ToString() + ", " + displayedObject.fleet.FleetAI.currentCommandState.ToString();
+                shipFleetAI.text = "FleetAI: " + displayedObject.fleet.FleetAI.commands.First().commandType.ToString() + ", " +
+                                   displayedObject.fleet.FleetAI.currentCommandState.ToString();
             else shipFleetAI.text = "FleetAI: Idle";
         } else {
             shipFleet.gameObject.SetActive(false);
             shipFleetAI.gameObject.SetActive(false);
         }
+
         weaponsCount.text = "Weapons: " + displayedObject.GetWeaponCount();
         if (displayedObject.GetWeaponCount() > 0) {
             shipTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedObject.GetUnitDamagePerSecond());
@@ -56,8 +57,10 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
             shipTotalDPS.gameObject.SetActive(false);
             maxWeaponRange.gameObject.SetActive(false);
         }
+
         shipAction.text = "Ship Action: " + displayedObject.shipAction.ToString();
-        UpdateCargoBayUI(displayedObject.moduleSystem.Get<CargoBay>().FirstOrDefault(), !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.faction));
+        UpdateCargoBayUI(displayedObject.moduleSystem.Get<CargoBay>().FirstOrDefault(),
+            !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.faction));
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
@@ -69,12 +72,15 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
                 if (cargoBayList.childCount <= i) {
                     Instantiate(cargoBayButtonPrefab, cargoBayList);
                 }
+
                 Transform cargoBayButton = cargoBayList.GetChild(i);
                 cargoBayButton.gameObject.SetActive(true);
                 cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = cargoBay.cargoBayTypes[i].ToString();
                 cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = cargoBay.cargoBays[i].ToString();
-                cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text = ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
+                cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text =
+                    ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
             }
+
             for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
                 cargoBayList.GetChild(i).gameObject.SetActive(false);
             }

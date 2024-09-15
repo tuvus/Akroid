@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Thruster : ModuleComponent, IParticleHolder {
     ThrusterScriptableObject thrusterScriptableObject;
@@ -15,7 +13,7 @@ public class Thruster : ModuleComponent, IParticleHolder {
     //     this.unit = unit;
     //     this.componentScriptableObject = componentScriptableObject;
     // }
-    public Thruster(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
+    public Thruster(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         thrusterScriptableObject = (ThrusterScriptableObject)componentScriptableObject;
 

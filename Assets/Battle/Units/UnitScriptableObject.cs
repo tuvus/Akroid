@@ -21,6 +21,7 @@ public class UnitScriptableObject : ScriptableObject {
         if (systems == null) {
             systems = Array.Empty<ModuleSystem.System>();
         }
+
         GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
         if (targetPrefab != null) {
             ModuleSystem.System[] oldSystems = systems;
@@ -29,6 +30,7 @@ public class UnitScriptableObject : ScriptableObject {
             for (int i = 0; i < Mathf.Min(oldSystems.Length, systems.Length); i++) {
                 systems[i] = oldSystems[i];
             }
+
             for (int i = 0; i < prefabModuleSystem.systems.Count; i++) {
                 if (systems[i] != null) {
                     systems[i] = new ModuleSystem.System(prefabModuleSystem.systems[i], systems[i].component);
@@ -51,6 +53,7 @@ public class UnitScriptableObject : ScriptableObject {
                 Debug.Log("Null Component " + unitName);
                 continue;
             }
+
             if (system.moduleCount == 0) Debug.Log($"{unitName} system {system.name} has a moduleCount of 0!");
             cost += system.component.cost * system.moduleCount;
             for (int f = 0; f < system.component.resourceTypes.Count; f++) {
@@ -66,6 +69,7 @@ public class UnitScriptableObject : ScriptableObject {
             resourceCosts.Add(0);
             metalIndex = resourceTypes.Count - 1;
         }
+
         resourceCosts[metalIndex] += cost;
     }
 

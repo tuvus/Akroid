@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LaserTurret : Turret {
     LaserTurretScriptableObject laserTurretScriptableObject;
     Laser laser;
 
-    public LaserTurret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
+    public LaserTurret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
 
@@ -64,12 +62,15 @@ public class LaserTurret : Turret {
 
 
     public override float GetDamagePerSecond() {
-        reloadController = new ReloadController(laserTurretScriptableObject.fireSpeed, laserTurretScriptableObject.reloadSpeed, laserTurretScriptableObject.maxAmmo);
+        reloadController = new ReloadController(laserTurretScriptableObject.fireSpeed, laserTurretScriptableObject.reloadSpeed,
+            laserTurretScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = laserTurretScriptableObject.laserDamagePerSecond * (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) * reloadController.maxAmmo;
+
+        float damage = laserTurretScriptableObject.laserDamagePerSecond *
+                       (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) * reloadController.maxAmmo;
         return damage / time;
     }
 
@@ -77,6 +78,7 @@ public class LaserTurret : Turret {
         base.StopFiring();
         // Destroy(laser.gameObject);
     }
+
     public override void ShowEffects(bool shown) {
         base.ShowEffects(shown);
         laser.ShowEffects(shown);

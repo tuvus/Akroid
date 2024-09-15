@@ -6,7 +6,7 @@ public class Star : BattleObject, IPositionConfirmer {
     float targetBrightness;
     float brightnessSpeed;
 
-    public Star(BattleObjectData battleObjectData, BattleManager battleManager): base(battleObjectData, battleManager) {
+    public Star(BattleObjectData battleObjectData, BattleManager battleManager) : base(battleObjectData, battleManager) {
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         RandomiseGlareTarget();
         Spawn();
@@ -31,6 +31,7 @@ public class Star : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+
         return true;
     }
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EngagedVisual : MonoBehaviour {
@@ -19,10 +17,12 @@ public class EngagedVisual : MonoBehaviour {
     }
 
     public void UpdateEngagedVisual() {
-        if (!LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() || !LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
+        if (!LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() ||
+            !LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = false;
             return;
         }
+
         if (Time.timeScale == 0)
             return;
         if (visualTime > 0) {
@@ -37,6 +37,7 @@ public class EngagedVisual : MonoBehaviour {
             if (visualCooldownTime > 0) {
                 visualCooldownTime = Mathf.Max(0, visualCooldownTime - Time.unscaledDeltaTime);
             }
+
             if (visualCooldownTime <= 0 && ShouldShowEngageVisual()) {
                 visualTime = visualTimeMax;
                 visualCooldownTime = visualCooldownMax;
@@ -60,7 +61,8 @@ public class EngagedVisual : MonoBehaviour {
     }
 
     public void ShowEngagedVisual(bool show) {
-        if (LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() && LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
+        if (LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() &&
+            LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
             if (visualTime > 0) {
                 spriteRenderer.enabled = show;
             } else {

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -71,7 +70,8 @@ public class Planet : BattleObject, IPositionConfirmer {
         public float mediumQualityLandFactor;
         public float lowQualityLandFactor;
 
-        public PlanetData(BattleObjectData battleObjectData, float highQualityLandFactor, float mediumQualityLandFactor, float lowQualityLandFactor) {
+        public PlanetData(BattleObjectData battleObjectData, float highQualityLandFactor, float mediumQualityLandFactor,
+            float lowQualityLandFactor) {
             this.battleObjectData = battleObjectData;
             this.highQualityLandFactor = highQualityLandFactor;
             this.mediumQualityLandFactor = mediumQualityLandFactor;
@@ -79,15 +79,19 @@ public class Planet : BattleObject, IPositionConfirmer {
         }
     }
 
-    public Planet(PlanetData planetData, BattleManager battleManager): base(planetData.battleObjectData, battleManager) {
+    public Planet(PlanetData planetData, BattleManager battleManager) : base(planetData.battleObjectData, battleManager) {
         rotationSpeed *= Random.Range(.5f, 1.5f);
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
+
         planetFactions = new Dictionary<Faction, PlanetFaction>();
         totalArea = (long)(math.pow(GetSize(), 2) * math.PI);
-        areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor), (long)(totalArea * planetData.mediumQualityLandFactor), (long)(totalArea * planetData.lowQualityLandFactor));
-        unclaimedTerritory = new PlanetFaction(this, null, new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0, "This territory is open to claim.");
+        areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
+            (long)(totalArea * planetData.mediumQualityLandFactor), (long)(totalArea * planetData.lowQualityLandFactor));
+        unclaimedTerritory = new PlanetFaction(this, null,
+            new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0,
+            "This territory is open to claim.");
         Spawn();
     }
 
@@ -101,14 +105,16 @@ public class Planet : BattleObject, IPositionConfirmer {
         faction.AddPlanet(this);
     }
 
-    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor, double lowQualityAreaFactor, long population, long force, string special) {
+    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor, double lowQualityAreaFactor,
+        long population, long force, string special) {
         PlanetTerritory territory = new PlanetTerritory((long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
             (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
             (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
         AddFaction(faction, territory, population, force, special);
     }
 
-    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor, double lowQualityAreaFactor, long population, double forceFraction, string special) {
+    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor, double lowQualityAreaFactor,
+        long population, double forceFraction, string special) {
         PlanetTerritory territory = new PlanetTerritory((long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
             (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
             (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
@@ -126,7 +132,8 @@ public class Planet : BattleObject, IPositionConfirmer {
         teritoryValue -= highQualityTerritories * 2;
         long mediumQualityTerritories = math.min(GetUnclaimedFaction().territory.mediumQualityArea, teritoryValue / 2);
         teritoryValue -= mediumQualityTerritories * 2;
-        AddFaction(faction, new PlanetTerritory(highQualityTerritories, mediumQualityTerritories, teritoryValue), population, population / 10, special);
+        AddFaction(faction, new PlanetTerritory(highQualityTerritories, mediumQualityTerritories, teritoryValue), population,
+            population / 10, special);
     }
 
     public void RemoveFaction(Faction faction) {
@@ -166,11 +173,13 @@ public class Planet : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
             if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize() + GetSize()) {
                 return false;
             }
         }
+
         foreach (var station in BattleManager.Instance.stations) {
             if (Vector2.Distance(position, station.GetPosition()) <= minDistanceFromObject + station.GetSize() + GetSize()) {
                 return false;
@@ -182,6 +191,7 @@ public class Planet : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+
         return true;
     }
 

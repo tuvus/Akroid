@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public interface IObjectGroupLink {
     /// <summary>
     /// Removes the object form the group without calling RemoveGroup on the BattleObject

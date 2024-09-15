@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class CampaingController : MonoBehaviour {
-    public BattleManager battleManager {  get; private set; }
+    public BattleManager battleManager { get; private set; }
     public EventManager eventManager { get; private set; }
     public float researchModifier;
     public float systemSizeModifier;

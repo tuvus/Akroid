@@ -1,11 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     public float totalResources;
 
-    public AsteroidField(BattleManager battleManager): base(battleManager, new HashSet<Asteroid>(), true) { }
+    public AsteroidField(BattleManager battleManager) : base(battleManager, new HashSet<Asteroid>(), true) { }
 
     /// <summary>
     /// SetupAstroidFieldPosition needs to be called after all asteroids have been added and placed to determine it's size.
@@ -17,6 +16,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
         foreach (var asteroid in battleObjects) {
             asteroid.AdjustPosition(-GetPosition());
         }
+
         SetPosition(GetSetupPosition(positionGiver));
     }
 
@@ -35,6 +35,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
                 return false;
             }
         }
+
         return true;
     }
 }

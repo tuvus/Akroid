@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public interface IPositionConfirmer {
-
     /// <summary>
     /// Confirms the position of the object, returns false if it is close to certain other object or true otherwise.
     /// </summary>

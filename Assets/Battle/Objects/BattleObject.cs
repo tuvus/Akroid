@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +16,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     [field: SerializeField] public Faction faction { get; protected set; }
     public bool spawned { get; protected set; }
-    public bool visible { get; protected set;}
+    public bool visible { get; protected set; }
 
     public struct BattleObjectData {
         public string objectName;
@@ -26,7 +25,8 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         public Vector2 scale;
         public Faction faction;
 
-        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Vector2 scale, Faction faction = null) {
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Vector2 scale,
+            Faction faction = null) {
             this.objectName = objectName;
             this.positionGiver = positionGiver;
             this.rotation = rotation;
@@ -34,18 +34,17 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
             this.faction = faction;
         }
 
-        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null):
-            this(objectName, positionGiver, rotation, Vector2.one, faction) {
-        }
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null) :
+            this(objectName, positionGiver, rotation, Vector2.one, faction) { }
 
-        public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null):
+        public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null) :
             this(objectName, new BattleManager.PositionGiver(position), rotation, faction) { }
 
-        public BattleObjectData(string objectName):
+        public BattleObjectData(string objectName) :
             this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0) { }
     }
 
-    public BattleObject() {}
+    public BattleObject() { }
 
     public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
         this.battleManager = battleManager;

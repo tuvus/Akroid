@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 public class GasCloud : BattleObject, IPositionConfirmer {
     public long resources;
     public CargoBay.CargoTypes gasCloudType;
 
-    public GasCloud(BattleObjectData battleObjectData, BattleManager battleManager, long resources, CargoBay.CargoTypes gasCloudType): base(battleObjectData, battleManager) {
+    public GasCloud(BattleObjectData battleObjectData, BattleManager battleManager, long resources, CargoBay.CargoTypes gasCloudType) :
+        base(battleObjectData, battleManager) {
         this.resources = resources;
         this.gasCloudType = gasCloudType;
         UnityEngine.Color temp = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
@@ -30,6 +28,7 @@ public class GasCloud : BattleObject, IPositionConfirmer {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -39,6 +38,7 @@ public class GasCloud : BattleObject, IPositionConfirmer {
             resources -= amount;
             return amount;
         }
+
         long returnValue = resources;
         resources = 0;
         return returnValue;

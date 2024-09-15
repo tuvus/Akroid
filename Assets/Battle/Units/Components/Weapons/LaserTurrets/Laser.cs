@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Laser : MonoBehaviour {
-
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer startHighlight;
     [SerializeField] private SpriteRenderer endHighlight;
@@ -82,9 +79,12 @@ public class Laser : MonoBehaviour {
         if (fadeTime <= 0) {
             ExpireLaser();
         } else {
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, fadeTime / laserTurret.GetFireDuration());
-            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, fadeTime / laserTurret.GetFadeDuration());
-            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, fadeTime / laserTurret.GetFadeDuration());
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
+                fadeTime / laserTurret.GetFireDuration());
+            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g,
+                fadeTime / laserTurret.GetFadeDuration());
+            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g,
+                fadeTime / laserTurret.GetFadeDuration());
         }
     }
 
@@ -100,6 +100,7 @@ public class Laser : MonoBehaviour {
                 contactLength = i + 1;
                 break;
             }
+
             Unit unit = contacts[i].collider.GetComponent<Unit>();
             if (unit != null && unit.faction != laserTurret.GetUnit().faction) {
                 if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
@@ -107,8 +108,10 @@ public class Laser : MonoBehaviour {
                     hitShield = null;
                     hitPoint = contacts[i];
                 }
+
                 continue;
             }
+
             Shield shield = contacts[i].collider.GetComponent<Shield>();
             if (shield != null && shield.GetUnit().faction != laserTurret.GetUnit().faction) {
                 if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
@@ -116,16 +119,20 @@ public class Laser : MonoBehaviour {
                     hitShield = shield;
                     hitPoint = contacts[i];
                 }
+
                 continue;
             }
         }
+
         for (int i = 0; i < contactLength; i++) {
             contacts[i] = new RaycastHit2D();
         }
+
         if (hitUnit != null) {
             hitUnit.TakeDamage(GetDamage(deltaTime, false));
             return;
         }
+
         if (hitShield != null) {
             hitShield.TakeDamage(GetDamage(deltaTime, true));
             return;
@@ -133,7 +140,8 @@ public class Laser : MonoBehaviour {
     }
 
     int GetDamage(float deltaTime, bool hitShield) {
-        float damage = laserTurret.GetLaserDamagePerSecond() * deltaTime * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
+        float damage = laserTurret.GetLaserDamagePerSecond() * deltaTime *
+                       laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;
@@ -147,13 +155,16 @@ public class Laser : MonoBehaviour {
     void SetDistance() {
         transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
         if (hitPoint.HasValue) {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x,
+                (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
             endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
         } else {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x,
+                (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             endHighlight.enabled = false;
         }
+
         transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
         startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
     }
@@ -166,7 +177,7 @@ public class Laser : MonoBehaviour {
         return laserTurret.GetLaserRange() * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 
-    public void ShowEffects(bool shown) { 
+    public void ShowEffects(bool shown) {
         startHighlight.enabled = shown;
         endHighlight.enabled = shown;
     }

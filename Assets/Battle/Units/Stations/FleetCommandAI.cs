@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Profiling;
 
 public class FleetCommandAI : ShipyardAI {
@@ -19,8 +16,10 @@ public class FleetCommandAI : ShipyardAI {
                     ship.moduleSystem.Get<ResearchEquipment>().ForEach(r => station.faction.AddScience(r.DownloadData()));
                 }
             }
+
             waitTime += waitSpeed;
         }
+
         Profiler.EndSample();
     }
 }

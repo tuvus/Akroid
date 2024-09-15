@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ReloadController {
@@ -27,6 +25,7 @@ public class ReloadController {
                 ammo = maxAmmo;
             }
         }
+
         firetime = Mathf.Max(0, firetime - time);
     }
 
@@ -37,6 +36,7 @@ public class ReloadController {
             reloadTime = reloadSpeed;
             return true;
         }
+
         return false;
     }
 

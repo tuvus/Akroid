@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEditor;
@@ -8,7 +7,6 @@ using UnityEngine.UIElements;
 
 [CustomEditor(typeof(PrefabModuleSystem))]
 public class PrefabModuleSystemEditor : Editor {
-
     public override VisualElement CreateInspectorGUI() {
         PrefabModuleSystem moduleSystem = (PrefabModuleSystem)target;
         // Create a new VisualElement to be the root of our inspector UI
@@ -22,7 +20,7 @@ public class PrefabModuleSystemEditor : Editor {
         myInspector.Add(selectSystem);
         DropdownField dropdownField = new DropdownField(new List<string>(Enum.GetNames(PrefabModuleSystem.SystemType.Turret.GetType())), 0);
         Button addSystemButton = new Button(() => {
-            moduleSystem.AddSystem(dropdownField.value, (PrefabModuleSystem.SystemType)dropdownField.index); 
+            moduleSystem.AddSystem(dropdownField.value, (PrefabModuleSystem.SystemType)dropdownField.index);
             selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
         }) {
             text = "AddSystem"
@@ -30,10 +28,16 @@ public class PrefabModuleSystemEditor : Editor {
         Button addModule = new Button(() => { moduleSystem.AddModule(selectSystem.value); }) {
             text = "AddModuleToSystem"
         };
-        Button removeSystem = new Button(() => { moduleSystem.RemoveSystem(selectSystem.value); selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1); }) {
+        Button removeSystem = new Button(() => {
+            moduleSystem.RemoveSystem(selectSystem.value);
+            selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
+        }) {
             text = "RemoveSystem"
         };
-        Button removeAllSystems = new Button(() => { moduleSystem.RemoveAllSystems(); selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1); }) {
+        Button removeAllSystems = new Button(() => {
+            moduleSystem.RemoveAllSystems();
+            selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
+        }) {
             text = "RemoveAllSystems"
         };
         Button refresh = new Button(() => { moduleSystem.RefreshComponents(); }) {

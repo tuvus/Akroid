@@ -4,8 +4,7 @@ using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
 class ProjectileTurretScriptableObject : TurretScriptableObject {
-    [Tooltip("Max at around 150")]
-    public float fireVelocity;
+    [Tooltip("Max at around 150")] public float fireVelocity;
     public float fireAccuracy;
     public int minDamage;
     public int maxDamage;
@@ -17,6 +16,7 @@ class ProjectileTurretScriptableObject : TurretScriptableObject {
         if (maxAmmo > 1) {
             time += maxAmmo * fireSpeed;
         }
+
         float damage = (minDamage + maxDamage) / 2f * maxAmmo;
         return damage / time;
     }

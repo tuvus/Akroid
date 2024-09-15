@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -12,7 +11,8 @@ public class MiningStation : Station {
     private float miningTime;
 
     public MiningStation(BattleObjectData battleObjectData, BattleManager battleManager,
-        StationScriptableObject stationScriptableObject, bool built): base(battleObjectData, battleManager, stationScriptableObject, built) {
+        StationScriptableObject stationScriptableObject,
+        bool built) : base(battleObjectData, battleManager, stationScriptableObject, built) {
         MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();
@@ -29,11 +29,15 @@ public class MiningStation : Station {
         List<AsteroidField> eligibleAsteroidFields = faction.GetClosestAvailableAsteroidFields(positionGiver.position);
 
         for (int i = 0; i < eligibleAsteroidFields.Count; i++) {
-            Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position, eligibleAsteroidFields[i].GetSize() + GetSize() + 10);
-            Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrement(new BattleManager.PositionGiver(targetCenterPosition, positionGiver), this);
+            Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position,
+                eligibleAsteroidFields[i].GetSize() + GetSize() + 10);
+            Vector2? targetLocationAsteroidField =
+                BattleManager.Instance.FindFreeLocationIncrement(new BattleManager.PositionGiver(targetCenterPosition, positionGiver),
+                    this);
             if (targetLocationAsteroidField.HasValue)
                 return targetLocationAsteroidField.Value;
         }
+
         Vector2? targetLocation = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetLocation.HasValue)
             return targetLocation.Value;
@@ -45,6 +49,7 @@ public class MiningStation : Station {
         if (!built) {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
+
         return base.BuildStation();
     }
 
@@ -57,10 +62,12 @@ public class MiningStation : Station {
                 ManageStationMining();
                 miningTime += GetMiningSpeed();
             }
+
             if (nearbyAsteroids.Count == 0 && GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0) {
                 activelyMining = false;
                 faction.RemoveMiningStation(this);
             }
+
             Profiler.EndSample();
         }
     }
@@ -69,8 +76,10 @@ public class MiningStation : Station {
         if (nearbyAsteroids.Count == 0) {
             UpdateMiningStationAsteroids();
         }
+
         if (nearbyAsteroids.Count > 0) {
-            LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())), CargoBay.CargoTypes.Metal);
+            LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())),
+                CargoBay.CargoTypes.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
             }
@@ -89,6 +98,7 @@ public class MiningStation : Station {
                 }
             }
         }
+
         while (tempAsteroids.Count > 0) {
             Asteroid closest = null;
             float closestDist = 0;
@@ -99,6 +109,7 @@ public class MiningStation : Station {
                     closestDist = tempDist;
                 }
             }
+
             nearbyAsteroids.Add(closest);
             tempAsteroids.Remove(closest);
         }

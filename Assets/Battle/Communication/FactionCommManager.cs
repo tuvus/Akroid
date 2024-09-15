@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CommunicationEvent;
@@ -34,6 +32,7 @@ public class FactionCommManager {
     }
 
     #region CommunicationTransfer
+
     public void SendCommunication(Faction receiver, string text, float delay = 0) {
         SendCommunication(new CommunicationEvent(receiver.GetFactionCommManager(), text), delay);
     }
@@ -64,8 +63,10 @@ public class FactionCommManager {
         } else if (receivedCommunication.options != null && receivedCommunication.optionChoiceLogic != null) {
             receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
+
         receivedCommunication.receivedEventLogic(receivedCommunication);
     }
+
     #endregion
 
     #region HelperMethods
@@ -81,5 +82,6 @@ public class FactionCommManager {
     public GameObject GetPortrait() {
         return character.characterModel;
     }
+
     #endregion
 }

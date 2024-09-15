@@ -1,12 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class ShipyardAI : StationAI {
-
     public bool autoCollectCargo;
 
-    public ShipyardAI(Station station): base(station) {
+    public ShipyardAI(Station station) : base(station) {
         autoCollectCargo = true;
     }
 
@@ -24,6 +19,7 @@ public class ShipyardAI : StationAI {
                     station.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Gas, ship);
                 }
             }
+
             cargoTime += cargoSpeed;
         }
     }
@@ -37,6 +33,7 @@ public class ShipyardAI : StationAI {
                 repairAmmount = station.RepairUnit(ship, repairAmmount);
             }
         }
+
         if (repairAmmount > 0 && station.IsDamaged())
             station.RepairUnit(station, repairAmmount);
     }

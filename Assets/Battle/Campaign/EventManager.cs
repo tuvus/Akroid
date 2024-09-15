@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,7 +8,7 @@ public class EventManager {
     public LocalPlayerGameInput playerGameInput { get; private set; }
     public float panDelta;
 
-    public EventManager(LocalPlayerGameInput playerGameInput) { 
+    public EventManager(LocalPlayerGameInput playerGameInput) {
         this.playerGameInput = playerGameInput;
         ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
         LocalPlayer.Instance.GetPlayerUI().playerEventUI.SetEventManager(this);
@@ -23,6 +22,7 @@ public class EventManager {
                 activeEvent.Item2();
             }
         }
+
         panDelta = 0;
     }
 

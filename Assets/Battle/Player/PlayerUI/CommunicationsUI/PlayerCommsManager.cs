@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -33,6 +32,7 @@ public class PlayerCommsManager : MonoBehaviour {
         for (int i = communicationLogTransform.childCount - 1; i >= 0; i--) {
             DestroyImmediate(communicationLogTransform.GetChild(i).gameObject);
         }
+
         if (faction != null) {
             FactionCommManager factionCommManager = faction.GetFactionCommManager();
             if (factionCommManager.communicationLog.Count > 0) {
@@ -40,9 +40,11 @@ public class PlayerCommsManager : MonoBehaviour {
             } else {
                 HidePanel();
             }
+
             for (int i = 0; i < factionCommManager.communicationLog.Count; i++) {
                 CreateCommEvent(factionCommManager.communicationLog[i]);
             }
+
             if (factionCommManager.communicationLog.Count > 0) {
                 SetPortrait(factionCommManager.communicationLog[factionCommManager.communicationLog.Count - 1].sender);
             }
@@ -50,6 +52,7 @@ public class PlayerCommsManager : MonoBehaviour {
             HidePanel();
         }
     }
+
     bool lockToBottom = false;
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
@@ -64,6 +67,7 @@ public class PlayerCommsManager : MonoBehaviour {
             verticleScrollbar.value = 0;
             lockToBottom = false;
         }
+
         if (portraitTime > 0) {
             portraitTime -= Time.deltaTime;
             if (portraitTime <= 0) {
@@ -82,7 +86,8 @@ public class PlayerCommsManager : MonoBehaviour {
                 GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
                 newOption.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.options[i].optionName;
                 newOption.GetComponent<Button>().interactable = communicationEvent.options[i].checkStatus(communicationEvent);
-                newOption.GetComponent<Button>().onClick.AddListener(() => ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
+                newOption.GetComponent<Button>().onClick.AddListener(() =>
+                    ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
             }
         }
     }
@@ -107,6 +112,7 @@ public class PlayerCommsManager : MonoBehaviour {
             DestroyImmediate(characterPortrait);
             characterPortraitPanel.SetActive(false);
         }
+
         if (factionCommManager.GetPortrait() != null) {
             characterPortrait = Instantiate(factionCommManager.GetPortrait(), characterPortraitFrame);
             characterPortraitPanel.SetActive(true);
@@ -130,6 +136,7 @@ public class PlayerCommsManager : MonoBehaviour {
             if (result.gameObject.tag.Equals("FreezeScroll"))
                 return true;
         }
+
         return false;
     }
 
@@ -139,6 +146,7 @@ public class PlayerCommsManager : MonoBehaviour {
         if (portraitTime > 0) {
             characterPortraitPanel.SetActive(true);
         }
+
         communicationToggleTransform.rotation = Quaternion.Euler(0, 0, 0);
     }
 

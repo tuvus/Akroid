@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class GasCollector : ModuleComponent {
     GasCollectorScriptableObject gasCollectorScriptableObject;
     float collectionTime;
@@ -22,8 +18,10 @@ public class GasCollector : ModuleComponent {
                 collectionTime = gasCollectorScriptableObject.collectionSpeed;
                 return false;
             }
+
             collectionTime += gasCollectorScriptableObject.collectionSpeed;
         }
+
         return true;
     }
 

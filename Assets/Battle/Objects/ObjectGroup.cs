@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,7 +15,8 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
         battleObjects = new HashSet<T>(10);
     }
 
-    public ObjectGroup(BattleManager battleManager, HashSet<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false) {
+    public ObjectGroup(BattleManager battleManager, HashSet<T> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true,
+        bool changeSizeIndicatorPosition = false) {
         this.battleManager = battleManager;
         battleObjects = objects;
         this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
@@ -48,8 +47,8 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
             sum += tempPos;
             min = Vector2.Min(min, tempPos);
             max = Vector2.Max(max, tempPos);
-
         }
+
         position = (min + max) / 2;
         averagePosition = sum / battleObjects.Count;
     }
@@ -82,9 +81,13 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
         }
     }
 
-    public Vector2 GetPosition() { return position; }
+    public Vector2 GetPosition() {
+        return position;
+    }
 
-    public Vector2 GetAveragePosition() { return averagePosition; }
+    public Vector2 GetAveragePosition() {
+        return averagePosition;
+    }
 
     public float GetSize() {
         return size;
@@ -93,5 +96,4 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
     public bool IsGroup() {
         return true;
     }
-
 }

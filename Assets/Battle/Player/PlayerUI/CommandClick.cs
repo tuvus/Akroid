@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CommandClick : MonoBehaviour {
@@ -28,7 +26,8 @@ public class CommandClick : MonoBehaviour {
                 spriteRenderer.enabled = false;
             } else {
                 transform.localScale = new Vector2(mainCamera.orthographicSize / 100, mainCamera.orthographicSize / 100);
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, clickTime / maxClickTime);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                    clickTime / maxClickTime);
             }
         }
     }

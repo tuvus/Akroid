@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Missile : BattleObject {
     public enum MissileType {
         Hermes,
     }
+
     public int missileIndex { get; private set; }
     public MissileType missileType;
     private MissileLauncher missileLauncher;
@@ -25,7 +24,8 @@ public class Missile : BattleObject {
         Activate(false);
     }
 
-    public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target, Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {
+    public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target,
+        Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {
         this.position = position;
         this.rotation = rotation;
         this.faction = faction;
@@ -73,7 +73,9 @@ public class Missile : BattleObject {
     }
 
     void RotateMissile(float deltaTime) {
-        Vector2 targetPosition = Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed, 0);
+        Vector2 targetPosition =
+            Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed,
+                0);
         float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(position, targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - rotation);
         float turnAmmont = turnSpeed * deltaTime;
@@ -108,11 +110,13 @@ public class Missile : BattleObject {
                     return;
                 }
             }
+
             damage = unit.TakeDamage(damage);
             Explode();
             velocity = unit.GetVelocity();
             return;
         }
+
         Shield shield = coll.GetComponent<Shield>();
         if (shield != null && shield.GetUnit().faction != faction) {
             damage = shield.TakeDamage((int)(damage * 0.5f));

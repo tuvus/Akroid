@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
-public class UnitGroup : ObjectGroup<Unit>{
-
-    public UnitGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false):
-        base(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition){
-    }
+public class UnitGroup : ObjectGroup<Unit> {
+    public UnitGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true,
+        bool changeSizeIndicatorPosition = false) :
+        base(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition) { }
 
     public int GetTotalGroupHealth() {
         return CalculateTotalGroupHealth();

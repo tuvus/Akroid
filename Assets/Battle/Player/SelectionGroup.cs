@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 [System.Serializable]
 public class SelectionGroup {
@@ -17,6 +14,7 @@ public class SelectionGroup {
         Units = 3,
         Fleet = 4,
     }
+
     public GroupType groupType;
 
     public List<BattleObject> objects = new List<BattleObject>();
@@ -34,8 +32,10 @@ public class SelectionGroup {
             foreach (var ship in fleet.GetShips()) {
                 fleetUnits.Add(ship);
             }
+
             return fleetUnits;
         }
+
         return objects.Where(obj => obj.IsUnit()).Cast<Unit>().ToList();
     }
 
@@ -52,6 +52,7 @@ public class SelectionGroup {
                 }
             }
         }
+
         return listOfShips;
     }
 
@@ -68,6 +69,7 @@ public class SelectionGroup {
                 }
             }
         }
+
         return listOfStations;
     }
 
@@ -83,6 +85,7 @@ public class SelectionGroup {
             if (objects[i].IsShip())
                 return true;
         }
+
         return false;
     }
 
@@ -91,6 +94,7 @@ public class SelectionGroup {
             if (objects[i].IsStation())
                 return true;
         }
+
         return false;
     }
 
@@ -128,6 +132,7 @@ public class SelectionGroup {
                 shipList.Add(ship);
             }
         }
+
         return shipList;
     }
 
@@ -142,6 +147,7 @@ public class SelectionGroup {
         foreach (var unit in group.objects) {
             objects.Add(unit);
         }
+
         this.fleet = group.fleet;
     }
 
@@ -164,7 +170,6 @@ public class SelectionGroup {
             objects.AddRange(fleet.GetShips());
             fleet = null;
         } else groupType = GroupType.Units;
-
     }
 
     public void RemoveUnit(Unit unit) {
@@ -196,9 +201,9 @@ public class SelectionGroup {
     public void AddBattleObjects(List<BattleObject> battleObject) {
         battleObject.ForEach((b) => AddBattleObject(b));
     }
-    
+
     public void RemoveBattleObject(BattleObject battleObject) {
-        if (battleObject.IsUnit()) { 
+        if (battleObject.IsUnit()) {
             RemoveUnit((Unit)battleObject);
         } else {
             objects.Remove(battleObject);
@@ -217,6 +222,7 @@ public class SelectionGroup {
             if (objects[i].IsShip())
                 return (Ship)objects[i];
         }
+
         return null;
     }
 
@@ -229,6 +235,7 @@ public class SelectionGroup {
             if (objects[i].IsStation())
                 return (Station)objects[i];
         }
+
         return null;
     }
 
@@ -249,7 +256,6 @@ public class SelectionGroup {
         } else {
             ClearGroup();
         }
-
     }
 
     public void SetStation(Station station) {
@@ -300,6 +306,7 @@ public class SelectionGroup {
             fleet.FleetAI.AddFleetAICommand(command, commandAction);
             return;
         }
+
         for (int i = 0; i < objects.Count; i++) {
             if (objects[i].IsSpawned() && objects[i].IsShip()) {
                 ((Ship)objects[i]).shipAI.AddUnitAICommand(command, commandAction);
@@ -336,9 +343,10 @@ public class SelectionGroup {
         int totalHealth = 0;
         if (groupType == GroupType.Fleet)
             totalHealth += fleet.GetTotalFleetHealth();
-        totalHealth = objects.Sum(obj => { 
-            if (obj.IsUnit()) return 0; 
-            return ((Unit)obj).GetTotalHealth(); });
+        totalHealth = objects.Sum(obj => {
+            if (obj.IsUnit()) return 0;
+            return ((Unit)obj).GetTotalHealth();
+        });
         return totalHealth;
     }
 

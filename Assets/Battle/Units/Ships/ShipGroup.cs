@@ -1,14 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class ShipGroup : UnitGroup {
-    [field:SerializeField] public HashSet<Ship> ships { get; private set; }
+    [field: SerializeField] public HashSet<Ship> ships { get; private set; }
     public List<Fleet> sentFleets;
 
-    public ShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true, bool changeSizeIndicatorPosition = false):
-        base(battleManager, objects.Cast<Unit>().ToHashSet(), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition){
+    public ShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true,
+        bool changeSizeIndicatorPosition = false) :
+        base(battleManager, objects.Cast<Unit>().ToHashSet(), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition) {
         ships = objects;
         sentFleets = new List<Fleet>();
     }
@@ -50,6 +50,7 @@ public class ShipGroup : UnitGroup {
             if (sentFaction == null || sentFleets[i].faction == sentFaction)
                 totalHealth += sentFleets[i].GetTotalFleetHealth();
         }
+
         return totalHealth >= GetTotalGroupHealth();
     }
 

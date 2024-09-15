@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerGroupInput : LocalPlayerGameInput {
-
     public List<SelectionGroup> groups = new List<SelectionGroup>();
 
     int fleetNumber = 10;
@@ -16,6 +14,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             SelectionGroup newGroup = new SelectionGroup();
             groups.Add(newGroup);
         }
+
         GetPlayerInput().Player.ActionGroup1.started += context => GroupButtonPressed(context, 1);
         GetPlayerInput().Player.ActionGroup2.started += context => GroupButtonPressed(context, 2);
         GetPlayerInput().Player.ActionGroup3.started += context => GroupButtonPressed(context, 3);
@@ -84,8 +83,8 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         if (groupNumber <= fleetNumber - 1 && groupNumber >= 0) {
             return true;
         }
+
         Debug.LogWarning("fleetNumber given was not in a valid range.");
         return false;
-
     }
 }

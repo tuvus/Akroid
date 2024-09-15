@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -13,6 +11,7 @@ public class MissileLauncher : ModuleComponent {
         smallest = 5,
         biggest = 6,
     }
+
     MissileLauncherScriptableObject missileLauncherScriptableObject;
 
     private ReloadController reloadController;
@@ -30,7 +29,8 @@ public class MissileLauncher : ModuleComponent {
         base(battleManager, module, unit, componentScriptableObject) {
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
 
-        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed, missileLauncherScriptableObject.maxAmmo);
+        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
+            missileLauncherScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -41,6 +41,7 @@ public class MissileLauncher : ModuleComponent {
             hibernating = true;
             return;
         }
+
         hibernating = false;
         Profiler.BeginSample("UpdateMissileLauncher");
         reloadController.UpdateReloadController(deltaTime, faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
@@ -48,16 +49,19 @@ public class MissileLauncher : ModuleComponent {
             Profiler.EndSample();
             return;
         }
+
         if (findNewTargetUpdateTime > 0)
             findNewTargetUpdateTime -= deltaTime;
         if (findNewTargetUpdateTime <= 0 && !IsTargetViable(targetUnit, GetRange())) {
             targetUnit = FindNewTarget(GetRange());
             findNewTargetUpdateTime += findNewTargetUpdateSpeed;
         }
+
         if (targetUnit != null) {
             Fire();
             targetUnit = null;
         }
+
         Profiler.EndSample();
     }
 
@@ -81,6 +85,7 @@ public class MissileLauncher : ModuleComponent {
                 target = newTarget;
             }
         }
+
         return target;
     }
 
@@ -115,6 +120,7 @@ public class MissileLauncher : ModuleComponent {
                 }
             }
         }
+
         return false;
     }
 
@@ -122,14 +128,17 @@ public class MissileLauncher : ModuleComponent {
         reloadController.Fire();
         if (!BattleManager.Instance.instantHit) {
             Missile missile = BattleManager.Instance.GetNewMissile();
-            missile.SetMissile(faction, this, position, rotation, targetUnit, unit.GetVelocity(), GetDamage(), missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(), missileLauncherScriptableObject.missileRetarget);
+            missile.SetMissile(faction, this, position, rotation, targetUnit, unit.GetVelocity(), GetDamage(),
+                missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(),
+                missileLauncherScriptableObject.missileRetarget);
         } else {
             targetUnit.TakeDamage(GetDamage());
         }
     }
 
     public int GetDamage() {
-        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
+        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage *
+                                faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
     }
 
     public float GetRange() {
@@ -141,11 +150,13 @@ public class MissileLauncher : ModuleComponent {
     }
 
     public float GetDamagePerSecond() {
-        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed, missileLauncherScriptableObject.maxAmmo);
+        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
+            missileLauncherScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
+
         float damage = missileLauncherScriptableObject.missileDamage / 2f * reloadController.maxAmmo;
         return damage / time;
     }

@@ -6,6 +6,7 @@ public class ConstructionBayScriptableObject : ComponentScriptableObject {
     public float constructionSpeed;
     public long constructionAmount;
     public int constructionBays;
+
     public override Type GetComponentType() {
         return typeof(ConstructionBay);
     }

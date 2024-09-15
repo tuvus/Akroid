@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 /// <summary>
@@ -73,7 +72,7 @@ public class ModuleSystem {
             systems.Add(newSystem);
             for (int i = 0; i < newSystem.moduleCount; i++) {
                 IModule module = prefabModules[modules.Count()];
-                var args = new object[] {battleManager, module, unit, newSystem.component};
+                var args = new object[] { battleManager, module, unit, newSystem.component };
                 ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(newSystem.component.GetComponentType(), args);
                 modules.Add(newComponent);
                 moduleToSystem.Add(newComponent, newSystem);
@@ -82,6 +81,7 @@ public class ModuleSystem {
     }
 
     #region SystemUpgrades
+
     public ComponentScriptableObject GetSystemUpgrade(int system) => systems[system].component.upgrade;
 
     public bool CanUpgradeSystem(int systemIndex, Unit upgrader) {
@@ -99,6 +99,7 @@ public class ModuleSystem {
                 }
             }
         }
+
         return true;
     }
 
@@ -113,6 +114,7 @@ public class ModuleSystem {
         for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
             upgrader.UseCargo(upgrade.resourceCosts[i] - current.resourceCosts[i] / 2, upgrade.resourceTypes[i]);
         }
+
         //Upgrade the system
         systems[systemIndex].component = upgrade;
 
@@ -120,12 +122,13 @@ public class ModuleSystem {
         for (int i = 0; i < modules.Count(); i++) {
             ModuleComponent oldModule = modules[i];
             if (moduleToSystem[oldModule] == system) {
-                var args = new object[] {unit.battleManager, oldModule.module, unit, upgrade};
+                var args = new object[] { unit.battleManager, oldModule.module, unit, upgrade };
                 modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
                 moduleToSystem.Remove(oldModule);
                 moduleToSystem.Add(modules[i], system);
             }
         }
     }
+
     #endregion
 }

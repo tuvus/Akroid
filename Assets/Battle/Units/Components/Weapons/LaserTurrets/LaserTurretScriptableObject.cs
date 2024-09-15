@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/LaserTurretScriptableObject", menuName = "Components/LaserTurret", order = 1)]
-
 class LaserTurretScriptableObject : TurretScriptableObject {
     public float laserDamagePerSecond;
     public float fireDuration;
@@ -19,6 +16,7 @@ class LaserTurretScriptableObject : TurretScriptableObject {
         if (maxAmmo > 1) {
             time += maxAmmo * fireSpeed;
         }
+
         float damage = laserDamagePerSecond * (fireDuration + fadeDuration / 2) * maxAmmo;
         return damage / time;
     }

@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ColorPicker {
-
-    private static List<Color> colors = new List<Color>() { 
-        Color.red, Color.green, Color.blue, Color.yellow, Color.cyan, Color.magenta, 
+    private static List<Color> colors = new List<Color>() {
+        Color.red, Color.green, Color.blue, Color.yellow, Color.cyan, Color.magenta,
         new Color(1, .5f, 0), // Orange
         new Color(.4f, 0, 1), // Purple
         new Color(.4f, 1, 0), // Light green
@@ -13,6 +11,7 @@ public class ColorPicker {
 
     private List<Color> preferedColors = new List<Color>();
     private List<Color> availableColors = new List<Color>();
+
     /// <summary>
     /// Creates a new ColorPicker which manages selecting unique colors from a pre-determined pool.
     /// If all colors in the pre-determined pool have been used then it will pick from a duplicate pool.
@@ -36,11 +35,11 @@ public class ColorPicker {
             if (availableColors.Count == 0) {
                 availableColors.AddRange(colors);
             }
+
             int index = Random.Range(0, availableColors.Count);
             Color temp = availableColors[index];
             availableColors.RemoveAt(index);
             return temp;
         }
     }
-
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -146,7 +145,8 @@ public class EventCondition {
         return condition;
     }
 
-    public static EventCondition CommandMoveShipToObjectSequence(Unit shipToMove, List<IObject> objectToCommandToMoveTo, bool visualise = false) {
+    public static EventCondition CommandMoveShipToObjectSequence(Unit shipToMove, List<IObject> objectToCommandToMoveTo,
+        bool visualise = false) {
         EventCondition condition = new EventCondition(ConditionType.CommandMoveShipToObjectSequence);
         condition.unitToSelect = shipToMove;
         condition.iObjects = objectToCommandToMoveTo;
@@ -156,7 +156,7 @@ public class EventCondition {
 
     public static EventCondition CommandDockShipToUnit(Unit shipToMove, Unit unitToDockAt, bool visualize = false) {
         EventCondition condition = new EventCondition(ConditionType.CommandDockShipToUnit);
-        condition.iObjects = new List<IObject>{ shipToMove, unitToDockAt };
+        condition.iObjects = new List<IObject> { shipToMove, unitToDockAt };
         condition.visualize = visualize;
         return condition;
     }
@@ -168,7 +168,8 @@ public class EventCondition {
         return condition;
     }
 
-    public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station, bool visualize = false) {
+    public static EventCondition BuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station,
+        bool visualize = false) {
         EventCondition condition = new EventCondition(ConditionType.BuildShipAtStation);
         condition.shipBlueprint = shipBlueprint;
         condition.iObjects = new List<IObject> { station };
@@ -232,6 +233,7 @@ public class EventCondition {
                 if (iObjects.Cast<Ship>().All((ship) => ship.IsIdle())) {
                     return true;
                 }
+
                 return false;
             case ConditionType.ConditionalWait:
                 return !conditionalWait;
@@ -240,6 +242,7 @@ public class EventCondition {
                     && eventManager.playerGameInput.GetSelectedUnits().objects.Count == 1) {
                     return true;
                 }
+
                 break;
             case ConditionType.SelectUnits:
                 if (eventManager.playerGameInput.GetDisplayedFleet() != null)
@@ -248,6 +251,7 @@ public class EventCondition {
                 if (units.All((unit) => selectedUnits.Contains(unit))) {
                     return true;
                 }
+
                 break;
             case ConditionType.SelectUnitsAmount:
                 if (eventManager.playerGameInput.GetDisplayedFleet() != null)
@@ -256,18 +260,21 @@ public class EventCondition {
                 if (units.Count((unit) => selectedUnitsAmount.Contains(unit)) >= intValue) {
                     return true;
                 }
+
                 break;
             case ConditionType.UnSelectUnits:
                 HashSet<Unit> unselectUnits = eventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
                 if (units.All((unit) => !unselectUnits.Contains(unit))) {
                     return true;
                 }
+
                 break;
             case ConditionType.SelectFleet:
                 if (eventManager.playerGameInput.GetSelectedUnits().fleet == fleetToSelect
                     && eventManager.playerGameInput.GetSelectedUnits().groupType == SelectionGroup.GroupType.Fleet) {
                     return true;
                 }
+
                 break;
             case ConditionType.OpenObjectPanel:
                 if (objectToSelect == null) {
@@ -276,21 +283,25 @@ public class EventCondition {
                 } else if (eventManager.playerGameInput.rightClickedBattleObject == objectToSelect) {
                     return true;
                 }
+
                 break;
             case ConditionType.OpenFactionPanel:
                 if (LocalPlayer.Instance.playerUI.playerFactionOverviewUI.displayedObject == faction) {
                     return true;
                 }
+
                 return false;
             case ConditionType.FollowUnit:
                 if (eventManager.playerGameInput.followUnit == unitToSelect) {
                     return true;
                 }
+
                 break;
             case ConditionType.MoveShipToObject:
                 if (Vector2.Distance(unitToSelect.GetPosition(), iObject.GetPosition()) <= unitToSelect.GetSize() + iObject.GetSize()) {
                     return true;
                 }
+
                 break;
             case ConditionType.ShipsDockedAtUnit:
                 foreach (var ship in iObjects.Cast<Ship>()) {
@@ -298,6 +309,7 @@ public class EventCondition {
                         return false;
                     }
                 }
+
                 return true;
             case ConditionType.CommandMoveShipToObjectSequence:
                 ShipAI shipAI = ((Ship)unitToSelect).shipAI;
@@ -305,15 +317,18 @@ public class EventCondition {
                 int objectIndex = 0;
                 foreach (var command in shipAI.commands) {
                     if (command.commandType == Command.CommandType.Move
-                        && Vector2.Distance(command.targetPosition, iObjects[objectIndex].GetPosition()) <= unitToSelect.GetSize() + iObjects[objectIndex].GetSize()) {
+                        && Vector2.Distance(command.targetPosition, iObjects[objectIndex].GetPosition()) <=
+                        unitToSelect.GetSize() + iObjects[objectIndex].GetSize()) {
                         objectIndex++;
                         if (objectIndex == iObjects.Count) return true;
                     }
                 }
+
                 return false;
             case ConditionType.CommandDockShipToUnit:
                 ShipAI shipAI2 = ((Ship)iObjects.First()).shipAI;
-                if (shipAI2.commands.Any((c) => c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)iObjects.Last()))
+                if (shipAI2.commands.Any((c) =>
+                        c.commandType == Command.CommandType.Dock && c.destinationStation == (Station)iObjects.Last()))
                     return true;
                 return false;
             case ConditionType.CommandShipToCollectGas:
@@ -321,20 +336,22 @@ public class EventCondition {
                 if (shipAI3.commands.Any((c) => c.commandType == Command.CommandType.CollectGas)) {
                     return true;
                 }
+
                 return false;
             case ConditionType.BuildShipAtStation:
                 if (intValue == 0) {
                     // If this is the first time the condition is active we need to subscibe to the station ship building
                     StationAI stationAI = ((Station)iObjects.First()).stationAI;
-                    stationAI.onBuildShip += (ship) => { 
+                    stationAI.onBuildShip += (ship) => {
                         if (ship.shipScriptableObject == shipBlueprint.shipScriptableObject && ship.faction == faction)
-                            intValue = 2; 
+                            intValue = 2;
                     };
                     intValue = 1;
                 } else if (intValue == 2) {
                     // The ship has been built between this CheckCondition call and the last so the condition has been satisfied
                     return true;
                 }
+
                 return false;
             case ConditionType.Pan:
                 // We can't just take the position of the camera here because the player might be following a ship
@@ -343,6 +360,7 @@ public class EventCondition {
                 if (floatValue2 >= floatValue) {
                     return true;
                 }
+
                 break;
             case ConditionType.Zoom:
                 float currentSize = LocalPlayer.Instance.GetInputManager().GetCamera().orthographicSize;
@@ -353,6 +371,7 @@ public class EventCondition {
                     // Zooming out
                     if (currentSize >= floatValue) return true;
                 }
+
                 break;
             case ConditionType.Predicate:
                 if (predicate(eventManager))
@@ -362,6 +381,7 @@ public class EventCondition {
                 if (eventCondition == null) eventCondition = eventConditionFunction();
                 return eventCondition.CheckCondition(eventManager, deltaTime);
         }
+
         return false;
     }
 }

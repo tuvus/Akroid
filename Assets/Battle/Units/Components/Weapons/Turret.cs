@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Profiling;
 
 public class Turret : ModuleComponent {
@@ -25,12 +23,13 @@ public class Turret : ModuleComponent {
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public Turret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject):
+    public Turret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
 
         SetSize(GetSpriteSize());
-        reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed, turretScriptableObject.maxAmmo);
+        reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
+            turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
@@ -41,6 +40,7 @@ public class Turret : ModuleComponent {
             hibernating = true;
             return;
         }
+
         hibernating = false;
         Profiler.BeginSample("UpdateTurretAction");
         UpdateTurretReload(deltaTime);
@@ -105,6 +105,7 @@ public class Turret : ModuleComponent {
         } else {
             return true;
         }
+
         return false;
     }
 
@@ -126,9 +127,11 @@ public class Turret : ModuleComponent {
                 }
             }
         }
+
         if (newTarget == null) {
             SetTargetRotation(module.GetRotation());
         }
+
         ChangeTargetUnit(newTarget);
     }
 
@@ -164,6 +167,7 @@ public class Turret : ModuleComponent {
                 }
             }
         }
+
         return false;
     }
 
@@ -173,7 +177,6 @@ public class Turret : ModuleComponent {
         targetRotation = newTargetRotation;
         if (newTargetRotation == rotation) {
             aimed = true;
-
         } else {
             aimed = false;
         }
@@ -196,6 +199,7 @@ public class Turret : ModuleComponent {
                     target = -180 + (-target - 180);
                 }
             }
+
             if (localMax < 0 && localMin < 0) {
                 if (localMin > target && target < 0) {
                     target = 180 + (-target + 180);
@@ -207,12 +211,14 @@ public class Turret : ModuleComponent {
                     target = -180 + (-target - 180);
                 }
             }
+
             if (localMax < 0 && localMin < 0) {
                 if (localMax > target && target < 0) {
                     target = 180 + (-target + 180);
                 }
             }
         }
+
         //If target is greater than zero turn left, if target is less than zero turn right.
         //If target equals zero the turret is aimed.
         if (0 < target) {
@@ -284,7 +290,5 @@ public class Turret : ModuleComponent {
 
     public virtual void ShowEffects(bool shown) { }
 
-    public virtual void StopFiring() {
-
-    }
+    public virtual void StopFiring() { }
 }

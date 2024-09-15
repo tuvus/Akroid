@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 public class StartMenuTests {
     [SetUp]
     public void Setup() {
-         SceneManager.LoadScene("Start", LoadSceneMode.Single);
+        SceneManager.LoadScene("Start", LoadSceneMode.Single);
     }
 
     [UnityTest]

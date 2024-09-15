@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,17 +13,17 @@ public class Fleet : ShipGroup {
     public List<Unit> enemyUnitsInRange { get; protected set; }
     public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
-    public Fleet(BattleManager battleManger, Faction faction, string fleetName, Ship ship):
-        this(battleManger, faction, fleetName, new HashSet<Ship>() { ship }) {
-    }
+    public Fleet(BattleManager battleManger, Faction faction, string fleetName, Ship ship) :
+        this(battleManger, faction, fleetName, new HashSet<Ship>() { ship }) { }
 
-    public Fleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships):
-        base(battleManager, new HashSet<Ship>(), true){
+    public Fleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships) :
+        base(battleManager, new HashSet<Ship>(), true) {
         this.faction = faction;
         this.fleetName = fleetName;
-        foreach(Ship ship in ships) {
+        foreach (Ship ship in ships) {
             AddShip(ship);
         }
+
         enemyUnitsInRange = new List<Unit>(20);
         enemyUnitsInRangeDistance = new List<float>(20);
         minShipSpeed = GetMinShipSpeed();
@@ -75,6 +73,7 @@ public class Fleet : ShipGroup {
         foreach (var ship in shipsToMerge) {
             fleet.AddShip(ship);
         }
+
         fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
     }
 
@@ -98,8 +97,8 @@ public class Fleet : ShipGroup {
             if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter)
                 break;
             FindEnemyGroup(faction.closeEnemyGroups[i]);
-
         }
+
         Profiler.EndSample();
     }
 
@@ -121,6 +120,7 @@ public class Fleet : ShipGroup {
                     return;
                 }
             }
+
             //Has not been added yet
             enemyUnitsInRange.Add(targetUnit);
             enemyUnitsInRangeDistance.Add(distance);
@@ -174,6 +174,7 @@ public class Fleet : ShipGroup {
                 return ((Ship)enemyUnit).fleet;
             }
         }
+
         return null;
     }
 
@@ -183,6 +184,7 @@ public class Fleet : ShipGroup {
                 return true;
             }
         }
+
         return false;
     }
 

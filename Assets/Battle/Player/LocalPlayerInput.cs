@@ -23,12 +23,15 @@ public class LocalPlayerInput : MonoBehaviour {
         TransportCommand,
         ColonizeCommand,
     }
+
     [SerializeField] protected ActionType actionType;
 
     private Camera mainCamera;
     private Background background;
+
     [Tooltip("Player input on how fast scroling should be.")]
     public float scrollModifyer;
+
     public float scrollFactor = 1;
 
     protected bool primaryMousePressed;
@@ -113,11 +116,13 @@ public class LocalPlayerInput : MonoBehaviour {
             float difference = mainCamera.orthographicSize - targetSize;
             MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * difference / mainCamera.orthographicSize);
         }
+
         mainCamera.orthographicSize = targetSize;
 
         scrollFactor = mainCamera.orthographicSize / -130;
 
-        mainCamera.transform.GetChild(0).localScale = new Vector3(mainCamera.orthographicSize / 3.8f, mainCamera.orthographicSize / 3.8f, 10);
+        mainCamera.transform.GetChild(0).localScale =
+            new Vector3(mainCamera.orthographicSize / 3.8f, mainCamera.orthographicSize / 3.8f, 10);
         background.UpdateBackground(mainCamera.orthographicSize / 5, 10 / Mathf.Sqrt(mainCamera.orthographicSize));
     }
 
@@ -126,9 +131,9 @@ public class LocalPlayerInput : MonoBehaviour {
 
         scrollFactor = mainCamera.orthographicSize / -130;
 
-        mainCamera.transform.GetChild(0).localScale = new Vector3(mainCamera.orthographicSize / 3.8f, mainCamera.orthographicSize / 3.8f, 10);
+        mainCamera.transform.GetChild(0).localScale =
+            new Vector3(mainCamera.orthographicSize / 3.8f, mainCamera.orthographicSize / 3.8f, 10);
         background.UpdateBackground(mainCamera.orthographicSize / 5, 10 / Mathf.Sqrt(mainCamera.orthographicSize));
-
     }
 
     protected void MoveCamera(Vector2 movement) {
@@ -144,6 +149,7 @@ public class LocalPlayerInput : MonoBehaviour {
         if (unit == null || unit == followUnit) {
             return;
         }
+
         followUnit = unit;
         SetCameraPosition(Vector2.zero);
         transform.position = followUnit.GetPosition();
@@ -175,9 +181,7 @@ public class LocalPlayerInput : MonoBehaviour {
         leftClickedBattleObject = mouseOverBattleObject;
     }
 
-    protected virtual void PrimaryMouseHeld() {
-
-    }
+    protected virtual void PrimaryMouseHeld() { }
 
     protected virtual void PrimaryMouseUp() {
         primaryMousePressed = false;
@@ -201,7 +205,6 @@ public class LocalPlayerInput : MonoBehaviour {
             Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() / 1200);
             OnPanEvent(oldPosition, GetCamera().transform.position);
-
         }
     }
 
@@ -255,6 +258,7 @@ public class LocalPlayerInput : MonoBehaviour {
             LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
             return;
         }
+
         PlayerUI.Instance.ToggleMenueUI();
     }
 
@@ -263,6 +267,7 @@ public class LocalPlayerInput : MonoBehaviour {
             StopFollowingUnit();
             return;
         }
+
         if (displayedBattleObject != null && displayedBattleObject.IsUnit()) {
             StartFollowingUnit((Unit)displayedBattleObject);
         }
@@ -283,28 +288,33 @@ public class LocalPlayerInput : MonoBehaviour {
             if (!targetUnit.IsSelectable()) {
                 continue;
             }
+
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.position);
             // if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
             //     battleObject = targetUnit;
             //     distance = tempDistance;
             // }
         }
+
         List<BattleObject> battleObjects = new List<BattleObject>(BattleManager.Instance.stars);
         battleObjects.AddRange(BattleManager.Instance.planets);
         foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
             battleObjects.AddRange(asteroidField.battleObjects);
         }
+
         battleObjects.AddRange(BattleManager.Instance.gasClouds);
         foreach (BattleObject targetObject in battleObjects) {
             if (!targetObject.IsSelectable()) {
                 continue;
             }
+
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.position);
             if (tempDistance < targetObject.GetSize() && tempDistance < distance) {
                 battleObject = targetObject;
                 distance = tempDistance;
             }
         }
+
         return battleObject;
     }
 

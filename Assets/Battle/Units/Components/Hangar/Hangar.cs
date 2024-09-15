@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -22,6 +21,7 @@ public class Hangar : ModuleComponent {
             dockSpace++;
             return true;
         }
+
         return false;
     }
 
@@ -48,6 +48,7 @@ public class Hangar : ModuleComponent {
                 index--;
             }
         }
+
         return null;
     }
 
@@ -59,6 +60,7 @@ public class Hangar : ModuleComponent {
                 index--;
             }
         }
+
         return null;
     }
 
@@ -70,6 +72,7 @@ public class Hangar : ModuleComponent {
                 index--;
             }
         }
+
         return null;
     }
 
@@ -81,6 +84,7 @@ public class Hangar : ModuleComponent {
                 index--;
             }
         }
+
         return null;
     }
 

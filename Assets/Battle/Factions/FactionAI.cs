@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -11,7 +10,7 @@ public class FactionAI {
     public float attackTime;
     public float attackStrength = 0.1f;
 
-    [field:SerializeField] public HashSet<Ship> idleShips { get; protected set; }
+    [field: SerializeField] public HashSet<Ship> idleShips { get; protected set; }
 
     public FactionAI(BattleManager battleManager, Faction faction) {
         this.battleManager = battleManager;
@@ -20,9 +19,7 @@ public class FactionAI {
         autoResearch = true;
     }
 
-    public virtual void GenerateFactionAI() {
-
-    }
+    public virtual void GenerateFactionAI() { }
 
     public virtual void UpdateFactionAI(float deltaTime) {
         if (autoResearch)
@@ -32,22 +29,20 @@ public class FactionAI {
             foreach (Faction enemy in faction.enemyFactions) {
                 foreach (Planet planet in faction.planets) {
                     PlanetFaction planetFaction = planet.planetFactions[faction];
-                    if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) && planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
+                    if (planetFaction.force > 0 && planet.planetFactions.ContainsKey(enemy) &&
+                        planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
                         planet.planetFactions[faction].FightFactionForTerritory(enemy, attackStrength, deltaTime);
                     }
                 }
             }
+
             attackTime = attackSpeed;
         }
     }
 
-    public virtual void OnStationBuilt(Station station) {
+    public virtual void OnStationBuilt(Station station) { }
 
-    }
-
-    public virtual void OnShipBuilt(Ship ship) {
-
-    }
+    public virtual void OnShipBuilt(Ship ship) { }
 
     public virtual void AddIdleShip(Ship ship) {
         if (!idleShips.Contains(ship))
@@ -58,9 +53,7 @@ public class FactionAI {
         idleShips.Remove(ship);
     }
 
-    public virtual void RemoveFleet(Fleet fleet) {
-
-    }
+    public virtual void RemoveFleet(Fleet fleet) { }
 
     public virtual double GetSellCostOfMetal() {
         return 2.4f;

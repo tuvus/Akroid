@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -17,6 +15,7 @@ public class LocalPlayer : MonoBehaviour {
         free = 1,
         following = 2,
     }
+
     public Faction faction;
     public HashSet<Unit> ownedUnits;
     public bool lockedOwnedUnits;
@@ -26,6 +25,7 @@ public class LocalPlayer : MonoBehaviour {
             Destroy(this);
             return;
         }
+
         Instance = this;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
@@ -43,6 +43,7 @@ public class LocalPlayer : MonoBehaviour {
                 ownedUnits.Clear();
             }
         }
+
         UpdateFactionColors();
         playerUI.GetPlayerCommsManager().SetupFaction(faction);
     }
@@ -62,12 +63,14 @@ public class LocalPlayer : MonoBehaviour {
     }
 
     #region RelationsAndColors
+
     public enum RelationType {
         Neutral = 0,
         Enemy = 1,
         Friendly = 2,
         Owned = 3,
     }
+
     Color neutralColor = new Color(1, 1, 1);
     Color friendlyColor = new Color(0, 1, 0);
     Color enemyColor = new Color(1, 0.4f, 0.35f);
@@ -99,19 +102,20 @@ public class LocalPlayer : MonoBehaviour {
     public Color GetColorOfRelationType(RelationType relationType) {
         switch (relationType) {
             case RelationType.Enemy:
-            return enemyColor;
+                return enemyColor;
             case RelationType.Friendly:
-            return friendlyColor;
+                return friendlyColor;
             case RelationType.Owned:
-            return ownedColor;
+                return ownedColor;
             default:
-            return neutralColor;
+                return neutralColor;
         }
     }
 
     #endregion
 
     #region HelperMethods
+
     public void AddOwnedUnit(Unit unit) {
         ownedUnits.Add(unit);
         // unit.GetUnitSelection().UpdateFactionColor();
@@ -141,5 +145,6 @@ public class LocalPlayer : MonoBehaviour {
     public Faction GetFaction() {
         return faction;
     }
+
     #endregion
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UnitSelection : MonoBehaviour {
     public enum SelectionStrength {
@@ -8,6 +6,7 @@ public class UnitSelection : MonoBehaviour {
         Selected = 1,
         Highlighted = 2,
     }
+
     Color neutralColor = new Color(1, 1, 1);
     Color friendlyColor = new Color(0, 1, 0);
     Color enemyColor = new Color(1, 0.4f, 0.35f);
@@ -36,6 +35,7 @@ public class UnitSelection : MonoBehaviour {
         } else {
             spriteRenderer.color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToUnit(unit));
         }
+
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
 
@@ -50,7 +50,6 @@ public class UnitSelection : MonoBehaviour {
             case SelectionStrength.Highlighted:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
                 break;
-
         }
     }
 
@@ -59,6 +58,7 @@ public class UnitSelection : MonoBehaviour {
             ShowUnitSelection(false);
             return;
         }
+
         float realSize = LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize;
         float imageSize = unit.GetSize() * realSize * realSize * 10;
         if (realSize > 1000) {

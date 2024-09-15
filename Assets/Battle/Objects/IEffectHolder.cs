@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public interface IEffectHolder {
     /// <summary>
     /// Sets if all effects should be shown

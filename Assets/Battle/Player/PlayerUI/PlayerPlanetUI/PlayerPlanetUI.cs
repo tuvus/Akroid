@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -6,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerPlanetUI : PlayerUIMenu<Planet> {
-
     [SerializeField] TMP_Text planetName;
     [SerializeField] TMP_Text planetFactionName;
     [SerializeField] TMP_Text planetType;
@@ -34,10 +32,14 @@ public class PlayerPlanetUI : PlayerUIMenu<Planet> {
         } else {
             planetFactionName.text = "Faction" + "Unowned";
         }
+
         planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedObject.GetPopulation());
-        highQualityPercentLand.text = "High Quality Land: " + (displayedObject.areas.highQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
-        mediumQualityPercentLand.text = "Medium Quality Land: " + (displayedObject.areas.mediumQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
-        lowQualityPercentLand.text = "Low Quality Land: " + (displayedObject.areas.lowQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
+        highQualityPercentLand.text = "High Quality Land: " +
+                                      (displayedObject.areas.highQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
+        mediumQualityPercentLand.text = "Medium Quality Land: " +
+                                        (displayedObject.areas.mediumQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
+        lowQualityPercentLand.text =
+            "Low Quality Land: " + (displayedObject.areas.lowQualityArea * 100 / displayedObject.totalArea).ToString() + "%";
         planetAreas.text = "Areas: " + NumFormatter.ConvertNumber(displayedObject.totalArea);
     }
 
@@ -49,6 +51,7 @@ public class PlayerPlanetUI : PlayerUIMenu<Planet> {
             if (planetFactionsList.childCount <= i) {
                 Instantiate(planetFactionButton, planetFactionsList);
             }
+
             Transform factionButtonTransorm = planetFactionsList.GetChild(i);
             factionButtonTransorm.gameObject.SetActive(true);
             Button factionButton = factionButtonTransorm.GetChild(0).GetComponent<Button>();
@@ -57,18 +60,25 @@ public class PlayerPlanetUI : PlayerUIMenu<Planet> {
 
             if (planetFaction.faction != null) {
                 factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.faction.name.ToString();
-                factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = planetFaction.faction.abbreviatedName.ToString();
+                factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
+                    planetFaction.faction.abbreviatedName.ToString();
             } else {
                 factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Unclaimed Territory";
                 factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
             }
-            factionButtonTransorm.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = "Population: " + NumFormatter.ConvertNumber(planetFaction.population);
-            factionButtonTransorm.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
-            factionButtonTransorm.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = (planetFaction.territory.GetTotalAreas() * 100 / displayedObject.areas.GetTotalAreas()).ToString() + "%";
+
+            factionButtonTransorm.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text =
+                "Population: " + NumFormatter.ConvertNumber(planetFaction.population);
+            factionButtonTransorm.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
+                "Force: " + NumFormatter.ConvertNumber(planetFaction.force);
+            factionButtonTransorm.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
+                (planetFaction.territory.GetTotalAreas() * 100 / displayedObject.areas.GetTotalAreas()).ToString() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
-            factionButtonTransorm.GetChild(0).GetComponent<Image>().color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));
+            factionButtonTransorm.GetChild(0).GetComponent<Image>().color =
+                LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));
             i++;
         }
+
         for (; i < planetFactionsList.childCount; i++) {
             planetFactionsList.GetChild(i).gameObject.SetActive(false);
         }

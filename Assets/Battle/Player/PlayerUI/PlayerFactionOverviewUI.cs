@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +33,7 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<Faction> {
         } else {
             autoCommandFleets.transform.parent.gameObject.SetActive(false);
         }
+
         if (autoCommandFleets.gameObject.activeInHierarchy) {
             autoCommandFleets.SetIsOnWithoutNotify(((SimulationFactionAI)displayedObject.GetFactionAI()).autoCommandFleets);
             autoCommandFleets.onValueChanged.RemoveAllListeners();
@@ -48,7 +47,8 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<Faction> {
         totalDiscoveries.text = "Total discoveries: " + displayedObject.Discoveries;
         for (int i = 0; i < displayedObject.improvementModifiers.Length; i++) {
             improvementList.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = displayedObject.improvementDiscoveryCount[i].ToString();
-            improvementList.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text = ((int)(displayedObject.improvementModifiers[i] * 100) / 100f).ToString();
+            improvementList.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text =
+                ((int)(displayedObject.improvementModifiers[i] * 100) / 100f).ToString();
         }
     }
 
@@ -57,6 +57,7 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<Faction> {
             if (characterPortrait != null) {
                 DestroyImmediate(characterPortrait);
             }
+
             leaderName.text = displayedObject.GetFactionCommManager().GetSenderName();
             pastCharacterPortrait = displayedObject.GetFactionCommManager().GetPortrait();
             characterPortrait = Instantiate(displayedObject.GetFactionCommManager().GetPortrait(), characterPortraitFrame);

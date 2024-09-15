@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -29,8 +28,8 @@ public class PlayerMenueUI : MonoBehaviour {
         factionNames.Add("None");
         foreach (var faction in factions) {
             factionNames.Add(faction.name);
-
         }
+
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.SetIsOnWithoutNotify(playerUI.showUnitCombatIndicators);
@@ -77,7 +76,8 @@ public class PlayerMenueUI : MonoBehaviour {
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
             LocalPlayer.Instance.SetupFaction(null);
-        } else if (LocalPlayer.Instance.GetFaction() == null || menueUIFactionSelect.value - 1 != factions.IndexOf(LocalPlayer.Instance.GetFaction())) {
+        } else if (LocalPlayer.Instance.GetFaction() == null ||
+                   menueUIFactionSelect.value - 1 != factions.IndexOf(LocalPlayer.Instance.GetFaction())) {
             LocalPlayer.Instance.SetupFaction(factions[menueUIFactionSelect.value - 1]);
         }
     }

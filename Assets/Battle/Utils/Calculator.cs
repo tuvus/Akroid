@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class Calculator {
@@ -20,7 +18,7 @@ public static class Calculator {
     /// <returns></returns>
     public static float GetAngleOutOfTwoPositions(Vector2 from, Vector2 to) {
         return GetAngleOutOfPosition(to - from);
-    } 
+    }
 
     /// <summary>
     /// Returns distance from an angle in degrees and a distance.
@@ -40,9 +38,11 @@ public static class Calculator {
         if (rotation > 180) {
             rotation = -180 + (rotation - 180);
         }
+
         if (rotation < -180) {
             rotation = 180 + (rotation + 180);
         }
+
         return rotation;
     }
 
@@ -72,6 +72,7 @@ public static class Calculator {
         } else if (roation < 360) {
             roation = -(-roation % 360);
         }
+
         return roation;
     }
 
@@ -82,19 +83,24 @@ public static class Calculator {
         if (currentRotaiton > 180) {
             currentRotaiton = -180 + (currentRotaiton - 180);
         }
+
         if (targetRotation > 180) {
             targetRotation = -180 + (targetRotation - 180);
         }
+
         if (targetRotation < -180) {
             targetRotation = 180 + (targetRotation + 180);
         }
+
         targetRotation -= currentRotaiton;
         if (targetRotation > 180) {
             targetRotation = -180 + (targetRotation - 180);
         }
+
         if (targetRotation < -180) {
             targetRotation = 180 + (targetRotation + 180);
         }
+
         return targetRotation;
     }
 
@@ -109,14 +115,18 @@ public static class Calculator {
             if (realDeg <= maxRotate && realDeg >= minRotate) {
                 return true;
             }
+
             return false;
         }
+
         if (minRotate > maxRotate) {
             if (realDeg <= maxRotate || realDeg >= minRotate) {
                 return true;
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -156,31 +166,38 @@ public static class Calculator {
             if (localMin > 180) {
                 localMin = -360 + localMin;
             }
+
             float localMax = SimplifyRotation360(maxRotate - localRotation);
             if (localMax > 180) {
                 localMax = -360 + localMax;
             }
+
             if (minRotate < maxRotate) {
                 if (localMax > 0 && localMin > 0 && localMax < localTargetRotation && localTargetRotation > 0) {
                     return -360 + localTargetRotation;
                 }
+
                 if (localMax < 0 && localMin < 0 && localMin > localTargetRotation && localTargetRotation > 0) {
                     return 360 + localTargetRotation;
                 }
             }
+
             if (minRotate > maxRotate) {
                 if (localMax > 0 && localMin > 0 && localMin < localTargetRotation && localTargetRotation > 0) {
                     return -360 + localTargetRotation;
                 }
+
                 if (localMax < 0 && localMin < 0 && localMax > localTargetRotation && localTargetRotation < 0) {
                     return 360 + localTargetRotation;
                 }
             }
         }
+
         return localTargetRotation;
     }
 
-    public static Vector2 GetTargetPositionAfterTimeAndVelocity(Vector2 position, Vector2 targetPosition, Vector2 velocity, Vector2 targetVelocity, float fireVelocity, float offSet) {
+    public static Vector2 GetTargetPositionAfterTimeAndVelocity(Vector2 position, Vector2 targetPosition, Vector2 velocity,
+        Vector2 targetVelocity, float fireVelocity, float offSet) {
         Vector2 targetLocalPosition = position - targetPosition;
         Vector2 localVelocity = velocity - targetVelocity;
         if (localVelocity.magnitude < 1)
@@ -195,8 +212,10 @@ public static class Calculator {
             if (Mathf.Abs(targetDist - bulletDist) <= .001) {
                 return position - localTargetPos;
             }
+
             calculatedTime = (localTargetPos.magnitude - offSet) / fireVelocity;
         }
+
         return position - localTargetPos;
     }
 

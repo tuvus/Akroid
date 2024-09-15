@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -34,7 +33,7 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : IObject {
     [SerializeField] protected GameObject leftPanel;
     [SerializeField] protected GameObject rightPanel;
 
-    public override void SetupPlayerUIMenu(PlayerUI playerUI, float updateSpeed) { 
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, float updateSpeed) {
         this.playerUI = playerUI;
         this.updateSpeed = updateSpeed;
     }
@@ -72,14 +71,17 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : IObject {
             playerUI.CloseAllMenus();
             return;
         }
+
         if (ShouldShowMiddlePanel()) {
             if (!middlePanel.activeSelf) middlePanel.SetActive(true);
             RefreshMiddlePanel();
         }
+
         if (ShouldShowLeftPanel()) {
             if (!leftPanel.activeSelf) leftPanel.SetActive(true);
             RefreshLeftPanel();
         }
+
         if (ShouldShowRightPanel()) {
             if (!rightPanel.activeSelf) rightPanel.SetActive(true);
             RefreshRightPanel();
@@ -101,10 +103,12 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : IObject {
     protected virtual void RefreshMiddlePanel() {
         throw new InvalidProgramException("The middle panel was refreshed without any logic to refresh the panel.");
     }
-    protected virtual void RefreshLeftPanel() { 
+
+    protected virtual void RefreshLeftPanel() {
         throw new InvalidProgramException("The left panel was refreshed without any logic to refresh the panel.");
     }
-    protected virtual void RefreshRightPanel() { 
+
+    protected virtual void RefreshRightPanel() {
         throw new InvalidProgramException("The right panel was refreshed without any logic to refresh the panel.");
     }
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -100,9 +98,11 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateMoveOffsetCommand(Vector2 currentPosition, Vector2 targetPosition, float offset, float maxSpeed = float.MaxValue) {
+    public static Command CreateMoveOffsetCommand(Vector2 currentPosition, Vector2 targetPosition, float offset,
+        float maxSpeed = float.MaxValue) {
         Command newCommand = new Command(CommandType.Move);
-        newCommand.targetPosition = Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset);
+        newCommand.targetPosition =
+            Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset);
         newCommand.maxSpeed = maxSpeed;
         return newCommand;
     }
@@ -115,7 +115,8 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateAttackMoveCommand(Unit targetUnit, float maxSpeed = float.MaxValue, bool useAlternateCommandOnceDone = false) {
+    public static Command CreateAttackMoveCommand(Unit targetUnit, float maxSpeed = float.MaxValue,
+        bool useAlternateCommandOnceDone = false) {
         Command newCommand = new Command(CommandType.AttackMoveUnit);
         newCommand.targetUnit = targetUnit;
         newCommand.maxSpeed = maxSpeed;
@@ -171,7 +172,8 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType, bool oneTrip = false) {
+    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
+        bool oneTrip = false) {
         Command newCommand = new Command(CommandType.Transport);
         newCommand.destinationStation = destinationStation;
         newCommand.productionStation = productionStation;
@@ -180,7 +182,8 @@ public class Command {
         return newCommand;
     }
 
-    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType, float delay) {
+    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
+        float delay) {
         Command newCommand = new Command(CommandType.TransportDelay);
         newCommand.destinationStation = destinationStation;
         newCommand.productionStation = productionStation;

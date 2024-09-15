@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ProjectileTurret : Turret {
     ProjectileTurretScriptableObject projectileTurretScriptableObject;
@@ -23,13 +21,22 @@ public class ProjectileTurret : Turret {
         base.Fire();
         if (!BattleManager.Instance.instantHit) {
             Projectile projectile = BattleManager.Instance.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, position, rotation + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy), unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity, Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)), projectileTurretScriptableObject.projectileRange * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
+            projectile.SetProjectile(unit.faction, position,
+                rotation + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy),
+                unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity,
+                Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
+                                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
+                projectileTurretScriptableObject.projectileRange *
+                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
             flashTime = flashSpeed;
             flash.enabled = BattleManager.Instance.GetEffectsShown();
             flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
         } else {
-            targetUnit.TakeDamage(Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
+            targetUnit.TakeDamage(Mathf.RoundToInt(
+                Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
+                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
         }
+
         return reloadController.Empty();
     }
 
@@ -45,12 +52,14 @@ public class ProjectileTurret : Turret {
             }
         }
     }
+
     protected override bool TurretHibernationStatus() {
         return base.TurretHibernationStatus() && !flash.enabled;
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
-        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(), target.GetPosition(), unit.GetVelocity(), target.GetVelocity(), projectileTurretScriptableObject.fireVelocity, GetTurretOffSet());
+        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(), target.GetPosition(), unit.GetVelocity(),
+            target.GetVelocity(), projectileTurretScriptableObject.fireVelocity, GetTurretOffSet());
     }
 
     public override float GetRange() {
@@ -62,12 +71,15 @@ public class ProjectileTurret : Turret {
     }
 
     public override float GetDamagePerSecond() {
-        reloadController = new ReloadController(projectileTurretScriptableObject.fireSpeed, projectileTurretScriptableObject.reloadSpeed, projectileTurretScriptableObject.maxAmmo);
+        reloadController = new ReloadController(projectileTurretScriptableObject.fireSpeed, projectileTurretScriptableObject.reloadSpeed,
+            projectileTurretScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
-        float damage = (projectileTurretScriptableObject.minDamage + projectileTurretScriptableObject.maxDamage) / 2f * reloadController.maxAmmo;
+
+        float damage = (projectileTurretScriptableObject.minDamage + projectileTurretScriptableObject.maxDamage) / 2f *
+                       reloadController.maxAmmo;
         return damage / time;
     }
 
