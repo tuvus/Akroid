@@ -6,7 +6,7 @@ using static Faction;
 using static Ship;
 using static Station;
 
-public class BattleManager {
+public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
     CampaingController campaignController;
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Laser : MonoBehaviour {
+public class Laser {
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer startHighlight;
     [SerializeField] private SpriteRenderer endHighlight;
@@ -17,7 +17,7 @@ public class Laser : MonoBehaviour {
     float extraDamage;
 
     public void SetLaser(LaserTurret laserTurret, float offset, float laserSize) {
-        transform.localScale = new Vector2(laserSize, 1);
+        // transform.localScale = new Vector2(laserSize, 1);
         this.translateAmount = offset;
         this.laserTurret = laserTurret;
 
@@ -25,11 +25,11 @@ public class Laser : MonoBehaviour {
         fireTime = 0;
         fadeTime = 0;
 
-        spriteRenderer.enabled = false;
-        startHighlight.enabled = false;
-        endHighlight.enabled = false;
-        startHighlight.transform.localScale = new Vector2(.2f, .2f);
-        endHighlight.transform.localScale = new Vector2(.2f, .2f);
+        // spriteRenderer.enabled = false;
+        // startHighlight.enabled = false;
+        // endHighlight.enabled = false;
+        // startHighlight.transform.localScale = new Vector2(.2f, .2f);
+        // endHighlight.transform.localScale = new Vector2(.2f, .2f);
         extraDamage = 0;
     }
 
@@ -55,8 +55,8 @@ public class Laser : MonoBehaviour {
             spriteRenderer.enabled = true;
             startHighlight.enabled = BattleManager.Instance.GetEffectsShown();
             endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
-            transform.localPosition = new Vector2(0, 0);
-            transform.rotation = transform.parent.rotation;
+            // transform.localPosition = new Vector2(0, 0);
+            // transform.rotation = transform.parent.rotation;
 
             UpdateDamageAndCollision(deltaTime);
 
@@ -90,7 +90,7 @@ public class Laser : MonoBehaviour {
 
     void UpdateDamageAndCollision(float deltaTime) {
         hitPoint = null;
-        Physics2D.RaycastNonAlloc(transform.position, transform.up, contacts, GetLaserRange() + translateAmount);
+        // Physics2D.RaycastNonAlloc(transform.position, transform.up, contacts, GetLaserRange() + translateAmount);
         Shield hitShield = null;
         Unit hitUnit = null;
 
@@ -153,7 +153,7 @@ public class Laser : MonoBehaviour {
     }
 
     void SetDistance() {
-        transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
+        // transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
         if (hitPoint.HasValue) {
             spriteRenderer.size = new Vector2(spriteRenderer.size.x,
                 (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
@@ -165,7 +165,7 @@ public class Laser : MonoBehaviour {
             endHighlight.enabled = false;
         }
 
-        transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
+        // transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
         startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
     }
 

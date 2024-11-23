@@ -9,6 +9,7 @@ public class LaserTurret : Turret {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
 
         // laser = Instantiate(laserTurretScriptableObject.laserPrefab, position, transform.rotation, transform).GetComponent<Laser>();
+        laser = new Laser();
         laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
     }
 

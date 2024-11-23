@@ -178,7 +178,6 @@ GameObject:
   m_Component:
   - component: {fileID: 457372564128145388}
   - component: {fileID: 8389980399855499369}
-  - component: {fileID: 8950607051732132005}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Untagged
@@ -255,18 +254,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8950607051732132005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1437537882386788958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f155161026438e418779e8b7d54a925, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 8389980399855499369}
-  startHighlight: {fileID: 8002859668785435966}
-  endHighlight: {fileID: 6173850612919400531}

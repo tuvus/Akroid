@@ -104,7 +104,7 @@ public class Projectile : BattleObject {
         }
 
         visible = activate;
-        boxCollider2D.enabled = activate;
+        // boxCollider2D.enabled = activate;
     }
 
     public void RemoveProjectile() {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
 
 public class CampaingSetup : MonoBehaviour {
     [SerializeField] GameObject campaignChapterPanel;
@@ -10,7 +11,7 @@ public class CampaingSetup : MonoBehaviour {
         ShowCampaingChapterPanel(false);
     }
 
-    public void StartCampaingChapter(int chapter) { 
+    public void StartCampaingChapter(int chapter) {
         StartCoroutine(ChangeScenes(chapter));
     }
 
@@ -49,6 +50,7 @@ public class CampaingSetup : MonoBehaviour {
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
         CampaingController campaingController = Instantiate(Resources.Load<GameObject>("Campaign/Chapter" + chapter + "/Chapter" + chapter), GameObject.Find("Game").transform).GetComponent<CampaingController>();
+        GameObject.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(campaingController);
         Destroy(gameObject);
     }
