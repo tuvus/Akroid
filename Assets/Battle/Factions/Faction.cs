@@ -146,7 +146,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroups = new List<UnitGroup>(100);
         closeEnemyGroupsDistance = new List<float>(100);
         baseGroup = CreateNewUnitGroup("BaseGroup", false, new HashSet<Unit>(100));
-        factionAI = new FactionAI(battleManager, this);
+        factionAI = (FactionAI)Activator.CreateInstance(factionData.factionAI, battleManager, this);
         GenerateFaction(factionData, startingResearchCost);
         factionAI.GenerateFactionAI();
         commManager = new FactionCommManager(this, factionData.leader);

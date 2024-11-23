@@ -268,8 +268,8 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject) {
-        // Ship shipPrefab = Resources.Load<Ship>(shipScriptableObject.prefabPath);
         Ship newShip = new Ship(battleObjectData, this, shipScriptableObject);
+        newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);
         return newShip;
@@ -277,8 +277,8 @@ public class BattleManager : MonoBehaviour {
 
     public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject,
         bool built) {
-        GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
         Station newStation = new Station(battleObjectData, this, stationScriptableObject, built);
+        newStation.SetupPosition(battleObjectData.positionGiver);
         if (built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -291,8 +291,8 @@ public class BattleManager : MonoBehaviour {
 
     public MiningStation CreateNewMiningStation(BattleObject.BattleObjectData battleObjectData,
         StationScriptableObject stationScriptableObject, bool built) {
-        GameObject stationPrefab = (GameObject)Resources.Load(stationScriptableObject.prefabPath);
         MiningStation newStation = new MiningStation(battleObjectData, this, stationScriptableObject, built);
+        newStation.SetupPosition(battleObjectData.positionGiver);
         if (built) {
             units.Add(newStation);
             stations.Add(newStation);
@@ -305,24 +305,23 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
-        Star newStar =
-            new Star(
-                new BattleObject.BattleObjectData(name, new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4), Random.Range(0, 360),
-                    Vector2.one * Random.Range(0.6f, 1.4f)), this);
+        Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
+            Vector2.one * Random.Range(0.6f, 1.4f)), this);
+        newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         return newStar;
     }
 
     public Planet CreateNewPlanet(Planet.PlanetData planetData) {
-        GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Planet");
         Planet newPlanet = new Planet(planetData, this);
+        newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
         return newPlanet;
     }
 
     public Planet CreateNewMoon(Planet.PlanetData planetData) {
-        GameObject planetPrefab = (GameObject)Resources.Load("Prefabs/Moon");
         Planet newPlanet = new Planet(planetData, this);
+        newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
         return newPlanet;
     }
@@ -332,16 +331,14 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
-        GameObject asteroidFieldPrefab = (GameObject)Resources.Load("Prefabs/AsteroidField");
         AsteroidField newAsteroidField = new AsteroidField(this);
         // The Asteroid field must be set up before the asteroids are generated
         for (int i = 0; i < count; i++) {
-            GameObject asteroidPrefab = (GameObject)Resources.Load("Prefabs/Asteroids/Asteroid" + ((int)Random.Range(1, 4)).ToString());
             float size = Random.Range(8f, 20f);
-            PositionGiver asteroidPositionGiver = new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4);
-            Asteroid newAsteroid = new Asteroid(
-                new BattleObject.BattleObjectData("Asteroid", asteroidPositionGiver, Random.Range(0, 360), Vector2.one * size),
-                this, newAsteroidField, (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
+            Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", Vector2.zero,
+                    Random.Range(0, 360), Vector2.one * size), this, newAsteroidField,
+                (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
+            newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
         }
 
@@ -353,8 +350,9 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
         float size = Random.Range(25, 35);
-        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", positionGiver, Random.Range(0, 360)), this,
+        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360)), this,
             (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
+        newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
     }
 

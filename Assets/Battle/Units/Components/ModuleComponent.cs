@@ -9,6 +9,7 @@ public abstract class ModuleComponent : BattleObject {
     public ModuleComponent(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(new BattleObjectData(componentScriptableObject.name, module.GetPosition(),
             module.GetRotation(), unit.faction), battleManager) {
+        this.unit = unit;
         this.module = module;
         this.componentScriptableObject = componentScriptableObject;
     }

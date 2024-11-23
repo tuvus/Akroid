@@ -72,8 +72,8 @@ public class ModuleSystem {
             systems.Add(newSystem);
             for (int i = 0; i < newSystem.moduleCount; i++) {
                 IModule module = prefabModules[modules.Count()];
-                var args = new object[] { battleManager, module, unit, newSystem.component };
-                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(newSystem.component.GetComponentType(), args);
+                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(newSystem.component.GetComponentType(),
+                    battleManager, module, unit, newSystem.component);
                 modules.Add(newComponent);
                 moduleToSystem.Add(newComponent, newSystem);
             }

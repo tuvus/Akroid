@@ -34,14 +34,16 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
             this.faction = faction;
         }
 
+        public BattleObjectData(string objectName, Vector2 position, float rotation, Vector2 scale, Faction faction = null) :
+            this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
+
         public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null) :
             this(objectName, positionGiver, rotation, Vector2.one, faction) { }
 
         public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null) :
-            this(objectName, new BattleManager.PositionGiver(position), rotation, faction) { }
+            this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
 
-        public BattleObjectData(string objectName) :
-            this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0) { }
+        public BattleObjectData(string objectName) : this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0, Vector2.one) { }
     }
 
     public BattleObject() { }
@@ -49,13 +51,17 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
         this.battleManager = battleManager;
         this.objectName = battleObjectData.objectName;
-        this.position = GetSetupPosition(battleObjectData.positionGiver);
+        this.position = Vector2.zero;
         this.rotation = battleObjectData.rotation;
         this.scale = battleObjectData.scale;
         this.faction = battleObjectData.faction;
         spawned = false;
         visible = false;
         SetSize(SetupSize());
+    }
+
+    public void SetupPosition(BattleManager.PositionGiver positionGiver) {
+        this.position = GetSetupPosition(positionGiver);
     }
 
     public bool IsInGroup(IObjectGroupLink newGroup) {
