@@ -28,7 +28,8 @@ public class ShipyardFactionAI : FactionAI {
 
     void UpdateFactionCommunication(float deltaTime) {
         for (int i = 0; i < faction.GetFactionCommManager().communicationLog.Count; i++) {
-            if (faction.GetFactionCommManager().communicationLog[i].isActive && faction.GetFactionCommManager().communicationLog[i].options.Length > 0)
+            if (faction.GetFactionCommManager().communicationLog[i].isActive &&
+                faction.GetFactionCommManager().communicationLog[i].options.Length > 0)
                 faction.GetFactionCommManager().communicationLog[i].ChooseOption(0);
         }
     }
@@ -45,17 +46,20 @@ public class ShipyardFactionAI : FactionAI {
                     ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
                 } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     ship.UndockShip(shipyard.GetPosition());
-                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
+                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                        Command.CommandAction.Replace);
                 }
             }
         }
+
         transportTime += 8;
     }
 
     void ManageIdleShips() {
         foreach (var ship in idleShips) {
             if (ship.IsTransportShip()) {
-                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal), Command.CommandAction.Replace);
+                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                    Command.CommandAction.Replace);
             }
         }
     }

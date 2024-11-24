@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 
 public class StartMenu : MonoBehaviour {
-    public static StartMenu Instance {get; private set;}
+    public static StartMenu Instance { get; private set; }
 
     private enum StartMenuState {
         None,
@@ -13,8 +13,7 @@ public class StartMenu : MonoBehaviour {
         OptionMenue,
     }
 
-    [SerializeField]
-    private StartMenuState state;
+    [SerializeField] private StartMenuState state;
     [SerializeField] TMP_Text versionText;
 
     public void Awake() {
@@ -41,7 +40,7 @@ public class StartMenu : MonoBehaviour {
         ShowStartMenue(true);
         state = StartMenuState.StartMenue;
     }
-    
+
     void ShowStartMenue(bool trueOrFalse) {
         transform.GetChild(0).gameObject.SetActive(trueOrFalse);
     }
@@ -49,6 +48,7 @@ public class StartMenu : MonoBehaviour {
     #endregion
 
     #region SimulationMenue
+
     public void SetSimulationMenu() {
         HideAllMenues();
         ShowSimulationMenue(true);
@@ -58,6 +58,7 @@ public class StartMenu : MonoBehaviour {
     public void ShowSimulationMenue(bool trueOrFalse) {
         transform.GetChild(1).gameObject.SetActive(trueOrFalse);
     }
+
     #endregion
 
     #region CampaingMenu
@@ -71,10 +72,10 @@ public class StartMenu : MonoBehaviour {
     void ShowCampaignMenue(bool trueOrFalse) {
         transform.GetChild(3).gameObject.SetActive(trueOrFalse);
     }
+
     #endregion
 
     public void ExitGame() {
         Application.Quit();
     }
 }
-

@@ -196,12 +196,13 @@ public class ShipAI {
                 distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
 
             //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandState != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                                                            (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                                                            (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                                                             command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                                                            (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                                                             command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+            if (currentCommandState != CommandType.Move &&
+                (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
+                 (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
+                 (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                  command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
+                 (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                  command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -276,12 +277,13 @@ public class ShipAI {
                 distanceToTargetUnit = Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition());
 
             //If there is a targetUnit check if a new one should be calculated
-            if (currentCommandState != CommandType.Move && (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                                                            (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                                                            (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                                                             command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                                                            (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                                                             command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+            if (currentCommandState != CommandType.Move &&
+                (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
+                 (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
+                 (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                  command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
+                 (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                  command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }

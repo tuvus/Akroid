@@ -51,6 +51,7 @@ public class SimulationSetup : MonoBehaviour {
         for (int i = 0; i < factionList.childCount; i++) {
             Destroy(factionList.GetChild(i).gameObject);
         }
+
         editSimulationPanel.SetActive(false);
         SelectFaction(-1);
     }
@@ -122,10 +123,14 @@ public class SimulationSetup : MonoBehaviour {
             } else {
                 newName = newName + 1;
             }
-            factions.Add(new FactionData(newName, "F" + factions.Count.ToString(), colorPicker.PickColor(), factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships, factions[factions.Count - 1].stations));
+
+            factions.Add(new FactionData(newName, "F" + factions.Count.ToString(), colorPicker.PickColor(),
+                factions[factions.Count - 1].credits, factions[factions.Count - 1].science, factions[factions.Count - 1].ships,
+                factions[factions.Count - 1].stations));
         } else {
             factions.Add(new FactionData("New Faction", "F" + factions.Count.ToString(), colorPicker.PickColor(), 200000, 0, 2, 2));
         }
+
         GameObject newFactionPrefab = Instantiate(factionPrefab, factionList);
         newFactionPrefab.name = factions[factions.Count - 1].name;
         newFactionPrefab.transform.GetChild(0).GetComponent<TMP_Text>().text = newFactionPrefab.name;
@@ -165,10 +170,11 @@ public class SimulationSetup : MonoBehaviour {
 
     public void UpdateSelectedFaction() {
         try {
-            factions[selectedFaction] = new FactionData(editFactionName.text, editFactionAbbreviation.text, colorPicker.PickColor(), long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text), int.Parse(editFactionStations.text));
-        } catch {
+            factions[selectedFaction] = new FactionData(editFactionName.text, editFactionAbbreviation.text, colorPicker.PickColor(),
+                long.Parse(editFactionCredits.text), long.Parse(editFactionScience.text), int.Parse(editFactionShips.text),
+                int.Parse(editFactionStations.text));
+        } catch { }
 
-        }
         factionList.GetChild(selectedFaction).gameObject.name = factions[selectedFaction].name;
         factionList.GetChild(selectedFaction).GetChild(0).GetComponent<TMP_Text>().text = factions[selectedFaction].name;
     }
@@ -191,11 +197,13 @@ public class SimulationSetup : MonoBehaviour {
         while (asyncLoad.progress < 0.9f) {
             yield return null;
         }
+
         DestroyImmediate(Camera.main.gameObject);
         asyncLoad.allowSceneActivation = true;
         while (!asyncLoad.isDone) {
             yield return null;
         }
+
         transform.DetachChildren();
         transform.SetParent(null);
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Loading"));
@@ -206,15 +214,18 @@ public class SimulationSetup : MonoBehaviour {
         while (asyncLoad.progress < 0.9f) {
             yield return null;
         }
+
         DestroyImmediate(Camera.main.gameObject);
         asyncLoad.allowSceneActivation = true;
         while (!asyncLoad.isDone) {
             yield return null;
         }
+
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
         GameObject.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
-        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, gasCloudCount, systemSizeModifier, researchModifier, factions);
+        GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier,
+            gasCloudCount, systemSizeModifier, researchModifier, factions);
         Destroy(gameObject);
     }
 

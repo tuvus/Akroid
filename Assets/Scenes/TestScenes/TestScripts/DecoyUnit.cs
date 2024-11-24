@@ -7,7 +7,8 @@ public class DecoyUnit : Unit {
     public Faction tempFaction;
     public Vector2 inputVelocity;
 
-    public DecoyUnit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject, Unit target, Faction tempFaction, Vector2 inputVelocity) : base(battleObjectData, battleManager, unitScriptableObject) {
+    public DecoyUnit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject, Unit target,
+        Faction tempFaction, Vector2 inputVelocity) : base(battleObjectData, battleManager, unitScriptableObject) {
         this.target = target;
         this.tempFaction = tempFaction;
         this.inputVelocity = inputVelocity;
@@ -28,8 +29,7 @@ public class DecoyUnit : Unit {
         return faction == null;
     }
 
-    public override void Explode() {
-    }
+    public override void Explode() { }
 
     public override int TakeDamage(int damage) {
         //print(damage);
@@ -46,6 +46,5 @@ public class DecoyUnit : Unit {
         return true;
     }
 
-    public override void DestroyUnit() {
-    }
+    public override void DestroyUnit() { }
 }
