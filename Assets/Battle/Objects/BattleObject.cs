@@ -106,10 +106,10 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     public void SetRotation(float rotation) {
         this.rotation = rotation;
     }
-
-    public virtual void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
-
-    public virtual void UnselectObject() { }
+    //
+    // public virtual void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
+    //
+    // public virtual void UnselectObject() { }
 
     /// <summary>
     /// Returns the game size of the object used for collisions, targeting, etc.

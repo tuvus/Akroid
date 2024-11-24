@@ -28,7 +28,7 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<Faction> {
         unitCount.text = "Units: " + displayedObject.units.Count.ToString();
         shipCount.text = "Ships: " + displayedObject.ships.Count.ToString();
         stationCount.text = "Station: " + displayedObject.stations.Count.ToString();
-        if (displayedObject == LocalPlayer.Instance.faction && displayedObject.GetFactionAI() is SimulationFactionAI) {
+        if (displayedObject == LocalPlayer.Instance.player.faction && displayedObject.GetFactionAI() is SimulationFactionAI) {
             autoCommandFleets.transform.parent.gameObject.SetActive(true);
         } else {
             autoCommandFleets.transform.parent.gameObject.SetActive(false);

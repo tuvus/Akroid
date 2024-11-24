@@ -75,10 +75,10 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
-            LocalPlayer.Instance.SetupFaction(null);
+            // LocalPlayer.Instance.SetupFaction(null);
         } else if (LocalPlayer.Instance.GetFaction() == null ||
                    menueUIFactionSelect.value - 1 != factions.IndexOf(LocalPlayer.Instance.GetFaction())) {
-            LocalPlayer.Instance.SetupFaction(factions[menueUIFactionSelect.value - 1]);
+            // LocalPlayer.Instance.SetupFaction(factions[menueUIFactionSelect.value - 1]);
         }
     }
 

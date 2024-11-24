@@ -282,19 +282,19 @@ public class SelectionGroup {
     }
 
     public void RemoveAllNonCombatShips() {
-        for (int i = objects.Count - 1; i >= 0; i--) {
-            if (!objects[i].IsShip() || !((Ship)objects[i]).IsCombatShip()) {
-                objects[i].SelectObject(UnitSelection.SelectionStrength.Unselected);
-                objects.RemoveAt(i);
-            }
-        }
+        // for (int i = objects.Count - 1; i >= 0; i--) {
+        //     if (!objects[i].IsShip() || !((Ship)objects[i]).IsCombatShip()) {
+        //         objects[i].SelectObject(UnitSelection.SelectionStrength.Unselected);
+        //         objects.RemoveAt(i);
+        //     }
+        // }
     }
 
     public void SelectAllBattleObjects(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
-        objects.ForEach(obj => obj.SelectObject(strength));
-        if (fleet != null) {
-            fleet.SelectFleet(strength);
-        }
+        // objects.ForEach(obj => obj.SelectObject(strength));
+        // if (fleet != null) {
+        //     fleet.SelectFleet(strength);
+        // }
     }
 
     public void UnselectAllBattleObjects() {
@@ -323,12 +323,12 @@ public class SelectionGroup {
     }
 
     public void RemoveAnyUnitsNotInList(List<Unit> unitList) {
-        for (int i = objects.Count - 1; i >= 0; i--) {
-            if (!unitList.Contains(objects[i])) {
-                objects[i].UnselectObject();
-                objects.RemoveAt(i);
-            }
-        }
+        // for (int i = objects.Count - 1; i >= 0; i--) {
+        //     if (!unitList.Contains(objects[i])) {
+        //         objects[i].UnselectObject();
+        //         objects.RemoveAt(i);
+        //     }
+        // }
     }
 
     public void RemoveAnyNullUnits() {

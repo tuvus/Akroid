@@ -80,8 +80,8 @@ public class CommunicationEvent {
         if (isActive) {
             isActive = false;
             if (receiver.IsLocalPlayer()) {
-                LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager()
-                    .OnCommunicationEventDeactivate(receiver.communicationLog.IndexOf(this));
+                //TODO: Fix UI for once an event is deactivated
+                // LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().OnCommunicationEventDeactivate(receiver.communicationLog.IndexOf(this));
             }
         }
     }

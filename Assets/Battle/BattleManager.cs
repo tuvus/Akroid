@@ -32,6 +32,7 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Projectile> unusedProjectiles { get; private set; }
     public HashSet<Missile> usedMissiles { get; private set; }
     public HashSet<Missile> unusedMissiles { get; private set; }
+    public HashSet<Player> players { get; private set; }
 
     public bool instantHit;
     public float timeScale;
@@ -150,11 +151,11 @@ public class BattleManager : MonoBehaviour {
             }
         }
 
-        if (factions.Count > 0)
-            LocalPlayer.Instance.SetupFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
-        else
-            LocalPlayer.Instance.SetupFaction(null);
-        LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
+        Player LocalPlayer = new Player(true);
+        players.Add(LocalPlayer);
+        if (factions.Count > 0) LocalPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
+        else LocalPlayer.SetFaction(null);
+        // LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
 
         startOfSimulation = Time.unscaledTime;
         battleState = BattleState.Running;
@@ -178,7 +179,9 @@ public class BattleManager : MonoBehaviour {
         systemSizeModifier = campaignControler.systemSizeModifier;
         researchModifier = campaignControler.researchModifier;
         InitializeBattle();
-        LocalPlayer.Instance.SetupFaction(null);
+        Player LocalPlayer = new Player(true);
+        players.Add(LocalPlayer);
+        LocalPlayer.SetFaction(null);
         // LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
         campaignControler.SetupBattle(this);
         foreach (var faction in factions) {
@@ -206,6 +209,7 @@ public class BattleManager : MonoBehaviour {
         unusedProjectiles = new HashSet<Projectile>(500);
         usedMissiles = new HashSet<Missile>(100);
         unusedMissiles = new HashSet<Missile>(100);
+        players = new HashSet<Player>();
 
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
@@ -308,7 +312,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Star CreateNewStar(string name) {
-        GameObject starPrefab = (GameObject)Resources.Load("Prefabs/Star");
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
             Vector2.one * Random.Range(0.6f, 1.4f)), this);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
@@ -352,7 +355,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
-        GameObject gasCloudPrefab = (GameObject)Resources.Load("Prefabs/GasClouds/GasCloud");
         float size = Random.Range(25, 35);
         GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360)), this,
             (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
@@ -417,7 +419,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void PreSpawnNewProjectile() {
-        GameObject projectilePrefab = (GameObject)Resources.Load("Prefabs/Projectile");
         Projectile newProjectile = new Projectile(this);
         projectiles.Add(newProjectile);
     }
@@ -441,7 +442,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void PrespawnNewMissile() {
-        GameObject missilePrefab = (GameObject)Resources.Load("Prefabs/HermesMissile");
         Missile newMissile = new Missile(this);
         missiles.Add(newMissile);
     }
@@ -523,19 +523,14 @@ public class BattleManager : MonoBehaviour {
         Profiler.EndSample();
         Faction factionWon = CheckVictory();
         if (factionWon != null) {
-            LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon, GetRealTime(), GetSimulationTime());
+            // LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon, GetRealTime(), GetSimulationTime());
             battleState = BattleState.Ended;
-            LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
+            // LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }
 
         if (campaignController != null) {
             campaignController.UpdateController(deltaTime);
         }
-    }
-
-    public void LateUpdate() {
-        LocalPlayer.Instance.GetLocalPlayerInput().UpdatePlayer();
-        LocalPlayer.Instance.UpdatePlayer();
     }
 
     #region HelperMethods
@@ -584,7 +579,7 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     /// <param name="shown"></param>
     public void ShowEffects(bool shown) {
-        ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
+        // ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
         // foreach (var unit in units) {
         //     unit.ShowEffects(shown);
         // }
@@ -630,21 +625,21 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
-    public bool GetEffectsShown() {
-        return PlayerUI.Instance.effects;
-    }
-
-    /// <summary>
-    /// For particle emitters to figure out if they should emit when begging their emissions.
-    /// </summary>
-    /// <returns>whether or not the particles should be shown</returns>
-    public bool GetParticlesShown() {
-        return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
-    }
-
-    public bool GetFactionColoringShown() {
-        return PlayerUI.Instance.factionColoring;
-    }
+    // public bool GetEffectsShown() {
+    //     return PlayerUI.Instance.effects;
+    // }
+    //
+    // /// <summary>
+    // /// For particle emitters to figure out if they should emit when begging their emissions.
+    // /// </summary>
+    // /// <returns>whether or not the particles should be shown</returns>
+    // public bool GetParticlesShown() {
+    //     return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
+    // }
+    //
+    // public bool GetFactionColoringShown() {
+    //     return PlayerUI.Instance.factionColoring;
+    // }
 
     public double GetRealTime() {
         return Time.unscaledTime - startOfSimulation;
@@ -700,6 +695,10 @@ public class BattleManager : MonoBehaviour {
 
     public static GameObject GetSizeIndicatorPrefab() {
         return Resources.Load<GameObject>("Prefabs/SizeIndicator");
+    }
+
+    public Player GetLocalPlayer() {
+        return players.First(p => p.isLocalPlayer);
     }
 
     #endregion

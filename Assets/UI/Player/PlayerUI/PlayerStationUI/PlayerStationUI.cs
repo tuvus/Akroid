@@ -151,7 +151,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
             long cost;
             if (LocalPlayer.Instance.GetFaction() != null) {
                 cost = ((Shipyard)displayedObject).GetConstructionBay()
-                    .GetCreditCostOfShip(LocalPlayer.Instance.faction, blueprint.shipScriptableObject);
+                    .GetCreditCostOfShip(LocalPlayer.Instance.player.faction, blueprint.shipScriptableObject);
                 button.interactable = LocalPlayer.Instance.GetFaction().credits >= cost;
             } else {
                 cost = blueprint.shipScriptableObject.cost;
@@ -318,7 +318,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
 
             RefreshRightPanel();
         }
-        //if (LocalPlayer.Instance.ownedUnits.Contains(displayedStation) || shipsInHangar[index].faction == LocalPlayer.Instance.GetFaction())
+        //if (LocalPlayer.Instance.player.ownedUnits.Contains(displayedStation) || shipsInHangar[index].faction == LocalPlayer.Instance.GetFaction())
         //    shipsInHangar[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
     }
 

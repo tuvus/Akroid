@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// LocalPlayer should contain all the relevant information that any part of the simulation/game
@@ -7,6 +6,7 @@ using UnityEngine;
 /// to the PlayerUI and it's functions.
 /// </summary>
 public class LocalPlayer : MonoBehaviour {
+    public Player player { get; private set; }
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
     public PlayerUI playerUI { get; private set; }
@@ -15,10 +15,6 @@ public class LocalPlayer : MonoBehaviour {
         free = 1,
         following = 2,
     }
-
-    public Faction faction;
-    public HashSet<Unit> ownedUnits;
-    public bool lockedOwnedUnits;
 
     public void SetUpPlayer() {
         if (Instance != null) {
@@ -31,21 +27,11 @@ public class LocalPlayer : MonoBehaviour {
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
         localPlayerInput.Setup();
         playerUI.SetUpUI(localPlayerInput);
-        ownedUnits = new HashSet<Unit>();
     }
 
-    public void SetupFaction(Faction faction) {
-        this.faction = faction;
-        if (!lockedOwnedUnits) {
-            if (faction != null) {
-                ownedUnits = faction.units;
-            } else {
-                ownedUnits.Clear();
-            }
-        }
-
+    public void SetupFaction() {
         UpdateFactionColors();
-        playerUI.GetPlayerCommsManager().SetupFaction(faction);
+        playerUI.GetPlayerCommsManager().SetupFaction(player.faction);
     }
 
     /// <summary>
@@ -60,6 +46,12 @@ public class LocalPlayer : MonoBehaviour {
 
     public void UpdatePlayer() {
         playerUI.UpdatePlayerUI();
+    }
+
+
+    public void LateUpdate() {
+        LocalPlayer.Instance.GetLocalPlayerInput().UpdatePlayer();
+        LocalPlayer.Instance.UpdatePlayer();
     }
 
     #region RelationsAndColors
@@ -80,7 +72,7 @@ public class LocalPlayer : MonoBehaviour {
     public RelationType GetRelationToUnit(Unit unit) {
         if (GetFaction() == null)
             return RelationType.Neutral;
-        if (ownedUnits.Contains(unit))
+        if (player.ownedUnits.Contains(unit))
             return RelationType.Owned;
         if (GetFaction() == unit.faction)
             return RelationType.Friendly;
@@ -114,18 +106,8 @@ public class LocalPlayer : MonoBehaviour {
 
     #endregion
 
+
     #region HelperMethods
-
-    public void AddOwnedUnit(Unit unit) {
-        ownedUnits.Add(unit);
-        // unit.GetUnitSelection().UpdateFactionColor();
-    }
-
-    public void RemoveOwnedUnit(Unit unit) {
-        ownedUnits.Remove(unit);
-        // unit.GetUnitSelection().UpdateFactionColor();
-    }
-
     public LocalPlayerInput GetInputManager() {
         return localPlayerInput;
     }
@@ -143,7 +125,7 @@ public class LocalPlayer : MonoBehaviour {
     }
 
     public Faction GetFaction() {
-        return faction;
+        return player.faction;
     }
 
     #endregion

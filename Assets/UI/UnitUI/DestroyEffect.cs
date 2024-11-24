@@ -40,13 +40,13 @@ public class DestroyEffect : MonoBehaviour, IParticleHolder {
     }
 
     public void Explode() {
-        if (BattleManager.Instance.GetParticlesShown()) {
-            explosion.Play(false);
-            fragments.Play(false);
-        }
+        // if (BattleManager.Instance.GetParticlesShown()) {
+            // explosion.Play(false);
+            // fragments.Play(false);
+        // }
 
-        if (BattleManager.Instance.GetEffectsShown())
-            flare.enabled = true;
+        // if (BattleManager.Instance.GetEffectsShown())
+            // flare.enabled = true;
         flareTime = 0;
         UpdateExplosion(0);
     }

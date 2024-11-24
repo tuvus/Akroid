@@ -2,7 +2,7 @@
 
 public class ProjectileTurret : Turret {
     ProjectileTurretScriptableObject projectileTurretScriptableObject;
-    private SpriteRenderer flash;
+    // private SpriteRenderer flash;
     static float flashSpeed = 0.5f;
     private float flashTime;
 
@@ -29,8 +29,8 @@ public class ProjectileTurret : Turret {
                 projectileTurretScriptableObject.projectileRange *
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
             flashTime = flashSpeed;
-            flash.enabled = BattleManager.Instance.GetEffectsShown();
-            flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
+            // flash.enabled = BattleManager.Instance.GetEffectsShown();
+            // flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
@@ -86,14 +86,14 @@ public class ProjectileTurret : Turret {
 
     public override void StopFiring() {
         base.StopFiring();
-        flash.enabled = false;
+        // flash.enabled = false;
     }
 
     public override void ShowEffects(bool shown) {
         base.ShowEffects(shown);
-        if (flash.enabled) {
-            flash.enabled = shown;
-        }
+        // if (flash.enabled) {
+            // flash.enabled = shown;
+        // }
     }
 
     [ContextMenu("GetDamagePerSecond")]

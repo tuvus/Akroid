@@ -77,12 +77,12 @@ public class PlayerUI : MonoBehaviour {
     public void UpdatePlayerUI() {
         Profiler.BeginSample("PlayerUI");
         command.text = localPlayerInput.GetActionType().ToString();
-        if (GetLocalPlayer().faction != null) {
+        if (GetLocalPlayer().player.faction != null) {
             factionUI.SetActive(true);
-            factionName.text = GetLocalPlayer().faction.name;
-            factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(GetLocalPlayer().faction.credits);
-            factionScience.text = "Science: " + NumFormatter.ConvertNumber(GetLocalPlayer().faction.science) + " (" +
-                                  GetLocalPlayer().faction.Discoveries + ")";
+            factionName.text = GetLocalPlayer().player.faction.name;
+            factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(GetLocalPlayer().player.faction.credits);
+            factionScience.text = "Science: " + NumFormatter.ConvertNumber(GetLocalPlayer().player.faction.science) + " (" +
+                                  GetLocalPlayer().player.faction.Discoveries + ")";
         } else {
             factionUI.SetActive(false);
         }
@@ -179,7 +179,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void FactionWon(Faction faction, double realTime, double timeElapsed) {
-        if (faction == LocalPlayer.Instance.faction) {
+        if (faction == LocalPlayer.Instance.player.faction) {
             victoryTitle.text = "Victory!";
         } else {
             victoryTitle.text = "Defeat!";

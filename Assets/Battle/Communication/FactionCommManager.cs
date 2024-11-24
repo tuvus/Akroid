@@ -60,7 +60,7 @@ public class FactionCommManager {
         receivedCommunication.receiver = this;
         communicationLog.Add(receivedCommunication);
         if (IsLocalPlayer()) {
-            LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(receivedCommunication);
+            // LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(receivedCommunication);
         } else if (receivedCommunication.options != null && receivedCommunication.optionChoiceLogic != null) {
             receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
@@ -73,7 +73,9 @@ public class FactionCommManager {
     #region HelperMethods
 
     public bool IsLocalPlayer() {
-        return LocalPlayer.Instance.GetFaction() == faction;
+        // TODO: Fix local player communications
+        return false;
+        // return LocalPlayer.Instance.GetFaction() == faction;
     }
 
     public string GetSenderName() {

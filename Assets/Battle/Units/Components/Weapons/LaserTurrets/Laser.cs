@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
 public class Laser {
-    [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private SpriteRenderer startHighlight;
-    [SerializeField] private SpriteRenderer endHighlight;
+    // [SerializeField] private SpriteRenderer spriteRenderer;
+    // [SerializeField] private SpriteRenderer startHighlight;
+    // [SerializeField] private SpriteRenderer endHighlight;
     LaserTurret laserTurret;
     bool fireing;
 
@@ -37,24 +37,24 @@ public class Laser {
         fireing = true;
         fireTime = laserTurret.GetFireDuration();
         fadeTime = laserTurret.GetFadeDuration();
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
-        startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, .8f);
-        endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
+        // spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
+        // startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, .8f);
+        // endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
     }
 
     void ExpireLaser() {
-        spriteRenderer.enabled = false;
-        startHighlight.enabled = false;
-        endHighlight.enabled = false;
+        // spriteRenderer.enabled = false;
+        // startHighlight.enabled = false;
+        // endHighlight.enabled = false;
         fireing = false;
     }
 
 
     public void UpdateLaser(float deltaTime) {
         if (fireing) {
-            spriteRenderer.enabled = true;
-            startHighlight.enabled = BattleManager.Instance.GetEffectsShown();
-            endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
+            // spriteRenderer.enabled = true;
+            // startHighlight.enabled = BattleManager.Instance.GetEffectsShown();
+            // endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
             // transform.localPosition = new Vector2(0, 0);
             // transform.rotation = transform.parent.rotation;
 
@@ -79,12 +79,12 @@ public class Laser {
         if (fadeTime <= 0) {
             ExpireLaser();
         } else {
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
-                fadeTime / laserTurret.GetFireDuration());
-            startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g,
-                fadeTime / laserTurret.GetFadeDuration());
-            endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g,
-                fadeTime / laserTurret.GetFadeDuration());
+            // spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
+                // fadeTime / laserTurret.GetFireDuration());
+            // startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g,
+                // fadeTime / laserTurret.GetFadeDuration());
+            // endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g,
+                // fadeTime / laserTurret.GetFadeDuration());
         }
     }
 
@@ -155,18 +155,18 @@ public class Laser {
     void SetDistance() {
         // transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
         if (hitPoint.HasValue) {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x,
-                (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
-            endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
-            endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
+            // spriteRenderer.size = new Vector2(spriteRenderer.size.x,
+                // (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            // endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
+            // endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
         } else {
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x,
-                (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
-            endHighlight.enabled = false;
+            // spriteRenderer.size = new Vector2(spriteRenderer.size.x,
+                // (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            // endHighlight.enabled = false;
         }
 
         // transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
-        startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
+        // startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
     }
 
     public bool IsFireing() {
@@ -178,7 +178,7 @@ public class Laser {
     }
 
     public void ShowEffects(bool shown) {
-        startHighlight.enabled = shown;
-        endHighlight.enabled = shown;
+        // startHighlight.enabled = shown;
+        // endHighlight.enabled = shown;
     }
 }

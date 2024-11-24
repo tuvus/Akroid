@@ -135,9 +135,9 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (!SelectGroup(10)) {
             selectedUnits.UnselectAllBattleObjects();
             selectedUnits.ClearGroup();
-            if (LocalPlayer.Instance.ownedUnits == null)
+            if (LocalPlayer.Instance.player.ownedUnits == null)
                 return;
-            foreach (var unit in LocalPlayer.Instance.ownedUnits) {
+            foreach (var unit in LocalPlayer.Instance.player.ownedUnits) {
                 if (unit.IsShip() && ((Ship)unit).IsCombatShip()) {
                     selectedUnits.AddShip((Ship)unit);
                 }
@@ -254,7 +254,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     public void ToggleSelectedUnit(BattleObject newBattleObject) {
         if (selectedUnits.ContainsObject(newBattleObject)) {
             selectedUnits.RemoveBattleObject(newBattleObject);
-            newBattleObject.SelectObject(UnitSelection.SelectionStrength.Unselected);
+            // newBattleObject.SelectObject(UnitSelection.SelectionStrength.Unselected);
             SetDisplayedUnit();
         } else {
             AddSelectedBattleObjects(newBattleObject);
@@ -329,8 +329,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     public void SelectOnlyControllableUnits() {
-        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.ownedUnits.ToList());
-        if (selectedUnits.fleet != null && selectedUnits.fleet.faction != LocalPlayer.Instance.faction) {
+        selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.player.ownedUnits.ToList());
+        if (selectedUnits.fleet != null && selectedUnits.fleet.faction != LocalPlayer.Instance.player.faction) {
             selectedUnits.UnselectAllBattleObjects();
             selectedUnits.fleet = null;
             selectedUnits.groupType = SelectionGroup.GroupType.None;

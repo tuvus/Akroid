@@ -46,7 +46,7 @@ public class PlayerFactionAI : FactionAI {
 
     public override void OnShipBuilt(Ship ship) {
         if (ship.IsCombatShip()) {
-            LocalPlayer.Instance.AddOwnedUnit(ship);
+            battleManager.GetLocalPlayer().AddOwnedUnit(ship);
         }
 
         ship.shipAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));

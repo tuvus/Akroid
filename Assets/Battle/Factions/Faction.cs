@@ -249,16 +249,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void AddEnemyFaction(Faction otherFaction) {
         enemyFactions.Add(otherFaction);
-        if (LocalPlayer.Instance.faction == this) {
-            LocalPlayer.Instance.UpdateFactionColors();
-        }
+        // TODO: ADD back faction update when a new enemy is made
+        // if (LocalPlayer.Instance.player.faction == this) {
+        // LocalPlayer.Instance.UpdateFactionColors();
+        // }
     }
 
     public void RemoveEnemyFaction(Faction otherFaction) {
         enemyFactions.Remove(otherFaction);
-        if (LocalPlayer.Instance.faction == this) {
-            LocalPlayer.Instance.UpdateFactionColors();
-        }
+        // if (LocalPlayer.Instance.player.faction == this) {
+        // LocalPlayer.Instance.UpdateFactionColors();
+        // }
     }
 
     public void AddUnit(Unit unit) {
@@ -284,16 +285,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void TransferShipTo(Ship ship, Faction to) {
         if (!ships.Contains(ship))
             throw new InvalidOperationException("The ship to transfer from this faction isn't owned by this faction.");
-        if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(ship)) {
-            LocalPlayer.Instance.RemoveOwnedUnit(ship);
-        }
+        // TODO: Update owned units when a ship is transfered
+        // if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.player.ownedUnits.Contains(ship)) {
+        //     LocalPlayer.Instance.RemoveOwnedUnit(ship);
+        // }
 
         RemoveShip(ship);
         to.AddShip(ship);
         ship.SetFaction(to);
-        if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
-            LocalPlayer.Instance.AddOwnedUnit(ship);
-        }
+        // if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
+        //     battleManager.GetLocalPlayer().AddOwnedUnit(ship);
+        // }
     }
 
     public void AddStation(Station station) {
@@ -309,16 +311,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void TransferStationTo(Station station, Faction to) {
         if (!stations.Contains(station))
             throw new InvalidOperationException("The station to transfer from this faction isn't owned by this faction.");
-        if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.ownedUnits.Contains(station)) {
-            LocalPlayer.Instance.RemoveOwnedUnit(station);
-        }
+        // TODO: Update owned units when a station is transfered
+        // if (LocalPlayer.Instance.GetFaction() == this && LocalPlayer.Instance.player.ownedUnits.Contains(station)) {
+        //     LocalPlayer.Instance.RemoveOwnedUnit(station);
+        // }
 
         RemoveStation(station);
         to.AddStation(station);
         station.SetFaction(to);
-        if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
-            LocalPlayer.Instance.AddOwnedUnit(station);
-        }
+        // if (LocalPlayer.Instance.GetFaction() == to && !LocalPlayer.Instance.lockedOwnedUnits) {
+        //     battleManager.GetLocalPlayer().AddOwnedUnit(station);
+        // }
     }
 
     public void AddStationBlueprint(Station station) {

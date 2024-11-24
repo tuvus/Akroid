@@ -108,7 +108,7 @@ public class Chapter1 : CampaingController {
             battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.onBuildShip += ship => {
-            if (ship.faction == LocalPlayer.Instance.GetFaction()) LocalPlayer.Instance.AddOwnedUnit(ship);
+            if (ship.faction == battleManager.GetLocalPlayer().faction) battleManager.GetLocalPlayer().AddOwnedUnit(ship);
         };
 
         shipyardFaction = battleManager.CreateNewFaction(
@@ -123,7 +123,7 @@ public class Chapter1 : CampaingController {
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
         shipyard.stationAI.onBuildShip += ship => {
-            if (ship.faction == LocalPlayer.Instance.GetFaction()) LocalPlayer.Instance.AddOwnedUnit(ship);
+            if (ship.faction == battleManager.GetLocalPlayer().faction) battleManager.GetLocalPlayer().AddOwnedUnit(ship);
         };
 
 
@@ -205,11 +205,11 @@ public class Chapter1 : CampaingController {
         planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L, Random.Range(0.001f, 0.003f),
             "All base stats improved");
 
-        LocalPlayer.Instance.lockedOwnedUnits = true;
-        LocalPlayer.Instance.ownedUnits.Add(playerMiningStation);
-        LocalPlayer.Instance.SetupFaction(playerFaction);
-        LocalPlayer.Instance.GetLocalPlayerInput().SetZoom(400);
-        LocalPlayer.Instance.GetLocalPlayerInput().StartFollowingUnit(setupFleetShip2);
+        battleManager.GetLocalPlayer().SetLockedUnits(true);
+        battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
+        battleManager.GetLocalPlayer().SetFaction(playerFaction);
+        // battleManager.GetLocalPlayer().GetLocalPlayerInput().SetZoom(400);
+        // battleManager.GetLocalPlayer().GetLocalPlayerInput().StartFollowingUnit(setupFleetShip2);
 
         StartTutorial();
         AddMoonQuestLine();
@@ -227,37 +227,37 @@ public class Chapter1 : CampaingController {
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(EventCondition.WaitEvent(1f));
         eventChain.AddAction(() => {
-            if (LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
-                GetBattleManager().SetSimulationTimeScale(10);
-                skipTutorial = true;
-            }
+            // if (battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                // GetBattleManager().SetSimulationTimeScale(10);
+                // skipTutorial = true;
+            // }
         });
         eventChain.Build(eventManager)();
         EventChainBuilder eventChain2 = new EventChainBuilder();
         eventChain2.AddCondition(EventCondition.WaitEvent(2f));
         eventChain2.AddAction(() => {
-            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
-                GetBattleManager().SetSimulationTimeScale(10);
-                skipTutorial = true;
-            }
+            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                // GetBattleManager().SetSimulationTimeScale(10);
+                // skipTutorial = true;
+            // }
         });
         eventChain2.Build(eventManager)();
         EventChainBuilder eventChain3 = new EventChainBuilder();
         eventChain3.AddCondition(EventCondition.WaitEvent(5f));
         eventChain3.AddAction(() => {
-            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
-                GetBattleManager().SetSimulationTimeScale(10);
-                skipTutorial = true;
-            }
+            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                // GetBattleManager().SetSimulationTimeScale(10);
+                // skipTutorial = true;
+            // }
         });
         eventChain3.Build(eventManager)();
         EventChainBuilder eventChain4 = new EventChainBuilder();
         eventChain4.AddCondition(EventCondition.WaitEvent(10f));
         eventChain4.AddAction(() => {
-            if (!skipTutorial && LocalPlayer.Instance.GetLocalPlayerGameInput().AdditiveButtonPressed) {
-                GetBattleManager().SetSimulationTimeScale(10);
-                skipTutorial = true;
-            }
+            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
+                // GetBattleManager().SetSimulationTimeScale(10);
+                // skipTutorial = true;
+            // }
         });
         eventChain4.Build(eventManager)();
 
@@ -276,8 +276,8 @@ public class Chapter1 : CampaingController {
                             .SetSimulationTimeScale(playerFaction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / 5);
                         eventManager.AddEvent(EventCondition.PredicateEvent(_ => playerMiningStation.IsBuilt()), () => {
                             Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
-                            if (LocalPlayer.Instance.GetFaction() == playerFaction) {
-                                LocalPlayer.Instance.AddOwnedUnit(shuttle);
+                            if (battleManager.GetLocalPlayer().faction == playerFaction) {
+                                battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
                             }
 
                             playerFactionAI.AddTradeRouteToStation(tradeStation);
@@ -435,8 +435,8 @@ public class Chapter1 : CampaingController {
         FactionCommManager playerComm = playerFaction.GetFactionCommManager();
         GetBattleManager().SetSimulationTimeScale(1);
         Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
-        if (LocalPlayer.Instance.GetFaction() == playerFaction) {
-            LocalPlayer.Instance.AddOwnedUnit(shuttle);
+        if (battleManager.GetLocalPlayer().faction == playerFaction) {
+            battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
         }
 
         EventChainBuilder movementTutorial = new EventChainBuilder();
@@ -715,7 +715,7 @@ public class Chapter1 : CampaingController {
             "Thanks! Hopefully you can make good use of it!", GetTimeScale() * 3);
         keepChain.AddAction(() => {
             researchFaction.TransferShipTo(researchShip, playerFaction);
-            LocalPlayer.Instance.AddOwnedUnit(researchShip);
+            battleManager.GetLocalPlayer().AddOwnedUnit(researchShip);
         });
         return keepChain.Build(eventManager, () => EscapeShipQuestLine(false));
     }
@@ -860,7 +860,7 @@ public class Chapter1 : CampaingController {
             EventCondition.DockShipsAtUnit(new List<Ship> { colonizer }, researchStation, true)));
         buildEscapeShipChain.AddAction(() => {
             colonizer.shipAI.ClearCommands();
-            LocalPlayer.Instance.RemoveOwnedUnit(colonizer);
+            battleManager.GetLocalPlayer().RemoveOwnedUnit(colonizer);
         });
         buildEscapeShipChain.AddCommEvent(shipyardCommManager, planetFaction,
             "The colonizer has docked at our station and we are beggining to instal the hyperdrive.", GetTimeScale() * 3);
@@ -884,7 +884,7 @@ public class Chapter1 : CampaingController {
         buildEscapeShipChain.AddCondition(EventCondition.WaitEvent(GetTimeScale() * 3));
         buildEscapeShipChain.AddAction(() => {
             colonizer.Explode();
-            LocalPlayer.Instance.GetPlayerUI().FactionWon(playerFaction, battleManager.GetRealTime(), battleManager.GetSimulationTime());
+            // battleManager.GetLocalPlayer().GetPlayerUI().FactionWon(playerFaction, battleManager.GetRealTime(), battleManager.GetSimulationTime());
             battleManager.EndBattle();
         });
         buildEscapeShipChain.Build(eventManager)();

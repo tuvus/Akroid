@@ -26,8 +26,8 @@ public class Thruster : ModuleComponent, IParticleHolder {
     }
 
     public void BeginThrust() {
-        if (BattleManager.Instance.GetParticlesShown())
-            particle.Play();
+        // if (BattleManager.Instance.GetParticlesShown())
+            // particle.Play();
         thrusterFlare.brightness = targetBrightness;
     }
 

@@ -55,9 +55,9 @@ public class PlayerEventUI : MonoBehaviour {
                 break;
             case EventCondition.ConditionType.SelectUnits:
             case EventCondition.ConditionType.SelectUnitsAmount:
-                HashSet<Unit> selectedUnits = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                HashSet<Unit> selectedUnits = GetSelectedUnits().GetAllUnits().ToHashSet();
                 List<Unit> unitsToSelect = VisualizedEvent.units.ToList();
-                if (EventManager.playerGameInput.GetSelectedUnits().fleet != null) {
+                if (GetSelectedUnits().fleet != null) {
                     VisualizeObjects(unitsToSelect.Cast<IObject>().ToList());
                 } else {
                     VisualizeObjects(unitsToSelect.Where((unit) => !selectedUnits.Contains(unit)).Cast<IObject>().ToList());
@@ -98,7 +98,7 @@ public class PlayerEventUI : MonoBehaviour {
             case EventCondition.ConditionType.MoveShipToObject:
                 // If the unit is docked at a station, we need to show the station instead
                 Unit unitToShow2 = VisualizedEvent.unitToSelect;
-                HashSet<Unit> selectedUnits3 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                HashSet<Unit> selectedUnits3 = GetSelectedUnits().GetAllUnits().ToHashSet();
                 if (selectedUnits3.Contains(unitToShow2) && selectedUnits3.Count == 1) {
                     VisualizeObjects(new List<IObject> { VisualizedEvent.iObject });
                 } else {
@@ -111,7 +111,7 @@ public class PlayerEventUI : MonoBehaviour {
 
                 break;
             case EventCondition.ConditionType.CommandMoveShipToObjectSequence:
-                HashSet<Unit> selectedUnits2 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                HashSet<Unit> selectedUnits2 = GetSelectedUnits().GetAllUnits().ToHashSet();
                 if (selectedUnits2.Count != 1 || !selectedUnits2.Contains(VisualizedEvent.unitToSelect)) {
                     VisualizeObjects(new List<IObject>() { VisualizedEvent.unitToSelect });
                 } else {
@@ -136,7 +136,7 @@ public class PlayerEventUI : MonoBehaviour {
                 break;
 
             case EventCondition.ConditionType.CommandDockShipToUnit:
-                HashSet<Unit> selectedUnits4 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                HashSet<Unit> selectedUnits4 = GetSelectedUnits().GetAllUnits().ToHashSet();
                 if (selectedUnits4.Count != 1 || !selectedUnits4.Contains(VisualizedEvent.iObjects.First())) {
                     VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.First() });
                 } else {
@@ -150,7 +150,7 @@ public class PlayerEventUI : MonoBehaviour {
 
                 break;
             case EventCondition.ConditionType.CommandShipToCollectGas:
-                HashSet<Unit> selectedUnits5 = EventManager.playerGameInput.GetSelectedUnits().GetAllUnits().ToHashSet();
+                HashSet<Unit> selectedUnits5 = GetSelectedUnits().GetAllUnits().ToHashSet();
                 if (selectedUnits5.Count != 1 || !selectedUnits5.Contains(VisualizedEvent.iObjects.First())) {
                     VisualizeObjects(new List<IObject>() { VisualizedEvent.iObjects.First() });
                 }
@@ -199,5 +199,10 @@ public class PlayerEventUI : MonoBehaviour {
 
     public void SetWorldSpaceTransform(Transform worldSpaceTransform) {
         this.worldSpaceTransform = worldSpaceTransform;
+    }
+
+    private SelectionGroup GetSelectedUnits() {
+        // return EventManager.playerGameInput.GetSelectedUnits();
+        return LocalPlayer.Instance.GetLocalPlayerGameInput().GetSelectedUnits();
     }
 }

@@ -29,7 +29,7 @@ public class Projectile : BattleObject {
         distance = 0;
         hit = false;
 
-        highlight.enabled = BattleManager.Instance.GetEffectsShown();
+        // highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
     }
 
@@ -92,8 +92,8 @@ public class Projectile : BattleObject {
 
         visible = false;
         boxCollider2D.enabled = false;
-        if (BattleManager.Instance.GetParticlesShown())
-            particleSystem.Play();
+        // if (BattleManager.Instance.GetParticlesShown())
+            // particleSystem.Play();
     }
 
     void Activate(bool activate = true) {
