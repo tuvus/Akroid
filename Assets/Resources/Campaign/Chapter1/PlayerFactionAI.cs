@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class PlayerFactionAI : FactionAI {
-
     Chapter1 chapter1;
     FactionCommManager commManager;
     MiningStation playerMiningStation;
@@ -12,14 +11,16 @@ public class PlayerFactionAI : FactionAI {
     int nextStationToSendTo;
     private bool nextState;
 
-    public PlayerFactionAI(BattleManager battleManager, Faction faction, Chapter1 chapter1, MiningStation playerMiningStation):
-        base(battleManager, faction) {
-        this.chapter1 = chapter1;
-        this.playerMiningStation = playerMiningStation;
+    public PlayerFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) {
         tradeRoutes = new List<Station>();
         nextStationToSendTo = 0;
         commManager = faction.GetFactionCommManager();
         autoResearch = false;
+    }
+
+    public void Setup(Chapter1 chapter1, MiningStation playerMiningStation) {
+        this.chapter1 = chapter1;
+        this.playerMiningStation = playerMiningStation;
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -37,7 +38,9 @@ public class PlayerFactionAI : FactionAI {
             nextStationToSendTo++;
             if (nextStationToSendTo >= tradeRoutes.Count)
                 nextStationToSendTo = 0;
-            ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo], CargoBay.CargoTypes.All, true), Command.CommandAction.AddToEnd);
+            ship.shipAI.AddUnitAICommand(
+                Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo], CargoBay.CargoTypes.All, true),
+                Command.CommandAction.AddToEnd);
         }
     }
 
@@ -45,11 +48,13 @@ public class PlayerFactionAI : FactionAI {
         if (ship.IsCombatShip()) {
             LocalPlayer.Instance.AddOwnedUnit(ship);
         }
+
         ship.shipAI.AddUnitAICommand(Command.CreateDockCommand(playerMiningStation));
     }
 
     public bool WantMoreTransportShips() {
-        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipCountOfType(Ship.ShipType.Transport) + chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
+        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() > faction.GetShipCountOfType(Ship.ShipType.Transport) +
+            chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             return true;
         } else {
             return false;

@@ -9,8 +9,10 @@ public class OtherMiningFactionAI : FactionAI {
     MiningStation otherMiningStation;
     Station tradeStation;
 
-    public OtherMiningFactionAI(BattleManager battleManger, Faction faction, Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, MiningStation otherMiningStation, Station tradeStation):
-        base(battleManger, faction){
+    public OtherMiningFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) {    }
+
+
+    public void Setup(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, MiningStation otherMiningStation, Station tradeStation) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.otherMiningStation = otherMiningStation;
