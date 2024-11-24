@@ -260,8 +260,8 @@ public abstract class Unit : BattleObject {
     }
 
     public Dictionary<CargoBay.CargoTypes, long> GetReservedCargoSpace() {
-        if (IsStation() && ((Station)this).stationType == Station.StationType.Shipyard ||
-            ((Station)this).stationType == Station.StationType.FleetCommand) {
+        if (IsStation() && ((Station)this).GetStationType() == Station.StationType.Shipyard ||
+            ((Station)this).GetStationType() == Station.StationType.FleetCommand) {
             return ((Shipyard)this).GetConstructionBay().GetReservedResources();
         }
 

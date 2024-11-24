@@ -39,13 +39,13 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
     }
 
     protected override bool ShouldShowMiddlePanel() {
-        return displayedObject.stationType != Station.StationType.None;
+        return displayedObject.GetStationType() != Station.StationType.None;
     }
 
     protected override bool ShouldShowLeftPanel() {
         bool isEnemy = LocalPlayer.Instance.GetRelationToUnit(displayedObject) == LocalPlayer.RelationType.Enemy;
-        return !isEnemy && (displayedObject.stationType == Station.StationType.Shipyard ||
-                            displayedObject.stationType == Station.StationType.FleetCommand);
+        return !isEnemy && (displayedObject.GetStationType() == Station.StationType.Shipyard ||
+                            displayedObject.GetStationType() == Station.StationType.FleetCommand);
     }
 
     protected override bool ShouldShowRightPanel() {
@@ -56,7 +56,7 @@ public class PlayerStationUI : PlayerUIMenu<Station> {
     protected override void RefreshMiddlePanel() {
         stationName.text = displayedObject.GetUnitName();
         stationFaction.text = displayedObject.faction.name;
-        stationType.text = "Station Type: " + displayedObject.stationType;
+        stationType.text = "Station Type: " + displayedObject.GetStationType();
         weaponsCount.text = "Weapons: " + displayedObject.GetWeaponCount();
         if (displayedObject.GetWeaponCount() > 0) {
             stationTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedObject.GetUnitDamagePerSecond());

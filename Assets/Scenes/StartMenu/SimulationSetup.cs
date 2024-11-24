@@ -213,6 +213,7 @@ public class SimulationSetup : MonoBehaviour {
         }
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
+        GameObject.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         GameObject.Find("Battle").GetComponent<BattleManager>().SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier, gasCloudCount, systemSizeModifier, researchModifier, factions);
         Destroy(gameObject);
     }

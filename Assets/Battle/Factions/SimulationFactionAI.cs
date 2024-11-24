@@ -29,7 +29,7 @@ public class SimulationFactionAI : FactionAI {
     public override void GenerateFactionAI() { }
 
     public override void OnStationBuilt(Station station) {
-        if (station.stationType == Station.StationType.FleetCommand) {
+        if (station.GetStationType() == Station.StationType.FleetCommand) {
             fleetCommand = (Shipyard)station;
         }
     }

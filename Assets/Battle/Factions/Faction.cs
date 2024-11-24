@@ -600,7 +600,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (asteroidField.totalResources <= 0)
             return false;
         foreach (Station friendlyStation in stations) {
-            if (friendlyStation.stationType == Station.StationType.MiningStation &&
+            if (friendlyStation.GetStationType() == Station.StationType.MiningStation &&
                 Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
                 ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
                 return false;
@@ -608,7 +608,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
 
         foreach (Station friendlyStation in stationBlueprints) {
-            if (friendlyStation.stationType == Station.StationType.MiningStation &&
+            if (friendlyStation.GetStationType() == Station.StationType.MiningStation &&
                 Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
                 ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
                 return false;

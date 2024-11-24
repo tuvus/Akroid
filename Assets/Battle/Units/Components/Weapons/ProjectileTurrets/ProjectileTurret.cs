@@ -42,19 +42,20 @@ public class ProjectileTurret : Turret {
 
     public override void UpdateTurret(float deltaTime) {
         base.UpdateTurret(deltaTime);
-        if (flash.enabled) {
-            flashTime -= deltaTime;
-            if (flashTime <= 0) {
-                flashTime = 0;
-                flash.enabled = false;
-            } else {
-                flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, flashTime / flashSpeed);
-            }
-        }
+        // if (flash.enabled) {
+        //     flashTime -= deltaTime;
+        //     if (flashTime <= 0) {
+        //         flashTime = 0;
+        //         flash.enabled = false;
+        //     } else {
+        //         flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, flashTime / flashSpeed);
+        //     }
+        // }
     }
 
     protected override bool TurretHibernationStatus() {
-        return base.TurretHibernationStatus() && !flash.enabled;
+        // return base.TurretHibernationStatus() && !flash.enabled;
+        return base.TurretHibernationStatus();
     }
 
     public override Vector2 GetTargetPosition(Unit target) {

@@ -21,6 +21,7 @@ public class FactionCommManager {
     public FactionCommManager(Faction faction, Character character) {
         this.faction = faction;
         this.character = character;
+        communicationLog = new List<CommunicationEvent>();
         delayedCommunications = new List<DelayCommunication>();
     }
 

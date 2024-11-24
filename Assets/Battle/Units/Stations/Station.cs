@@ -16,7 +16,7 @@ public class Station : Unit, IPositionConfirmer {
         ReserchStation = 6,
     }
 
-    public StationType stationType;
+    public StationScriptableObject stationScriptableObject { get; private set; }
 
     [System.Serializable]
     public class StationBlueprint {
@@ -54,9 +54,9 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime { get; protected set; }
     protected bool built;
 
-    public Station(BattleObjectData battleObjectData, BattleManager battleManager,
-        StationScriptableObject stationScriptableObject, bool built) : base(battleObjectData, battleManager,
-        stationScriptableObject) {
+    public Station(BattleObjectData battleObjectData, BattleManager battleManager, StationScriptableObject stationScriptableObject,
+        bool built) : base(battleObjectData, battleManager, stationScriptableObject) {
+        this.stationScriptableObject = stationScriptableObject;
         stationAI = new StationAI(this);
         this.built = built;
         if (!built) {
@@ -267,6 +267,10 @@ public class Station : Unit, IPositionConfirmer {
 
     public int GetRepairAmmount() {
         return (int)(repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+    }
+
+    public StationType GetStationType() {
+        return stationScriptableObject.stationType;
     }
 
     #endregion

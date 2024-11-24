@@ -277,7 +277,11 @@ public class BattleManager : MonoBehaviour {
 
     public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject,
         bool built) {
-        Station newStation = new Station(battleObjectData, this, stationScriptableObject, built);
+        Station newStation;
+        if (stationScriptableObject.stationType == StationType.Shipyard || stationScriptableObject.stationType == StationType.FleetCommand)
+            newStation = new Shipyard(battleObjectData, this, stationScriptableObject, built);
+        else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
+
         newStation.SetupPosition(battleObjectData.positionGiver);
         if (built) {
             units.Add(newStation);
