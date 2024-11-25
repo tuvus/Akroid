@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class Star : BattleObject, IPositionConfirmer {
-    Color color;
+    public Color color { get; private set; }
     float targetBrightness;
     float brightnessSpeed;
 
@@ -51,7 +51,6 @@ public class Star : BattleObject, IPositionConfirmer {
                 RandomiseGlareTarget();
             }
         }
-        // glareRenderer.color = color;
     }
 
     void RandomiseGlareTarget() {

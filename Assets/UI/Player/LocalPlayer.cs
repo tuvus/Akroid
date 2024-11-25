@@ -49,12 +49,6 @@ public class LocalPlayer : MonoBehaviour {
         playerUI.UpdatePlayerUI();
     }
 
-
-    public void LateUpdate() {
-        LocalPlayer.Instance.GetLocalPlayerInput().UpdatePlayer();
-        LocalPlayer.Instance.UpdatePlayer();
-    }
-
     #region RelationsAndColors
 
     public enum RelationType {

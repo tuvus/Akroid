@@ -35,7 +35,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         }
 
         public BattleObjectData(string objectName, Vector2 position, float rotation, Vector2 scale, Faction faction = null) :
-            this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
+            this(objectName, new BattleManager.PositionGiver(position), rotation, scale, faction) { }
 
         public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null) :
             this(objectName, positionGiver, rotation, Vector2.one, faction) { }
@@ -145,7 +145,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     /// </summary>
     /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
-        return 0;
+        return 10;
 //         if (spriteRenderer.sprite == null) return 0;
 //         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
 // Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),

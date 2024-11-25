@@ -239,14 +239,14 @@ public class PlayerUI : MonoBehaviour {
     public void SetEffects(bool shown) {
         if (shown != effects) {
             effects = shown;
-            BattleManager.Instance.ShowEffects(shown);
+            // BattleManager.Instance.ShowEffects(shown);
         }
     }
 
     public void SetParticles(bool shown) {
         if (shown != particles) {
             particles = shown;
-            BattleManager.Instance.ShowParticles(shown);
+            // BattleManager.Instance.ShowParticles(shown);
         }
     }
 
@@ -273,7 +273,7 @@ public class PlayerUI : MonoBehaviour {
     public void SetFactionColor(bool shown) {
         if (factionColoring != shown) {
             factionColoring = shown;
-            BattleManager.Instance.ShowFactionColoring(shown);
+            // BattleManager.Instance.ShowFactionColoring(shown);
         }
     }
 
