@@ -290,6 +290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9046208289571305099}
   - component: {fileID: 9098336959992409108}
+  - component: {fileID: 8245325341901301390}
   m_Layer: 0
   m_Name: Battle
   m_TagString: Untagged
@@ -390,3 +391,15 @@ MonoBehaviour:
   instantHit: 0
   timeScale: 0
   <battleState>k__BackingField: 0
+--- !u!114 &8245325341901301390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9046208289571305109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea20858116049e715bce4854d9e28f54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

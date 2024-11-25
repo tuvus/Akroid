@@ -16,14 +16,13 @@ public class LocalPlayer : MonoBehaviour {
         following = 2,
     }
 
-    public void SetUpPlayer() {
+    public void SetUpPlayer(BattleManager battleManager) {
         if (Instance != null) {
             Destroy(this);
             return;
         }
-        //TODO: Add proper player setup
-        player = new Player(true);
 
+        player = battleManager.GetLocalPlayer();
         Instance = this;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
@@ -110,6 +109,7 @@ public class LocalPlayer : MonoBehaviour {
 
 
     #region HelperMethods
+
     public LocalPlayerInput GetInputManager() {
         return localPlayerInput;
     }
