@@ -21,6 +21,8 @@ public class LocalPlayer : MonoBehaviour {
             Destroy(this);
             return;
         }
+        //TODO: Add proper player setup
+        player = new Player(true);
 
         Instance = this;
         localPlayerInput = GetComponent<LocalPlayerInput>();

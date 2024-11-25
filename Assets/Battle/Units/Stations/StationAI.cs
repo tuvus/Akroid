@@ -8,11 +8,11 @@ public class StationAI {
     [field: SerializeField] public long cargoAmount { get; private set; }
     protected float waitTime;
     protected float cargoTime;
-    public event Action<Ship> onBuildShip;
+    public event Action<Ship> OnBuildShip;
 
     public StationAI(Station station) {
         this.station = station;
-        onBuildShip = delegate { };
+        OnBuildShip = delegate { };
     }
 
     public virtual void UpdateAI(float deltaTime) {
@@ -29,6 +29,6 @@ public class StationAI {
     }
 
     public virtual void OnShipBuilt(Ship ship) {
-        onBuildShip.Invoke(ship);
+        OnBuildShip.Invoke(ship);
     }
 }

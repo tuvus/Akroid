@@ -56,7 +56,7 @@ public class Ship : Unit {
     [SerializeField] private Vector2 movePosition;
     [SerializeField] private Station targetStation;
     private float timeUntilCheckRotation;
-    private readonly float checkRotationSpeed = 0.2f;
+    private const float checkRotationSpeed = 0.2f;
 
     [System.Serializable]
     public class ShipBlueprint {
