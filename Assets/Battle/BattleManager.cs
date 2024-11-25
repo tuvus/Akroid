@@ -219,6 +219,7 @@ public class BattleManager : MonoBehaviour {
             PrespawnNewMissile();
         }
         // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
+        timeScale = 1;
     }
 
     #endregion
@@ -298,8 +299,8 @@ public class BattleManager : MonoBehaviour {
     }
 
     public MiningStation CreateNewMiningStation(BattleObject.BattleObjectData battleObjectData,
-        StationScriptableObject stationScriptableObject, bool built) {
-        MiningStation newStation = new MiningStation(battleObjectData, this, stationScriptableObject, built);
+        MiningStationScriptableObject miningStationScriptableObject, bool built) {
+        MiningStation newStation = new MiningStation(battleObjectData, this, miningStationScriptableObject, built);
         newStation.SetupPosition(battleObjectData.positionGiver);
         if (built) {
             units.Add(newStation);

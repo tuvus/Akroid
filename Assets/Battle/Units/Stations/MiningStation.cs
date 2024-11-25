@@ -4,16 +4,16 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class MiningStation : Station {
-    public MiningStationScriptableObject MiningStationScriptableObject { get; private set; }
+    public MiningStationScriptableObject miningStationScriptableObject { get; private set; }
 
     public bool activelyMining;
     public List<Asteroid> nearbyAsteroids;
     private float miningTime;
 
     public MiningStation(BattleObjectData battleObjectData, BattleManager battleManager,
-        StationScriptableObject stationScriptableObject,
-        bool built) : base(battleObjectData, battleManager, stationScriptableObject, built) {
-        MiningStationScriptableObject = (MiningStationScriptableObject)unitScriptableObject;
+        MiningStationScriptableObject miningStationScriptableObject,
+        bool built) : base(battleObjectData, battleManager, miningStationScriptableObject, built) {
+        this.miningStationScriptableObject = miningStationScriptableObject;
         nearbyAsteroids = new List<Asteroid>(10);
         UpdateMiningStationAsteroids();
         activelyMining = true;
@@ -21,6 +21,7 @@ public class MiningStation : Station {
         if (this.built) {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
+        GetMiningStationAI().SetupMiningStation();
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -116,15 +117,15 @@ public class MiningStation : Station {
     }
 
     public int GetMiningAmount() {
-        return MiningStationScriptableObject.miningAmount;
+        return miningStationScriptableObject.miningAmount;
     }
 
     public float GetMiningSpeed() {
-        return MiningStationScriptableObject.miningSpeed;
+        return miningStationScriptableObject.miningSpeed;
     }
 
     public int GetMiningRange() {
-        return (int)(MiningStationScriptableObject.miningRange * BattleManager.Instance.systemSizeModifier);
+        return (int)(miningStationScriptableObject.miningRange * BattleManager.Instance.systemSizeModifier);
     }
 
     public MiningStationAI GetMiningStationAI() {

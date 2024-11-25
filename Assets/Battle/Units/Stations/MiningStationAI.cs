@@ -4,10 +4,14 @@ using UnityEngine.Profiling;
 
 public class MiningStationAI : StationAI {
     public List<Ship> transportShips;
-    [SerializeField] int wantedTransports;
+    [SerializeField] private int wantedTransports;
 
     public MiningStationAI(Station station) : base(station) {
         transportShips = new List<Ship>(10);
+        wantedTransports = 0;
+    }
+
+    public void SetupMiningStation() {
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
         } else {

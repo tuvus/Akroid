@@ -57,7 +57,19 @@ public class Station : Unit, IPositionConfirmer {
     public Station(BattleObjectData battleObjectData, BattleManager battleManager, StationScriptableObject stationScriptableObject,
         bool built) : base(battleObjectData, battleManager, stationScriptableObject) {
         this.stationScriptableObject = stationScriptableObject;
-        stationAI = new StationAI(this);
+        switch (stationScriptableObject.stationType) {
+            case StationType.MiningStation:
+                stationAI = new MiningStationAI(this);
+                break;
+            case StationType.Shipyard:
+            case StationType.FleetCommand:
+                stationAI = new ShipyardAI(this);
+                break;
+            default:
+                stationAI = new StationAI(this);
+                break;
+        }
+
         this.built = built;
         if (!built) {
             faction.AddStationBlueprint(this);

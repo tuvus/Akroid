@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
@@ -112,8 +113,14 @@ public class Ship : Unit {
 
     public Ship(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject) :
         base(battleObjectData, battleManager, shipScriptableObject) {
+        this.shipScriptableObject = shipScriptableObject;
         faction.AddShip(this);
-        shipAI = new ShipAI(this);
+        switch (shipScriptableObject.shipType) {
+            default:
+                shipAI = new ShipAI(this);
+                break;
+        }
+
         mass = GetSize() * 100;
         SetupThrusters();
         SetIdle();

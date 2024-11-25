@@ -334,8 +334,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <researchModifier>k__BackingField: 0
   <systemSizeModifier>k__BackingField: 0
-  shipBlueprints: []
-  stationBlueprints: []
+  shipBlueprints:
+  - name: Aria
+    shipScriptableObject: {fileID: 11400000, guid: 8d5e794ffe75e3d41bbcae36073d4fc1,
+      type: 2}
+  - name: Lancer
+    shipScriptableObject: {fileID: 11400000, guid: 861654087bb19d64596b1dd3e9e603a7,
+      type: 2}
+  - name: Aterna
+    shipScriptableObject: {fileID: 11400000, guid: a727fd3223ea8994a89aacc2d8408518,
+      type: 2}
+  - name: Transport
+    shipScriptableObject: {fileID: 11400000, guid: e6cddaa2146ef6f439b6354dab8b81cf,
+      type: 2}
+  - name: GasCollector
+    shipScriptableObject: {fileID: 11400000, guid: 9e5dfb8892aab944481eb82a16720054,
+      type: 2}
+  - name: StationBuilder
+    shipScriptableObject: {fileID: 11400000, guid: bffda0670c651f9458e1e1bdb179f52d,
+      type: 2}
+  - name: Zarrack
+    shipScriptableObject: {fileID: 11400000, guid: b80c92b7a8bafe34bbfe420be865d72f,
+      type: 2}
+  - name: HeavyTransport
+    shipScriptableObject: {fileID: 11400000, guid: 72db07275a9189a46a228d1482d5a78d,
+      type: 2}
+  - name: Colonizer
+    shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
+      type: 2}
+  stationBlueprints:
+  - name: 
+    factionIndex: 0
+    stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
+      type: 2}
+    stationCost: 0
+    resourcesTypes: 
+    resources: 
+    totalResourcesRequired: 0
+  - name: 
+    factionIndex: 0
+    stationScriptableObject: {fileID: 11400000, guid: 51a747427e783d94f90e5dd5eeeae964,
+      type: 2}
+    stationCost: 0
+    resourcesTypes: 
+    resources: 
+    totalResourcesRequired: 0
+  - name: 
+    factionIndex: 0
+    stationScriptableObject: {fileID: 11400000, guid: 198eaddfd11c81c4985c80bfa8b44470,
+      type: 2}
+    stationCost: 0
+    resourcesTypes: 
+    resources: 
+    totalResourcesRequired: 0
   instantHit: 0
   timeScale: 0
   <battleState>k__BackingField: 0
