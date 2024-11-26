@@ -179,4 +179,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     public bool IsGasCloud() {
         return this is GasCloud;
     }
+
+    /// <returns>A GameObject representing the prefab, or null if the object is not rendered</returns>
+    public abstract GameObject GetPrefab();
 }

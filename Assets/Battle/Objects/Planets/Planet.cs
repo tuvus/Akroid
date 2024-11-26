@@ -198,4 +198,8 @@ public class Planet : BattleObject, IPositionConfirmer {
     public long GetPopulation() {
         return planetFactions.Sum((f) => f.Value.population);
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/Planet");
+    }
 }

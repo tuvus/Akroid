@@ -1,3 +1,5 @@
+using UnityEngine;
+
 /// <summary>
 /// Represents a component that is assosiated with a module and provides some sort of functionality based on the underlying class.
 /// </summary>
@@ -12,5 +14,9 @@ public abstract class ModuleComponent : BattleObject {
         this.unit = unit;
         this.module = module;
         this.componentScriptableObject = componentScriptableObject;
+    }
+
+    public override GameObject GetPrefab() {
+        return null;
     }
 }

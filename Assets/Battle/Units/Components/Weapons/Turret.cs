@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Profiling;
 
-public class Turret : ModuleComponent {
+public abstract class Turret : ModuleComponent {
     public enum TargetingBehaviors {
         closest = 1,
         strongest = 2,
@@ -291,4 +291,5 @@ public class Turret : ModuleComponent {
     public virtual void ShowEffects(bool shown) { }
 
     public virtual void StopFiring() { }
+
 }

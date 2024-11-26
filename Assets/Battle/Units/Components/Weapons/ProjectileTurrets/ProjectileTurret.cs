@@ -100,4 +100,8 @@ public class ProjectileTurret : Turret {
     public void PrintDamagePerSecond() {
         Debug.Log(GetDamagePerSecond());
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/ProjectileTurret");
+    }
 }

@@ -57,4 +57,8 @@ public class Star : BattleObject, IPositionConfirmer {
         targetBrightness = UnityEngine.Random.Range(.5f, 1f);
         brightnessSpeed = UnityEngine.Random.Range(10f, 30f);
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/Star");
+    }
 }

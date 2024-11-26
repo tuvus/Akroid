@@ -46,5 +46,9 @@ public class DecoyUnit : Unit {
         return true;
     }
 
+    public override GameObject GetPrefab() {
+        throw new System.NotImplementedException();
+    }
+
     public override void DestroyUnit() { }
 }

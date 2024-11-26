@@ -151,4 +151,8 @@ public class Missile : BattleObject {
 
         visible = activate;
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/Missile");
+    }
 }

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Faction;
 using static Ship;
 using static Station;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
@@ -16,6 +19,7 @@ public class BattleManager : MonoBehaviour {
     public List<StationBlueprint> stationBlueprints;
 
     public HashSet<Faction> factions { get; private set; }
+    public HashSet<BattleObject> objects { get; private set; }
     public HashSet<Unit> units { get; private set; }
     public HashSet<Ship> ships { get; private set; }
     public HashSet<Station> stations { get; private set; }
@@ -33,6 +37,9 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> usedMissiles { get; private set; }
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
+
+    public event Action<BattleObject> objectCreatedEvent = delegate { };
+    public event Action<BattleObject> objectRemovedEvent = delegate { };
 
     public bool instantHit;
     public float timeScale;
@@ -218,6 +225,7 @@ public class BattleManager : MonoBehaviour {
         for (int i = 0; i < 20; i++) {
             PrespawnNewMissile();
         }
+
         // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         timeScale = 1;
     }
@@ -277,6 +285,7 @@ public class BattleManager : MonoBehaviour {
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);
+        AddObject(newShip);
         return newShip;
     }
 
@@ -295,6 +304,8 @@ public class BattleManager : MonoBehaviour {
             stationsInProgress.Add(newStation);
         }
 
+        AddObject(newStation);
+
         return newStation;
     }
 
@@ -309,6 +320,7 @@ public class BattleManager : MonoBehaviour {
             stationsInProgress.Add(newStation);
         }
 
+        AddObject(newStation);
         return newStation;
     }
 
@@ -317,6 +329,7 @@ public class BattleManager : MonoBehaviour {
             new Vector2(10, 10) * Random.Range(0.6f, 1.4f)), this);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
+        AddObject(newStar);
         return newStar;
     }
 
@@ -324,6 +337,7 @@ public class BattleManager : MonoBehaviour {
         Planet newPlanet = new Planet(planetData, this);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
+        AddObject(newPlanet);
         return newPlanet;
     }
 
@@ -331,6 +345,7 @@ public class BattleManager : MonoBehaviour {
         Planet newPlanet = new Planet(planetData, this);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
+        AddObject(newPlanet);
         return newPlanet;
     }
 
@@ -348,6 +363,7 @@ public class BattleManager : MonoBehaviour {
                 (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
             newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
+            AddObject(newAsteroid);
         }
 
         // The Asteroid field position must be set after the asteroids have been generated
@@ -361,11 +377,22 @@ public class BattleManager : MonoBehaviour {
             (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
+        AddObject(newGasCloud);
     }
 
     #endregion
 
     #region ObjectLists
+
+    private void AddObject(BattleObject battleObject) {
+        objects.Add(battleObject);
+        objectCreatedEvent.Invoke(battleObject);
+    }
+
+    private void RemoveObject(BattleObject battleObject) {
+        objects.Remove(battleObject);
+        objectRemovedEvent.Invoke(battleObject);
+    }
 
     public void BuildStationBlueprint(Station station) {
         stationsInProgress.Remove(station);
@@ -399,16 +426,19 @@ public class BattleManager : MonoBehaviour {
 
     public void RemoveDestroyedUnit(Unit unit) {
         destroyedUnits.Remove(unit);
+        RemoveObject(unit);
     }
 
     public void AddProjectile(Projectile projectile) {
         usedProjectiles.Add(projectile);
         unusedProjectiles.Remove(projectile);
+        AddObject(projectile);
     }
 
     public void RemoveProjectile(Projectile projectile) {
         usedProjectiles.Remove(projectile);
         unusedProjectiles.Add(projectile);
+        RemoveObject(projectile);
     }
 
     public Projectile GetNewProjectile() {
@@ -427,11 +457,13 @@ public class BattleManager : MonoBehaviour {
     public void AddMissile(Missile missile) {
         usedMissiles.Add(missile);
         unusedMissiles.Remove(missile);
+        AddObject(missile);
     }
 
     public void RemoveMissile(Missile missile) {
         usedMissiles.Remove(missile);
         unusedMissiles.Add(missile);
+        RemoveObject(missile);
     }
 
     public Missile GetNewMissile() {

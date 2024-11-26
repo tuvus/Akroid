@@ -1,0 +1,17 @@
+
+using UnityEngine;
+
+public class StarUI : BattleObjectUI {
+    public Star star { get; private set; }
+    private SpriteRenderer glare;
+
+    public override void Setup(BattleObject battleObject) {
+        this.star = (Star)battleObject;
+        glare = transform.GetChild(0).GetComponent<SpriteRenderer>();
+    }
+
+    public override void UpdateObject() {
+        spriteRenderer.color = star.color;
+        glare.color = star.color;
+    }
+}

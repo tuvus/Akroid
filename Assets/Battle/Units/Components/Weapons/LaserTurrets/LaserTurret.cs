@@ -89,4 +89,8 @@ public class LaserTurret : Turret {
     public void PrintDamagePerSecond() {
         Debug.Log(GetDamagePerSecond());
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/LaserTurret");
+    }
 }

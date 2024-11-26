@@ -114,4 +114,8 @@ public class Projectile : BattleObject {
         highlight.enabled = false;
         Activate(false);
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/Projectile");
+    }
 }

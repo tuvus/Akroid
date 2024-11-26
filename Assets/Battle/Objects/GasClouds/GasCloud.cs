@@ -47,4 +47,8 @@ public class GasCloud : BattleObject, IPositionConfirmer {
     public bool HasResources() {
         return resources > 0;
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/GasCloud");
+    }
 }

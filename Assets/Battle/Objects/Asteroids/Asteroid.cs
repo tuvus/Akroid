@@ -63,4 +63,8 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     public void AdjustPosition(Vector2 position) {
         this.position += position;
     }
+
+    public override GameObject GetPrefab() {
+        return (GameObject)Resources.Load("Prefabs/Asteroid");
+    }
 }
