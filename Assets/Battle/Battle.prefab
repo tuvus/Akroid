@@ -393,6 +393,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e6149dec64f79d32c8e82e9b88ccd859, type: 2}
   - {fileID: 11400000, guid: d8cc44ea62616f58b8bb2e2b7fadc27b, type: 2}
   - {fileID: 11400000, guid: a620ab91fc809097ea680f1064c46017, type: 2}
+  gasCloudBlueprints:
+  - {fileID: 11400000, guid: 7ec04667d0a9288e7851aa7863a0c56a, type: 2}
+  starBlueprints:
+  - {fileID: 11400000, guid: 1419d287730ffd9eabd22a7561161482, type: 2}
   instantHit: 0
   timeScale: 0
   <battleState>k__BackingField: 0

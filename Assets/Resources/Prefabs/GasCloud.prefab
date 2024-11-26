@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6845490222595411427}
   - component: {fileID: 59644866233033793}
+  - component: {fileID: 792855730855607796}
   m_Layer: 0
   m_Name: GasCloud
   m_TagString: Untagged
@@ -84,3 +85,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &792855730855607796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897736451247822812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c8c3bb45b593abe390b665cda13705d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

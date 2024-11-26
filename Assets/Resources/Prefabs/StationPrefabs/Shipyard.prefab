@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 8198535041992587763}
   - component: {fileID: 8198535041992587760}
   - component: {fileID: 342532574777567342}
+  - component: {fileID: -1204109344673138660}
   m_Layer: 6
   m_Name: Shipyard
   m_TagString: Untagged
@@ -340,6 +341,18 @@ MonoBehaviour:
   - {fileID: 6618773732313746010}
   - {fileID: 6200344398223106344}
   - {fileID: 6007532465051499261}
+--- !u!114 &-1204109344673138660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8198535041992587762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b285904aadff8e9870ac6eb6f1a218, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2426268461300759319
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -8,8 +8,6 @@ public class AsteroidUI : BattleObjectUI {
         base.Setup(battleObject);
         asteroid = (Asteroid)battleObject;
         spriteRenderer.sprite = asteroid.asteroidScriptableObject.sprite;
-    }
 
-    public override void UpdateObject() {
     }
 }

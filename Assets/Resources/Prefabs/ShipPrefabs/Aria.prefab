@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 4630675845762834500}
   - component: {fileID: 4630675845762834491}
   - component: {fileID: 4495538074269276487}
+  - component: {fileID: -1860534556673562320}
   m_Layer: 7
   m_Name: Aria
   m_TagString: Units/Ship
@@ -328,6 +329,18 @@ MonoBehaviour:
   - {fileID: 8549971299306225349}
   - {fileID: 6506414211996682072}
   - {fileID: 2727886957197695345}
+--- !u!114 &-1860534556673562320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4630675845762834490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269bf84073558843592ce21861b7f0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1072322756528083484
 PrefabInstance:
   m_ObjectHideFlags: 0

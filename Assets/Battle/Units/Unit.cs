@@ -30,6 +30,11 @@ public abstract class Unit : BattleObject {
         maxWeaponRange = float.MinValue;
         SetupWeaponRanges();
         Spawn();
+        SetSize(SetupSize());
+    }
+
+    protected override float SetupSize() {
+        return GetSpriteSize() * scale.x;
     }
 
     public void SetupWeaponRanges() {
@@ -366,6 +371,13 @@ public abstract class Unit : BattleObject {
         return moduleSystem.Get<Turret>().Count
                + moduleSystem.Get<LaserTurret>().Count
                + moduleSystem.Get<MissileLauncher>().Count;
+    }
+
+    public override float GetSpriteSize() {
+        Sprite sprite = unitScriptableObject.sprite;
+        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
     }
 
     #endregion

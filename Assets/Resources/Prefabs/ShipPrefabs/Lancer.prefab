@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 4870678752167284700}
   - component: {fileID: 4870678752167284643}
   - component: {fileID: 5266684754195560350}
+  - component: {fileID: 2762964160628717462}
   m_Layer: 7
   m_Name: Lancer
   m_TagString: Units/Ship
@@ -348,6 +349,18 @@ MonoBehaviour:
   - {fileID: 7466768863211548142}
   - {fileID: 6353654539444030825}
   - {fileID: 1611968647441517600}
+--- !u!114 &2762964160628717462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4870678752167284642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269bf84073558843592ce21861b7f0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &82654540179217947
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,14 +2,18 @@ using System;
 using UnityEngine;
 
 public class Star : BattleObject, IPositionConfirmer {
+    public StarScriptableObject starScriptableObject { get; private set; }
     public Color color { get; private set; }
     float targetBrightness;
     float brightnessSpeed;
 
-    public Star(BattleObjectData battleObjectData, BattleManager battleManager) : base(battleObjectData, battleManager) {
+    public Star(BattleObjectData battleObjectData, BattleManager battleManager, StarScriptableObject starScriptableObject) :
+        base(battleObjectData, battleManager) {
+        this.starScriptableObject = starScriptableObject;
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         RandomiseGlareTarget();
         Spawn();
+        SetSize(SetupSize());
     }
 
     protected override float SetupSize() {
@@ -56,6 +60,13 @@ public class Star : BattleObject, IPositionConfirmer {
     void RandomiseGlareTarget() {
         targetBrightness = UnityEngine.Random.Range(.5f, 1f);
         brightnessSpeed = UnityEngine.Random.Range(10f, 30f);
+    }
+
+    public override float GetSpriteSize() {
+        Sprite sprite = starScriptableObject.sprite;
+        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
     }
 
     public override GameObject GetPrefab() {

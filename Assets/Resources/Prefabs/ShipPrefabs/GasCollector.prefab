@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 5023812487943957089}
   - component: {fileID: 5023812487943957022}
   - component: {fileID: 8804296839329784724}
+  - component: {fileID: 2098883410372616267}
   m_Layer: 7
   m_Name: GasCollector
   m_TagString: Units/Ship
@@ -336,6 +337,18 @@ MonoBehaviour:
   - {fileID: 1434150307775635816}
   - {fileID: 6350871528138981996}
   - {fileID: 8071935001585812157}
+--- !u!114 &2098883410372616267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5023812487943957023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 269bf84073558843592ce21861b7f0bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &876681764997796469
 PrefabInstance:
   m_ObjectHideFlags: 0

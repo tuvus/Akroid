@@ -40,6 +40,7 @@ public class Missile : BattleObject {
         expired = false;
         distance = 0;
         Activate(true);
+        SetSize(SetupSize());
     }
 
     public void UpdateMissile(float deltaTime) {

@@ -57,7 +57,6 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         this.faction = battleObjectData.faction;
         spawned = false;
         visible = false;
-        SetSize(SetupSize());
     }
 
     public void SetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -145,11 +144,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     /// </summary>
     /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
-        return 10;
-//         if (spriteRenderer.sprite == null) return 0;
-//         return Mathf.Max(Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y)),
-// Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.y, spriteRenderer.sprite.bounds.size.z)),
-// Vector2.Distance(spriteRenderer.sprite.bounds.center, new Vector2(spriteRenderer.sprite.bounds.size.z, spriteRenderer.sprite.bounds.size.x))) / 2 * transform.localScale.y;
+        return 0;
     }
 
     public bool IsUnit() {

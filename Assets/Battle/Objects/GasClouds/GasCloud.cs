@@ -1,16 +1,20 @@
 using UnityEngine;
 
 public class GasCloud : BattleObject, IPositionConfirmer {
+    public GasCloudScriptableObject gasCloudScriptableObject { get; private set; }
     public long resources;
     public CargoBay.CargoTypes gasCloudType;
+    public Color color { get; private set; }
 
-    public GasCloud(BattleObjectData battleObjectData, BattleManager battleManager, long resources, CargoBay.CargoTypes gasCloudType) :
-        base(battleObjectData, battleManager) {
+
+    public GasCloud(BattleObjectData battleObjectData, BattleManager battleManager, long resources,
+        GasCloudScriptableObject gasCloudScriptableObject) : base(battleObjectData, battleManager) {
+        this.gasCloudScriptableObject = gasCloudScriptableObject;
         this.resources = resources;
         this.gasCloudType = gasCloudType;
-        UnityEngine.Color temp = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
-
+        color = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
         Spawn();
+        SetSize(SetupSize());
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -46,6 +50,13 @@ public class GasCloud : BattleObject, IPositionConfirmer {
 
     public bool HasResources() {
         return resources > 0;
+    }
+
+    public override float GetSpriteSize() {
+        Sprite sprite = gasCloudScriptableObject.sprite;
+        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
     }
 
     public override GameObject GetPrefab() {

@@ -22,8 +22,11 @@ public class UnitSpriteManager : MonoBehaviour {
     public void UpdateSpriteManager() {
         foreach (var objPair in objects.ToList()) {
             if (objPair.Value == null) {
-                BattleObjectUI objectUI = Instantiate(objPair.Key.GetPrefab(), uIManager.GetStarTransform()).GetComponent<BattleObjectUI>();
+                BattleObjectUI objectUI = Instantiate(objPair.Key.GetPrefab()).GetComponent<BattleObjectUI>();
                 objectUI.Setup(objPair.Key);
+                if (objectUI is StarUI) objectUI.transform.SetParent(uIManager.GetStarTransform());
+                else if (objectUI is GasCloudUI) objectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
+                else if (objectUI is AsteroidUI) objectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
                 objects[objPair.Key] = objectUI;
             } else {
                 objPair.Value.UpdateObject();

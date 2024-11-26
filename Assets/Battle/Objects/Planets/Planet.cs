@@ -93,6 +93,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0,
             "This territory is open to claim.");
         Spawn();
+        SetSize(SetupSize());
     }
 
     /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>

@@ -9,15 +9,14 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     /// <summary>
     /// SetupAstroidFieldPosition needs to be called after all asteroids have been added and placed to determine it's size.
     /// All asteroids need to be added after the battleObjects set in ObjectGroup is initialized.
-    /// Therefore SetupAstroidFieldPosition must be called after SetupAsteroidField.
+    /// Therefore SetupAsteroidFieldPosition must be called after SetupAsteroidField.
     /// </summary>
-    public void SetupAstroidFieldPosition(BattleManager.PositionGiver positionGiver) {
+    public void SetupAsteroidFieldPosition(BattleManager.PositionGiver positionGiver) {
         UpdateObjectGroup();
+        SetPosition(GetSetupPosition(positionGiver));
         foreach (var asteroid in battleObjects) {
             asteroid.AdjustPosition(-GetPosition());
         }
-
-        SetPosition(GetSetupPosition(positionGiver));
     }
 
     private Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

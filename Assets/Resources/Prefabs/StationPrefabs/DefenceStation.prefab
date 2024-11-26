@@ -206,6 +206,7 @@ GameObject:
   - component: {fileID: 7158030276076730608}
   - component: {fileID: 7158030276076730611}
   - component: {fileID: 4507291863928309723}
+  - component: {fileID: 718949890569657956}
   m_Layer: 6
   m_Name: DefenceStation
   m_TagString: Untagged
@@ -318,6 +319,18 @@ MonoBehaviour:
   - {fileID: 8246228794775569001}
   - {fileID: 8781300304675031237}
   - {fileID: 959286110286733378}
+--- !u!114 &718949890569657956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7158030276076730609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b285904aadff8e9870ac6eb6f1a218, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1498170370403692956
 PrefabInstance:
   m_ObjectHideFlags: 0

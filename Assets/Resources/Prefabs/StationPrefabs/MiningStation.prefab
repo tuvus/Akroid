@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 831600065110085483}
   - component: {fileID: 831600065110085477}
   - component: {fileID: 3874112364353240433}
+  - component: {fileID: 5200958436858707445}
   m_Layer: 6
   m_Name: MiningStation
   m_TagString: Untagged
@@ -221,6 +222,18 @@ MonoBehaviour:
   - {fileID: 8722201221679710835}
   - {fileID: 5474822065016376058}
   - {fileID: 1848661247200616616}
+--- !u!114 &5200958436858707445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831600065110085484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b285904aadff8e9870ac6eb6f1a218, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6430685081454762431
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,11 +7,20 @@ public abstract class BattleObjectUI : MonoBehaviour {
     public virtual void Setup(BattleObject battleObject) {
         this.battleObject = battleObject;
         transform.position = battleObject.GetPosition();
+        SetRotation(battleObject.rotation);
         transform.localScale = battleObject.scale;
-        transform.eulerAngles = new Vector3(0, 0, battleObject.rotation);
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public abstract void UpdateObject();
+    public virtual void UpdateObject() {
+        if (!Mathf.Approximately(transform.rotation.z, battleObject.rotation))
+            SetRotation(battleObject.rotation);
+        if (!battleObject.position.Equals(transform.position))
+            transform.position = battleObject.position;
 
+    }
+
+    public void SetRotation(float rotation) {
+        transform.eulerAngles = new Vector3(0, 0, rotation);
+    }
 }

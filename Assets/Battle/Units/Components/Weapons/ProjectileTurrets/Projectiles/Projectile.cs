@@ -29,6 +29,7 @@ public class Projectile : BattleObject {
 
         // highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
+        SetSize(SetupSize());
     }
 
     public void UpdateProjectile(float deltaTime) {

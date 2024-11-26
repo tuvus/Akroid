@@ -12,11 +12,11 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         this.resources = resources;
         asteroidField.totalResources += this.resources;
         Spawn();
+        SetSize(SetupSize());
     }
 
     protected override float SetupSize() {
-        // return GetSpriteSize() * transform.localScale.x;
-        return 0;
+        return GetSpriteSize() * scale.x;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -39,7 +39,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Returns the ammount mined.
+    /// Returns the amount mined.
     /// </summary>
     /// <param name="amount"></param>
     /// <returns></returns>
@@ -62,6 +62,13 @@ public class Asteroid : BattleObject, IPositionConfirmer {
 
     public void AdjustPosition(Vector2 position) {
         this.position += position;
+    }
+
+    public override float GetSpriteSize() {
+        Sprite sprite = asteroidScriptableObject.sprite;
+        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
+            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
     }
 
     public override GameObject GetPrefab() {

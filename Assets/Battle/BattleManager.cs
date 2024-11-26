@@ -17,6 +17,8 @@ public class BattleManager : MonoBehaviour {
     public List<ShipBlueprint> shipBlueprints;
     public List<StationBlueprint> stationBlueprints;
     public List<AsteroidScriptableObject> asteroidBlueprints;
+    public List<GasCloudScriptableObject> gasCloudBlueprints;
+    public List<StarScriptableObject> starBlueprints;
 
     public HashSet<Faction> factions { get; private set; }
     public HashSet<BattleObject> objects { get; private set; }
@@ -327,7 +329,7 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
-            new Vector2(10, 10) * Random.Range(0.6f, 1.4f)), this);
+            new Vector2(10, 10) * Random.Range(0.6f, 1.4f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddObject(newStar);
@@ -351,7 +353,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateNewAsteroidField(Vector2 center, int count, float resourceModifier = 1) {
-        CreateNewAsteroidField(new PositionGiver(center, 0, 100000, 500, 1000, 2), count, resourceModifier);
+        CreateNewAsteroidField(new PositionGiver(center, 100, 100000, 500, 1000, 2), count, resourceModifier);
     }
 
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
@@ -362,20 +364,19 @@ public class BattleManager : MonoBehaviour {
             Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", Vector2.zero,
                     Random.Range(0, 360), Vector2.one * size), this, newAsteroidField,
                 (long)(Random.Range(400, 600) * size * resourceModifier), asteroidBlueprints[Random.Range(0, asteroidBlueprints.Count)]);
-            newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4));
+            newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 10), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
             AddObject(newAsteroid);
         }
-
         // The Asteroid field position must be set after the asteroids have been generated
-        newAsteroidField.SetupAstroidFieldPosition(positionGiver);
+        newAsteroidField.SetupAsteroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
     }
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
-        float size = Random.Range(25, 35);
-        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360)), this,
-            (long)(Random.Range(5000, 17000) * size * resourceModifier), CargoBay.CargoTypes.Gas);
+        float size = Random.Range(5, 15);
+        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
+            (long)(Random.Range(5000, 17000) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
         AddObject(newGasCloud);
