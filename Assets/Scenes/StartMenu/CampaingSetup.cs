@@ -52,8 +52,10 @@ public class CampaingSetup : MonoBehaviour {
         CampaingController campaingController = Instantiate(Resources.Load<GameObject>("Campaign/Chapter" + chapter + "/Chapter" + chapter),
             GameObject.Find("Game").transform).GetComponent<CampaingController>();
         BattleManager battleManager = GameObject.Find("Battle").GetComponent<BattleManager>();
+        UIManager uIManager = GameObject.Find("Battle").GetComponent<UIManager>();
+        uIManager.PreBattleManagerSetup(battleManager);
         battleManager.SetupBattle(campaingController);
-        GameObject.Find("Battle").GetComponent<UIManager>().SetupUIManager(battleManager);
+        uIManager.SetupUIManager();
         Destroy(gameObject);
     }
 }

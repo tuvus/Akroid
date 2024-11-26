@@ -12,9 +12,7 @@ public class Projectile : BattleObject {
     private Vector2 startingScale;
     private bool hit;
 
-    public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) {
-        Activate(false);
-    }
+    public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
 
     public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage,
         float projectileRange, float offset, float scale) {
@@ -93,7 +91,7 @@ public class Projectile : BattleObject {
         visible = false;
         boxCollider2D.enabled = false;
         // if (BattleManager.Instance.GetParticlesShown())
-            // particleSystem.Play();
+        // particleSystem.Play();
     }
 
     void Activate(bool activate = true) {
@@ -104,7 +102,6 @@ public class Projectile : BattleObject {
         }
 
         visible = activate;
-        // boxCollider2D.enabled = activate;
     }
 
     public void RemoveProjectile() {

@@ -8,7 +8,7 @@ public class PlayerAsteroidUI : PlayerUIMenu<Asteroid> {
 
     protected override void RefreshMiddlePanel() {
         asteroidName.text = displayedObject.objectName;
-        resourceType.text = "Resource Type: " + displayedObject.asteroidType.ToString();
+        resourceType.text = "Resource Type: " + displayedObject.asteroidScriptableObject.type.ToString();
         resourceAmount.text = "Resources: " + NumFormatter.ConvertNumber(displayedObject.resources);
     }
 }

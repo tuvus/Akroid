@@ -1,15 +1,15 @@
 using UnityEngine;
 
 public class Asteroid : BattleObject, IPositionConfirmer {
+    public AsteroidScriptableObject asteroidScriptableObject { get; private set; }
     private AsteroidField asteroidField;
     public long resources;
-    public CargoBay.CargoTypes asteroidType;
 
     public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources,
-        CargoBay.CargoTypes asteroidType) : base(battleObjectData, battleManager) {
+        AsteroidScriptableObject asteroidScriptableObject) : base(battleObjectData, battleManager) {
+        this.asteroidScriptableObject = asteroidScriptableObject;
         this.asteroidField = asteroidField;
         this.resources = resources;
-        this.asteroidType = asteroidType;
         asteroidField.totalResources += this.resources;
         Spawn();
     }

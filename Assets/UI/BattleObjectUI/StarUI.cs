@@ -6,6 +6,7 @@ public class StarUI : BattleObjectUI {
     private SpriteRenderer glare;
 
     public override void Setup(BattleObject battleObject) {
+        base.Setup(battleObject);
         this.star = (Star)battleObject;
         glare = transform.GetChild(0).GetComponent<SpriteRenderer>();
     }

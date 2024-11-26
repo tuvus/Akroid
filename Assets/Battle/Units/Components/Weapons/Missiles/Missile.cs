@@ -20,9 +20,7 @@ public class Missile : BattleObject {
     bool hit;
     bool expired;
 
-    public Missile(BattleManager battleManager) : base(new BattleObjectData("Missile"), battleManager) {
-        Activate(false);
-    }
+    public Missile(BattleManager battleManager) : base(new BattleObjectData("Missile"), battleManager) { }
 
     public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target,
         Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UnitSpriteManager : MonoBehaviour {
@@ -15,16 +16,31 @@ public class UnitSpriteManager : MonoBehaviour {
         battleManager.objectRemovedEvent += OnObjectRemoved;
     }
 
+    /// <summary>
+    /// Updates the state of the sprites
+    /// </summary>
     public void UpdateSpriteManager() {
-        foreach (var objPair in objects) {
-            objPair.Value.UpdateObject();
+        foreach (var objPair in objects.ToList()) {
+            if (objPair.Value == null) {
+                BattleObjectUI objectUI = Instantiate(objPair.Key.GetPrefab(), uIManager.GetStarTransform()).GetComponent<BattleObjectUI>();
+                objectUI.Setup(objPair.Key);
+                objects[objPair.Key] = objectUI;
+            } else {
+                objPair.Value.UpdateObject();
+            }
         }
     }
 
+    /// <summary>
+    /// Registers a sprite for creation, doesn't actually create the object here.
+    /// </summary>
     private void OnObjectCreated(BattleObject battleObject) {
         if (battleObject.GetPrefab() == null) return;
-        GameObject obj = Instantiate(battleObject.GetPrefab(), uIManager.GetStarTransform());
-        objects.Add(battleObject, obj.GetComponent<BattleObjectUI>());
+        if (battleObject.GetPrefab().GetComponent<BattleObjectUI>() == null) {
+            Debug.LogWarning(battleObject.objectName + " had a prefab path but did not have a UI component");
+            return;
+        }
+        objects.Add(battleObject, null);
     }
 
     private void OnObjectRemoved(BattleObject battleObject) {

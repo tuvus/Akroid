@@ -5,12 +5,23 @@ public class UIManager : MonoBehaviour {
     public LocalPlayer localPlayer { get; private set; }
     public UnitSpriteManager unitSpriteManager { get; private set; }
 
-    public void SetupUIManager(BattleManager battleManager) {
+    /// <summary>
+    /// Subscription to BattleManager events needs to occur before the system is created.
+    /// This method should be called before the BattleManager is set up.
+    /// </summary>
+    public void PreBattleManagerSetup(BattleManager battleManager) {
         this.battleManager = battleManager;
-        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
-        localPlayer.SetUpPlayer(battleManager);
         unitSpriteManager = GetComponent<UnitSpriteManager>();
         unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
+
+    }
+
+    /// <summary>
+    /// Setup that should be done after the BattleManager is set up
+    /// </summary>
+    public void SetupUIManager() {
+        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
+        localPlayer.SetUpPlayer(battleManager);
     }
 
     public void LateUpdate() {
@@ -19,7 +30,7 @@ public class UIManager : MonoBehaviour {
         if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
     }
 
-        /// <summary>
+    /// <summary>
     /// Determines whether the effects will be shown or not.
     /// </summary>
     /// <param name="shown"></param>
@@ -66,7 +77,7 @@ public class UIManager : MonoBehaviour {
     /// <param name="shown"></param>
     public void ShowFactionColoring(bool shown) {
         // foreach (var unit in units) {
-            // unit.ShowFactionColor(shown);
+        // unit.ShowFactionColor(shown);
         // }
     }
 

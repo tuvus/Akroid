@@ -6,7 +6,6 @@ using UnityEngine.Profiling;
 using static Faction;
 using static Ship;
 using static Station;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class BattleManager : MonoBehaviour {
@@ -17,6 +16,7 @@ public class BattleManager : MonoBehaviour {
     [field: SerializeField] public float systemSizeModifier { get; private set; }
     public List<ShipBlueprint> shipBlueprints;
     public List<StationBlueprint> stationBlueprints;
+    public List<AsteroidScriptableObject> asteroidBlueprints;
 
     public HashSet<Faction> factions { get; private set; }
     public HashSet<BattleObject> objects { get; private set; }
@@ -201,6 +201,7 @@ public class BattleManager : MonoBehaviour {
 
     private void InitializeBattle() {
         factions = new HashSet<Faction>(10);
+        objects = new HashSet<BattleObject>(1000);
         units = new HashSet<Unit>(200);
         ships = new HashSet<Ship>(150);
         stations = new HashSet<Station>(50);
@@ -360,7 +361,7 @@ public class BattleManager : MonoBehaviour {
             float size = Random.Range(8f, 20f);
             Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", Vector2.zero,
                     Random.Range(0, 360), Vector2.one * size), this, newAsteroidField,
-                (long)(Random.Range(400, 600) * size * resourceModifier), CargoBay.CargoTypes.Metal);
+                (long)(Random.Range(400, 600) * size * resourceModifier), asteroidBlueprints[Random.Range(0, asteroidBlueprints.Count)]);
             newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 100), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
             AddObject(newAsteroid);
@@ -452,6 +453,7 @@ public class BattleManager : MonoBehaviour {
     public void PreSpawnNewProjectile() {
         Projectile newProjectile = new Projectile(this);
         projectiles.Add(newProjectile);
+        unusedProjectiles.Add(newProjectile);
     }
 
     public void AddMissile(Missile missile) {
@@ -477,6 +479,7 @@ public class BattleManager : MonoBehaviour {
     public void PrespawnNewMissile() {
         Missile newMissile = new Missile(this);
         missiles.Add(newMissile);
+        unusedMissiles.Add(newMissile);
     }
 
     public List<IPositionConfirmer> GetPositionBlockingObjects() {
