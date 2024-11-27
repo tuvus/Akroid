@@ -172,11 +172,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", GetPosition(), Random.Range(0, 360), this),
+            BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 300, 10, 3);
+            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, Random.Range(0, 360), this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
-                    new BattleObject.BattleObjectData("MiningStation", GetPosition(), Random.Range(0, 360), this),
+                    new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, Random.Range(0, 360), this),
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
@@ -352,6 +353,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         Fleet newFleet = new Fleet(battleManager, this, fleetName, ships);
         fleets.Add(newFleet);
         unitGroups.Add(newFleet);
+        battleManager.CreateFleet(newFleet);
         return newFleet;
     }
 
@@ -359,6 +361,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         fleets.Remove(fleet);
         factionAI.RemoveFleet(fleet);
         unitGroups.Remove(fleet);
+        battleManager.RemoveFleet(fleet);
     }
 
     public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, HashSet<Unit> units) {

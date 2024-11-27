@@ -1,18 +1,17 @@
 using UnityEngine;
 
-public abstract class BattleObjectUI : MonoBehaviour {
+public abstract class BattleObjectUI : ObjectUI {
     public BattleObject battleObject { get; private set; }
-    protected SpriteRenderer spriteRenderer { get; private set; }
 
     public virtual void Setup(BattleObject battleObject) {
+        base.Setup();
         this.battleObject = battleObject;
         transform.position = battleObject.GetPosition();
         SetRotation(battleObject.rotation);
         transform.localScale = battleObject.scale;
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public virtual void UpdateObject() {
+    public override void UpdateObject() {
         if (!Mathf.Approximately(transform.rotation.z, battleObject.rotation))
             SetRotation(battleObject.rotation);
         if (!battleObject.position.Equals(transform.position))
@@ -20,7 +19,8 @@ public abstract class BattleObjectUI : MonoBehaviour {
 
     }
 
-    public void SetRotation(float rotation) {
-        transform.eulerAngles = new Vector3(0, 0, rotation);
+    public override bool IsSelectable() {
+        return battleObject.IsSpawned();
     }
+
 }

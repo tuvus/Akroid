@@ -294,10 +294,7 @@ public abstract class Turret : ModuleComponent {
     public virtual void StopFiring() { }
 
     public override float GetSpriteSize() {
-        Sprite sprite = turretScriptableObject.turretSprite;
-        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
+        return Calculator.GetSpriteSize(turretScriptableObject.turretSprite, scale);
     }
 
 }

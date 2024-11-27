@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour {
         this.battleManager = battleManager;
         unitSpriteManager = GetComponent<UnitSpriteManager>();
         unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
-
     }
 
     /// <summary>
@@ -21,13 +20,13 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void SetupUIManager() {
         localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
-        localPlayer.SetUpPlayer(battleManager);
+        localPlayer.SetUpPlayer(battleManager, unitSpriteManager);
     }
 
     public void LateUpdate() {
+        if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();
-        if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
     }
 
     /// <summary>
@@ -98,6 +97,10 @@ public class UIManager : MonoBehaviour {
     }
 
     public Transform GetFactionsTransform() {
+        return transform.GetChild(0);
+    }
+
+    public Transform GetFleetTransform(Faction faction) {
         return transform.GetChild(0);
     }
 

@@ -25,7 +25,7 @@ public class ShipyardAI : StationAI {
     }
 
     protected override void ManageStationRepair() {
-        int repairAmmount = GetShipyard().GetRepairAmmount();
+        int repairAmmount = GetShipyard().GetRepairAmount();
         if (repairAmmount > 0 && station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
         foreach (var ship in station.GetAllDockedShips()) {

@@ -34,7 +34,7 @@ public abstract class Unit : BattleObject {
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * scale.x;
+        return GetSpriteSize();
     }
 
     public void SetupWeaponRanges() {
@@ -374,10 +374,7 @@ public abstract class Unit : BattleObject {
     }
 
     public override float GetSpriteSize() {
-        Sprite sprite = unitScriptableObject.sprite;
-        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
+        return Calculator.GetSpriteSize(unitScriptableObject.sprite, scale);
     }
 
     #endregion

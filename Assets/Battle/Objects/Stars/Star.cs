@@ -63,10 +63,7 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     public override float GetSpriteSize() {
-        Sprite sprite = starScriptableObject.sprite;
-        return Mathf.Max(Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.x, sprite.bounds.size.y)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.y, sprite.bounds.size.z)),
-            Vector2.Distance(sprite.bounds.center, new Vector2(sprite.bounds.size.z, sprite.bounds.size.x))) / 2 * scale.y;
+        return Calculator.GetSpriteSize(starScriptableObject.sprite, scale);
     }
 
     public override GameObject GetPrefab() {

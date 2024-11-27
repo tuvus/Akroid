@@ -8,44 +8,44 @@ public class PlayerObjectStatusUI : MonoBehaviour {
     [SerializeField] TMP_Text shieldText;
     [SerializeField] TMP_Text nameText;
 
-    public void RefreshPlayerObjectStatusUI(BattleObject battleObject, int objectCount) {
+    public void RefreshPlayerObjectStatusUI(BattleObjectUI battleObjectUI, int objectCount) {
         objectImage.enabled = true;
         // objectImage.sprite = battleObject.GetSpriteRenderer().sprite;
         objectImage.SetNativeSize();
         float sizeRatio = objectImage.rectTransform.sizeDelta.y / objectImage.rectTransform.sizeDelta.x;
         objectImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
-        if (battleObject.IsUnit())
-            RefreshUIForUnit((Unit)battleObject);
+        if (battleObjectUI.battleObject.IsUnit())
+            RefreshUIForUnit((UnitUI)battleObjectUI);
         // else objectImage.color = battleObject.GetSpriteRenderer().color;
         if (objectCount <= 1) {
-            nameText.GetComponent<TMP_Text>().text = battleObject.objectName;
+            nameText.GetComponent<TMP_Text>().text = battleObjectUI.battleObject.objectName;
         } else {
-            nameText.GetComponent<TMP_Text>().text = battleObject.objectName + " (" + objectCount + ")";
+            nameText.GetComponent<TMP_Text>().text = battleObjectUI.battleObject.objectName + " (" + objectCount + ")";
         }
 
         gameObject.SetActive(true);
     }
 
-    private void RefreshUIForUnit(Unit unit) {
+    private void RefreshUIForUnit(UnitUI unitUI) {
         // objectImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
-        healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(unit.GetHealth()) + "/" +
-                                                   NumFormatter.ConvertNumber(unit.GetMaxHealth());
-        shieldText.GetComponent<TMP_Text>().text = "Shields " + NumFormatter.ConvertNumber(unit.GetShields()) + "/" +
-                                                   NumFormatter.ConvertNumber(unit.GetMaxShields());
+        healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(unitUI.unit.GetHealth()) + "/" +
+                                                   NumFormatter.ConvertNumber(unitUI.unit.GetMaxHealth());
+        shieldText.GetComponent<TMP_Text>().text = "Shields " + NumFormatter.ConvertNumber(unitUI.unit.GetShields()) + "/" +
+                                                   NumFormatter.ConvertNumber(unitUI.unit.GetMaxShields());
     }
 
-    public void RefreshPlayerObjectStatusUI(Fleet fleet, Unit unit, int unitCount) {
+    public void RefreshPlayerObjectStatusUI(FleetUI fleetUI, UnitUI unitUI, int unitCount) {
         objectImage.enabled = true;
-        // objectImage.sprite = unit.GetSpriteRenderer().sprite;
+        objectImage.sprite = unitUI.GetSprite();
         objectImage.SetNativeSize();
         // objectImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
         float sizeRatio = objectImage.rectTransform.sizeDelta.y / objectImage.rectTransform.sizeDelta.x;
         objectImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
-        healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(fleet.GetFleetHealth()) + "/" +
-                                                   NumFormatter.ConvertNumber(fleet.GetMaxFleetHealth());
-        shieldText.GetComponent<TMP_Text>().text = "Shields " + NumFormatter.ConvertNumber(fleet.GetFleetShields()) + "/" +
-                                                   NumFormatter.ConvertNumber(fleet.GetMaxFleetShields());
-        nameText.GetComponent<TMP_Text>().text = fleet.GetFleetName() + " (" + unitCount + ")";
+        healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(fleetUI.fleet.GetFleetHealth()) + "/" +
+                                                   NumFormatter.ConvertNumber(fleetUI.fleet.GetMaxFleetHealth());
+        shieldText.GetComponent<TMP_Text>().text = "Shields " + NumFormatter.ConvertNumber(fleetUI.fleet.GetFleetShields()) + "/" +
+                                                   NumFormatter.ConvertNumber(fleetUI.fleet.GetMaxFleetShields());
+        nameText.GetComponent<TMP_Text>().text = fleetUI.fleet.GetFleetName() + " (" + unitCount + ")";
         gameObject.SetActive(true);
     }
 

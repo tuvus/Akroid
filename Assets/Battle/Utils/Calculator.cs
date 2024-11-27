@@ -222,4 +222,8 @@ public static class Calculator {
     public static Vector2 FindLocalPosAfterTime(Vector2 targetPosition, Vector2 localVelocity, float time) {
         return targetPosition + (localVelocity * time);
     }
+
+    public static float GetSpriteSize(Sprite sprite, Vector2 scale) {
+        return Mathf.Max(sprite.rect.size.x / 2, sprite.rect.size.y / 2) / sprite.pixelsPerUnit;
+    }
 }

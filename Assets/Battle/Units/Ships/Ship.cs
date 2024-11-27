@@ -448,10 +448,6 @@ public class Ship : Unit {
         return shipScriptableObject.shipType;
     }
 
-    public override bool IsSelectable() {
-        return base.IsSelectable() && dockedStation == null;
-    }
-
     public override bool IsTargetable() {
         return base.IsTargetable() && dockedStation == null;
     }

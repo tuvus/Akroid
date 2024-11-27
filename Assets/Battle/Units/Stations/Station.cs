@@ -87,9 +87,9 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-    protected override float SetupSize() {
-        return base.SetupSize() * 7 / 10;
-    }
+    // protected override float SetupSize() {
+    //     return base.SetupSize() * 7 / 10;
+    // }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
@@ -277,7 +277,7 @@ public class Station : Unit, IPositionConfirmer {
         return built;
     }
 
-    public int GetRepairAmmount() {
+    public int GetRepairAmount() {
         return (int)(repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 

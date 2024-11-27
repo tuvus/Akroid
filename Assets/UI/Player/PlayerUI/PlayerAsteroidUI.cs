@@ -1,14 +1,14 @@
 using TMPro;
 using UnityEngine;
 
-public class PlayerAsteroidUI : PlayerUIMenu<Asteroid> {
+public class PlayerAsteroidUI : PlayerUIMenu<AsteroidUI> {
     [SerializeField] TMP_Text asteroidName;
     [SerializeField] TMP_Text resourceType;
     [SerializeField] TMP_Text resourceAmount;
 
     protected override void RefreshMiddlePanel() {
-        asteroidName.text = displayedObject.objectName;
-        resourceType.text = "Resource Type: " + displayedObject.asteroidScriptableObject.type.ToString();
-        resourceAmount.text = "Resources: " + NumFormatter.ConvertNumber(displayedObject.resources);
+        asteroidName.text = displayedObject.asteroid.objectName;
+        resourceType.text = "Resource Type: " + displayedObject.asteroid.asteroidScriptableObject.type.ToString();
+        resourceAmount.text = "Resources: " + NumFormatter.ConvertNumber(displayedObject.asteroid.resources);
     }
 }

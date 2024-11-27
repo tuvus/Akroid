@@ -10,24 +10,26 @@ public class LocalPlayer : MonoBehaviour {
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
     public PlayerUI playerUI { get; private set; }
+    private UnitSpriteManager unitSpriteManager;
 
     public enum PlayerState {
         free = 1,
         following = 2,
     }
 
-    public void SetUpPlayer(BattleManager battleManager) {
+    public void SetUpPlayer(BattleManager battleManager, UnitSpriteManager unitSpriteManager) {
         if (Instance != null) {
             Destroy(this);
             return;
         }
 
+        this.unitSpriteManager = unitSpriteManager;
         player = battleManager.GetLocalPlayer();
         Instance = this;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
-        localPlayerInput.Setup();
-        playerUI.SetUpUI(localPlayerInput);
+        localPlayerInput.Setup(this, unitSpriteManager);
+        playerUI.SetUpUI(localPlayerInput, this, unitSpriteManager);
     }
 
     public void SetupFaction() {
@@ -122,6 +124,10 @@ public class LocalPlayer : MonoBehaviour {
 
     public Faction GetFaction() {
         return player.faction;
+    }
+
+    public FactionUI GetFactionUI() {
+        return unitSpriteManager.factionUIs[player.faction];
     }
 
     #endregion

@@ -5,4 +5,8 @@ public class ShipUI : UnitUI {
         base.Setup(battleObject);
         this.ship = (Ship)battleObject;
     }
+
+    public override bool IsSelectable() {
+        return base.IsSelectable() && ship.dockedStation == null;
+    }
 }

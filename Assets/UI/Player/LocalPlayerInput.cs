@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +6,8 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(-1)]
 public class LocalPlayerInput : MonoBehaviour {
     PlayerInput playerInput;
+    protected UnitSpriteManager unitSpriteManager;
+    protected LocalPlayer localPlayer;
 
     public enum ActionType {
         None,
@@ -41,12 +42,12 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected Vector2 pastMousePosition;
 
-    public BattleObject mouseOverBattleObject { get; protected set; }
-    public BattleObject leftClickedBattleObject { get; protected set; }
-    public BattleObject displayedBattleObject { get; protected set; }
-    public Fleet displayedFleet { get; protected set; }
-    public BattleObject rightClickedBattleObject { get; protected set; }
-    public Unit followUnit { get; protected set; }
+    public BattleObjectUI mouseOverBattleObject { get; protected set; }
+    public BattleObjectUI leftClickedBattleObject { get; protected set; }
+    public BattleObjectUI displayedBattleObject { get; protected set; }
+    public FleetUI displayedFleet { get; protected set; }
+    public BattleObjectUI rightClickedBattleObject { get; protected set; }
+    public UnitUI followUnit { get; protected set; }
 
     public event Action<Vector2, Vector2> OnPanEvent = delegate { };
 
@@ -57,7 +58,9 @@ public class LocalPlayerInput : MonoBehaviour {
     int timeStepIndex;
     protected CanvasScaler canvasScaler;
 
-    public virtual void Setup() {
+    public virtual void Setup(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+        this.localPlayer = localPlayer;
+        this.unitSpriteManager = unitSpriteManager;
         mainCamera = transform.GetChild(0).GetComponent<Camera>();
         background = GetComponentInChildren<Background>();
         background.SetupBackground();
@@ -105,7 +108,7 @@ public class LocalPlayerInput : MonoBehaviour {
             SecondaryMouseHeld();
         pastMousePosition = GetMousePosition();
         if (followUnit != null)
-            transform.position = followUnit.position;
+            transform.position = followUnit.unit.position;
     }
 
     void UpdateZoom(float scroll) {
@@ -144,7 +147,7 @@ public class LocalPlayerInput : MonoBehaviour {
         mainCamera.transform.position = new Vector3(position.x, position.y, -10);
     }
 
-    public void StartFollowingUnit(Unit unit) {
+    public void StartFollowingUnit(UnitUI unit) {
         StopFollowingUnit();
         if (unit == null || unit == followUnit) {
             return;
@@ -152,7 +155,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
         followUnit = unit;
         SetCameraPosition(Vector2.zero);
-        transform.position = followUnit.GetPosition();
+        transform.position = followUnit.unit.position;
     }
 
     public void StopFollowingUnit() {
@@ -163,12 +166,12 @@ public class LocalPlayerInput : MonoBehaviour {
 
     public void CenterCamera() {
         if (followUnit != null) {
-            Unit targetUnit = followUnit;
+            UnitUI targetUnit = followUnit;
             StopFollowingUnit();
             StartFollowingUnit(targetUnit);
-            transform.position = followUnit.GetPosition();
+            transform.position = followUnit.unit.position;
         } else if (displayedBattleObject != null) {
-            SetCameraPosition(displayedBattleObject.GetPosition());
+            SetCameraPosition(displayedBattleObject.battleObject.position);
         } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
             SetCameraPosition(LocalPlayer.Instance.GetFaction().stations.First().position);
         }
@@ -268,8 +271,8 @@ public class LocalPlayerInput : MonoBehaviour {
             return;
         }
 
-        if (displayedBattleObject != null && displayedBattleObject.IsUnit()) {
-            StartFollowingUnit((Unit)displayedBattleObject);
+        if (displayedBattleObject != null && displayedBattleObject.battleObject.IsUnit()) {
+            StartFollowingUnit((UnitUI)displayedBattleObject);
         }
     }
 
@@ -281,57 +284,36 @@ public class LocalPlayerInput : MonoBehaviour {
         PlayerUI.Instance.SetFactionColor(!PlayerUI.Instance.factionColoring);
     }
 
-    BattleObject GetBattleObjectOverMouse() {
-        BattleObject battleObject = null;
+    BattleObjectUI GetBattleObjectOverMouse() {
+        BattleObjectUI objectUI = null;
         float distance = float.MaxValue;
-        foreach (Unit targetUnit in BattleManager.Instance.units) {
-            if (!targetUnit.IsSelectable()) {
-                continue;
-            }
-
-            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetUnit.position);
-            // if (tempDistance < targetUnit.GetSize() * Mathf.Max(1, targetUnit.GetZoomIndicatorSize()) && tempDistance < distance) {
-            //     battleObject = targetUnit;
-            //     distance = tempDistance;
-            // }
-        }
-
-        List<BattleObject> battleObjects = new List<BattleObject>(BattleManager.Instance.stars);
-        battleObjects.AddRange(BattleManager.Instance.planets);
-        foreach (var asteroidField in BattleManager.Instance.asteroidFields) {
-            battleObjects.AddRange(asteroidField.battleObjects);
-        }
-
-        battleObjects.AddRange(BattleManager.Instance.gasClouds);
-        foreach (BattleObject targetObject in battleObjects) {
+        foreach (BattleObjectUI targetObject in unitSpriteManager.objects.Values) {
             if (!targetObject.IsSelectable()) {
                 continue;
             }
 
-            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.position);
-            if (tempDistance < targetObject.GetSize() && tempDistance < distance) {
-                battleObject = targetObject;
+            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.battleObject.position);
+            if (tempDistance < targetObject.battleObject.GetSize() && tempDistance < distance) {
+                objectUI = targetObject;
                 distance = tempDistance;
             }
         }
-
-        return battleObject;
+        return objectUI;
     }
 
     public virtual void UnitDestroyed(Unit unit) {
-        if (GetDisplayedBattleObject() == unit)
-            displayedBattleObject = null;
+        if (GetDisplayedBattleObject() == unitSpriteManager.units[unit]) displayedBattleObject = null;
     }
 
     public PlayerInput GetPlayerInput() {
         return playerInput;
     }
 
-    public virtual BattleObject GetDisplayedBattleObject() {
+    public virtual BattleObjectUI GetDisplayedBattleObject() {
         return displayedBattleObject;
     }
 
-    public Fleet GetDisplayedFleet() {
+    public FleetUI GetDisplayedFleet() {
         return displayedFleet;
     }
 

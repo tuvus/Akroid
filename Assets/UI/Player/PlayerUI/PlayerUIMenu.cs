@@ -3,16 +3,16 @@ using UnityEngine;
 
 /// <summary>
 /// Why is this abstract class here? Why do we need an abstract class inheriting another abstract class?
-/// Well first C# does not allow us to make lists of generic constraints. 
+/// Well first C# does not allow us to make lists of generic constraints.
 /// So we can't make List<PlayerUIMenu> where we only care that T of PlayerUIMenu is of the type BattleObject.
 /// To solve this we need to have a non generic interface to use in PlayerUI.
 /// Unity, however, does not support lists of interfaces in the editor.
 /// Therefore we must use an abstract class instead. Thankfully this workaround actually works.
 /// </summary>
 public abstract class IPlayerUIMenu : MonoBehaviour {
-    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, float updateSpeed);
+    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float updateSpeed);
 
-    public abstract void SetDisplayedObject(IObject iObject);
+    public abstract void SetDisplayedObject(ObjectUI objectUI);
 
     public abstract void UpdateUI();
 
@@ -23,8 +23,10 @@ public abstract class IPlayerUIMenu : MonoBehaviour {
     public abstract Type GetMenuType();
 }
 
-public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : IObject {
+public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
+    protected LocalPlayer localPlayer;
     protected PlayerUI playerUI;
+    protected UnitSpriteManager unitSpriteManager;
     [SerializeField] private float updateSpeed;
     private float updateTime;
     public T displayedObject { get; protected set; }
@@ -33,13 +35,15 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : IObject {
     [SerializeField] protected GameObject leftPanel;
     [SerializeField] protected GameObject rightPanel;
 
-    public override void SetupPlayerUIMenu(PlayerUI playerUI, float updateSpeed) {
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float updateSpeed) {
         this.playerUI = playerUI;
+        this.localPlayer = localPlayer;
         this.updateSpeed = updateSpeed;
+        this.unitSpriteManager = unitSpriteManager;
     }
 
-    public override void SetDisplayedObject(IObject iObject) {
-        SetDisplayedObject((T)iObject);
+    public override void SetDisplayedObject(ObjectUI objectUI) {
+        SetDisplayedObject((T)objectUI);
     }
 
     public void SetDisplayedObject(T objectToDisplay) {

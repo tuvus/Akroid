@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84acad7fd132b6ea880d4d3fae6f8176, type: 3}
   m_Name: Star1
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 684882672, guid: 9d7fb046bda731e48a8f85f07d002f99, type: 3}

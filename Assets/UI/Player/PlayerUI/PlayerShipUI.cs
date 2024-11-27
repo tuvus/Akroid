@@ -2,7 +2,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class PlayerShipUI : PlayerUIMenu<Ship> {
+public class PlayerShipUI : PlayerUIMenu<ShipUI> {
     [SerializeField] TMP_Text shipName;
     [SerializeField] TMP_Text shipFaction;
     [SerializeField] TMP_Text shipClass;
@@ -21,36 +21,36 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
     [SerializeField] GameObject cargoBayButtonPrefab;
 
     protected override bool IsObjectViable() {
-        return displayedObject != null && displayedObject.IsSpawned();
+        return displayedObject != null && displayedObject.ship.IsSpawned();
     }
 
     protected override void RefreshMiddlePanel() {
-        shipName.text = displayedObject.GetUnitName();
-        shipFaction.text = displayedObject.faction.name;
-        shipClass.text = "Ship Class: " + displayedObject.GetShipClass();
-        shipType.text = "Ship Type: " + displayedObject.GetShipType();
-        if (displayedObject.shipAI.commands.Count > 0)
-            shipAI.text = "ShipAI: " + displayedObject.shipAI.commands.First().commandType.ToString() + ", " +
-                          displayedObject.shipAI.currentCommandState.ToString();
+        shipName.text = displayedObject.ship.GetUnitName();
+        shipFaction.text = displayedObject.ship.faction.name;
+        shipClass.text = "Ship Class: " + displayedObject.ship.GetShipClass();
+        shipType.text = "Ship Type: " + displayedObject.ship.GetShipType();
+        if (displayedObject.ship.shipAI.commands.Count > 0)
+            shipAI.text = "ShipAI: " + displayedObject.ship.shipAI.commands.First().commandType.ToString() + ", " +
+                          displayedObject.ship.shipAI.currentCommandState.ToString();
         else shipAI.text = "ShipAI: Idle";
 
-        if (displayedObject.fleet != null) {
+        if (displayedObject.ship.fleet != null) {
             shipFleet.gameObject.SetActive(true);
-            shipFleet.text = "Fleet: " + displayedObject.fleet.GetFleetName();
+            shipFleet.text = "Fleet: " + displayedObject.ship.fleet.GetFleetName();
             shipFleetAI.gameObject.SetActive(true);
-            if (displayedObject.fleet.FleetAI.commands.Count > 0)
-                shipFleetAI.text = "FleetAI: " + displayedObject.fleet.FleetAI.commands.First().commandType.ToString() + ", " +
-                                   displayedObject.fleet.FleetAI.currentCommandState.ToString();
+            if (displayedObject.ship.fleet.FleetAI.commands.Count > 0)
+                shipFleetAI.text = "FleetAI: " + displayedObject.ship.fleet.FleetAI.commands.First().commandType.ToString() + ", " +
+                                   displayedObject.ship.fleet.FleetAI.currentCommandState.ToString();
             else shipFleetAI.text = "FleetAI: Idle";
         } else {
             shipFleet.gameObject.SetActive(false);
             shipFleetAI.gameObject.SetActive(false);
         }
 
-        weaponsCount.text = "Weapons: " + displayedObject.GetWeaponCount();
-        if (displayedObject.GetWeaponCount() > 0) {
-            shipTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedObject.GetUnitDamagePerSecond());
-            maxWeaponRange.text = "Weapon Range: " + NumFormatter.ConvertNumber(displayedObject.GetMaxWeaponRange());
+        weaponsCount.text = "Weapons: " + displayedObject.ship.GetWeaponCount();
+        if (displayedObject.ship.GetWeaponCount() > 0) {
+            shipTotalDPS.text = "Damage Per Second: " + NumFormatter.ConvertNumber(displayedObject.ship.GetUnitDamagePerSecond());
+            maxWeaponRange.text = "Weapon Range: " + NumFormatter.ConvertNumber(displayedObject.ship.GetMaxWeaponRange());
             shipTotalDPS.gameObject.SetActive(true);
             maxWeaponRange.gameObject.SetActive(true);
         } else {
@@ -58,9 +58,9 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
             maxWeaponRange.gameObject.SetActive(false);
         }
 
-        shipAction.text = "Ship Action: " + displayedObject.shipAction.ToString();
-        UpdateCargoBayUI(displayedObject.moduleSystem.Get<CargoBay>().FirstOrDefault(),
-            !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.faction));
+        shipAction.text = "Ship Action: " + displayedObject.ship.shipAction.ToString();
+        UpdateCargoBayUI(displayedObject.ship.moduleSystem.Get<CargoBay>().FirstOrDefault(),
+            !LocalPlayer.Instance.GetFaction().IsAtWarWithFaction(displayedObject.ship.faction));
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
@@ -90,7 +90,7 @@ public class PlayerShipUI : PlayerUIMenu<Ship> {
     }
 
     public void OpenFactionMenu() {
-        Faction faction = displayedObject.faction;
-        playerUI.ShowFactionUI(faction);
+        Faction faction = displayedObject.ship.faction;
+        playerUI.ShowFactionUI(unitSpriteManager.factionUIs[faction]);
     }
 }

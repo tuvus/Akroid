@@ -8,7 +8,9 @@ using UnityEngine.SceneManagement;
 
 public class PlayerUI : MonoBehaviour {
     public static PlayerUI Instance { get; protected set; }
+    private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
+    private UnitSpriteManager unitSpriteManager;
 
     [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
@@ -53,9 +55,11 @@ public class PlayerUI : MonoBehaviour {
     public bool commandRendererShown;
     public bool factionColoring;
 
-    public void SetUpUI(LocalPlayerInput localPlayerInput) {
+    public void SetUpUI(LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+        this.localPlayer = localPlayer;
         Instance = this;
         this.localPlayerInput = localPlayerInput;
+        this.unitSpriteManager = unitSpriteManager;
         CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
@@ -66,7 +70,7 @@ public class PlayerUI : MonoBehaviour {
         commandRendererShown = true;
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
-        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, .2f));
+        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, unitSpriteManager, .2f));
         playerMenueUI.SetupMenueUI(this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
         foreach (var menu in uIMenusInput) {
@@ -77,12 +81,12 @@ public class PlayerUI : MonoBehaviour {
     public void UpdatePlayerUI() {
         Profiler.BeginSample("PlayerUI");
         command.text = localPlayerInput.GetActionType().ToString();
-        if (GetLocalPlayer().player.faction != null) {
+        if (localPlayer.player.faction != null) {
             factionUI.SetActive(true);
-            factionName.text = GetLocalPlayer().player.faction.name;
-            factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(GetLocalPlayer().player.faction.credits);
-            factionScience.text = "Science: " + NumFormatter.ConvertNumber(GetLocalPlayer().player.faction.science) + " (" +
-                                  GetLocalPlayer().player.faction.Discoveries + ")";
+            factionName.text = localPlayer.player.faction.name;
+            factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(localPlayer.player.faction.credits);
+            factionScience.text = "Science: " + NumFormatter.ConvertNumber(localPlayer.player.faction.science) + " (" +
+                                  localPlayer.player.faction.Discoveries + ")";
         } else {
             factionUI.SetActive(false);
         }
@@ -108,23 +112,23 @@ public class PlayerUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-    public void UpdateDisplayedObjectUI(Fleet fleet, BattleObject battleObject, int unitCount) {
+    public void UpdateDisplayedObjectUI(FleetUI fleetUI, BattleObjectUI battleObjectUI, int unitCount) {
         commandRenderer.enabled = false;
-        if (battleObject == null || !battleObject.IsSpawned()) {
+        if (battleObjectUI == null || !battleObjectUI.battleObject.IsSpawned()) {
             objectStatusUI.DeselectPlayerObjectStatusUI();
-        } else if (battleObject.IsUnit()) {
-            if (fleet != null) {
-                objectStatusUI.RefreshPlayerObjectStatusUI(fleet, (Unit)battleObject, unitCount);
+        } else if (battleObjectUI.battleObject.IsUnit()) {
+            if (fleetUI != null) {
+                objectStatusUI.RefreshPlayerObjectStatusUI(fleetUI, (UnitUI)battleObjectUI, unitCount);
             } else {
-                objectStatusUI.RefreshPlayerObjectStatusUI((Unit)battleObject, unitCount);
+                objectStatusUI.RefreshPlayerObjectStatusUI((UnitUI)battleObjectUI, unitCount);
             }
 
-            if (commandRendererShown && battleObject.IsShip()) {
-                Ship ship = (Ship)battleObject;
+            if (commandRendererShown && battleObjectUI.battleObject.IsShip()) {
+                Ship ship = (Ship)battleObjectUI.battleObject;
                 List<Vector3> positions;
-                if (fleet != null) {
-                    if (fleet.FleetAI.commands.Count == 0) return;
-                    positions = fleet.FleetAI.GetMovementPositionPlan();
+                if (fleetUI != null) {
+                    if (fleetUI.fleet.FleetAI.commands.Count == 0) return;
+                    positions = fleetUI.fleet.FleetAI.GetMovementPositionPlan();
                 } else {
                     if (ship.shipAI.commands.Count == 0) return;
                     positions = ship.shipAI.GetMovementPositionPlan();
@@ -143,10 +147,10 @@ public class PlayerUI : MonoBehaviour {
                 commandRenderer.SetPositions(positions.ToArray());
                 commandRenderer.enabled = true;
             }
-        } else if (battleObject.IsPlanet()) {
-            objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
-        } else if (battleObject.IsStar() || battleObject.IsAsteroid() || battleObject.IsGasCloud()) {
-            objectStatusUI.RefreshPlayerObjectStatusUI(battleObject, unitCount);
+        } else if (battleObjectUI.battleObject.IsPlanet()) {
+            objectStatusUI.RefreshPlayerObjectStatusUI(battleObjectUI, unitCount);
+        } else if (battleObjectUI.battleObject.IsStar() || battleObjectUI.battleObject.IsAsteroid() || battleObjectUI.battleObject.IsGasCloud()) {
+            objectStatusUI.RefreshPlayerObjectStatusUI(battleObjectUI, unitCount);
         }
     }
 
@@ -192,12 +196,12 @@ public class PlayerUI : MonoBehaviour {
     }
 
 
-    public void SetDisplayedObject(IObject iObject) {
-        Type currentType = iObject.GetType();
+    public void SetDisplayedObject(ObjectUI iObjectUI) {
+        Type currentType = iObjectUI.GetType();
         while (currentType != null) {
             if (uIMenus.ContainsKey(currentType)) {
                 CloseAllMenus();
-                uIMenus[currentType].SetDisplayedObject(iObject);
+                uIMenus[currentType].SetDisplayedObject(iObjectUI);
                 return;
             }
 
@@ -205,12 +209,12 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
-    public void ShowFactionUI(Faction faction) {
+    public void ShowFactionUI(FactionUI faction) {
         SetDisplayedObject(faction);
     }
 
     public void ShowLocalFaction() {
-        ShowFactionUI(LocalPlayer.Instance.GetFaction());
+        ShowFactionUI(unitSpriteManager.factionUIs[localPlayer.GetFaction()]);
     }
 
     public void CloseAllMenus() {
@@ -301,10 +305,6 @@ public class PlayerUI : MonoBehaviour {
 
     public bool IsAnObjectMenuShown() {
         return stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf;
-    }
-
-    public LocalPlayer GetLocalPlayer() {
-        return LocalPlayer.Instance;
     }
 
     public CommandClick GetCommandClick() {

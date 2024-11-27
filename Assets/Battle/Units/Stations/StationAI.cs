@@ -25,7 +25,7 @@ public class StationAI {
 
     protected virtual void ManageStationRepair() {
         if (station.IsDamaged())
-            station.RepairUnit(station, station.GetRepairAmmount());
+            station.RepairUnit(station, station.GetRepairAmount());
     }
 
     public virtual void OnShipBuilt(Ship ship) {

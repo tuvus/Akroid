@@ -8,8 +8,8 @@ public class PlayerGroupInput : LocalPlayerGameInput {
 
     int fleetNumber = 10;
 
-    public override void Setup() {
-        base.Setup();
+    public override void Setup(LocalPlayer localPlayer,UnitSpriteManager unitSpriteManager) {
+        base.Setup(localPlayer, unitSpriteManager);
         for (int i = 0; i < fleetNumber; i++) {
             SelectionGroup newGroup = new SelectionGroup();
             groups.Add(newGroup);
@@ -35,7 +35,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
     }
 
     void GroupButtonPressed(InputAction.CallbackContext context, int buttonNumber) {
-        if (LocalPlayer.Instance.player.ownedUnits == null)
+        if (localPlayer.player.ownedUnits == null)
             return;
         if (AdditiveButtonPressed) {
             SelectOnlyControllableUnits();

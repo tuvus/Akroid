@@ -131,10 +131,6 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         return spawned;
     }
 
-    public virtual bool IsSelectable() {
-        return IsSpawned();
-    }
-
     public void SetFaction(Faction faction) {
         this.faction = faction;
     }

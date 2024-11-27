@@ -35,7 +35,7 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 1
-    aniso: 1
+    aniso: 6
     mipBias: 0
     wrapU: 1
     wrapV: 1
@@ -126,12 +126,12 @@ TextureImporter:
       name: Star_0
       rect:
         serializedVersion: 2
-        x: 99
+        x: 100
         y: 100
-        width: 1800
+        width: 1799
         height: 1800
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

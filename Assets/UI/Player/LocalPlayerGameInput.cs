@@ -3,8 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 public class LocalPlayerGameInput : LocalPlayerSelectionInput {
-    public override void Setup() {
-        base.Setup();
+    public override void Setup(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+        base.Setup(localPlayer, unitSpriteManager);
         GetPlayerInput().Player.ClearCommands.started += context => ClearCommands();
 
         GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPreformed();
@@ -150,18 +150,21 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateMoveCommand() {
-        if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
-            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit((Unit)mouseOverBattleObject);
+        if (mouseOverBattleObject != null && mouseOverBattleObject.battleObject.IsUnit()) {
+            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit((Unit)mouseOverBattleObject.battleObject);
             if (relationType != LocalPlayer.RelationType.Enemy) {
-                if (mouseOverBattleObject.IsStation()) {
-                    GiveCommandToAllSelectedUnits(Command.CreateDockCommand((Station)mouseOverBattleObject), GetCommandAction());
+                if (mouseOverBattleObject.battleObject.IsStation()) {
+                    GiveCommandToAllSelectedUnits(Command.CreateDockCommand((Station)mouseOverBattleObject.battleObject),
+                        GetCommandAction());
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 } else {
-                    GiveCommandToAllSelectedUnits(Command.CreateFollowCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                    GiveCommandToAllSelectedUnits(Command.CreateFollowCommand((Unit)mouseOverBattleObject.battleObject),
+                        GetCommandAction());
                     LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 }
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject),
+                    GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
 
@@ -173,15 +176,17 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateUndockCombatAtCommand() {
-        foreach (var station in selectedUnits.GetAllStations()) {
-            Ship firstShip = station.GetAllDockedShips().FirstOrDefault(s => s.IsCombatShip());
+        foreach (var stationUI in selectedUnits.GetAllStations()) {
+            Ship firstShip = stationUI.station.GetAllDockedShips().FirstOrDefault(s => s.IsCombatShip());
             if (firstShip != null) {
-                if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
-                    if (mouseOverBattleObject.IsStation()) {
-                        firstShip.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject), GetCommandAction());
+                if (mouseOverBattleObject != null && mouseOverBattleObject.battleObject.IsUnit()) {
+                    if (mouseOverBattleObject.battleObject.IsStation()) {
+                        firstShip.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject.battleObject),
+                            GetCommandAction());
                         LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                     } else {
-                        firstShip.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                        firstShip.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject.battleObject),
+                            GetCommandAction());
                         LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                     }
 
@@ -195,17 +200,19 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateAttackCommand() {
-        if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
-            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit((Unit)mouseOverBattleObject);
+        if (mouseOverBattleObject != null && mouseOverBattleObject.battleObject.IsUnit()) {
+            LocalPlayer.RelationType relationType = LocalPlayer.Instance.GetRelationToUnit((Unit)mouseOverBattleObject.battleObject);
             if (relationType != LocalPlayer.RelationType.Enemy) {
-                GiveCommandToAllSelectedUnits(Command.CreateProtectCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                GiveCommandToAllSelectedUnits(Command.CreateProtectCommand((Unit)mouseOverBattleObject.battleObject), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
-            } else if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverBattleObject.IsShip() &&
-                       ((Ship)mouseOverBattleObject).fleet != null) {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackFleetCommand(((Ship)mouseOverBattleObject).fleet), GetCommandAction());
+            } else if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet && mouseOverBattleObject.battleObject.IsShip() &&
+                ((Ship)mouseOverBattleObject.battleObject).fleet != null) {
+                GiveCommandToAllSelectedUnits(Command.CreateAttackFleetCommand(((Ship)mouseOverBattleObject.battleObject).fleet),
+                    GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject),
+                    GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
 
@@ -217,15 +224,17 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateUndockTransportAtCommand() {
-        foreach (var station in selectedUnits.GetAllStations()) {
-            Ship firstShip = station.GetAllDockedShips().FirstOrDefault(s => s.IsTransportShip());
+        foreach (var stationUI in selectedUnits.GetAllStations()) {
+            Ship firstShip = stationUI.station.GetAllDockedShips().FirstOrDefault(s => s.IsTransportShip());
             if (firstShip != null && LocalPlayer.Instance.player.ownedUnits.Contains(firstShip)) {
-                if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
-                    if (mouseOverBattleObject.IsStation()) {
-                        firstShip.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject), GetCommandAction());
+                if (mouseOverBattleObject != null && mouseOverBattleObject.battleObject.IsUnit()) {
+                    if (mouseOverBattleObject.battleObject.IsStation()) {
+                        firstShip.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject.battleObject),
+                            GetCommandAction());
                         LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                     } else {
-                        firstShip.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                        firstShip.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject.battleObject),
+                            GetCommandAction());
                         LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                     }
 
@@ -241,15 +250,17 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     void GenerateFormationCommand() { }
 
     void GenerateUndockAllCombatCommand() {
-        foreach (var station in selectedUnits.GetAllStations()) {
-            foreach (var ship in station.GetAllDockedShips().Where(s => s.IsCombatShip())) {
+        foreach (var stationUI in selectedUnits.GetAllStations()) {
+            foreach (var ship in stationUI.station.GetAllDockedShips().Where(s => s.IsCombatShip())) {
                 if (ship != null && LocalPlayer.Instance.player.ownedUnits.Contains(ship)) {
-                    if (mouseOverBattleObject != null && mouseOverBattleObject.IsUnit()) {
-                        if (mouseOverBattleObject.IsStation()) {
-                            ship.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject), GetCommandAction());
+                    if (mouseOverBattleObject != null && mouseOverBattleObject.battleObject.IsUnit()) {
+                        if (mouseOverBattleObject.battleObject.IsStation()) {
+                            ship.shipAI.AddUnitAICommand(Command.CreateDockCommand((Station)mouseOverBattleObject.battleObject),
+                                GetCommandAction());
                             LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                         } else {
-                            ship.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject), GetCommandAction());
+                            ship.shipAI.AddUnitAICommand(Command.CreateFollowCommand((Unit)mouseOverBattleObject.battleObject),
+                                GetCommandAction());
                             LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                         }
 
@@ -264,11 +275,11 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateStationBuilderCommand() {
-        List<Ship> allShips = selectedUnits.GetAllShips();
+        List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsConstructionShip() && ((ConstructionShip)allShips[i]).targetStationBlueprint == null) {
-                Station newMiningStation = ((ConstructionShip)allShips[i]).CreateStation(GetMouseWorldPosition());
-                allShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
+            if (allShips[i].ship.IsConstructionShip() && ((ConstructionShip)allShips[i].ship).targetStationBlueprint == null) {
+                Station newMiningStation = ((ConstructionShip)allShips[i].ship).CreateStation(GetMouseWorldPosition());
+                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
                     Command.CommandAction.Replace);
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
                 return;
@@ -276,9 +287,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
 
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsConstructionShip()) {
-                Station newMiningStation = ((ConstructionShip)allShips[i]).CreateStation(GetMouseWorldPosition());
-                allShips[i].shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
+            if (allShips[i].ship.IsConstructionShip()) {
+                Station newMiningStation = ((ConstructionShip)allShips[i].ship).CreateStation(GetMouseWorldPosition());
+                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
                     Command.CommandAction.Replace);
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
                 return;
@@ -300,10 +311,10 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
         if (closestStar == null) return;
 
-        List<Ship> allShips = selectedUnits.GetAllShips();
+        List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsScienceShip()) {
-                allShips[i].shipAI
+            if (allShips[i].ship.IsScienceShip()) {
+                allShips[i].ship.shipAI
                     .AddUnitAICommand(Command.CreateResearchCommand(closestStar, LocalPlayer.Instance.player.faction.GetFleetCommand()),
                         GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
@@ -325,11 +336,12 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
         if (closestGasCloud != null) return;
 
-        List<Ship> allShips = selectedUnits.GetAllShips();
+        List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsGasCollectorShip()) {
-                allShips[i].shipAI
-                    .AddUnitAICommand(Command.CreateCollectGasCommand(closestGasCloud, LocalPlayer.Instance.player.faction.GetFleetCommand()),
+            if (allShips[i].ship.IsGasCollectorShip()) {
+                allShips[i].ship.shipAI
+                    .AddUnitAICommand(
+                        Command.CreateCollectGasCommand(closestGasCloud, LocalPlayer.Instance.player.faction.GetFleetCommand()),
                         GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
@@ -350,10 +362,10 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
         if (closestProductionStation == null) return;
 
-        List<Ship> allShips = selectedUnits.GetAllShips();
+        List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsTransportShip()) {
-                allShips[i].shipAI
+            if (allShips[i].ship.IsTransportShip()) {
+                allShips[i].ship.shipAI
                     .AddUnitAICommand(
                         Command.CreateTransportCommand(closestProductionStation, LocalPlayer.Instance.GetFaction().GetFleetCommand(),
                             CargoBay.CargoTypes.Metal), GetCommandAction());
@@ -375,10 +387,10 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
 
         if (closestPlanet == null) return;
-        List<Ship> allShips = selectedUnits.GetAllShips();
+        List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].IsColonizerShip()) {
-                allShips[i].shipAI.AddUnitAICommand(Command.CreateColonizeCommand(closestPlanet), GetCommandAction());
+            if (allShips[i].ship.IsColonizerShip()) {
+                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateColonizeCommand(closestPlanet), GetCommandAction());
                 LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }
@@ -397,22 +409,22 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             base.CombatUnitButtonPerformed();
         if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
             if (AdditiveButtonPressed && AltButtonPressed) {
-                selectedUnits.fleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
+                selectedUnits.fleet.fleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
             } else if (AdditiveButtonPressed) {
-                selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
+                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             } else if (AltButtonPressed) {
-                selectedUnits.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
             } else {
-                selectedUnits.fleet.FleetAI.AddFormationCommand();
+                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand();
             }
-        } else if (selectedUnits.objects.Any((o) => o.IsShip() && ((Ship)o).IsCombatShip())) {
+        } else if (selectedUnits.objects.Any((o) => o.battleObject.IsShip() && ((Ship)o.battleObject).IsCombatShip())) {
             selectedUnits.RemoveAllNonCombatShips();
             selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.player.ownedUnits.ToList());
             selectedUnits.RemoveAnyNullUnits();
-            HashSet<Ship> ships = selectedUnits.GetAllShips().ToHashSet();
+            List<ShipUI> ships = selectedUnits.GetAllShips();
             if (ships.Count > 0) {
-                LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships);
-                SelectBattleObjects(new List<BattleObject>() { ships.First() });
+                LocalPlayer.Instance.GetFaction().CreateNewFleet("NewFleet", ships.Select(s => s.ship).ToHashSet());
+                SelectBattleObjects(new List<BattleObjectUI>() { ships.First() });
             }
 
             selectedGroup = -1;

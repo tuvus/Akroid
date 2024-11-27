@@ -40,8 +40,10 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
 
-    public event Action<BattleObject> objectCreatedEvent = delegate { };
-    public event Action<BattleObject> objectRemovedEvent = delegate { };
+    public event Action<BattleObject> OnObjectCreated = delegate { };
+    public event Action<BattleObject> OnObjectRemoved = delegate { };
+    public event Action<Fleet> OnFleetCreated = delegate { };
+    public event Action<Fleet> OnFleetRemoved = delegate { };
 
     public bool instantHit;
     public float timeScale;
@@ -388,12 +390,12 @@ public class BattleManager : MonoBehaviour {
 
     private void AddObject(BattleObject battleObject) {
         objects.Add(battleObject);
-        objectCreatedEvent.Invoke(battleObject);
+        OnObjectCreated.Invoke(battleObject);
     }
 
     private void RemoveObject(BattleObject battleObject) {
         objects.Remove(battleObject);
-        objectRemovedEvent.Invoke(battleObject);
+        OnObjectRemoved.Invoke(battleObject);
     }
 
     public void BuildStationBlueprint(Station station) {
@@ -481,6 +483,14 @@ public class BattleManager : MonoBehaviour {
         Missile newMissile = new Missile(this);
         missiles.Add(newMissile);
         unusedMissiles.Add(newMissile);
+    }
+
+    public void CreateFleet(Fleet fleet) {
+        OnFleetCreated.Invoke(fleet);
+    }
+
+    public void RemoveFleet(Fleet fleet) {
+        OnFleetRemoved.Invoke(fleet);
     }
 
     public List<IPositionConfirmer> GetPositionBlockingObjects() {

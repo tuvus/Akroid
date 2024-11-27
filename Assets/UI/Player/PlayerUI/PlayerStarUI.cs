@@ -1,10 +1,10 @@
 using TMPro;
 using UnityEngine;
 
-public class PlayerStarUI : PlayerUIMenu<Star> {
+public class PlayerStarUI : PlayerUIMenu<StarUI> {
     [SerializeField] TMP_Text starName;
 
     protected override void RefreshMiddlePanel() {
-        starName.text = displayedObject.objectName;
+        starName.text = displayedObject.star.objectName;
     }
 }
