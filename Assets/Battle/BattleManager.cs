@@ -40,6 +40,7 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
 
+    public event Action<Faction> OnFactionCreated = delegate { };
     public event Action<BattleObject> OnObjectCreated = delegate { };
     public event Action<BattleObject> OnObjectRemoved = delegate { };
     public event Action<Fleet> OnFleetCreated = delegate { };
@@ -282,6 +283,7 @@ public class BattleManager : MonoBehaviour {
     public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
         Faction newFaction = new Faction(this, factionData, positionGiver, startingResearchCost);
         factions.Add(newFaction);
+        OnFactionCreated.Invoke(newFaction);
         return newFaction;
     }
 

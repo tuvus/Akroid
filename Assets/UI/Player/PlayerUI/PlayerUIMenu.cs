@@ -10,7 +10,8 @@ using UnityEngine;
 /// Therefore we must use an abstract class instead. Thankfully this workaround actually works.
 /// </summary>
 public abstract class IPlayerUIMenu : MonoBehaviour {
-    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float updateSpeed);
+    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
+        float updateSpeed);
 
     public abstract void SetDisplayedObject(ObjectUI objectUI);
 
@@ -35,7 +36,8 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     [SerializeField] protected GameObject leftPanel;
     [SerializeField] protected GameObject rightPanel;
 
-    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float updateSpeed) {
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
+        float updateSpeed) {
         this.playerUI = playerUI;
         this.localPlayer = localPlayer;
         this.updateSpeed = updateSpeed;
@@ -52,6 +54,9 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
             ShowMenu(false);
         } else {
             ShowMenu(true);
+            if (leftPanel != null) leftPanel.SetActive(false);
+            if (middlePanel != null) middlePanel.SetActive(false);
+            if (rightPanel != null) rightPanel.SetActive(false);
             RefreshUI();
         }
     }
@@ -67,7 +72,8 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         }
     }
 
-    /// <summary> Immediately refreshes the UI with the information of the displayedBattleObject.
+    /// <summary>
+    /// Immediately refreshes the UI with the information of the displayedBattleObject.
     /// If the object is no longer viable then the menu will be closed.
     /// </summary>
     public override void RefreshUI() {

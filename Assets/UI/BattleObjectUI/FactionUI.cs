@@ -15,4 +15,14 @@ public class FactionUI : ObjectUI {
     public override bool IsSelectable() {
         return true;
     }
+
+    public Transform GetShipTransform() {
+        return transform.GetChild(0);
+    }
+    public Transform GetStationsTransform() {
+        return transform.GetChild(1);
+    }
+    public Transform GetFleetTransform() {
+        return transform.GetChild(2);
+    }
 }

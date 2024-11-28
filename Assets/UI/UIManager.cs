@@ -100,10 +100,6 @@ public class UIManager : MonoBehaviour {
         return transform.GetChild(0);
     }
 
-    public Transform GetFleetTransform(Faction faction) {
-        return transform.GetChild(0);
-    }
-
     public Transform GetAsteroidFieldTransform() {
         return transform.GetChild(1);
     }

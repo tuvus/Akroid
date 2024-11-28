@@ -18,6 +18,7 @@ public class UnitSpriteManager : MonoBehaviour {
         units = new Dictionary<Unit, UnitUI>();
         fleetUIs = new Dictionary<Fleet, FleetUI>();
         factionUIs = new Dictionary<Faction, FactionUI>();
+        battleManager.OnFactionCreated += OnFactionCreated;
         battleManager.OnObjectCreated += OnObjectCreated;
         battleManager.OnObjectRemoved += OnObjectRemoved;
         battleManager.OnFleetCreated += OnFleetCreated;
@@ -35,12 +36,25 @@ public class UnitSpriteManager : MonoBehaviour {
                 if (objectUI is StarUI) objectUI.transform.SetParent(uIManager.GetStarTransform());
                 else if (objectUI is GasCloudUI) objectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
                 else if (objectUI is AsteroidUI) objectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
+                else if (objectUI.battleObject.faction != null) {
+                    FactionUI factionUI = factionUIs[objectUI.battleObject.faction];
+                    if (objectUI is ShipUI) objectUI.transform.SetParent(factionUI.GetShipTransform());
+                    else if (objectUI is StationUI) objectUI.transform.SetParent(factionUI.GetStationsTransform());
+                }
+
                 objects[objPair.Key] = objectUI;
                 if (objPair.Key.IsUnit()) units[(Unit)objPair.Key] = (UnitUI)objectUI;
             } else {
                 objPair.Value.UpdateObject();
             }
         }
+    }
+
+    private void OnFactionCreated(Faction faction) {
+        FactionUI factionUI = Instantiate((GameObject)Resources.Load("Prefabs/Faction"),
+            uIManager.GetFactionsTransform()).GetComponent<FactionUI>();
+        factionUIs.Add(faction, factionUI);
+        factionUI.Setup(faction);
     }
 
     /// <summary>
@@ -66,8 +80,9 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnFleetCreated(Fleet fleet) {
+        FactionUI factionUI = factionUIs[fleet.faction];
         FleetUI fleetUI = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"),
-            uIManager.GetFleetTransform(fleet.faction)).GetComponent<FleetUI>();
+            factionUI.GetFleetTransform()).GetComponent<FleetUI>();
         fleetUI.Setup(fleet, this);
         fleetUIs.Add(fleet, fleetUI);
     }

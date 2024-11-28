@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerStationUI : PlayerUIMenu<StationUI> {
-    private UnitSpriteManager unitSpriteManager;
     [SerializeField] private TMP_Text stationName;
     [SerializeField] private TMP_Text stationFaction;
     [SerializeField] private TMP_Text stationType;
@@ -20,7 +19,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     [SerializeField] private TMP_Text hangarStatus;
     [SerializeField] private Transform hangarList;
     [SerializeField] private GameObject shipButtonPrefab;
-    [SerializeField] private List<Ship> shipsInHangar;
+    [SerializeField] private List<Ship> shipsInHangar = new();
     [SerializeField] private Toggle autoBuildShips;
     [SerializeField] private Button shipYardSelection;
     [SerializeField] private Button upgradeSelection;
@@ -33,11 +32,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     UnitUI upgradeDisplayUnit;
     [SerializeField] TMP_Text constructionBayStatus;
     [SerializeField] Transform constructionBayList;
-    List<Ship.ShipBlueprint> shipBlueprints;
-
-    public void SetupPlayerStationUI(UnitSpriteManager unitSpriteManager) {
-        this.unitSpriteManager = this.unitSpriteManager;
-    }
+    List<Ship.ShipBlueprint> shipBlueprints = new();
 
     protected override bool IsObjectViable() {
         return displayedObject != null && displayedObject.battleObject.IsSpawned();
