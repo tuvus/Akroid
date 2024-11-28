@@ -7,21 +7,6 @@ public class ShipyardAI : StationAI {
 
     public override void UpdateAI(float deltaTime) {
         base.UpdateAI(deltaTime);
-        UpdateShipyard();
-    }
-
-    void UpdateShipyard() {
-        if (cargoTime <= 0 && autoCollectCargo) {
-            foreach (var ship in station.GetAllDockedShips()) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
-                    station.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Metal, ship);
-                } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) > 0) {
-                    station.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.Gas, ship);
-                }
-            }
-
-            cargoTime += cargoSpeed;
-        }
     }
 
     protected override void ManageStationRepair() {

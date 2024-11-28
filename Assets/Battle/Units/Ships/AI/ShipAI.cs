@@ -27,7 +27,7 @@ public class ShipAI {
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
         if ((command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit ||
-             command.commandType == CommandType.Protect) && !ship.HasWeapons()) {
+            command.commandType == CommandType.Protect) && !ship.HasWeapons()) {
             return;
         }
 
@@ -198,11 +198,11 @@ public class ShipAI {
             //If there is a targetUnit check if a new one should be calculated
             if (currentCommandState != CommandType.Move &&
                 (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                 (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                 (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                  command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                 (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                  command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+                    (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
+                    (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                        command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
+                    (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                        command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -279,11 +279,11 @@ public class ShipAI {
             //If there is a targetUnit check if a new one should be calculated
             if (currentCommandState != CommandType.Move &&
                 (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                 (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                 (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                  command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                 (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                  command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+                    (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
+                    (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                        command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
+                    (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                        command.targetUnit != GetClosestNearbyEnemyUnit()))) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -404,11 +404,11 @@ public class ShipAI {
             if (targetAngle <= 0) {
                 targetAngle = Calculator.ConvertTo360DegRotation(targetAngle + 120);
                 targetPosition = command.targetUnit.GetPosition() +
-                                 Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                    Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
             } else {
                 targetAngle = Calculator.ConvertTo360DegRotation(targetAngle - 120);
                 targetPosition = command.targetUnit.GetPosition() -
-                                 Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
+                    Calculator.GetPositionOutOfAngleAndDistance(targetAngle, ship.GetMinWeaponRange());
             }
 
             ship.SetMoveRotateTarget(targetPosition);
@@ -641,6 +641,8 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
+        //TODO: Create a more robust cargo transfer system
+        long cargoTransferSpeed = 400;
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
                 currentCommandState = CommandType.Transport;
@@ -659,6 +661,7 @@ public class ShipAI {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
+                    ship.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, command.productionStation);
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
@@ -669,6 +672,7 @@ public class ShipAI {
                     else
                         currentCommandState = CommandType.Dock;
                 } else {
+                    command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {
@@ -695,6 +699,8 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
+        //TODO: Create a more robust cargo transfer system
+        long cargoTransferSpeed = 400;
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
                 currentCommandState = CommandType.Transport;
@@ -713,6 +719,7 @@ public class ShipAI {
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
+                    ship.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, command.productionStation);
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
@@ -725,6 +732,7 @@ public class ShipAI {
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
+                    command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {
@@ -754,7 +762,7 @@ public class ShipAI {
 
         if (Vector2.Distance(ship.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
             foreach (var habitationModule in ship.moduleSystem.modules.Where((c) => c.GetType() == typeof(HabitationArea))
-                         .Cast<HabitationArea>()) {
+                .Cast<HabitationArea>()) {
                 habitationModule.ColonizePlanet(command.targetPlanet);
             }
 
@@ -861,8 +869,8 @@ public class ShipAI {
                     Vector2.Distance(ship.GetPosition(), command.targetPlanet.GetPosition()) -
                     (ship.GetSize() + command.targetPlanet.GetSize() + 100)));
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
-                                                               || command.commandType == CommandType.TurnToRotation ||
-                                                               command.commandType == CommandType.TurnToPosition) { } else if
+                || command.commandType == CommandType.TurnToRotation ||
+                command.commandType == CommandType.TurnToPosition) { } else if
                 (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;
                 positions.Add(command.protectUnit.GetPosition());

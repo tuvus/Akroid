@@ -34,11 +34,7 @@ public class MiningStationAI : StationAI {
 
     private void UpdateMiningStation() {
         Profiler.BeginSample("UpdateMiningStationAI");
-        if (GetMiningStation().activelyMining) {
-            if (cargoTime <= 0) {
-                ManageMinningStationCargo();
-            }
-        } else if (!GetMiningStation().activelyMining && transportShips.Count > 0) {
+        if (!GetMiningStation().activelyMining && !GetMiningStation().activelyMining && transportShips.Count > 0) {
             for (int i = transportShips.Count - 1; i >= 0; i--) {
                 transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 transportShips.RemoveAt(i);
@@ -46,16 +42,6 @@ public class MiningStationAI : StationAI {
         }
 
         Profiler.EndSample();
-    }
-
-    void ManageMinningStationCargo() {
-        foreach (var ship in station.GetAllDockedShips()) {
-            if (ship.GetShipType() == Ship.ShipType.Transport) {
-                ship.LoadCargoFromUnit(cargoAmount, CargoBay.CargoTypes.All, station);
-                cargoTime += cargoSpeed;
-                break;
-            }
-        }
     }
 
     public void AddTransportShip(Ship ship) {
