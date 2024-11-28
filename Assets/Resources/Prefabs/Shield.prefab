@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 579245397232031920}
   - component: {fileID: 3561529356722744132}
-  - component: {fileID: 4863749457260747931}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Units/Shield
@@ -85,16 +84,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4863749457260747931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2483464117563281541}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 648645c8ee579f049bc4e03372d7c439, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 0

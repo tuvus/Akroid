@@ -57,7 +57,7 @@ public class Projectile : BattleObject {
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.IsSpawned() && unit.faction != faction) {
             foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
-                damage = shieldGenerator.GetShield().TakeDamage(damage);
+                damage = shieldGenerator.shield.TakeDamage(damage);
                 if (damage < 0) {
                     Explode(unit);
                     return;

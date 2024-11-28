@@ -1,26 +1,24 @@
 ﻿using UnityEngine;
 
-public class Shield : MonoBehaviour {
-    Unit unit;
-    ShieldGenerator shieldGenerator;
-    private SpriteRenderer spriteRenderer;
-    private Collider2D shieldCollider;
-    public int health;
+public class Shield : BattleObject {
+    private Unit unit;
+    private ShieldGenerator shieldGenerator;
+    public int health { get; private set; }
 
-    public void SetShield(int health, ShieldGenerator shieldGenerator, Unit unit) {
+    public Shield(ShieldGenerator shieldGenerator, Unit unit, int health) {
         this.health = health;
         this.shieldGenerator = shieldGenerator;
         this.unit = unit;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        shieldCollider = GetComponent<Collider2D>();
-        RefreshSheild();
+    }
+
+    public void SetStrength(int strength) {
+        health = strength;
     }
 
     public void RegenShield(int regenAmount) {
         health += regenAmount;
         if (health > shieldGenerator.GetMaxShieldStrength())
             health = shieldGenerator.GetMaxShieldStrength();
-        RefreshSheild();
     }
 
     public int TakeDamage(int takeDamage) {
@@ -29,24 +27,27 @@ public class Shield : MonoBehaviour {
             int returnValue = -health;
             shieldGenerator.DestroyShield();
             health = 0;
+            SetVisible(false);
             return returnValue;
         } else {
-            RefreshSheild();
             return 0;
         }
     }
 
-    public void RefreshSheild() {
-        float shieldPercent = (float)health / shieldGenerator.GetMaxShieldStrength();
-        spriteRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
-    }
-
-    public void ShowSield(bool show) {
-        spriteRenderer.enabled = show;
-        shieldCollider.enabled = show;
-    }
+    // public void RefreshSheild() {
+    //     float shieldPercent = (float)health / shieldGenerator.GetMaxShieldStrength();
+    //     spriteRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
+    // }
 
     public Unit GetUnit() {
         return unit;
+    }
+
+    public void SetVisible(bool visible) {
+        this.visible = visible;
+    }
+
+    public override GameObject GetPrefab() {
+        return shieldGenerator.shieldGeneratorScriptableObject.shieldPrefab;
     }
 }

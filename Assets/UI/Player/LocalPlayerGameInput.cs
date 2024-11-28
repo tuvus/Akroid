@@ -275,25 +275,10 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     void GenerateStationBuilderCommand() {
-        List<ShipUI> allShips = selectedUnits.GetAllShips();
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsConstructionShip() && ((ConstructionShip)allShips[i].ship).targetStationBlueprint == null) {
-                Station newMiningStation = ((ConstructionShip)allShips[i].ship).CreateStation(GetMouseWorldPosition());
-                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
-                    Command.CommandAction.Replace);
-                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-                return;
-            }
-        }
-
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsConstructionShip()) {
-                Station newMiningStation = ((ConstructionShip)allShips[i].ship).CreateStation(GetMouseWorldPosition());
-                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateMoveCommand(newMiningStation.GetPosition()),
-                    Command.CommandAction.Replace);
-                LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-                return;
-            }
+        foreach (var shipUI in selectedUnits.GetAllShips().Where(shipUI => shipUI.ship.IsConstructionShip() && shipUI.ship.spawned)) {
+            shipUI.ship.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(shipUI.ship.faction ,Station.StationType.MiningStation, GetMouseWorldPosition()), GetCommandAction());
+            LocalPlayer.Instance.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+            return;
         }
     }
 

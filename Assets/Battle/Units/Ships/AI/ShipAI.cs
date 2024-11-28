@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,6 +34,7 @@ public class ShipAI {
 
         if (commandAction == CommandAction.AddToBegining) {
             newCommand = true;
+            if (commands.Any()) commands.First().OnCommandNoLongerActive(ship);
             commands.Insert(0, command);
         } else if (commandAction == CommandAction.Replace) {
             newCommand = true;
@@ -47,8 +49,7 @@ public class ShipAI {
 
     public void NextCommand() {
         if (commands.Count > 0) {
-            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
-                ship.SetGroup(ship.faction.baseGroup);
+            commands.First().OnRemoveCommand(ship, true);
             commands.RemoveAt(0);
             newCommand = true;
         }
@@ -60,8 +61,10 @@ public class ShipAI {
 
     public void ClearCommands() {
         if (commands.Count > 0) {
-            if (commands[0].commandType == CommandType.Transport || commands[0].commandType == CommandType.TransportDelay)
-                ship.SetGroup(ship.faction.baseGroup);
+            commands.First().OnRemoveCommand(ship, true);
+            for (int i = 1; i < commands.Count; i++) {
+                commands[i].OnRemoveCommand(ship, false);
+            }
         }
 
         commands.Clear();
@@ -108,7 +111,7 @@ public class ShipAI {
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             CommandType.Colonize => DoColonizeCommand(command, deltaTime),
-            _ => CommandResult.Stop,
+            CommandType.BuildStation => DoBuildStationCommand(command, deltaTime),
         };
     }
 
@@ -768,6 +771,27 @@ public class ShipAI {
 
             ship.Explode();
             return CommandResult.StopRemove;
+        }
+
+        return CommandResult.Stop;
+    }
+
+    /// <summary>
+    /// Moves to the station and builds the station once it is close enough
+    /// </summary>
+    CommandResult DoBuildStationCommand(Command command, float deltaTime) {
+        if (newCommand) {
+            currentCommandState = CommandType.Move;
+            ship.SetMovePosition(command.destinationStation.position, command.destinationStation.size + ship.size + 2);
+            command.targetPosition = ship.GetTargetMovePosition();
+            ship.SetMaxSpeed(command.maxSpeed);
+            newCommand = false;
+        }
+
+        if (Vector2.Distance(ship.position, command.destinationStation.position) <= ship.size + command.destinationStation.size + 4) {
+            if (!command.destinationStation.BuildStation()) throw new InvalidProgramException("Trying to build an already built station!");
+            ship.Explode();
+            return CommandResult.Stop;
         }
 
         return CommandResult.Stop;

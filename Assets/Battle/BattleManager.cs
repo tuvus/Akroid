@@ -299,9 +299,12 @@ public class BattleManager : MonoBehaviour {
     public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject,
         bool built) {
         Station newStation;
-        if (stationScriptableObject.stationType == StationType.Shipyard || stationScriptableObject.stationType == StationType.FleetCommand)
+        if (stationScriptableObject.stationType == StationType.Shipyard ||
+            stationScriptableObject.stationType == StationType.FleetCommand) {
             newStation = new Shipyard(battleObjectData, this, stationScriptableObject, built);
-        else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
+        } else if (stationScriptableObject.stationType == StationType.MiningStation) {
+            newStation = new MiningStation(battleObjectData, this, (MiningStationScriptableObject)stationScriptableObject, built);
+        } else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
 
         newStation.SetupPosition(battleObjectData.positionGiver);
         if (built) {
@@ -372,6 +375,7 @@ public class BattleManager : MonoBehaviour {
             newAsteroidField.battleObjects.Add(newAsteroid);
             AddObject(newAsteroid);
         }
+
         // The Asteroid field position must be set after the asteroids have been generated
         newAsteroidField.SetupAsteroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
@@ -379,7 +383,8 @@ public class BattleManager : MonoBehaviour {
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         float size = Random.Range(5, 15);
-        GasCloud newGasCloud = new GasCloud(new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
+        GasCloud newGasCloud = new GasCloud(
+            new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
             (long)(Random.Range(5000, 17000) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);

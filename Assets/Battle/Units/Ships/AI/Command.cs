@@ -23,6 +23,7 @@ public class Command {
         CollectGas,
         DisbandFleet,
         Colonize,
+        BuildStation,
     }
 
     public enum CommandAction {
@@ -56,110 +57,109 @@ public class Command {
     }
 
     public static Command CreateIdleCommand() {
-        Command newCommand = new Command(CommandType.Idle);
-        return newCommand;
+        return new Command(CommandType.Idle);
     }
 
     public static Command CreateWaitCommand(float waitTime) {
-        Command newCommand = new Command(CommandType.Wait);
-        newCommand.waitTime = waitTime;
-        return newCommand;
+        return new Command(CommandType.Wait) {
+            waitTime = waitTime
+        };
     }
 
     public static Command CreateRotationCommand(float rotation) {
-        Command newCommand = new Command(CommandType.TurnToRotation);
-        newCommand.targetRotation = rotation;
-        return newCommand;
+        return new Command(CommandType.TurnToRotation) {
+            targetRotation = rotation
+        };
     }
 
     public static Command CreateRotationCommand(Vector2 targetPosition) {
-        Command newCommand = new Command(CommandType.TurnToPosition);
-        newCommand.targetPosition = targetPosition;
-        return newCommand;
+        return new Command(CommandType.TurnToPosition) {
+            targetPosition = targetPosition
+        };
     }
 
     public static Command CreateFormationCommand(float rotation) {
-        Command newCommand = new Command(CommandType.Formation);
-        newCommand.targetRotation = rotation;
-        return newCommand;
+        return new Command(CommandType.Formation) {
+            targetRotation = rotation
+        };
     }
 
     public static Command CreateFormationCommand(Vector2 targetPosition, float rotation) {
-        Command newCommand = new Command(CommandType.FormationLocation);
-        newCommand.targetPosition = targetPosition;
-        newCommand.targetRotation = rotation;
-        return newCommand;
+        return new Command(CommandType.FormationLocation) {
+            targetPosition = targetPosition,
+            targetRotation = rotation
+        };
     }
 
     public static Command CreateMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.Move);
-        newCommand.targetPosition = targetPosition;
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.Move) {
+            targetPosition = targetPosition,
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateMoveOffsetCommand(Vector2 currentPosition, Vector2 targetPosition, float offset,
         float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.Move);
-        newCommand.targetPosition =
-            Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset);
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.Move) {
+            targetPosition =
+                Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset),
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateAttackMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.AttackMove);
-        newCommand.targetPosition = targetPosition;
-        newCommand.maxSpeed = maxSpeed;
-        newCommand.waitTime = Random.Range(0, 0.2f);
-        return newCommand;
+        return new Command(CommandType.AttackMove) {
+            targetPosition = targetPosition,
+            maxSpeed = maxSpeed,
+            waitTime = Random.Range(0, 0.2f)
+        };
     }
 
     public static Command CreateAttackMoveCommand(Unit targetUnit, float maxSpeed = float.MaxValue,
         bool useAlternateCommandOnceDone = false) {
-        Command newCommand = new Command(CommandType.AttackMoveUnit);
-        newCommand.targetUnit = targetUnit;
-        newCommand.maxSpeed = maxSpeed;
-        newCommand.useAlternateCommandOnceDone = useAlternateCommandOnceDone;
-        newCommand.waitTime = Random.Range(0, 0.2f);
-        return newCommand;
+        return new Command(CommandType.AttackMoveUnit) {
+            targetUnit = targetUnit,
+            maxSpeed = maxSpeed,
+            useAlternateCommandOnceDone = useAlternateCommandOnceDone,
+            waitTime = Random.Range(0, 0.2f)
+        };
     }
 
     public static Command CreateAttackFleetCommand(Fleet targetFleet, Ship targetShip = null) {
-        Command newCommand = new Command(CommandType.AttackFleet);
-        newCommand.targetFleet = targetFleet;
-        newCommand.maxSpeed = float.MaxValue;
-        newCommand.targetUnit = targetShip;
-        return newCommand;
+        return new Command(CommandType.AttackFleet) {
+            targetFleet = targetFleet,
+            maxSpeed = float.MaxValue,
+            targetUnit = targetShip
+        };
     }
 
     public static Command CreateSkirmishCommand(Fleet targetFleet, Ship targetShip, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.AttackFleet);
-        newCommand.targetUnit = targetShip;
-        newCommand.targetFleet = targetFleet;
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.AttackFleet) {
+            targetUnit = targetShip,
+            targetFleet = targetFleet,
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateFollowCommand(Unit targetUnit, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.Follow);
-        newCommand.targetUnit = targetUnit;
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.Follow) {
+            targetUnit = targetUnit,
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateProtectCommand(Unit protectUnit, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.Protect);
-        newCommand.protectUnit = protectUnit;
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.Protect) {
+            protectUnit = protectUnit,
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateDockCommand(Station destinationStation, float maxSpeed = float.MaxValue) {
-        Command newCommand = new Command(CommandType.Dock);
-        newCommand.destinationStation = destinationStation;
-        newCommand.maxSpeed = maxSpeed;
-        return newCommand;
+        return new Command(CommandType.Dock) {
+            destinationStation = destinationStation,
+            maxSpeed = maxSpeed
+        };
     }
 
     public static Command CreateUndockCommand() {
@@ -167,55 +167,87 @@ public class Command {
     }
 
     public static Command CreateUndockCommand(float rotation) {
-        Command newCommand = new Command(CommandType.UndockCommand);
-        newCommand.targetRotation = rotation;
-        return newCommand;
+        return new Command(CommandType.UndockCommand) {
+            targetRotation = rotation
+        };
     }
 
     public static Command CreateTransportCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
         bool oneTrip = false) {
-        Command newCommand = new Command(CommandType.Transport);
-        newCommand.destinationStation = destinationStation;
-        newCommand.productionStation = productionStation;
-        newCommand.useAlternateCommandOnceDone = oneTrip;
-        newCommand.cargoType = cargoType;
-        return newCommand;
+        return new Command(CommandType.Transport) {
+            destinationStation = destinationStation,
+            productionStation = productionStation,
+            useAlternateCommandOnceDone = oneTrip,
+            cargoType = cargoType
+        };
     }
 
     public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
         float delay) {
-        Command newCommand = new Command(CommandType.TransportDelay);
-        newCommand.destinationStation = destinationStation;
-        newCommand.productionStation = productionStation;
-        newCommand.waitTime = delay;
-        newCommand.cargoType = cargoType;
-        newCommand.targetRotation = delay;
-        return newCommand;
+        return new Command(CommandType.TransportDelay) {
+            destinationStation = destinationStation,
+            productionStation = productionStation,
+            waitTime = delay,
+            cargoType = cargoType,
+            targetRotation = delay
+        };
     }
 
     public static Command CreateResearchCommand(Star targetStar, Station returnStation) {
-        Command newCommand = new Command(CommandType.Research);
-        newCommand.destinationStation = returnStation;
-        newCommand.targetStar = targetStar;
-        return newCommand;
+        return new Command(CommandType.Research) {
+            destinationStation = returnStation,
+            targetStar = targetStar
+        };
     }
 
     public static Command CreateCollectGasCommand(GasCloud targetGasCloud, Station returnStation) {
-        Command newCommand = new Command(CommandType.CollectGas);
-        newCommand.destinationStation = returnStation;
-        newCommand.targetGasCloud = targetGasCloud;
-        return newCommand;
+        return new Command(CommandType.CollectGas) {
+            destinationStation = returnStation,
+            targetGasCloud = targetGasCloud
+        };
     }
 
     public static Command CreateDisbandFleetCommand() {
-        Command newCommand = new Command(CommandType.DisbandFleet);
-        return newCommand;
+        return new Command(CommandType.DisbandFleet);
     }
 
     public static Command CreateColonizeCommand(Planet planet) {
-        Command newCommand = new Command(CommandType.Colonize);
-        newCommand.targetPlanet = planet;
-        return newCommand;
+        return new Command(CommandType.Colonize) {
+            targetPlanet = planet
+        };
+    }
+
+    public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position) {
+        return CreateBuildStationCommand(faction.battleManager.CreateNewStation(
+            new BattleObject.BattleObjectData(stationType.ToString(), new BattleManager.PositionGiver(position), Random.Range(0, 360),
+                faction),
+            faction.battleManager.GetStationBlueprint(stationType).stationScriptableObject, false));
+    }
+
+    public static Command CreateBuildStationCommand(Station stationToBuild) {
+        return new Command(CommandType.BuildStation) {
+            destinationStation = stationToBuild
+        };
+    }
+
+    /// <summary>
+    /// Called when the command is no longer the first command in the list.
+    /// </summary>
+    public void OnCommandNoLongerActive(Ship ship) {
+        if (commandType == CommandType.Transport || commandType == CommandType.TransportDelay) {
+            // Ships that are doing a transport command go into a special group
+            // We need to remove them from this group and add it to the base group once the command is no longer active
+            ship.SetGroup(ship.faction.baseGroup);
+        }
+    }
+
+    public void OnRemoveCommand(Ship ship, bool wasActiveCommand) {
+        if (commandType == CommandType.Transport || commandType == CommandType.TransportDelay) {
+            if (wasActiveCommand) ship.SetGroup(ship.faction.baseGroup);
+        } else if (commandType == CommandType.BuildStation && !destinationStation.IsBuilt()) {
+            // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
+            destinationStation.Explode();
+        }
     }
 
     public bool IsAttackCommand() {

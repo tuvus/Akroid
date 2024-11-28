@@ -21,15 +21,13 @@ public class Station : Unit, IPositionConfirmer {
     [System.Serializable]
     public class StationBlueprint {
         public string name;
-        public int factionIndex;
         public StationScriptableObject stationScriptableObject;
         public long stationCost;
         public List<CargoBay.CargoTypes> resourcesTypes;
         public List<long> resources;
         public long totalResourcesRequired;
 
-        private StationBlueprint(int factionIndex, StationScriptableObject stationScriptableObject, string name) {
-            this.factionIndex = factionIndex;
+        private StationBlueprint(StationScriptableObject stationScriptableObject, string name) {
             this.stationScriptableObject = stationScriptableObject;
             this.name = name;
             this.stationCost = stationScriptableObject.cost;
@@ -40,10 +38,10 @@ public class Station : Unit, IPositionConfirmer {
             }
         }
 
-        public StationBlueprint CreateStationBlueprint(int factionIndex, string name = null) {
+        public StationBlueprint CreateStationBlueprint(string name = null) {
             if (name == null)
                 name = this.name;
-            return new StationBlueprint(factionIndex, stationScriptableObject, name);
+            return new StationBlueprint(stationScriptableObject, name);
         }
     }
 

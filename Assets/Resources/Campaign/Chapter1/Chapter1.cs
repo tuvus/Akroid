@@ -135,12 +135,13 @@ public class Chapter1 : CampaingController {
                 researchFaction), Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/ResearchStation"), true);
 
         playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
-        Ship setupFleetShip1 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
-        ConstructionShip setupFleetShip2 = (ConstructionShip)tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder);
-        setupFleetShip2.targetStationBlueprint = playerMiningStation;
-        Ship setupFleetShip3 = tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport);
-        Ship setupFleetShip4 = tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle");
-        Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet", playerFaction.ships);
+        Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
+            new HashSet<Ship>() {
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
+                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle")
+            });
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
             Command.CommandAction.Replace);
         miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4,
@@ -148,7 +149,7 @@ public class Chapter1 : CampaingController {
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(),
             playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateDockCommand(playerMiningStation));
+        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
         miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
@@ -426,7 +427,6 @@ public class Chapter1 : CampaingController {
                 "Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n " +
                 "In the mean time feel free to click the \"Controls help\" button in the top right and read the controls.",
                 15 * GetTimeScale());
-
             eventManager.AddEvent(eventManager.CreatePredicateEvent(_ => playerMiningStation.IsBuilt()), () => { AddStationTutorial(); });
         })();
     }

@@ -102,8 +102,8 @@ public class Missile : BattleObject {
         Unit unit = coll.GetComponent<Unit>();
         if (unit != null && unit.IsSpawned() && unit.faction != faction) {
             foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
-                if (shieldGenerator.GetShield().health > 0) {
-                    damage = shieldGenerator.GetShield().TakeDamage(damage);
+                if (shieldGenerator.shield.health > 0) {
+                    damage = shieldGenerator.shield.TakeDamage(damage);
                     Explode();
                     velocity = unit.GetVelocity();
                     return;

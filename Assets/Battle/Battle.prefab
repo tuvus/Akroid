@@ -365,7 +365,7 @@ MonoBehaviour:
     shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
       type: 2}
   stationBlueprints:
-  - name: 
+  - name: Fleet Command
     factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
       type: 2}
@@ -373,7 +373,7 @@ MonoBehaviour:
     resourcesTypes: 
     resources: 
     totalResourcesRequired: 0
-  - name: 
+  - name: Mining Station
     factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 51a747427e783d94f90e5dd5eeeae964,
       type: 2}
@@ -381,7 +381,7 @@ MonoBehaviour:
     resourcesTypes: 
     resources: 
     totalResourcesRequired: 0
-  - name: 
+  - name: Defense Station
     factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 198eaddfd11c81c4985c80bfa8b44470,
       type: 2}

@@ -93,6 +93,7 @@ public class FleetAI {
             CommandType.Dock => DoDockCommand(command, deltaTime),
             CommandType.Formation => DoFormationCommand(command, deltaTime),
             CommandType.FormationLocation => DoFormationLocationCommand(command, deltaTime),
+            CommandType.BuildStation => DoBuildStationCommand(command, deltaTime),
             CommandType.DisbandFleet => DoDisbandFleetCommand(command, deltaTime),
             _ => CommandResult.Stop,
         };
@@ -390,6 +391,33 @@ public class FleetAI {
         return CommandResult.Stop;
     }
 
+    /// <summary>
+    /// Sends the ships to construct the station and docks them at it once constructed.
+    /// If there is no construction ship in the fleet, the fleet will wait for the station to build.
+    /// </summary>
+    CommandResult DoBuildStationCommand(Command command, float deltaTime) {
+        if (newCommand) {
+            SetFleetMoveCommand(command.destinationStation.position, fleet.GetSize() + command.destinationStation.GetSize() + 10);
+            Ship constructionShip = fleet.ships.FirstOrDefault(s => s.IsConstructionShip());
+            if (constructionShip != null) {
+                constructionShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(command.destinationStation));
+            }
+            currentCommandState = CommandType.Move;
+            newCommand = false;
+        }
+
+        if (fleet.AreShipsIdle() && command.destinationStation.IsBuilt()) {
+            SetFleetDockTarget(command.destinationStation);
+            currentCommandState = CommandType.Dock;
+        }
+
+        if (fleet.AreShipsIdle() && fleet.ships.All(s => s.dockedStation == command.destinationStation)) {
+            return CommandResult.StopRemove;
+        }
+
+        return CommandResult.Stop;
+    }
+
     CommandResult DoFormationCommand(Command command, float deltaTime) {
         if (newCommand) {
             AssignShipsToFormation(fleet.GetPosition(), command.targetRotation);
@@ -515,6 +543,10 @@ public class FleetAI {
         return 0;
     }
 
+    public void SetFleetMoveCommand(Vector2 movePosition, float distanceFromPosition) {
+        SetFleetMoveCommand(Vector2.MoveTowards(movePosition, fleet.position, distanceFromPosition));
+    }
+
 
     /// <summary>
     /// Clears all other commands, rotates the ships towards the position
@@ -612,10 +644,10 @@ public class FleetAI {
                     positions.Add(command.targetGasCloud.GetPosition());
                 }
             } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
-                                                               || command.commandType == CommandType.TurnToRotation ||
-                                                               command.commandType == CommandType.TurnToPosition
-                                                               || command.commandType == CommandType.DisbandFleet ||
-                                                               command.commandType == CommandType.Formation) { } else if
+                || command.commandType == CommandType.TurnToRotation ||
+                command.commandType == CommandType.TurnToPosition
+                || command.commandType == CommandType.DisbandFleet ||
+                command.commandType == CommandType.Formation) { } else if
                 (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;
                 positions.Add(command.protectUnit.GetPosition());

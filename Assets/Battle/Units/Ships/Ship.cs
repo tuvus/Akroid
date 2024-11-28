@@ -417,6 +417,7 @@ public class Ship : Unit {
 
     public override void Explode() {
         base.Explode();
+        shipAI.ClearCommands();
         moduleSystem.Get<Thruster>().ForEach(t => t.EndThrust());
     }
 

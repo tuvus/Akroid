@@ -1,31 +1,26 @@
 ﻿using UnityEngine;
 
 public class ShieldGenerator : ModuleComponent {
-    ShieldGeneratorScriptableObject shieldGeneratorScriptableObject;
-
-    //ShieldStats
-    public Shield shieldPrefab;
+    public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; private set; }
 
     //RuntimeStats
     private float timeTillShieldCount;
-    private Shield shield;
+    public Shield shield { get; private set; }
 
-    public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit,
-        ComponentScriptableObject componentScriptableObject) :
+    public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
 
+        shield = new Shield(this, unit, shieldGeneratorScriptableObject.maxShieldHealth);
         // shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
         // shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
-        shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
-        CreateShield(true);
     }
 
     public void UpdateShieldGenerator(float deltaTime) {
         timeTillShieldCount -= deltaTime * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldRegen);
         if (shield.health == 0) {
             if (timeTillShieldCount <= 0) {
-                CreateShield(false);
+                shield.SetStrength(GetMaxShieldStrength() / 5);
             }
         } else {
             if (timeTillShieldCount <= 0) {
@@ -39,37 +34,17 @@ public class ShieldGenerator : ModuleComponent {
         timeTillShieldCount += shieldGeneratorScriptableObject.shieldRegenRate;
     }
 
-    public void CreateShield(bool fullHealth) {
-        ShowShield(true);
-        if (fullHealth) {
-            shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth, this, unit);
-        } else {
-            shield.SetShield(shieldGeneratorScriptableObject.maxShieldHealth / 5, this, unit);
-        }
-    }
-
     public void DestroyShield() {
-        ShowShield(false);
+        shield.SetVisible(false);
         timeTillShieldCount = shieldGeneratorScriptableObject.shieldRecreateSpeed;
     }
 
     public int GetShieldStrength() {
-        int shieldHealth = 0;
-        if (shield != null)
-            shieldHealth = shield.health;
-        return shieldHealth;
+        return shield.health;
     }
 
     public int GetMaxShieldStrength() {
         return Mathf.RoundToInt(shieldGeneratorScriptableObject.maxShieldHealth *
-                                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
-    }
-
-    public Shield GetShield() {
-        return shield;
-    }
-
-    public void ShowShield(bool show) {
-        shield.ShowSield(show);
+            unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
     }
 }
