@@ -172,13 +172,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 300, 10, 3);
-            battleManager.CreateNewStation(new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, Random.Range(0, 360), this),
+            BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
+            battleManager.CreateNewStation(
+                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, Random.Range(0, 360), this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
                     new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, Random.Range(0, 360), this),
-                    (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, true);
+                    (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
+                        .stationScriptableObject, true);
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport);
                     shipCount--;
@@ -574,54 +576,21 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns>the available asteroid field count</returns>
     public int GetAvailableAsteroidFieldsCount() {
-        return battleManager.asteroidFields.Count(a => IsAsteroidAvailableForNewMiningStation(a));
+        return battleManager.asteroidFields.Count(IsAsteroidAvailableForNewMiningStation);
     }
 
-    public List<AsteroidField> GetClosestAvailableAsteroidFields(Vector2 position) {
-        List<AsteroidField> eligibleAsteroidFields = new List<AsteroidField>();
-        List<float> distances = new List<float>();
-        foreach (var targetAsteroidField in battleManager.asteroidFields) {
-            if (IsAsteroidAvailableForNewMiningStation(targetAsteroidField)) {
-                float distance = Vector2.Distance(position, targetAsteroidField.GetPosition());
-                for (int f = 0; f < eligibleAsteroidFields.Count + 1; f++) {
-                    if (f == eligibleAsteroidFields.Count) {
-                        eligibleAsteroidFields.Add(targetAsteroidField);
-                        distances.Add(distance);
-                        break;
-                    }
-
-                    if (distance < Vector2.Distance(position, eligibleAsteroidFields[f].GetPosition())) {
-                        eligibleAsteroidFields.Insert(f, targetAsteroidField);
-                        distances.Insert(f, distance);
-                        break;
-                    }
-                }
-            }
-        }
-
-        return eligibleAsteroidFields;
+    public IOrderedEnumerable<AsteroidField> GetClosestAvailableAsteroidFields(Vector2 position) {
+        return battleManager.asteroidFields.Where(IsAsteroidAvailableForNewMiningStation)
+            .OrderBy(a => Vector2.Distance(a.position, position));
     }
 
     bool IsAsteroidAvailableForNewMiningStation(AsteroidField asteroidField) {
         if (asteroidField.totalResources <= 0)
             return false;
-        foreach (Station friendlyStation in stations) {
-            if (friendlyStation.GetStationType() == Station.StationType.MiningStation &&
-                Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
-                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
-                return false;
-            }
-        }
-
-        foreach (Station friendlyStation in stationBlueprints) {
-            if (friendlyStation.GetStationType() == Station.StationType.MiningStation &&
-                Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
-                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100) {
-                return false;
-            }
-        }
-
-        return true;
+        return stations.ToList().Concat(stationBlueprints).All(friendlyStation =>
+            friendlyStation.GetStationType() != Station.StationType.MiningStation
+            || !(Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
+                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100));
     }
 
     /// <summary>

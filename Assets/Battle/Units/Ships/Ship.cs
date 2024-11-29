@@ -403,7 +403,7 @@ public class Ship : Unit {
     }
 
     public void UndockShip(Vector2 position) {
-        UndockShip(Calculator.GetAngleOutOfTwoPositions(position, position));
+        UndockShip(Calculator.GetAngleOutOfTwoPositions(this.position, position));
     }
 
     public void UndockShip(float angle) {

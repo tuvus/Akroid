@@ -110,7 +110,7 @@ public class Station : Unit, IPositionConfirmer {
                     return false;
                 }
             } else if (Vector2.Distance(position, blockingObject.GetPosition()) <=
-                       minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
+                minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
                 return false;
             }
         }

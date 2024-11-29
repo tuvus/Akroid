@@ -46,7 +46,7 @@ public class BattleManager : MonoBehaviour {
     public event Action<Fleet> OnFleetCreated = delegate { };
     public event Action<Fleet> OnFleetRemoved = delegate { };
 
-    public bool instantHit;
+    public bool instantHit = true;
     public float timeScale;
     public static bool quickStart = true;
 
@@ -173,6 +173,7 @@ public class BattleManager : MonoBehaviour {
         battleState = BattleState.Running;
         if (CheckVictory() != null)
             battleState = BattleState.Ended;
+        instantHit = true;
     }
 
     /// <summary>
@@ -365,7 +366,7 @@ public class BattleManager : MonoBehaviour {
 
     public void CreateNewAsteroidField(PositionGiver positionGiver, int count, float resourceModifier = 1) {
         AsteroidField newAsteroidField = new AsteroidField(this);
-        // The Asteroid field must be set up before the asteroids are generated
+        // We need to generate the asteroids first which can only collide with other asteroids in the same field
         for (int i = 0; i < count; i++) {
             float size = Random.Range(8f, 20f);
             Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", Vector2.zero,
@@ -376,7 +377,7 @@ public class BattleManager : MonoBehaviour {
             AddObject(newAsteroid);
         }
 
-        // The Asteroid field position must be set after the asteroids have been generated
+        // The Asteroid field position must be set after the asteroids have been generated so that we know the size of the asteroid field
         newAsteroidField.SetupAsteroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
     }
@@ -625,7 +626,7 @@ public class BattleManager : MonoBehaviour {
         // foreach (var missile in missiles) {
         //     missile.SetParticleSpeed(time);
         // }
-        instantHit = time > 10;
+        // instantHit = time > 10;
     }
 
     public double GetRealTime() {

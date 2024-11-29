@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -21,17 +22,18 @@ public class MiningStation : Station {
         if (this.built) {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
+
         GetMiningStationAI().SetupMiningStation();
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
-        List<AsteroidField> eligibleAsteroidFields = faction.GetClosestAvailableAsteroidFields(positionGiver.position);
 
-        for (int i = 0; i < eligibleAsteroidFields.Count; i++) {
-            Vector2 targetCenterPosition = Vector2.MoveTowards(eligibleAsteroidFields[i].GetPosition(), positionGiver.position,
-                eligibleAsteroidFields[i].GetSize() + GetSize() + 10);
+        IOrderedEnumerable<AsteroidField> eligibleAsteroidFields = faction.GetClosestAvailableAsteroidFields(positionGiver.position);
+        foreach (var asteroidField in eligibleAsteroidFields) {
+            Vector2 targetCenterPosition = Vector2.MoveTowards(asteroidField.position, positionGiver.position,
+                asteroidField.GetSize() + GetSize() + 10);
             Vector2? targetLocationAsteroidField =
                 BattleManager.Instance.FindFreeLocationIncrement(new BattleManager.PositionGiver(targetCenterPosition, positionGiver),
                     this);

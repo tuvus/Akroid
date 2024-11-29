@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Asteroid : BattleObject, IPositionConfirmer {
     public AsteroidScriptableObject asteroidScriptableObject { get; private set; }
-    private AsteroidField asteroidField;
+    public AsteroidField asteroidField { get; private set; }
     public long resources;
 
     public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources,
