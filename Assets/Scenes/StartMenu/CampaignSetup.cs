@@ -1,17 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms;
 
-public class CampaingSetup : MonoBehaviour {
+public class CampaignSetup : MonoBehaviour {
     [SerializeField] GameObject campaignChapterPanel;
 
     private void Awake() {
         ShowCampaingChapterPanel(false);
     }
 
-    public void StartCampaingChapter(int chapter) {
+    public void StartCampaignChapter(int chapter) {
         StartCoroutine(ChangeScenes(chapter));
     }
 

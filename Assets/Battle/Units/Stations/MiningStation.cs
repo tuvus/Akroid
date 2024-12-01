@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
@@ -30,8 +31,8 @@ public class MiningStation : Station {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
 
-        IOrderedEnumerable<AsteroidField> eligibleAsteroidFields = faction.GetClosestAvailableAsteroidFields(positionGiver.position);
-        foreach (var asteroidField in eligibleAsteroidFields) {
+
+        foreach (var asteroidField in faction.GetClosestAvailableAsteroidFields(positionGiver.position)) {
             Vector2 targetCenterPosition = Vector2.MoveTowards(asteroidField.position, positionGiver.position,
                 asteroidField.GetSize() + GetSize() + 10);
             Vector2? targetLocationAsteroidField =

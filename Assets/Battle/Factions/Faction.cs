@@ -173,9 +173,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
             BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
-            battleManager.CreateNewStation(
+            Station fleetCommand = battleManager.CreateNewStation(
                 new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, Random.Range(0, 360), this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
+            stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
                     new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, Random.Range(0, 360), this),
@@ -587,10 +588,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     bool IsAsteroidAvailableForNewMiningStation(AsteroidField asteroidField) {
         if (asteroidField.totalResources <= 0)
             return false;
-        return stations.ToList().Concat(stationBlueprints).All(friendlyStation =>
-            friendlyStation.GetStationType() != Station.StationType.MiningStation
-            || !(Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
-                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize() + 100));
+        return !stations.Concat(stationBlueprints).Any(friendlyStation =>
+            friendlyStation.GetStationType() == Station.StationType.MiningStation
+            && Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
+                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize());
     }
 
     /// <summary>

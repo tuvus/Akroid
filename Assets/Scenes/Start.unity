@@ -5485,12 +5485,12 @@ PrefabInstance:
     - target: {fileID: 3776020614680213613, guid: a4225b6513285d941ab164a047610fcf,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartCampaingChapter
+      value: StartCampaignChapter
       objectReference: {fileID: 0}
     - target: {fileID: 3776020614680213613, guid: a4225b6513285d941ab164a047610fcf,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: CampaingSetup, Assembly-CSharp
+      value: CampaignSetup, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 3776020614680213613, guid: a4225b6513285d941ab164a047610fcf,
         type: 3}
@@ -7260,12 +7260,12 @@ PrefabInstance:
     - target: {fileID: 269785454562076048, guid: 83433631c06bb1245a4c334f162a0c67,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StartCampaingChapter
+      value: StartCampaignChapter
       objectReference: {fileID: 0}
     - target: {fileID: 269785454562076048, guid: 83433631c06bb1245a4c334f162a0c67,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: CampaingSetup, Assembly-CSharp
+      value: CampaignSetup, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 269785454562076048, guid: 83433631c06bb1245a4c334f162a0c67,
         type: 3}
