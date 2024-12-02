@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using static Turret;
 
-abstract class TurretScriptableObject : ComponentScriptableObject {
+public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float DPS;
     public Sprite turretSprite;
     public float turretOffset;

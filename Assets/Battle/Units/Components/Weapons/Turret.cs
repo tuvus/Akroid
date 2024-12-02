@@ -11,7 +11,7 @@ public abstract class Turret : ModuleComponent {
         biggest = 6,
     }
 
-    TurretScriptableObject turretScriptableObject;
+    public TurretScriptableObject turretScriptableObject { get; private set; }
 
     protected ReloadController reloadController;
 

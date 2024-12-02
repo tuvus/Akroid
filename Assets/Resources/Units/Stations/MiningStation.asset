@@ -37,5 +37,5 @@ MonoBehaviour:
   repairSpeed: 5
   rotationSpeed: 0.3
   miningAmount: 300
-  miningSpeed: 5
+  miningSpeed: 2
   miningRange: 500

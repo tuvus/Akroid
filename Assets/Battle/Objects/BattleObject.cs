@@ -51,7 +51,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
         this.battleManager = battleManager;
         this.objectName = battleObjectData.objectName;
-        this.position = Vector2.zero;
+        this.position = battleObjectData.positionGiver.position;
         this.rotation = battleObjectData.rotation;
         this.scale = battleObjectData.scale;
         this.faction = battleObjectData.faction;
@@ -98,7 +98,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         return true;
     }
 
-    public Vector2 GetPosition() {
+    public virtual Vector2 GetPosition() {
         return position;
     }
 

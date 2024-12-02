@@ -10,7 +10,7 @@ public abstract class ObjectUI : MonoBehaviour {
     public abstract void UpdateObject();
 
     public void SetRotation(float rotation) {
-        transform.eulerAngles = new Vector3(0, 0, rotation);
+        transform.localEulerAngles = new Vector3(0, 0, Calculator.SimplifyPositiveRotation360(rotation));
     }
 
     public abstract bool IsSelectable();

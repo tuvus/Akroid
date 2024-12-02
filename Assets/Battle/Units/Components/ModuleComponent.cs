@@ -16,6 +16,14 @@ public abstract class ModuleComponent : BattleObject {
         this.componentScriptableObject = componentScriptableObject;
     }
 
+    public Vector2 GetWorldPosition() {
+        return Calculator.ConvertLocalPositionToWorld(unit.position, unit.rotation, position);
+    }
+
+    public float GetWorldRotation() {
+        return Calculator.SimplifyRotation360(rotation + unit.rotation);
+    }
+
     public override GameObject GetPrefab() {
         return null;
     }

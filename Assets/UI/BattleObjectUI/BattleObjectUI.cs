@@ -12,11 +12,18 @@ public abstract class BattleObjectUI : ObjectUI {
     }
 
     public override void UpdateObject() {
-        if (!Mathf.Approximately(transform.rotation.z, battleObject.rotation))
-            SetRotation(battleObject.rotation);
-        if (!battleObject.position.Equals(transform.position))
-            transform.position = battleObject.position;
+        // if (!Mathf.Approximately(transform.rotation.z, GetRotation()))
+            SetRotation(GetRotation());
+        // if (!battleObject.position.Equals(transform.position))
+            transform.position = GetPosition();
+    }
 
+    public virtual Vector2 GetPosition() {
+        return battleObject.position;
+    }
+
+    public virtual float GetRotation() {
+        return battleObject.rotation;
     }
 
     public override bool IsSelectable() {

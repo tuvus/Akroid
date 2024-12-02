@@ -64,24 +64,45 @@ public static class Calculator {
     }
 
     /// <summary>
+    /// Converts a local position to the world's position given the parents position and rotation.
+    /// </summary>
+    public static Vector2 ConvertLocalPositionToWorld(Vector2 parentPos, float parentRot, Vector2 localPos) {
+        parentRot -= 180;
+        if (parentRot < 0) parentRot += 360;
+        float radians = parentRot * Mathf.Deg2Rad;
+        return new Vector2(parentPos.x + localPos.y * Mathf.Sin(radians) + localPos.x * Mathf.Cos(radians),
+            parentPos.y - localPos.y * Mathf.Cos(radians) + localPos.x * Mathf.Sin(radians));
+    }
+
+    /// <summary>
     /// Simplifies the rotation so that it is not higher or lower than 360,-360.
     /// </summary>
-    public static float SimplifyRotation360(float roation) {
-        if (roation > 360) {
-            roation = roation % 360;
-        } else if (roation < 360) {
-            roation = -(-roation % 360);
+    public static float SimplifyRotation360(float rotation) {
+        if (rotation > 360) {
+            rotation = rotation % 360;
+        } else if (rotation < 0) {
+            rotation = -(-rotation % 360);
         }
 
-        return roation;
+        return rotation;
+    }
+
+    public static float SimplifyPositiveRotation360(float rotation) {
+        if (rotation > 360) {
+            rotation = rotation % 360;
+        } else if (rotation < 0) {
+            rotation = -(-rotation % 360) + 360;
+
+        }
+        return rotation;
     }
 
     /// <summary>
     /// Returns the target rotation relative to the current rotation. Input both as 360, -360 degrees.
     /// </summary>
-    public static float GetLocalTargetRotation(float currentRotaiton, float targetRotation) {
-        if (currentRotaiton > 180) {
-            currentRotaiton = -180 + (currentRotaiton - 180);
+    public static float GetLocalTargetRotation(float currentRotation, float targetRotation) {
+        if (currentRotation > 180) {
+            currentRotation = -180 + (currentRotation - 180);
         }
 
         if (targetRotation > 180) {
@@ -92,7 +113,7 @@ public static class Calculator {
             targetRotation = 180 + (targetRotation + 180);
         }
 
-        targetRotation -= currentRotaiton;
+        targetRotation -= currentRotation;
         if (targetRotation > 180) {
             targetRotation = -180 + (targetRotation - 180);
         }
