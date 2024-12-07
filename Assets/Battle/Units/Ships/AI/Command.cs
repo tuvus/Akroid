@@ -219,7 +219,8 @@ public class Command {
 
     public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position) {
         return CreateBuildStationCommand(faction.battleManager.CreateNewStation(
-            new BattleObject.BattleObjectData(stationType.ToString(), new BattleManager.PositionGiver(position), Random.Range(0, 360),
+            new BattleObject.BattleObjectData(stationType.ToString(), new BattleManager.PositionGiver(position, 0, 1000, 100, 0, 2),
+                Random.Range(0, 360),
                 faction),
             faction.battleManager.GetStationBlueprint(stationType).stationScriptableObject, false));
     }
