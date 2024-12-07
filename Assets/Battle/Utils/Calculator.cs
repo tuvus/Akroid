@@ -70,8 +70,8 @@ public static class Calculator {
         parentRot -= 180;
         if (parentRot < 0) parentRot += 360;
         float radians = parentRot * Mathf.Deg2Rad;
-        return new Vector2(parentPos.x + localPos.y * Mathf.Sin(radians) + localPos.x * Mathf.Cos(radians),
-            parentPos.y - localPos.y * Mathf.Cos(radians) + localPos.x * Mathf.Sin(radians));
+        return new Vector2(parentPos.x + localPos.y * Mathf.Sin(radians) - localPos.x * Mathf.Cos(radians),
+            parentPos.y - localPos.y * Mathf.Cos(radians) - localPos.x * Mathf.Sin(radians));
     }
 
     /// <summary>

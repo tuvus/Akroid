@@ -5,4 +5,5 @@ public interface IModule {
     public float GetRotation();
     public float GetMinRotation();
     public float GetMaxRotation();
+    public int GetSystemIndex();
 }

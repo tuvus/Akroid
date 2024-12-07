@@ -48,4 +48,8 @@ public class Module : MonoBehaviour, IModule {
     public float GetMaxRotation() {
         return maxRotate;
     }
+
+    public int GetSystemIndex() {
+        return system;
+    }
 }

@@ -70,13 +70,14 @@ public class ModuleSystem {
 
             System newSystem = new System(system);
             systems.Add(newSystem);
-            for (int i = 0; i < newSystem.moduleCount; i++) {
-                IModule module = prefabModules[modules.Count()];
-                ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(newSystem.component.GetComponentType(),
-                    battleManager, module, unit, newSystem.component);
-                modules.Add(newComponent);
-                moduleToSystem.Add(newComponent, newSystem);
-            }
+        }
+
+        foreach (var prefabModule in prefabModules) {
+            System system = systems[prefabModule.GetSystemIndex()];
+            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(system.component.GetComponentType(),
+                battleManager, prefabModule, unit, system.component);
+            modules.Add(newComponent);
+            moduleToSystem.Add(newComponent, system);
         }
     }
 

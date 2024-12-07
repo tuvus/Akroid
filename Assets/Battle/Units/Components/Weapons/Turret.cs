@@ -86,14 +86,14 @@ public abstract class Turret : ModuleComponent {
     }
 
     public bool IsTargetViable(Unit targetUnit, float range) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(position, targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
 
     public virtual bool IsTargetRotationViable(Unit targetUnit, out Vector2 targetLocation, out float localShipAngle) {
         targetLocation = GetTargetPosition(targetUnit);
-        float realAngle = Calculator.GetAngleOutOfTwoPositions(position, targetLocation);
+        float realAngle = Calculator.GetAngleOutOfTwoPositions(GetWorldPosition(), targetLocation);
         localShipAngle = Calculator.ConvertTo360DegRotation(realAngle - unit.rotation);
         if (module.GetMinRotation() < module.GetMaxRotation()) {
             if (localShipAngle <= module.GetMaxRotation() && localShipAngle >= module.GetMinRotation()) {
@@ -143,7 +143,7 @@ public abstract class Turret : ModuleComponent {
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (turretScriptableObject.targeting == TargetingBehaviors.closest) {
-                if (Vector2.Distance(newTarget.position, position) <= Vector2.Distance(oldTarget.position, position)) {
+                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <= Vector2.Distance(oldTarget.position, GetWorldPosition())) {
                     return true;
                 }
             } else if (turretScriptableObject.targeting == TargetingBehaviors.strongest) {

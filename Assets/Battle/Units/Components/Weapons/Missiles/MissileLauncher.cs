@@ -70,7 +70,7 @@ public class MissileLauncher : ModuleComponent {
     }
 
     private bool IsTargetViable(Unit targetUnit, float range) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(position, targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
@@ -95,7 +95,7 @@ public class MissileLauncher : ModuleComponent {
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (missileLauncherScriptableObject.targeting == TargetingBehaviors.closest) {
-                if (Vector2.Distance(newTarget.position, position) <= Vector2.Distance(oldTarget.position, position)) {
+                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <= Vector2.Distance(oldTarget.position, GetWorldPosition())) {
                     return true;
                 }
             } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.strongest) {
@@ -128,7 +128,7 @@ public class MissileLauncher : ModuleComponent {
         reloadController.Fire();
         if (!BattleManager.Instance.instantHit) {
             Missile missile = BattleManager.Instance.GetNewMissile();
-            missile.SetMissile(faction, this, position, rotation, targetUnit, unit.GetVelocity(), GetDamage(),
+            missile.SetMissile(faction, this, GetWorldPosition(), rotation, targetUnit, unit.GetVelocity(), GetDamage(),
                 missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(),
                 missileLauncherScriptableObject.missileRetarget);
         } else {

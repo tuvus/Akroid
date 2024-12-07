@@ -21,7 +21,7 @@ public class ProjectileTurret : Turret {
         base.Fire();
         if (!BattleManager.Instance.instantHit) {
             Projectile projectile = BattleManager.Instance.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, position,
+            projectile.SetProjectile(unit.faction, GetWorldPosition(),
                 rotation + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy),
                 unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity,
                 Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *

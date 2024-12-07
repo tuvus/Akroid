@@ -107,6 +107,10 @@ public class ModuleSystemTests {
         public float GetMaxRotation() {
             return 0;
         }
+
+        public int GetSystemIndex() {
+            return 0;
+        }
     }
 
     class MockFaction : Faction {
