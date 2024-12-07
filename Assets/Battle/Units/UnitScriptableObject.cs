@@ -37,7 +37,7 @@ public class UnitScriptableObject : ScriptableObject {
                 }
             }
 
-            modules = prefabModuleSystem.modules.ToArray();
+            modules = prefabModuleSystem.modules.Cast<IModule>().ToArray();
         }
 
         UpdateCosts();
@@ -97,6 +97,7 @@ public class UnitScriptableObject : ScriptableObject {
     }
 
     public List<IModule> GetModules() {
+        if (modules == null) OnValidate();
         return modules.ToList();
     }
 
