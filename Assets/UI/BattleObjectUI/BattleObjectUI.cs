@@ -15,7 +15,7 @@ public abstract class BattleObjectUI : ObjectUI {
         // if (!Mathf.Approximately(transform.rotation.z, GetRotation()))
             SetRotation(GetRotation());
         // if (!battleObject.position.Equals(transform.position))
-            transform.position = GetPosition();
+            transform.localPosition = GetPosition();
     }
 
     public virtual Vector2 GetPosition() {
