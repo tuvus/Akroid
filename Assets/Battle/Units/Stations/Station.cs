@@ -83,6 +83,8 @@ public class Station : Unit, IPositionConfirmer {
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
+
+        visible = true;
     }
 
     // protected override float SetupSize() {

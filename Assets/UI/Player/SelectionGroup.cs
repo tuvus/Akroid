@@ -291,10 +291,10 @@ public class SelectionGroup {
     }
 
     public void SelectAllBattleObjects(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
-        // objects.ForEach(obj => obj.SelectObject(strength));
-        // if (fleet != null) {
-        //     fleet.SelectFleet(strength);
-        // }
+        objects.ForEach(obj => obj.SelectObject(strength));
+        if (fleet != null) {
+            fleet.SelectObject(strength);
+        }
     }
 
     public void UnselectAllBattleObjects() {

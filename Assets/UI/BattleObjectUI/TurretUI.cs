@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class TurretUI : BattleObjectUI {
     private Turret turret;
+    private UnitUI unitUI;
 
-    public override void Setup(BattleObject battleObject) {
-        base.Setup(battleObject);
+    public void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
+        base.Setup(battleObject, uIManager);
+        this.unitUI = unitUI;
         turret = (Turret)battleObject;
         spriteRenderer.sprite = turret.turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
@@ -17,4 +19,12 @@ public class TurretUI : BattleObjectUI {
     public override float GetRotation() {
         return turret.rotation;
     }
+
+    public override bool IsVisible() {
+        return unitUI.IsVisible();
+    }
+
+    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
+
+    public override void UnselectObject() { }
 }

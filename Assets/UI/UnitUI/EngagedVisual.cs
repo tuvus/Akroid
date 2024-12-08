@@ -1,15 +1,17 @@
 using UnityEngine;
 
 public class EngagedVisual : MonoBehaviour {
-    Unit unit;
+    UnitUI unitUI;
     SpriteRenderer spriteRenderer;
     static float visualTimeMax = .3f;
     static float visualCooldownMax = 3;
     float visualTime;
     float visualCooldownTime;
+    private UIManager uIManager;
 
-    public void SetupEngagedVisual(Unit unit) {
-        this.unit = unit;
+    public void SetupEngagedVisual(UnitUI unitUI, UIManager uIManager) {
+        this.unitUI = unitUI;
+        this.uIManager = uIManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
         visualTime = 0;
         visualCooldownTime = 0;
@@ -17,8 +19,8 @@ public class EngagedVisual : MonoBehaviour {
     }
 
     public void UpdateEngagedVisual() {
-        if (!LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() ||
-            !LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
+        if (!uIManager.localPlayer.GetPlayerUI().ShowUnitCombatIndicators() ||
+            !uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = false;
             return;
         }
@@ -47,22 +49,22 @@ public class EngagedVisual : MonoBehaviour {
         }
     }
 
-    bool ShouldShowEngageVisual() {
-        if (unit.GetEnemyUnitsInRange().Count > 0)
+    private bool ShouldShowEngageVisual() {
+        if (unitUI.unit.GetEnemyUnitsInRange().Count > 0)
             return true;
         return false;
     }
 
-    void UpdateVisualScale() {
-        float scale = visualTime / visualTimeMax * unit.GetSize();
-        if (unit.IsShip())
+    private void UpdateVisualScale() {
+        float scale = visualTime / visualTimeMax * unitUI.unit.GetSize();
+        if (unitUI.unit.IsShip())
             scale /= 2;
         transform.localScale = new Vector2(scale, scale);
     }
 
     public void ShowEngagedVisual(bool show) {
-        if (LocalPlayer.Instance.GetPlayerUI().ShowUnitCombatIndicators() &&
-            LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
+        if (uIManager.localPlayer.GetPlayerUI().ShowUnitCombatIndicators() &&
+            uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             if (visualTime > 0) {
                 spriteRenderer.enabled = show;
             } else {

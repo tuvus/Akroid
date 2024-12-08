@@ -10,13 +10,13 @@ public class PlayerObjectStatusUI : MonoBehaviour {
 
     public void RefreshPlayerObjectStatusUI(BattleObjectUI battleObjectUI, int objectCount) {
         objectImage.enabled = true;
-        // objectImage.sprite = battleObject.GetSpriteRenderer().sprite;
+        objectImage.sprite = battleObjectUI.GetSprite();
         objectImage.SetNativeSize();
         float sizeRatio = objectImage.rectTransform.sizeDelta.y / objectImage.rectTransform.sizeDelta.x;
         objectImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
         if (battleObjectUI.battleObject.IsUnit())
             RefreshUIForUnit((UnitUI)battleObjectUI);
-        // else objectImage.color = battleObject.GetSpriteRenderer().color;
+        else objectImage.color = battleObjectUI.GetSpriteColor();
         if (objectCount <= 1) {
             nameText.GetComponent<TMP_Text>().text = battleObjectUI.battleObject.objectName;
         } else {

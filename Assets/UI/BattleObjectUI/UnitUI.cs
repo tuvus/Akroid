@@ -8,19 +8,19 @@ public abstract class UnitUI : BattleObjectUI {
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
     public List<BattleObjectUI> components { get; private set; }
 
-    public override void Setup(BattleObject battleObject) {
-        base.Setup(battleObject);
+    public override void Setup(BattleObject battleObject, UIManager uIManager) {
+        base.Setup(battleObject, uIManager);
         this.unit = (Unit)battleObject;
         spriteRenderer.sprite = unit.unitScriptableObject.sprite;
         unitSelection = transform.GetChild(0).GetComponent<UnitSelection>();
-        unitSelection.SetupSelection(unit);
+        unitSelection.SetupSelection(this, uIManager);
         components = new List<BattleObjectUI>();
         prefabModuleSystem = GetComponent<PrefabModuleSystem>();
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
             if (unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type == PrefabModuleSystem.SystemType.Turret) {
                 TurretUI turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
                 components.Add(turretUI);
-                turretUI.Setup(unit.moduleSystem.modules[i]);
+                turretUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
             }
         }
     }
@@ -32,5 +32,10 @@ public abstract class UnitUI : BattleObjectUI {
     public override void UpdateObject() {
         base.UpdateObject();
         if (components != null) components.ForEach(c => c.UpdateObject());
+        unitSelection.UpdateUnitSelection(uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators());
+    }
+
+    public override bool IsVisible() {
+        return battleObject.visible;
     }
 }

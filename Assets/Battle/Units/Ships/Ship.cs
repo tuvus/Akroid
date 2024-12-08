@@ -124,6 +124,7 @@ public class Ship : Unit {
         mass = GetSize() * 100;
         SetupThrusters();
         SetIdle();
+        visible = true;
     }
 
     public void SetupThrusters() {

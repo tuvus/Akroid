@@ -4,8 +4,8 @@ public class StationUI : UnitUI {
     public Station station { get; private set; }
     private bool built = false;
 
-    public override void Setup(BattleObject battleObject) {
-        base.Setup(battleObject);
+    public override void Setup(BattleObject battleObject, UIManager uIManager) {
+        base.Setup(battleObject, uIManager);
         this.station = (Station)battleObject;
         built = station.IsBuilt();
         if (!built) {
@@ -21,5 +21,13 @@ public class StationUI : UnitUI {
             spriteRenderer.color = Color.white;
 
         }
+    }
+
+    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
+        unitSelection.SetSelected(selectionStrength);
+    }
+
+    public override void UnselectObject() {
+        unitSelection.SetSelected();
     }
 }

@@ -98,11 +98,6 @@ public class PlayerUI : MonoBehaviour {
 
         UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
-        if (UpdateUnitZoomIndicators()) {
-            foreach (var unit in BattleManager.Instance.units) {
-                // unit.UpdateUnitUI(showUnitZoomIndicators);
-            }
-        }
 
         uIMenusInput.ForEach(m => {
             if (m.IsShown()) m.UpdateUI();

@@ -18,4 +18,12 @@ public abstract class ObjectUI : MonoBehaviour {
     public Sprite GetSprite() {
         return spriteRenderer.sprite;
     }
+
+    public Color GetSpriteColor() {
+        return spriteRenderer.color;
+    }
+
+    public virtual void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
+
+    public virtual void UnselectObject() { }
 }

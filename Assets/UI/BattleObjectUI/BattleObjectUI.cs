@@ -1,10 +1,12 @@
 using UnityEngine;
 
 public abstract class BattleObjectUI : ObjectUI {
+    protected UIManager uIManager { get; private set; }
     public BattleObject battleObject { get; private set; }
 
-    public virtual void Setup(BattleObject battleObject) {
+    public virtual void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup();
+        this.uIManager = uIManager;
         this.battleObject = battleObject;
         transform.position = battleObject.GetPosition();
         SetRotation(battleObject.rotation);
@@ -12,10 +14,9 @@ public abstract class BattleObjectUI : ObjectUI {
     }
 
     public override void UpdateObject() {
-        // if (!Mathf.Approximately(transform.rotation.z, GetRotation()))
-            SetRotation(GetRotation());
-        // if (!battleObject.position.Equals(transform.position))
-            transform.localPosition = GetPosition();
+        SetRotation(GetRotation());
+        transform.localPosition = GetPosition();
+        spriteRenderer.enabled = IsVisible();
     }
 
     public virtual Vector2 GetPosition() {
@@ -26,8 +27,11 @@ public abstract class BattleObjectUI : ObjectUI {
         return battleObject.rotation;
     }
 
+    public virtual bool IsVisible() {
+        return true;
+    }
+
     public override bool IsSelectable() {
         return battleObject.IsSpawned();
     }
-
 }

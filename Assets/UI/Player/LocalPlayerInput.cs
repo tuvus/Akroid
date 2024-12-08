@@ -293,7 +293,10 @@ public class LocalPlayerInput : MonoBehaviour {
             }
 
             float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.battleObject.position);
-            if (tempDistance < targetObject.battleObject.GetSize() && tempDistance < distance) {
+            float size = targetObject.battleObject.GetSize();
+            if (targetObject is UnitUI unitUI) size *= Mathf.Max(1, unitUI.unitSelection.GetSize());
+
+            if (tempDistance <  size && tempDistance < distance) {
                 objectUI = targetObject;
                 distance = tempDistance;
             }

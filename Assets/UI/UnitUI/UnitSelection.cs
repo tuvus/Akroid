@@ -15,26 +15,28 @@ public class UnitSelection : MonoBehaviour {
     float highlightedAlpha = .8f;
     float selectedAlpha = 1f;
     SpriteRenderer spriteRenderer;
-    EngagedVisual engagedVisual;
-    Unit unit;
+    private EngagedVisual engagedVisual;
+    private UnitUI unitUI;
+    private UIManager uIManager;
 
-    public void SetupSelection(Unit unit) {
-        this.unit = unit;
+    public void SetupSelection(UnitUI unitUI, UIManager uIManager) {
+        this.unitUI = unitUI;
+        this.uIManager = uIManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.enabled = false;
         UpdateFactionColor();
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
         engagedVisual = GetComponentInChildren<EngagedVisual>();
-        engagedVisual.SetupEngagedVisual(unit);
+        engagedVisual.SetupEngagedVisual(unitUI, uIManager);
     }
 
     public void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
-        // if (unit.battleManager.GetFactionColoringShown()) {
-        //     spriteRenderer.color = unit.faction.GetColorTint();
-        // } else {
-        //     spriteRenderer.color = LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToUnit(unit));
-        // }
+        if (uIManager.GetFactionColoringShown()) {
+            spriteRenderer.color = unitUI.unit.faction.GetColorTint();
+        } else {
+            spriteRenderer.color = uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
+        }
 
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
@@ -54,21 +56,22 @@ public class UnitSelection : MonoBehaviour {
     }
 
     public void UpdateUnitSelection(bool showIndicator) {
-        if (showIndicator == false || (unit.IsStation() && !((Station)unit).IsBuilt())) {
+        if (showIndicator == false || (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
+            || !unitUI.IsVisible()) {
             ShowUnitSelection(false);
             return;
         }
 
-        float realSize = LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize;
-        float imageSize = unit.GetSize() * realSize * realSize * 10;
+        float realSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
+        float imageSize = unitUI.unit.GetSize() * realSize * realSize * 10;
         if (realSize > 1000) {
-            float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unit.GetSize();
+            float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitUI.unit.GetSize();
             spriteRenderer.sortingOrder = 10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
         } else if (realSize > 500f) {
-            float size = Mathf.Max(1.2f, realSize / 10 / unit.GetSize());
+            float size = Mathf.Max(1.2f, realSize / 10 / unitUI.unit.GetSize());
             spriteRenderer.sortingOrder = -10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
@@ -80,7 +83,7 @@ public class UnitSelection : MonoBehaviour {
     }
 
     public void ShowUnitSelection(bool show) {
-        if (LocalPlayer.Instance.GetPlayerUI().GetShowUnitZoomIndicators()) {
+        if (uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = show;
             engagedVisual.ShowEngagedVisual(show);
         } else {
