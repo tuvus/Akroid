@@ -34,6 +34,10 @@ public class GasCloud : BattleObject, IPositionConfirmer {
         return true;
     }
 
+    protected override float SetupSize() {
+        return GetSpriteSize() * scale.x;
+    }
+
     /// <returns>The amount mined</returns>
     public long CollectGas(long amount) {
         if (resources > amount) {

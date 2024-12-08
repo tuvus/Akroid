@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 [DefaultExecutionOrder(-1)]
@@ -287,6 +288,7 @@ public class LocalPlayerInput : MonoBehaviour {
     BattleObjectUI GetBattleObjectOverMouse() {
         BattleObjectUI objectUI = null;
         float distance = float.MaxValue;
+        Profiler.BeginSample("BattleObjectOverMouse");
         foreach (BattleObjectUI targetObject in unitSpriteManager.objects.Values) {
             if (!targetObject.IsSelectable()) {
                 continue;
@@ -301,6 +303,7 @@ public class LocalPlayerInput : MonoBehaviour {
                 distance = tempDistance;
             }
         }
+        Profiler.EndSample();
         return objectUI;
     }
 

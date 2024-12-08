@@ -12,6 +12,12 @@ public class TurretUI : BattleObjectUI {
         spriteRenderer.enabled = true;
     }
 
+    public override void UpdateObject() {
+        base.UpdateObject();
+        if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unitUI.unit.faction.GetColorTint();
+        else spriteRenderer.color = Color.white;
+    }
+
     public override Vector2 GetPosition() {
         return turret.GetPosition();
     }

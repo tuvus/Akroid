@@ -7,14 +7,10 @@ public class UnitSelection : MonoBehaviour {
         Highlighted = 2,
     }
 
-    Color neutralColor = new Color(1, 1, 1);
-    Color friendlyColor = new Color(0, 1, 0);
-    Color enemyColor = new Color(1, 0.4f, 0.35f);
-    Color ownedColor = new Color(0, 1f, 1f);
-    float unselectedAlpha = .6f;
-    float highlightedAlpha = .8f;
-    float selectedAlpha = 1f;
-    SpriteRenderer spriteRenderer;
+    private const float unselectedAlpha = .6f;
+    private const float highlightedAlpha = .8f;
+    private const float selectedAlpha = 1f;
+    private SpriteRenderer spriteRenderer;
     private EngagedVisual engagedVisual;
     private UnitUI unitUI;
     private UIManager uIManager;
@@ -30,7 +26,13 @@ public class UnitSelection : MonoBehaviour {
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
     }
 
-    public void UpdateFactionColor() {
+    public void UpdateUnitSelection() {
+        if (UpdateSelection()) {
+            UpdateFactionColor();
+        }
+    }
+
+    private void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
         if (uIManager.GetFactionColoringShown()) {
             spriteRenderer.color = unitUI.unit.faction.GetColorTint();
@@ -41,25 +43,15 @@ public class UnitSelection : MonoBehaviour {
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
 
-    public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
-        switch (selectionStrength) {
-            case SelectionStrength.Unselected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
-                break;
-            case SelectionStrength.Selected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
-                break;
-            case SelectionStrength.Highlighted:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
-                break;
-        }
-    }
-
-    public void UpdateUnitSelection(bool showIndicator) {
-        if (showIndicator == false || (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
+    /// <summary>
+    /// Updates the selection strength of the indicator, may also hide it
+    /// </summary>
+    /// <returns>True if the indicator is visible, false otherwise</returns>
+    private bool UpdateSelection() {
+        if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false || (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
             || !unitUI.IsVisible()) {
             ShowUnitSelection(false);
-            return;
+            return false;
         }
 
         float realSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
@@ -80,15 +72,31 @@ public class UnitSelection : MonoBehaviour {
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
         }
+
+        return true;
     }
 
-    public void ShowUnitSelection(bool show) {
+    private void ShowUnitSelection(bool show) {
         if (uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = show;
             engagedVisual.ShowEngagedVisual(show);
         } else {
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
+        }
+    }
+
+    public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
+        switch (selectionStrength) {
+            case SelectionStrength.Unselected:
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
+                break;
+            case SelectionStrength.Selected:
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
+                break;
+            case SelectionStrength.Highlighted:
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
+                break;
         }
     }
 

@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class UnitUI : BattleObjectUI {
     public Unit unit { get; private set; }
@@ -32,7 +33,11 @@ public abstract class UnitUI : BattleObjectUI {
     public override void UpdateObject() {
         base.UpdateObject();
         if (components != null) components.ForEach(c => c.UpdateObject());
-        unitSelection.UpdateUnitSelection(uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators());
+
+        if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unit.faction.GetColorTint();
+        else spriteRenderer.color = Color.white;
+
+        unitSelection.UpdateUnitSelection();
     }
 
     public override bool IsVisible() {
