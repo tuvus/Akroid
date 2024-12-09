@@ -1,13 +1,10 @@
-using System;
 using UnityEngine;
 
-public class TurretUI : BattleObjectUI {
+public class TurretUI : ComponentUI {
     private Turret turret;
-    private UnitUI unitUI;
 
-    public void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
-        base.Setup(battleObject, uIManager);
-        this.unitUI = unitUI;
+    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
+        base.Setup(battleObject, uIManager, unitUI);
         turret = (Turret)battleObject;
         spriteRenderer.sprite = turret.turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
@@ -19,23 +16,11 @@ public class TurretUI : BattleObjectUI {
         else spriteRenderer.color = Color.white;
     }
 
-    public void OnUnitDestroyed() {
+    public override void OnUnitDestroyed() {
         spriteRenderer.enabled = false;
-    }
-
-    public override Vector2 GetPosition() {
-        return turret.GetPosition();
-    }
-
-    public override float GetRotation() {
-        return turret.rotation;
     }
 
     public override bool IsVisible() {
         return unitUI.IsVisible();
     }
-
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
-
-    public override void UnselectObject() { }
 }

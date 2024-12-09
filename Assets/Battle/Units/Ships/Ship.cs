@@ -49,7 +49,9 @@ public class Ship : Unit {
     public Station dockedStation;
     private float mass;
     private float thrust;
-    private bool thrusting;
+    public bool thrusting { get; private set; }
+    /// <summary> A modifier to the thrust size between 0 and 1 based on the ships speed. </summary>
+    public float thrustSize { get; private set; }
     private float maxSetSpeed;
 
     public ShipAction shipAction;
@@ -190,24 +192,24 @@ public class Ship : Unit {
                     SetIdle();
                 } else if (shipAction == ShipAction.MoveRotate) {
                     shipAction = ShipAction.Move;
-                    SetThrusters(true);
+                    thrusting = true;
                 } else if (shipAction == ShipAction.DockRotate) {
                     shipAction = ShipAction.DockMove;
-                    SetThrusters(true);
+                    thrusting = true;
                 } else if (shipAction == ShipAction.MoveAndRotate) {
                     shipAction = ShipAction.Move;
-                    SetThrusters(true);
+                    thrusting = true;
                 }
             } else if (localRotation > 0) {
                 SetRotation(rotation + turnSpeed);
                 if (shipAction != ShipAction.MoveAndRotate) {
-                    SetThrusters(false);
+                    thrusting = false;
                     return;
                 }
             } else {
                 SetRotation(rotation - turnSpeed);
                 if (shipAction == ShipAction.MoveAndRotate) {
-                    SetThrusters(false);
+                    thrusting = false;
                     return;
                 }
             }
@@ -219,7 +221,7 @@ public class Ship : Unit {
             if (GetEnemyUnitsInRangeDistance().Count != 0)
                 speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
             float thrust = speed * deltaTime;
-            moduleSystem.Get<Thruster>().ForEach(thruster => thruster.SetThrustSize(speed / GetSpeed()));
+            thrustSize = speed / GetSpeed();
 
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
@@ -246,7 +248,7 @@ public class Ship : Unit {
         }
 
         if (shipAction == ShipAction.MoveLateral) {
-            SetThrusters(false);
+            thrusting = false;
             float speed = math.min(maxSetSpeed, GetSpeed()) / 2;
             if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
                 position = movePosition;
@@ -268,7 +270,7 @@ public class Ship : Unit {
         faction.GetFactionAI().AddIdleShip(this);
         shipAction = ShipAction.Idle;
         velocity = Vector2.zero;
-        SetThrusters(false);
+        thrusting = false;
     }
 
     public void SetTargetRotate(float rotation) {
@@ -369,17 +371,6 @@ public class Ship : Unit {
         return 0.5f + 0.5f * ((distanceToClosestEnemy - GetMinWeaponRange()) / (GetMaxWeaponRange() - GetMinWeaponRange()));
     }
 
-    public void SetThrusters(bool trueOrFalse) {
-        if (trueOrFalse != thrusting) {
-            thrusting = trueOrFalse;
-            if (thrusting) {
-                moduleSystem.Get<Thruster>().ForEach(t => t.BeginThrust());
-            } else {
-                moduleSystem.Get<Thruster>().ForEach(t => t.EndThrust());
-            }
-        }
-    }
-
     public override void DestroyUnit() {
         base.DestroyUnit();
         if (fleet != null) fleet.RemoveShip(this);
@@ -419,7 +410,7 @@ public class Ship : Unit {
     public override void Explode() {
         base.Explode();
         shipAI.ClearCommands();
-        moduleSystem.Get<Thruster>().ForEach(t => t.EndThrust());
+        thrusting = false;
     }
 
     #endregion

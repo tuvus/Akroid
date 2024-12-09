@@ -5,7 +5,7 @@ public abstract class UnitUI : BattleObjectUI {
     public Unit unit { get; private set; }
     public UnitSelection unitSelection { get; private set; }
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
-    public List<TurretUI> components { get; private set; }
+    public List<ComponentUI> components { get; private set; }
     private DestroyEffectUI destroyEffectUI;
     private bool destroyed;
 
@@ -15,16 +15,21 @@ public abstract class UnitUI : BattleObjectUI {
         spriteRenderer.sprite = unit.unitScriptableObject.sprite;
         unitSelection = transform.GetChild(0).GetComponent<UnitSelection>();
         unitSelection.SetupSelection(this, uIManager);
-        components = new List<TurretUI>();
+        components = new List<ComponentUI>();
         prefabModuleSystem = GetComponent<PrefabModuleSystem>();
         destroyEffectUI = transform.GetChild(1).GetComponent<DestroyEffectUI>();
         destroyEffectUI.SetupDestroyEffect(this, uIManager, spriteRenderer);
         destroyed = false;
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
-            if (unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type == PrefabModuleSystem.SystemType.Turret) {
+            var systemType = unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type;
+            if (systemType == PrefabModuleSystem.SystemType.Turret) {
                 TurretUI turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
                 components.Add(turretUI);
                 turretUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
+            } else if (systemType == PrefabModuleSystem.SystemType.Thruster) {
+                ThrusterUI thrusterUI = prefabModuleSystem.modules[i].gameObject.AddComponent<ThrusterUI>();
+                components.Add(thrusterUI);
+                thrusterUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
             }
         }
     }
@@ -47,6 +52,7 @@ public abstract class UnitUI : BattleObjectUI {
                 if (components != null) components.ForEach(c => c.OnUnitDestroyed());
                 destroyed = true;
                 destroyEffectUI.Explode();
+                unitSelection.ShowUnitSelection(false);
             }
         } else {
             destroyEffectUI.UpdateExplosion();

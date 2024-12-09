@@ -76,7 +76,7 @@ public class UnitSelection : MonoBehaviour {
         return true;
     }
 
-    private void ShowUnitSelection(bool show) {
+    public void ShowUnitSelection(bool show) {
         if (uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = show;
             engagedVisual.ShowEngagedVisual(show);
