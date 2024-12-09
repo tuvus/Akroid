@@ -46,7 +46,7 @@ public class BattleManager : MonoBehaviour {
     public event Action<Fleet> OnFleetCreated = delegate { };
     public event Action<Fleet> OnFleetRemoved = delegate { };
 
-    public bool instantHit = true;
+    public bool instantHit;
     public float timeScale;
     public static bool quickStart = true;
 
@@ -173,7 +173,6 @@ public class BattleManager : MonoBehaviour {
         battleState = BattleState.Running;
         if (CheckVictory() != null)
             battleState = BattleState.Ended;
-        instantHit = true;
     }
 
     /// <summary>

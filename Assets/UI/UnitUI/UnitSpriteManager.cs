@@ -36,6 +36,7 @@ public class UnitSpriteManager : MonoBehaviour {
                 if (objectUI is StarUI) objectUI.transform.SetParent(uIManager.GetStarTransform());
                 else if (objectUI is GasCloudUI) objectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
                 else if (objectUI is AsteroidUI) objectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
+                else if (objectUI is ProjectileUI) objectUI.transform.SetParent(uIManager.GetProjectileTransform());
                 else if (objectUI.battleObject.faction != null) {
                     FactionUI factionUI = factionUIs[objectUI.battleObject.faction];
                     if (objectUI is ShipUI) objectUI.transform.SetParent(factionUI.GetShipTransform());
@@ -74,6 +75,7 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnObjectRemoved(BattleObject battleObject) {
+        objects[battleObject].OnBattleObjectRemoved();
         Destroy(objects[battleObject]);
         objects.Remove(battleObject);
         if (battleObject.IsUnit()) units.Remove((Unit)battleObject);

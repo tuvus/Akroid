@@ -10,7 +10,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
     [field: SerializeField] public Color color { get; protected set; }
-    [field: SerializeField] public new string name { get; protected set; }
+    [field: SerializeField] public string name { get; protected set; }
     [field: SerializeField] public string abbreviatedName { get; protected set; }
     [field: SerializeField] public long credits { get; protected set; }
     [field: SerializeField] public long science { get; protected set; }

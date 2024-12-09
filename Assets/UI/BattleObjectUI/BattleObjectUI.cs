@@ -19,6 +19,8 @@ public abstract class BattleObjectUI : ObjectUI {
         spriteRenderer.enabled = IsVisible();
     }
 
+    public virtual void OnBattleObjectRemoved() { }
+
     public virtual Vector2 GetPosition() {
         return battleObject.position;
     }

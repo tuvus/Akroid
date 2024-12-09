@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
 
 public class Projectile : BattleObject {
-    [SerializeField] private SpriteRenderer highlight;
-    [SerializeField] private new ParticleSystem particleSystem;
-    [SerializeField] private BoxCollider2D boxCollider2D;
     private float speed;
     private int damage;
     private float projectileRange;
     private float distance;
     private Vector2 shipVelocity;
     private Vector2 startingScale;
-    private bool hit;
+    public float particleTime { get; private set; }
+    public bool hit { get; private set; }
 
     public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
 
@@ -27,14 +25,14 @@ public class Projectile : BattleObject {
         distance = 0;
         hit = false;
 
-        // highlight.enabled = BattleManager.Instance.GetEffectsShown();
         Activate(true);
         SetSize(SetupSize());
     }
 
     public void UpdateProjectile(float deltaTime) {
         if (hit) {
-            if (particleSystem.isPlaying == false) {
+            particleTime += deltaTime;
+            if (particleTime >= 3) {
                 RemoveProjectile();
             } else {
                 position += shipVelocity * deltaTime;
@@ -80,7 +78,6 @@ public class Projectile : BattleObject {
 
     public void Explode(Unit unit) {
         hit = true;
-        highlight.enabled = false;
         position = new Vector3(position.x, position.y, 10);
         scale = new Vector2(.5f, .5f);
         if (unit != null) {
@@ -90,16 +87,13 @@ public class Projectile : BattleObject {
         }
 
         visible = false;
-        boxCollider2D.enabled = false;
-        // if (BattleManager.Instance.GetParticlesShown())
-        // particleSystem.Play();
     }
 
     void Activate(bool activate = true) {
         if (activate) {
-            BattleManager.Instance.AddProjectile(this);
+            battleManager.AddProjectile(this);
         } else {
-            BattleManager.Instance.RemoveProjectile(this);
+            battleManager.RemoveProjectile(this);
         }
 
         visible = activate;
@@ -107,9 +101,7 @@ public class Projectile : BattleObject {
 
     public void RemoveProjectile() {
         scale = startingScale;
-        particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         hit = false;
-        highlight.enabled = false;
         Activate(false);
     }
 

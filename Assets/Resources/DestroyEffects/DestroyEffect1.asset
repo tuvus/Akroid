@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24ac785f84dd39aa94222182ef0abea, type: 3}
   m_Name: DestroyEffect1
   m_EditorClassIdentifier: 
-  flareSpeed: 1
-  fadeSpeed: 1
+  flareUpSpeed: 0.5
+  flareUpFadeSpeed: 1
+  flareNormalSpeed: 1
+  flareFadeSpeed: 2
   flareSizeMult: 1
-  flareMaxSize: 2
+  flareUpSizeMult: 2
   scrapSizeMult: 1
   explosionSizeMult: 1
   explosionColor: {r: 1, g: 0.5254902, b: 0.3529412, a: 1}

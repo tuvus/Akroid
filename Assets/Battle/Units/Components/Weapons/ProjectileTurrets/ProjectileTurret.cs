@@ -2,35 +2,24 @@
 
 public class ProjectileTurret : Turret {
     ProjectileTurretScriptableObject projectileTurretScriptableObject;
-    // private SpriteRenderer flash;
-    static float flashSpeed = 0.5f;
-    private float flashTime;
 
     public ProjectileTurret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
-
-        // flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
-        // flash.transform.localScale = new Vector2(.2f,.2f);
-        // flash.transform.localPosition = new Vector2(0, projectileTurretScriptableObject.turretOffset);
-        // flash.enabled = false;
     }
 
     public override bool Fire() {
         base.Fire();
-        if (!BattleManager.Instance.instantHit) {
-            Projectile projectile = BattleManager.Instance.GetNewProjectile();
+        if (!battleManager.instantHit) {
+            Projectile projectile = battleManager.GetNewProjectile();
             projectile.SetProjectile(unit.faction, GetWorldPosition(),
-                rotation + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy),
+                GetWorldRotation() + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy),
                 unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity,
                 Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
                                  unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
                 projectileTurretScriptableObject.projectileRange *
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
-            flashTime = flashSpeed;
-            // flash.enabled = BattleManager.Instance.GetEffectsShown();
-            // flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
@@ -38,24 +27,6 @@ public class ProjectileTurret : Turret {
         }
 
         return reloadController.Empty();
-    }
-
-    public override void UpdateTurret(float deltaTime) {
-        base.UpdateTurret(deltaTime);
-        // if (flash.enabled) {
-        //     flashTime -= deltaTime;
-        //     if (flashTime <= 0) {
-        //         flashTime = 0;
-        //         flash.enabled = false;
-        //     } else {
-        //         flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, flashTime / flashSpeed);
-        //     }
-        // }
-    }
-
-    protected override bool TurretHibernationStatus() {
-        // return base.TurretHibernationStatus() && !flash.enabled;
-        return base.TurretHibernationStatus();
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
@@ -82,18 +53,6 @@ public class ProjectileTurret : Turret {
         float damage = (projectileTurretScriptableObject.minDamage + projectileTurretScriptableObject.maxDamage) / 2f *
                        reloadController.maxAmmo;
         return damage / time;
-    }
-
-    public override void StopFiring() {
-        base.StopFiring();
-        // flash.enabled = false;
-    }
-
-    public override void ShowEffects(bool shown) {
-        base.ShowEffects(shown);
-        // if (flash.enabled) {
-            // flash.enabled = shown;
-        // }
     }
 
     [ContextMenu("GetDamagePerSecond")]
