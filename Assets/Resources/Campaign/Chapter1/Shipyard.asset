@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: Shipyard
   m_EditorClassIdentifier: 
-  cost: 90000
+  cost: 95434
   resourceTypes: 0100000002000000
-  resourceCosts: 5a230000000000000a00000000000000
+  resourceCosts: bf42000000000000a900000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   unitName: Shipyard
   maxHealth: 9000
@@ -44,6 +44,7 @@ MonoBehaviour:
     type: 1
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   stationType: 4
   repairAmount: 500
   repairSpeed: 5

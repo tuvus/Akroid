@@ -19,7 +19,6 @@ MonoBehaviour:
   unitName: Civilian
   maxHealth: 60
   sprite: {fileID: 2014477746, guid: dafc31837f98a4b4687f98ecfb498daa, type: 3}
-  components: []
   systems:
   - name: TopTurret
     type: 3
@@ -41,6 +40,7 @@ MonoBehaviour:
     type: 4
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   shipClass: 2
   shipType: 0
   turnSpeed: 30

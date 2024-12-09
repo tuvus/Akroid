@@ -16,6 +16,7 @@ public class UnitScriptableObject : ScriptableObject {
 
     [SerializeField] protected ModuleSystem.System[] systems;
     [SerializeField] protected IModule[] modules;
+    public DestroyEffectScriptableObject destroyEffect;
 
     public void OnValidate() {
         if (systems == null) {

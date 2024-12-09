@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class TurretUI : BattleObjectUI {
@@ -16,6 +17,10 @@ public class TurretUI : BattleObjectUI {
         base.UpdateObject();
         if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unitUI.unit.faction.GetColorTint();
         else spriteRenderer.color = Color.white;
+    }
+
+    public void OnUnitDestroyed() {
+        spriteRenderer.enabled = false;
     }
 
     public override Vector2 GetPosition() {

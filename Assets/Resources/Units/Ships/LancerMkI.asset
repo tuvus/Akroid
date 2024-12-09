@@ -19,29 +19,6 @@ MonoBehaviour:
   unitName: Lancer
   maxHealth: 580
   sprite: {fileID: -603366875, guid: 5a11f1cbb331c0a419e3f6fe5d003231, type: 3}
-  components:
-  - name: CenterTurret
-    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: LeftTopTurret
-    component: {fileID: 0}
-  - name: LeftBottomTurret
-    component: {fileID: 0}
-  - name: RightTopTurret
-    component: {fileID: 0}
-  - name: RightBottomTurret
-    component: {fileID: 0}
-  - name: Weapon
-    component: {fileID: 11400000, guid: 25438419514bf3a41887042280c4c1b3, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 406328309328359499ecd4de8f81c776, type: 2}
-  - name: LeftMainThruster
-    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
-  - name: RightMainThruster
-    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
-  - name: LeftSubThruster
-    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
-  - name: RightSubThruster
-    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
   systems:
   - name: CenterTurret
     type: 3
@@ -71,6 +48,7 @@ MonoBehaviour:
     type: 4
     component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   shipClass: 3
   shipType: 4
   turnSpeed: 40

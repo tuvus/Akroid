@@ -19,19 +19,6 @@ MonoBehaviour:
   unitName: Aria
   maxHealth: 224
   sprite: {fileID: 2014477746, guid: dafc31837f98a4b4687f98ecfb498daa, type: 3}
-  components:
-  - name: TopTurret
-    component: {fileID: 0}
-  - name: BottomTurret
-    component: {fileID: 0}
-  - name: Utility
-    component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
-  - name: MainThruster
-    component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
-  - name: LeftSubThruster
-    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
-  - name: RightSubThruster
-    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
   systems:
   - name: TopTurret
     type: 3
@@ -53,6 +40,7 @@ MonoBehaviour:
     type: 4
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   shipClass: 2
   shipType: 4
   turnSpeed: 60

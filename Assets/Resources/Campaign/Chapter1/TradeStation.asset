@@ -12,51 +12,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: TradeStation
   m_EditorClassIdentifier: 
-  cost: 97529
-  resourceTypes: 01000000
-  resourceCosts: 1942000000000000
+  cost: 97460
+  resourceTypes: 0100000002000000
+  resourceCosts: c141000000000000a900000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   unitName: TradeStation
   maxHealth: 9346
   sprite: {fileID: 48152505, guid: a0a783ed409c02147832d0f5edb5d4d5, type: 3}
-  components:
-  - name: LowerBottomTurret
-    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: LowerLeftTurret
-    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: LowerRightTurret
-    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
-  - name: UpperTopTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: UpperLeftTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: UpperRightTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
   systems:
   - name: LowerTurrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
+    moduleSize: 0
   - name: UpperTurrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: b20153318fa355a4d9a2413e00335606, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+    moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   stationType: 5
   repairAmount: 500
   repairSpeed: 5

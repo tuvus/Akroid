@@ -13,6 +13,7 @@ public abstract class Unit : BattleObject {
     private float maxWeaponRange;
     private float minWeaponRange;
     protected Vector2 velocity;
+    private DestroyEffect destroyEffect;
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
@@ -111,14 +112,9 @@ public abstract class Unit : BattleObject {
     }
 
     public void UpdateDestroyedUnit(float deltaTime) {
-        // if (destroyEffect.IsPlaying() == false && GetHealth() <= 0) {
-        //     BattleManager.Instance.RemoveDestroyedUnit(this);
-        //     //if (IsStation() && ((Station)this).stationType == Station.StationType.FleetCommand)
-        //     //    return;
-        //     Destroy(gameObject);
-        // } else {
-        //     destroyEffect.UpdateExplosion(deltaTime);
-        // }
+        if (!destroyEffect.UpdateDestroyEffect(deltaTime)) {
+            BattleManager.Instance.RemoveDestroyedUnit(this);
+        }
     }
 
     #endregion
@@ -154,6 +150,7 @@ public abstract class Unit : BattleObject {
         moduleSystem.Get<ShieldGenerator>().ForEach(s => s.DestroyShield());
         moduleSystem.Get<Turret>().ForEach(s => s.StopFiring());
         moduleSystem.Get<Hangar>().ForEach(h => h.UndockAll());
+        destroyEffect = new DestroyEffect(unitScriptableObject.destroyEffect);
         Despawn(false);
     }
 
@@ -375,6 +372,10 @@ public abstract class Unit : BattleObject {
 
     public override float GetSpriteSize() {
         return Calculator.GetSpriteSize(unitScriptableObject.sprite, scale);
+    }
+
+    public DestroyEffect GetDestroyEffect() {
+        return destroyEffect;
     }
 
     #endregion

@@ -19,7 +19,6 @@ MonoBehaviour:
   unitName: Colonizer
   maxHealth: 850
   sprite: {fileID: 2143475390, guid: 9256f3aff4adf1346aae1320292696a2, type: 3}
-  components: []
   systems:
   - name: SecondaryTurrets
     type: 3
@@ -45,6 +44,7 @@ MonoBehaviour:
     type: 4
     component: {fileID: 11400000, guid: a33a08d6956c46847aec3fa8de0f0be1, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   shipClass: 7
   shipType: 9
   turnSpeed: 30

@@ -19,25 +19,6 @@ MonoBehaviour:
   unitName: FleetCommand
   maxHealth: 13000
   sprite: {fileID: 48152505, guid: a0a783ed409c02147832d0f5edb5d4d5, type: 3}
-  components:
-  - name: LowerBottomTurret
-    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
-  - name: LowerLeftTurret
-    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
-  - name: LowerRightTurret
-    component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
-  - name: UpperTopTurret
-    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
-  - name: UpperLeftTurret
-    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
-  - name: UpperRightTurret
-    component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
   systems:
   - name: LowerTurrets
     type: 3
@@ -63,6 +44,7 @@ MonoBehaviour:
     type: 1
     component: {fileID: 11400000, guid: c894325743034634288ca3b5d5112419, type: 2}
     moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   stationType: 1
   repairAmount: 1000
   repairSpeed: 10

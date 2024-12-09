@@ -12,34 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: ResearchStation
   m_EditorClassIdentifier: 
-  cost: 23523
-  resourceTypes: 01000000
-  resourceCosts: a80d000000000000
+  cost: 23544
+  resourceTypes: 0100000002000000
+  resourceCosts: b10d0000000000004c00000000000000
   prefabPath: Prefabs/StationPrefabs/DefenceStation
   unitName: ResearchStation
   maxHealth: 2300
   sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
-  components:
-  - name: TopTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: LeftTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: RightTurret
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
-  - name: Utility
-    component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
   systems:
   - name: Turrets
-    moduleCount: 3
+    type: 3
     component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+    moduleSize: 0
   - name: Utility
-    moduleCount: 1
+    type: 1
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
+    moduleSize: 0
+  destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   stationType: 2
   repairAmount: 200
   repairSpeed: 5
