@@ -278,7 +278,8 @@ public abstract class Turret : ModuleComponent {
     }
 
     public float GetTurretOffSet() {
-        return turretScriptableObject.turretOffset * scale.y;
+        return (turretScriptableObject.turretSprite.rect.size.y - turretScriptableObject.turretSprite.pivot.y) * scale.y /
+            turretScriptableObject.turretSprite.pixelsPerUnit;
     }
 
     public virtual float GetReloadTimeModifier() {
@@ -296,5 +297,4 @@ public abstract class Turret : ModuleComponent {
     public override float GetSpriteSize() {
         return Calculator.GetSpriteSize(turretScriptableObject.turretSprite, scale);
     }
-
 }

@@ -13,13 +13,15 @@ public class ProjectileTurret : Turret {
         base.Fire();
         if (!battleManager.instantHit) {
             Projectile projectile = battleManager.GetNewProjectile();
-            projectile.SetProjectile(unit.faction, GetWorldPosition(),
-                GetWorldRotation() + Random.Range(-projectileTurretScriptableObject.fireAccuracy, projectileTurretScriptableObject.fireAccuracy),
+            projectile.SetProjectile(unit.faction,
+                GetWorldPosition(),
+                GetWorldRotation() + Random.Range(-projectileTurretScriptableObject.fireAccuracy,
+                    projectileTurretScriptableObject.fireAccuracy),
                 unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity,
                 Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
-                                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
+                    unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
                 projectileTurretScriptableObject.projectileRange *
-                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet() * rotation, scale.y);
+                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
@@ -51,7 +53,7 @@ public class ProjectileTurret : Turret {
         }
 
         float damage = (projectileTurretScriptableObject.minDamage + projectileTurretScriptableObject.maxDamage) / 2f *
-                       reloadController.maxAmmo;
+            reloadController.maxAmmo;
         return damage / time;
     }
 

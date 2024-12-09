@@ -6,7 +6,6 @@ public class Projectile : BattleObject {
     private float projectileRange;
     private float distance;
     private Vector2 shipVelocity;
-    private Vector2 startingScale;
     public float particleTime { get; private set; }
     public bool hit { get; private set; }
 
@@ -100,7 +99,6 @@ public class Projectile : BattleObject {
     }
 
     public void RemoveProjectile() {
-        scale = startingScale;
         hit = false;
         Activate(false);
     }

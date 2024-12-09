@@ -75,9 +75,10 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnObjectRemoved(BattleObject battleObject) {
-        objects[battleObject].OnBattleObjectRemoved();
-        Destroy(objects[battleObject]);
+        BattleObjectUI battleObjectUI = objects[battleObject];
+        if (battleObjectUI != null) battleObjectUI.OnBattleObjectRemoved();
         objects.Remove(battleObject);
+        Destroy(battleObjectUI.gameObject);
         if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
     }
 
