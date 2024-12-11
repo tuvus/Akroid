@@ -31,6 +31,7 @@ public abstract class Turret : ModuleComponent {
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
             turretScriptableObject.maxAmmo);
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
+        visible = true;
         SetSize(SetupSize());
     }
 

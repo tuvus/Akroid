@@ -58,8 +58,4 @@ public abstract class UnitUI : BattleObjectUI {
             destroyEffectUI.UpdateExplosion();
         }
     }
-
-    public override bool IsVisible() {
-        return battleObject.visible;
-    }
 }

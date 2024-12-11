@@ -76,9 +76,14 @@ public class UnitSpriteManager : MonoBehaviour {
 
     private void OnObjectRemoved(BattleObject battleObject) {
         BattleObjectUI battleObjectUI = objects[battleObject];
-        if (battleObjectUI != null) battleObjectUI.OnBattleObjectRemoved();
+        // If the object is destroyed before the battleObjectUI has been set up lets skip destroying it
+        // Many simulation frames might have occured since the object was registered to be created
+        if (battleObjectUI != null) {
+            battleObjectUI.OnBattleObjectRemoved();
+            Destroy(battleObjectUI.gameObject);
+
+        }
         objects.Remove(battleObject);
-        Destroy(battleObjectUI.gameObject);
         if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
     }
 

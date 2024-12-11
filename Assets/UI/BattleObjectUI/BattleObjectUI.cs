@@ -30,7 +30,7 @@ public abstract class BattleObjectUI : ObjectUI {
     }
 
     public virtual bool IsVisible() {
-        return true;
+        return battleObject.visible;
     }
 
     public override bool IsSelectable() {
