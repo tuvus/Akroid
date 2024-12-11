@@ -37,8 +37,10 @@ public class Projectile : BattleObject {
                 position += shipVelocity * deltaTime;
             }
         } else {
-            position += shipVelocity * deltaTime;
-            position += Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed);
+            if (CheckProjectileCollision(deltaTime)) return;
+            Vector2 newPosition = position + shipVelocity * deltaTime +
+                Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed);
+            position = newPosition;
             distance += speed * deltaTime;
             if (distance >= projectileRange) {
                 RemoveProjectile();
@@ -46,38 +48,47 @@ public class Projectile : BattleObject {
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D coll) {
-        if (hit) {
-            return;
-        }
+    private bool CheckProjectileCollision(float deltaTime) {
+        float distanceTraveled = (shipVelocity.magnitude + speed) * deltaTime;
+        float distanceToFaction = Vector2.Distance(position, faction.position) + size + distanceTraveled;
+        for (int g = 0; g < faction.closeEnemyGroupsDistance.Count; g++) {
+            // If the distance from the faction to the group is greater than our distance to the faction
+            // Then there is no chance that we can collide with anything in the group
+            // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
+            if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
+            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
+                if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
 
-        Unit unit = coll.GetComponent<Unit>();
-        if (unit != null && unit.IsSpawned() && unit.faction != faction) {
-            foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
-                damage = shieldGenerator.shield.TakeDamage(damage);
-                if (damage < 0) {
-                    Explode(unit);
-                    return;
+                // Start checking positions that the projectile traveled across
+                int collisionChecks = 10;
+                for (int j = 0; j < collisionChecks; j++) {
+                    Vector2 tempPosition = position + (shipVelocity * j / collisionChecks) +
+                        Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed * j / collisionChecks);
+                    if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
+
+                    foreach (var shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
+                        damage = shieldGenerator.shield.TakeDamage(damage);
+                        if (damage < 0) {
+                            position = tempPosition;
+                            Explode(targetUnit);
+                            return true;
+                        }
+                    }
+
+                    damage = targetUnit.TakeDamage(damage);
+                    position = tempPosition;
+                    Explode(targetUnit);
+                    return true;
                 }
             }
-
-            damage = unit.TakeDamage(damage);
-            Explode(unit);
-            return;
         }
 
-        Shield shield = coll.GetComponent<Shield>();
-        if (shield != null && shield.GetUnit().faction != faction) {
-            damage = shield.TakeDamage(damage);
-            if (damage == 0)
-                Explode(unit);
-            return;
-        }
+        return false;
     }
 
     public void Explode(Unit unit) {
         hit = true;
-        position = new Vector3(position.x, position.y, 10);
         scale = new Vector2(.5f, .5f);
         if (unit != null) {
             shipVelocity = unit.GetVelocity();
@@ -101,6 +112,11 @@ public class Projectile : BattleObject {
     public void RemoveProjectile() {
         hit = false;
         Activate(false);
+    }
+
+
+    public override float GetSpriteSize() {
+        return 2;
     }
 
     public override GameObject GetPrefab() {

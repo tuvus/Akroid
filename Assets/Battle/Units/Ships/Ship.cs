@@ -230,7 +230,6 @@ public class Ship : Unit {
 
             if (distance <= thrust + 2) {
                 position = movePosition;
-                position = movePosition;
                 if (shipAction == ShipAction.Move || shipAction == ShipAction.MoveAndRotate) {
                     SetIdle();
                 } else if (shipAction == ShipAction.DockMove) {
