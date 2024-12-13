@@ -6,6 +6,7 @@ public class LaserTurretUI : TurretUI {
         base.Setup(battleObject, uIManager, unitUI);
         laserTurret = (LaserTurret)battleObject;
         laserUI = Instantiate(laserTurret.laser.GetPrefab(), transform).GetComponent<LaserUI>();
+        laserUI.Setup(laserTurret.laser, uIManager);
     }
 
     public override void UpdateObject() {

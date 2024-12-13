@@ -43,7 +43,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null) :
             this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
 
-        public BattleObjectData(string objectName) : this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0, Vector2.one) { }
+        public BattleObjectData(string objectName, Faction faction = null) : this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0, Vector2.one, faction) { }
     }
 
     public BattleObject() { }

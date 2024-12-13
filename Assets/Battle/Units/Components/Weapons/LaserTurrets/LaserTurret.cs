@@ -8,8 +8,7 @@ public class LaserTurret : Turret {
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
 
-        laser = new Laser();
-        laser.SetLaser(this);
+        laser = new Laser(new BattleObjectData("Laser", unit.faction), battleManager, this);
     }
 
     protected override void UpdateTurretReload(float deltaTime) {

@@ -22,17 +22,23 @@ public class LaserUI : BattleObjectUI {
         base.UpdateObject();
         if (laser.fireing) {
             if (!fireing) {
-                if (uIManager.GetEffectsShown()) {
-                    startHighlight.enabled = true;
-                    endHighlight.enabled = true;
-                }
-                spriteRenderer.enabled = true;
+                startHighlight.enabled = uIManager.GetEffectsShown();
             }
             fireing = true;
 
             transform.localPosition = new Vector2(0, 0);
             transform.rotation = transform.parent.rotation;
-            transform.localScale = laser.scale;
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, laser.laserLength);
+            transform.Translate(Vector2.up * (laser.laserLength / 2 + laser.laserTurret.GetTurretOffSet()));
+
+            if (laser.hitPoint != null) {
+                endHighlight.transform.localPosition = new Vector2(0, laser.laserLength / 2);
+                endHighlight.enabled = uIManager.GetEffectsShown();
+            } else {
+                endHighlight.enabled = false;
+            }
+
+            startHighlight.transform.localPosition = new Vector2(0, -laser.laserLength / 2);
 
             if (laser.fireTime > 0) {
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
@@ -48,7 +54,6 @@ public class LaserUI : BattleObjectUI {
             }
         } else if (!laser.fireing && fireing) {
             fireing = false;
-            spriteRenderer.enabled = false;
             startHighlight.enabled = false;
             endHighlight.enabled = false;
         }
