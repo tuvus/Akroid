@@ -3,7 +3,7 @@ using UnityEngine;
 using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/LaserTurretScriptableObject", menuName = "Components/LaserTurret", order = 1)]
-class LaserTurretScriptableObject : TurretScriptableObject {
+public class LaserTurretScriptableObject : TurretScriptableObject {
     public float laserDamagePerSecond;
     public float fireDuration;
     public float fadeDuration;

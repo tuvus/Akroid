@@ -1,65 +1,37 @@
-﻿using UnityEngine;
+﻿using System;
+using Unity.Mathematics;
+using UnityEngine;
 
-public class Laser {
-    // [SerializeField] private SpriteRenderer spriteRenderer;
-    // [SerializeField] private SpriteRenderer startHighlight;
-    // [SerializeField] private SpriteRenderer endHighlight;
-    LaserTurret laserTurret;
-    bool fireing;
+public class Laser : BattleObject {
+    public LaserTurret laserTurret { get; private set; }
+    public bool fireing { get; private set; }
 
-    float fireTime;
-    float fadeTime;
-
-    float translateAmount;
-
-    RaycastHit2D? hitPoint;
-    RaycastHit2D[] contacts = new RaycastHit2D[20];
+    public float fireTime { get; private set; }
+    public float fadeTime { get; private set; }
     float extraDamage;
 
-    public void SetLaser(LaserTurret laserTurret, float offset, float laserSize) {
+    public void SetLaser(LaserTurret laserTurret) {
         // transform.localScale = new Vector2(laserSize, 1);
-        this.translateAmount = offset;
         this.laserTurret = laserTurret;
 
         fireing = false;
         fireTime = 0;
         fadeTime = 0;
 
-        // spriteRenderer.enabled = false;
-        // startHighlight.enabled = false;
-        // endHighlight.enabled = false;
-        // startHighlight.transform.localScale = new Vector2(.2f, .2f);
-        // endHighlight.transform.localScale = new Vector2(.2f, .2f);
         extraDamage = 0;
+        visible = false;
     }
 
     public void FireLaser() {
         fireing = true;
         fireTime = laserTurret.GetFireDuration();
         fadeTime = laserTurret.GetFadeDuration();
-        // spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
-        // startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, .8f);
-        // endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
-    }
-
-    void ExpireLaser() {
-        // spriteRenderer.enabled = false;
-        // startHighlight.enabled = false;
-        // endHighlight.enabled = false;
-        fireing = false;
     }
 
 
     public void UpdateLaser(float deltaTime) {
         if (fireing) {
-            // spriteRenderer.enabled = true;
-            // startHighlight.enabled = BattleManager.Instance.GetEffectsShown();
-            // endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
-            // transform.localPosition = new Vector2(0, 0);
-            // transform.rotation = transform.parent.rotation;
-
             UpdateDamageAndCollision(deltaTime);
-
             SetDistance();
 
             if (fireTime > 0) {
@@ -77,71 +49,43 @@ public class Laser {
     void UpdateFadeTime(float deltaTime) {
         fadeTime = Mathf.Max(0, fadeTime - deltaTime);
         if (fadeTime <= 0) {
-            ExpireLaser();
-        } else {
-            // spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
-                // fadeTime / laserTurret.GetFireDuration());
-            // startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g,
-                // fadeTime / laserTurret.GetFadeDuration());
-            // endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g,
-                // fadeTime / laserTurret.GetFadeDuration());
+            fireing = false;
         }
     }
 
     void UpdateDamageAndCollision(float deltaTime) {
-        hitPoint = null;
-        // Physics2D.RaycastNonAlloc(transform.position, transform.up, contacts, GetLaserRange() + translateAmount);
         Shield hitShield = null;
         Unit hitUnit = null;
+        float laserLength = GetLaserRange();
+        float distanceToFaction = Vector2.Distance(position, faction.position) + size;
+        Vector2 firePosition = laserTurret.GetWorldPosition() +
+            Calculator.GetPositionOutOfAngleAndDistance(rotation, laserTurret.GetTurretOffSet());
+        for (int g = 0; g < faction.closeEnemyGroupsDistance.Count; g++) {
+            // If the distance from the faction to the group is greater than our distance to the faction
+            // Then there is no chance that we can collide with anything in the group
+            // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
+            if (faction.closeEnemyGroupsDistance[g] > distanceToFaction + laserLength) break;
+            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
+                if (distanceToUnit > targetUnit.size + size + laserLength) continue;
 
-        int contactLength = -1;
-        for (int i = 0; i < contacts.Length; i++) {
-            if (contacts[i].collider == null) {
-                contactLength = i + 1;
-                break;
+                Vector2 closestPoint = Calculator.GetClosestPointToAPointOnALine(firePosition, rotation, targetUnit.position);
+                float distanceToClosestPoint = Vector2.Distance(firePosition, closestPoint);
+                if (distanceToClosestPoint > targetUnit.size) continue;
+                hitUnit = targetUnit;
             }
-
-            Unit unit = contacts[i].collider.GetComponent<Unit>();
-            if (unit != null && unit.faction != laserTurret.GetUnit().faction) {
-                if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
-                    hitUnit = unit;
-                    hitShield = null;
-                    hitPoint = contacts[i];
-                }
-
-                continue;
-            }
-
-            Shield shield = contacts[i].collider.GetComponent<Shield>();
-            if (shield != null && shield.GetUnit().faction != laserTurret.GetUnit().faction) {
-                if (!hitPoint.HasValue || contacts[i].distance < hitPoint.Value.distance) {
-                    hitUnit = null;
-                    hitShield = shield;
-                    hitPoint = contacts[i];
-                }
-
-                continue;
-            }
-        }
-
-        for (int i = 0; i < contactLength; i++) {
-            contacts[i] = new RaycastHit2D();
-        }
-
-        if (hitUnit != null) {
-            hitUnit.TakeDamage(GetDamage(deltaTime, false));
-            return;
         }
 
         if (hitShield != null) {
             hitShield.TakeDamage(GetDamage(deltaTime, true));
-            return;
+        } else if (hitUnit != null) {
+            hitUnit.TakeDamage(GetDamage(deltaTime, false));
         }
     }
 
     int GetDamage(float deltaTime, bool hitShield) {
         float damage = laserTurret.GetLaserDamagePerSecond() * deltaTime *
-                       laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
+            laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
         float damageToShield = 0.5f;
         if (hitShield)
             damage *= damageToShield;
@@ -154,16 +98,16 @@ public class Laser {
 
     void SetDistance() {
         // transform.Translate(Vector2.up * translateAmount * laserTurret.scale.y);
-        if (hitPoint.HasValue) {
+        // if (hitPoint.HasValue) {
             // spriteRenderer.size = new Vector2(spriteRenderer.size.x,
-                // (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            // (hitPoint.Value.distance / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             // endHighlight.transform.localPosition = new Vector2(0, spriteRenderer.size.y / 2);
             // endHighlight.enabled = BattleManager.Instance.GetEffectsShown();
-        } else {
+        // } else {
             // spriteRenderer.size = new Vector2(spriteRenderer.size.x,
-                // (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
+            // (GetLaserRange() / laserTurret.scale.y - translateAmount) / laserTurret.scale.y);
             // endHighlight.enabled = false;
-        }
+        // }
 
         // transform.Translate(Vector2.up * spriteRenderer.size / 2 * laserTurret.scale.y * laserTurret.scale.y);
         // startHighlight.transform.localPosition = new Vector2(0, -spriteRenderer.size.y / 2);
@@ -177,8 +121,7 @@ public class Laser {
         return laserTurret.GetLaserRange() * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 
-    public void ShowEffects(bool shown) {
-        // startHighlight.enabled = shown;
-        // endHighlight.enabled = shown;
+    public override GameObject GetPrefab() {
+        return laserTurret.laserTurretScriptableObject.laserPrefab;
     }
 }

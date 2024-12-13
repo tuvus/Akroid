@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Castle.Components.DictionaryAdapter.Xml;
 using UnityEngine;
 
 public abstract class UnitUI : BattleObjectUI {
@@ -23,7 +24,12 @@ public abstract class UnitUI : BattleObjectUI {
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
             var systemType = unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type;
             if (systemType == PrefabModuleSystem.SystemType.Turret) {
-                TurretUI turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
+                TurretUI turretUI;
+                if (unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].component is LaserTurretScriptableObject) {
+                    turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<LaserTurretUI>();
+                } else {
+                    turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
+                }
                 components.Add(turretUI);
                 turretUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
             } else if (systemType == PrefabModuleSystem.SystemType.Thruster) {

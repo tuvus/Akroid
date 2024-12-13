@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
 
 public class LaserTurret : Turret {
-    LaserTurretScriptableObject laserTurretScriptableObject;
-    Laser laser;
+    public LaserTurretScriptableObject laserTurretScriptableObject { get; private set; }
+    public Laser laser { get; private set; }
 
     public LaserTurret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
 
-        // laser = Instantiate(laserTurretScriptableObject.laserPrefab, position, transform.rotation, transform).GetComponent<Laser>();
         laser = new Laser();
-        laser.SetLaser(this, GetTurretOffSet(), laserTurretScriptableObject.laserSize);
+        laser.SetLaser(this);
     }
 
     protected override void UpdateTurretReload(float deltaTime) {
@@ -73,16 +72,6 @@ public class LaserTurret : Turret {
         float damage = laserTurretScriptableObject.laserDamagePerSecond *
                        (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) * reloadController.maxAmmo;
         return damage / time;
-    }
-
-    public override void StopFiring() {
-        base.StopFiring();
-        // Destroy(laser.gameObject);
-    }
-
-    public override void ShowEffects(bool shown) {
-        base.ShowEffects(shown);
-        laser.ShowEffects(shown);
     }
 
     [ContextMenu("GetDamagePerSecond")]

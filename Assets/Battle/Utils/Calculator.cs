@@ -97,6 +97,14 @@ public static class Calculator {
         return rotation;
     }
 
+    public static Vector2 GetClosestPointToAPointOnALine(Vector2 lineOrigin, float lineRotation, Vector2 point) {
+        Vector2 lineVector = GetPositionOutOfAngleAndDistance(lineRotation, 1);
+        Vector2 vectorToPoint = point - lineOrigin;
+        return lineOrigin * Vector2.Dot(lineVector, vectorToPoint) / Vector2.Dot(lineVector, lineVector);
+        // float t = Vector2.Dot(vectorToPoint, vectorToPoint) / Vector2.Dot(lineVector, lineVector);
+        // return lineOrigin + GetPositionOutOfAngleAndDistance(lineRotation, t);
+    }
+
     /// <summary>
     /// Returns the target rotation relative to the current rotation. Input both as 360, -360 degrees.
     /// </summary>
