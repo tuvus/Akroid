@@ -79,8 +79,8 @@ public class SimulationSetup : MonoBehaviour {
         systemSizeModifier = 0.1f;
         gasCloudCount = 0;
         researchModifier = 1.01f;
-        factions.Add(new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 50, 1));
-        factions.Add(new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 50, 1));
+        factions.Add(new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 45, 1));
+        factions.Add(new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 45, 1));
         StartSimulation();
     }
 

@@ -11,6 +11,8 @@ public class GasCloud : BattleObject, IPositionConfirmer {
         this.gasCloudScriptableObject = gasCloudScriptableObject;
         this.resources = resources;
         color = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
+        color = new Color(color.r, color.g, color.b, .5f);
+        visible = true;
         Spawn();
         SetSize(SetupSize());
     }

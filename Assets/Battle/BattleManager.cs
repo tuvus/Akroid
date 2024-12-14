@@ -382,10 +382,10 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
-        float size = Random.Range(5, 15);
+        float size = Random.Range(40, 80);
         GasCloud newGasCloud = new GasCloud(
             new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
-            (long)(Random.Range(5000, 17000) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
+            (long)(Random.Range(500, 1700) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
         AddObject(newGasCloud);

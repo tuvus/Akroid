@@ -12,6 +12,7 @@ public class Star : BattleObject, IPositionConfirmer {
         this.starScriptableObject = starScriptableObject;
         color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
         RandomiseGlareTarget();
+        visible = true;
         Spawn();
         SetSize(SetupSize());
     }

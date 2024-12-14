@@ -11,6 +11,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         this.asteroidField = asteroidField;
         this.resources = resources;
         asteroidField.totalResources += this.resources;
+        visible = true;
         Spawn();
         SetSize(SetupSize());
     }
