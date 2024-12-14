@@ -364,9 +364,11 @@ MonoBehaviour:
   - name: Colonizer
     shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
       type: 2}
+  - name: Civilian
+    shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
+      type: 2}
   stationBlueprints:
   - name: Fleet Command
-    factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,
       type: 2}
     stationCost: 0
@@ -374,7 +376,6 @@ MonoBehaviour:
     resources: 
     totalResourcesRequired: 0
   - name: Mining Station
-    factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 51a747427e783d94f90e5dd5eeeae964,
       type: 2}
     stationCost: 0
@@ -382,7 +383,6 @@ MonoBehaviour:
     resources: 
     totalResourcesRequired: 0
   - name: Defense Station
-    factionIndex: 0
     stationScriptableObject: {fileID: 11400000, guid: 198eaddfd11c81c4985c80bfa8b44470,
       type: 2}
     stationCost: 0

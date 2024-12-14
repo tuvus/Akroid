@@ -22,6 +22,7 @@ public abstract class UnitUI : BattleObjectUI {
         destroyEffectUI.SetupDestroyEffect(this, unit.unitScriptableObject.destroyEffect, uIManager, spriteRenderer);
         destroyed = false;
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
+            if (unit.moduleSystem.modules[i].componentScriptableObject is EmptyScriptableObject) continue;
             var systemType = unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type;
             if (systemType == PrefabModuleSystem.SystemType.Turret) {
                 TurretUI turretUI;

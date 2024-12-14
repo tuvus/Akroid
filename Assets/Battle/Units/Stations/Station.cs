@@ -61,6 +61,7 @@ public class Station : Unit, IPositionConfirmer {
                 break;
             case StationType.Shipyard:
             case StationType.FleetCommand:
+            case StationType.TradeStation:
                 stationAI = new ShipyardAI(this);
                 break;
             default:

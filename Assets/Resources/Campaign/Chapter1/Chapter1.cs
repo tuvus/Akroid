@@ -74,6 +74,7 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewFaction(
                 new FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(), 1000, 0, 0, 0),
                 new PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
+        otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
             battleManager.CreateNewAsteroidField(new PositionGiver(otherMiningFaction.GetPosition(), 0, 5000, 100, 1000, 2),
                 Random.Range(5, 10), 10);

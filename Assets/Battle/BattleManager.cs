@@ -300,7 +300,8 @@ public class BattleManager : MonoBehaviour {
         bool built) {
         Station newStation;
         if (stationScriptableObject.stationType == StationType.Shipyard ||
-            stationScriptableObject.stationType == StationType.FleetCommand) {
+            stationScriptableObject.stationType == StationType.FleetCommand ||
+            stationScriptableObject.stationType == StationType.TradeStation) {
             newStation = new Shipyard(battleObjectData, this, stationScriptableObject, built);
         } else if (stationScriptableObject.stationType == StationType.MiningStation) {
             newStation = new MiningStation(battleObjectData, this, (MiningStationScriptableObject)stationScriptableObject, built);
