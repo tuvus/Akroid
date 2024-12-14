@@ -3,7 +3,7 @@ using UnityEngine;
 using FlareState = DestroyEffect.FlareState;
 
 public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
-    private UnitUI unitUI;
+    private BattleObjectUI battleObjectUI;
     private UIManager uIManager;
     private DestroyEffect destroyEffect;
     private DestroyEffectScriptableObject destroyEffectScriptableObject;
@@ -11,11 +11,11 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     [SerializeField] ParticleSystem fragments;
     [SerializeField] LensFlare flare;
 
-    public void SetupDestroyEffect(UnitUI unitUI, UIManager uIManager, SpriteRenderer targetRenderer) {
-        this.unitUI = unitUI;
+    public void SetupDestroyEffect(BattleObjectUI battleObjectUI, DestroyEffectScriptableObject destroyEffectScriptableObject, UIManager uIManager, SpriteRenderer targetRenderer) {
+        this.battleObjectUI = battleObjectUI;
         this.uIManager = uIManager;
-        destroyEffectScriptableObject = unitUI.unit.unitScriptableObject.destroyEffect;
-        float newScale = this.unitUI.unit.GetSpriteSize() * unitUI.transform.localScale.x;
+        this.destroyEffectScriptableObject = destroyEffectScriptableObject;
+        float newScale = this.battleObjectUI.battleObject.GetSpriteSize() * battleObjectUI.transform.localScale.x;
         transform.localScale = new Vector2(newScale, newScale);
         explosion.transform.localScale = transform.localScale;
 
@@ -38,8 +38,8 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
         flare.brightness = 0;
     }
 
-    public void Explode() {
-        destroyEffect = unitUI.unit.GetDestroyEffect();
+    public void Explode(DestroyEffect destroyEffect) {
+        this.destroyEffect = destroyEffect;
         if (uIManager.GetParticlesShown()) {
             explosion.Play(false);
             fragments.Play(false);
@@ -103,11 +103,11 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     }
 
     private float GetBaseFlareSize() {
-        return unitUI.unit.GetSpriteSize() * 30 * destroyEffectScriptableObject.flareSizeMult;
+        return battleObjectUI.battleObject.GetSpriteSize() * 30 * destroyEffectScriptableObject.flareSizeMult;
     }
 
     private float GetFlareUpSize() {
-        return unitUI.unit.GetSpriteSize() * 30 * destroyEffectScriptableObject.flareSizeMult *
+        return battleObjectUI.battleObject.GetSpriteSize() * 30 * destroyEffectScriptableObject.flareSizeMult *
             destroyEffectScriptableObject.flareUpSizeMult;
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6973132868627845795}
   - component: {fileID: 6973132868627845796}
+  - component: {fileID: 1324482628504643744}
   m_Layer: 8
   m_Name: Missile
   m_TagString: Untagged
@@ -52,6 +53,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -87,6 +91,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1324482628504643744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6973132868627845797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fcf15ff5beb8510cb859278691ac21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thrust: {fileID: 6973132870048437460}
+  highlight: {fileID: 3092384830821924026}
+  destroyEffectUI: {fileID: 2312831284555659598}
 --- !u!1 &6973132870048437462
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,6 +157,9 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4987,6 +5009,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -5088,7 +5113,7 @@ PrefabInstance:
     - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
       propertyPath: lengthInSec
-      value: 0.1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
@@ -5103,7 +5128,7 @@ PrefabInstance:
     - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 0.4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3316298032335789725, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
@@ -5128,7 +5153,7 @@ PrefabInstance:
     - target: {fileID: 5626107184251421489, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
       propertyPath: lengthInSec
-      value: 0.05
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5626107184251421489, guid: 101b7af4909279d4680b9c9be40ba8b0,
         type: 3}
@@ -5246,3 +5271,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1136227200768620934}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2312831284555659598 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3448740622132478152, guid: 101b7af4909279d4680b9c9be40ba8b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1136227200768620934}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec7ba581c985b84b85cd6ba34e1052d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

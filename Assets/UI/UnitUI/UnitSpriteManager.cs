@@ -37,6 +37,7 @@ public class UnitSpriteManager : MonoBehaviour {
                 else if (objectUI is GasCloudUI) objectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
                 else if (objectUI is AsteroidUI) objectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
                 else if (objectUI is ProjectileUI) objectUI.transform.SetParent(uIManager.GetProjectileTransform());
+                else if (objectUI is MissileUI) objectUI.transform.SetParent(uIManager.GetMissileTransform());
                 else if (objectUI.battleObject.faction != null) {
                     FactionUI factionUI = factionUIs[objectUI.battleObject.faction];
                     if (objectUI is ShipUI) objectUI.transform.SetParent(factionUI.GetShipTransform());

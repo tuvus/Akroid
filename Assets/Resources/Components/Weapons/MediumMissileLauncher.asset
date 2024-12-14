@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30835f7d1dce3764398c8ce86d70f164, type: 3}
   m_Name: MediumMissileLauncher
   m_EditorClassIdentifier: 
+  cost: 169
+  resourceTypes: 0100000002000000
+  resourceCosts: 1e000000000000006b00000000000000
+  upgrade: {fileID: 0}
   DPS: 7.6923075
   range: 400
   targeting: 1
@@ -23,3 +27,4 @@ MonoBehaviour:
   fireSpeed: 1
   reloadSpeed: 8
   maxAmmo: 5
+  missile: {fileID: 11400000, guid: 16379c178e84c87239340129f6f97503, type: 2}

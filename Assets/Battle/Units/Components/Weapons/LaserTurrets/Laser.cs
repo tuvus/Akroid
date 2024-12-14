@@ -83,6 +83,7 @@ public class Laser : BattleObject {
             // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction + laserLength) break;
             foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+                if (!targetUnit.IsTargetable()) continue;
                 float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
                 if (distanceToUnit > targetUnit.size + size + laserLength) continue;
 

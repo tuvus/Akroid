@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30835f7d1dce3764398c8ce86d70f164, type: 3}
   m_Name: HeavyMissileLauncherMkI
   m_EditorClassIdentifier: 
+  cost: 303
+  resourceTypes: 0100000002000000
+  resourceCosts: 3700000000000000c100000000000000
+  upgrade: {fileID: 0}
   DPS: 13.793104
   range: 600
-  targeting: 2
+  targeting: 1
   missileDamage: 80
   missileThrust: 200
   missileTurnSpeed: 60
@@ -23,3 +27,4 @@ MonoBehaviour:
   fireSpeed: 0.9
   reloadSpeed: 12
   maxAmmo: 6
+  missile: {fileID: 11400000, guid: bf13058e2131a798681e62187519494f, type: 2}

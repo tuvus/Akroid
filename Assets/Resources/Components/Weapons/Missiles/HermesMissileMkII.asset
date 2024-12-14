@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af0f8955b56da5a09a93b68b99cd491, type: 3}
+  m_Name: HermesMissileMkII
+  m_EditorClassIdentifier: 
+  type: 0
+  damage: 40
+  thrust: 160
+  turnSpeed: 20
+  fuelRange: 600
+  retarget: 0
+  sprite: {fileID: -795279756, guid: d178ef83e7ad40642b1295bc0c068466, type: 3}
+  destroyEffect: {fileID: 11400000, guid: 1ecd3ef65dc4109a88eaffd73765f81d, type: 2}
+  timeAfterExpire: 1

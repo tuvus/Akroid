@@ -113,7 +113,7 @@ public abstract class Unit : BattleObject {
 
     public void UpdateDestroyedUnit(float deltaTime) {
         if (!destroyEffect.UpdateDestroyEffect(deltaTime)) {
-            BattleManager.Instance.RemoveDestroyedUnit(this);
+            battleManager.RemoveDestroyedUnit(this);
         }
     }
 

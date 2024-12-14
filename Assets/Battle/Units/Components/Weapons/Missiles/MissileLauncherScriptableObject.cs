@@ -3,20 +3,16 @@ using UnityEngine;
 using static MissileLauncher;
 
 [CreateAssetMenu(fileName = "Resources/Components/MissileLauncherScriptableObject", menuName = "Components/MissileLauncher", order = 3)]
-class MissileLauncherScriptableObject : ComponentScriptableObject {
+public class MissileLauncherScriptableObject : ComponentScriptableObject {
     public float DPS;
     public float range;
     public TargetingBehaviors targeting;
 
-    public int missileDamage;
-    public float missileThrust;
-    public float missileTurnSpeed;
-    public float missileFuelRange;
-    public bool missileRetarget;
-
     public float fireSpeed;
     public float reloadSpeed;
     public int maxAmmo;
+
+    public MissileScriptableObject missile;
 
     public virtual float GetDamagePerSecond() {
         float time = reloadSpeed;
@@ -24,7 +20,7 @@ class MissileLauncherScriptableObject : ComponentScriptableObject {
             time += maxAmmo * fireSpeed;
         }
 
-        float damage = missileDamage / 2f * maxAmmo;
+        float damage = missile.damage / 2f * maxAmmo;
         return damage / time;
     }
 

@@ -19,7 +19,7 @@ public abstract class UnitUI : BattleObjectUI {
         components = new List<ComponentUI>();
         prefabModuleSystem = GetComponent<PrefabModuleSystem>();
         destroyEffectUI = transform.GetChild(1).GetComponent<DestroyEffectUI>();
-        destroyEffectUI.SetupDestroyEffect(this, uIManager, spriteRenderer);
+        destroyEffectUI.SetupDestroyEffect(this, unit.unitScriptableObject.destroyEffect, uIManager, spriteRenderer);
         destroyed = false;
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
             var systemType = unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].type;
@@ -30,6 +30,7 @@ public abstract class UnitUI : BattleObjectUI {
                 } else {
                     turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
                 }
+
                 components.Add(turretUI);
                 turretUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
             } else if (systemType == PrefabModuleSystem.SystemType.Thruster) {
@@ -57,7 +58,7 @@ public abstract class UnitUI : BattleObjectUI {
             if (unit.GetDestroyEffect() != null) {
                 if (components != null) components.ForEach(c => c.OnUnitDestroyed());
                 destroyed = true;
-                destroyEffectUI.Explode();
+                destroyEffectUI.Explode(unit.GetDestroyEffect());
                 unitSelection.ShowUnitSelection(false);
             }
         } else {

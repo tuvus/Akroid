@@ -24,8 +24,7 @@ public class MissileLauncher : ModuleComponent {
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    public MissileLauncher(BattleManager battleManager, IModule module, Unit unit,
-        ComponentScriptableObject componentScriptableObject) :
+    public MissileLauncher(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
 
@@ -126,19 +125,18 @@ public class MissileLauncher : ModuleComponent {
 
     public void Fire() {
         reloadController.Fire();
-        if (!BattleManager.Instance.instantHit) {
-            Missile missile = BattleManager.Instance.GetNewMissile();
-            missile.SetMissile(faction, this, GetWorldPosition(), rotation, targetUnit, unit.GetVelocity(), GetDamage(),
-                missileLauncherScriptableObject.missileThrust, missileLauncherScriptableObject.missileTurnSpeed, GetFuelRange(),
-                missileLauncherScriptableObject.missileRetarget);
+        if (!battleManager.instantHit) {
+            Missile missile = battleManager.GetNewMissile();
+            missile.SetMissile(faction, this, missileLauncherScriptableObject.missile, GetWorldPosition(), GetWorldRotation(),
+                targetUnit, unit.GetVelocity());
         } else {
             targetUnit.TakeDamage(GetDamage());
         }
     }
 
     public int GetDamage() {
-        return Mathf.RoundToInt(missileLauncherScriptableObject.missileDamage *
-                                faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
+        return Mathf.RoundToInt(missileLauncherScriptableObject.missile.damage *
+            faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage));
     }
 
     public float GetRange() {
@@ -146,7 +144,7 @@ public class MissileLauncher : ModuleComponent {
     }
 
     public float GetFuelRange() {
-        return missileLauncherScriptableObject.missileFuelRange * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.missile.fuelRange * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetDamagePerSecond() {
@@ -157,7 +155,7 @@ public class MissileLauncher : ModuleComponent {
             time += reloadController.maxAmmo * reloadController.fireSpeed;
         }
 
-        float damage = missileLauncherScriptableObject.missileDamage / 2f * reloadController.maxAmmo;
+        float damage = missileLauncherScriptableObject.missile.damage / 2f * reloadController.maxAmmo;
         return damage / time;
     }
 

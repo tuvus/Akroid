@@ -5,66 +5,61 @@ public class Missile : BattleObject {
         Hermes,
     }
 
-    public int missileIndex { get; private set; }
-    public MissileType missileType;
+    public MissileScriptableObject missileScriptableObject { get; private set; }
     private MissileLauncher missileLauncher;
+    private DestroyEffect destroyEffect;
     private Unit target;
-    public int damage;
-    public float thrustSpeed;
-    public float maxTurnSpeed;
     private Vector2 velocity;
-    float turnSpeed;
-    public float fuelRange;
-    public bool retarget;
-    float distance;
-    bool hit;
-    bool expired;
+    private float distance;
+    public bool hit { get; private set; }
+    public bool expired { get; private set; }
+    private bool failedToFindRetarget;
+    private float timeAfterExpire;
 
     public Missile(BattleManager battleManager) : base(new BattleObjectData("Missile"), battleManager) { }
 
-    public void SetMissile(Faction faction, MissileLauncher missileLauncher, Vector2 position, float rotation, Unit target,
-        Vector2 shipVelocity, int damage, float thrustSpeed, float maxTurnSpeed, float fuelRange, bool retarget) {
+    public void SetMissile(Faction faction, MissileLauncher missileLauncher, MissileScriptableObject missileScriptableObject,
+        Vector2 position, float rotation, Unit target, Vector2 shipVelocity) {
+        this.missileScriptableObject = missileScriptableObject;
         this.position = position;
         this.rotation = rotation;
         this.faction = faction;
         this.missileLauncher = missileLauncher;
         this.target = target;
-        this.damage = damage;
-        this.thrustSpeed = thrustSpeed;
-        this.maxTurnSpeed = maxTurnSpeed;
-        turnSpeed = 0;
         this.velocity = shipVelocity;
-        this.fuelRange = fuelRange;
-        this.retarget = retarget;
+        destroyEffect = null;
+        failedToFindRetarget = false;
         hit = false;
         expired = false;
         distance = 0;
+        timeAfterExpire = 0;
         Activate(true);
         SetSize(SetupSize());
     }
 
     public void UpdateMissile(float deltaTime) {
         if (hit) {
-            // if (!destroyEffect.IsPlaying() && thrustParticleSystem.isPlaying == false) {
-            //     RemoveMissile();
-            // } else {
-            //     destroyEffect.UpdateExplosion(deltaTime);
-            //     transform.Translate(velocity * deltaTime);
-            // }
+            if (!destroyEffect.UpdateDestroyEffect(deltaTime)) {
+                Activate(false);
+            }
+
+            position += velocity * deltaTime;
         } else if (expired) {
-            // if (thrustParticleSystem.isPlaying == false) {
-            //     RemoveMissile();
-            // } else {
-            //     transform.Translate(velocity * deltaTime);
-            // }
+            timeAfterExpire += deltaTime;
+            if (timeAfterExpire >= missileScriptableObject.timeAfterExpire) {
+                Activate(false);
+            }
         } else {
-            turnSpeed = Mathf.Min(maxTurnSpeed, turnSpeed + deltaTime * 50);
+            if (CheckMissileCollision(deltaTime)) return;
             if (target != null && target.IsTargetable()) {
                 RotateMissile(deltaTime);
-            } else if (retarget && missileLauncher != null && missileLauncher.GetUnit().IsSpawned()) {
+            } else if (!failedToFindRetarget && missileScriptableObject.retarget && missileLauncher != null &&
+                missileLauncher.GetUnit().IsSpawned()) {
+                // We can only find a new target if the original ship is still alive to give the missile a new target.
                 target = missileLauncher.FindNewTarget(missileLauncher.GetRange());
-                if (target == null)
-                    retarget = false;
+
+                // If we have failed to find a new target, give up. We don't want to check every single frame for a new target.
+                if (target == null) failedToFindRetarget = true;
             }
 
             MoveMissile(deltaTime);
@@ -73,11 +68,11 @@ public class Missile : BattleObject {
 
     void RotateMissile(float deltaTime) {
         Vector2 targetPosition =
-            Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(), thrustSpeed,
-                0);
+            Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(),
+                missileScriptableObject.thrust, 0);
         float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(position, targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - rotation);
-        float turnAmmont = turnSpeed * deltaTime;
+        float turnAmmont = missileScriptableObject.turnSpeed * deltaTime;
         if (Mathf.Abs(angle) < turnAmmont) {
             rotation = targetAngle;
         } else if (angle > turnAmmont) {
@@ -88,67 +83,88 @@ public class Missile : BattleObject {
     }
 
     void MoveMissile(float deltaTime) {
-        position += velocity * deltaTime;
-        position += Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * thrustSpeed);
-        distance += thrustSpeed * deltaTime;
-        if (distance >= fuelRange) {
+        position += velocity * deltaTime +
+            Calculator.GetPositionOutOfAngleAndDistance(rotation, missileScriptableObject.thrust * deltaTime);
+        distance += missileScriptableObject.thrust * deltaTime;
+        if (distance >= missileScriptableObject.fuelRange) {
             Expire();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D coll) {
-        if (hit || expired)
-            return;
-        Unit unit = coll.GetComponent<Unit>();
-        if (unit != null && unit.IsSpawned() && unit.faction != faction) {
-            foreach (var shieldGenerator in unit.moduleSystem.Get<ShieldGenerator>()) {
-                if (shieldGenerator.shield.health > 0) {
-                    damage = shieldGenerator.shield.TakeDamage(damage);
-                    Explode();
-                    velocity = unit.GetVelocity();
-                    return;
+
+    private bool CheckMissileCollision(float deltaTime) {
+        float distanceTraveled = (velocity.magnitude + missileScriptableObject.thrust) * deltaTime;
+        float distanceToFaction = Vector2.Distance(position, faction.position) + size + distanceTraveled;
+        for (int g = 0; g < faction.closeEnemyGroupsDistance.Count; g++) {
+            // If the distance from the faction to the group is greater than our distance to the faction
+            // Then there is no chance that we can collide with anything in the group
+            // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
+            if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
+            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+                if (!targetUnit.IsTargetable()) continue;
+                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
+                if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
+
+                // Start checking positions that the missile traveled across
+                int collisionChecks = 10;
+                for (int j = 0; j < collisionChecks; j++) {
+                    Vector2 tempPosition = position + (velocity * j / collisionChecks) +
+                        Calculator.GetPositionOutOfAngleAndDistance(rotation,
+                            deltaTime * missileScriptableObject.thrust * j / collisionChecks);
+                    if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
+
+                    foreach (var shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
+                        shieldGenerator.shield.TakeDamage(missileScriptableObject.damage / 2);
+                        position = tempPosition;
+                        Explode(targetUnit);
+                        return true;
+                    }
+
+                    targetUnit.TakeDamage(missileScriptableObject.damage);
+                    position = tempPosition;
+                    Explode(targetUnit);
+                    return true;
                 }
             }
-
-            damage = unit.TakeDamage(damage);
-            Explode();
-            velocity = unit.GetVelocity();
-            return;
         }
 
-        Shield shield = coll.GetComponent<Shield>();
-        if (shield != null && shield.GetUnit().faction != faction) {
-            damage = shield.TakeDamage((int)(damage * 0.5f));
-            Explode();
-            velocity = shield.GetUnit().GetVelocity();
-            return;
-        }
+        return false;
     }
 
-    public void Explode() {
+    public void Explode(Unit targetUnit) {
+        if (targetUnit != null) {
+            velocity = targetUnit.GetVelocity();
+        } else {
+            velocity = Vector2.zero;
+        }
+
         hit = true;
         rotation = 0;
         visible = false;
+        destroyEffect = new DestroyEffect(missileScriptableObject.destroyEffect);
     }
-
 
     public void Expire() {
         visible = false;
         expired = true;
     }
 
-    public void RemoveMissile() {
-        Activate(false);
-    }
-
     void Activate(bool activate = true) {
         if (activate) {
-            BattleManager.Instance.AddMissile(this);
+            battleManager.AddMissile(this);
         } else {
-            BattleManager.Instance.RemoveMissile(this);
+            battleManager.RemoveMissile(this);
         }
 
         visible = activate;
+    }
+
+    public override float GetSpriteSize() {
+        return Calculator.GetSpriteSize(missileScriptableObject.sprite, scale);
+    }
+
+    public DestroyEffect GetDestroyEffect() {
+        return destroyEffect;
     }
 
     public override GameObject GetPrefab() {
