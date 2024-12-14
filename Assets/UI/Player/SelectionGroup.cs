@@ -322,13 +322,13 @@ public class SelectionGroup {
         }
     }
 
-    public void RemoveAnyUnitsNotInList(List<Unit> unitList) {
-        // for (int i = objects.Count - 1; i >= 0; i--) {
-        //     if (!unitList.Contains(objects[i])) {
-        //         objects[i].UnselectObject();
-        //         objects.RemoveAt(i);
-        //     }
-        // }
+    public void RemoveAnyUnitsNotInHashSet(HashSet<Unit> unitList) {
+        for (int i = objects.Count - 1; i >= 0; i--) {
+            if (!objects[i].battleObject.IsUnit() || !unitList.Contains((Unit)objects[i].battleObject)) {
+                objects[i].UnselectObject();
+                objects.RemoveAt(i);
+            }
+        }
     }
 
     public void RemoveAnyNullUnits() {

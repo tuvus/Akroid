@@ -404,7 +404,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             }
         } else if (selectedUnits.objects.Any((o) => o.battleObject.IsShip() && ((Ship)o.battleObject).IsCombatShip())) {
             selectedUnits.RemoveAllNonCombatShips();
-            selectedUnits.RemoveAnyUnitsNotInList(LocalPlayer.Instance.player.ownedUnits.ToList());
+            selectedUnits.RemoveAnyUnitsNotInHashSet(LocalPlayer.Instance.player.ownedUnits);
             selectedUnits.RemoveAnyNullUnits();
             List<ShipUI> ships = selectedUnits.GetAllShips();
             if (ships.Count > 0) {
