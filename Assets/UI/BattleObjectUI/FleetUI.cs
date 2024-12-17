@@ -17,6 +17,16 @@ public class FleetUI : ObjectUI {
 
     public override void UpdateObject() { }
 
+    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
+        base.SelectObject(selectionStrength);
+        GetShipsUI().ToList().ForEach(s => s.SelectObject(selectionStrength));
+    }
+
+    public override void UnselectObject() {
+        base.UnselectObject();
+        GetShipsUI().ToList().ForEach(s => s.UnselectObject());
+    }
+
     public override bool IsSelectable() {
         return true;
     }

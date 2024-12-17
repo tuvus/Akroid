@@ -59,6 +59,7 @@ public class SimulationSetup : MonoBehaviour {
             asteroidFieldCount = 80,
             starCount = 3,
             asteroidCountModifier = 1.2f,
+            gasCloudCount = 16,
             systemSizeModifier = 1.2f,
             researchModifier = 1.01f,
         };
@@ -76,8 +77,8 @@ public class SimulationSetup : MonoBehaviour {
             asteroidFieldCount = 0,
             starCount = 0,
             asteroidCountModifier = 1f,
-            systemSizeModifier = 0.1f,
             gasCloudCount = 0,
+            systemSizeModifier = 0.1f,
             researchModifier = 1.01f,
         };
         factions.Add(new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 45, 1));
@@ -111,6 +112,8 @@ public class SimulationSetup : MonoBehaviour {
             battleSettings.starCount = 3;
             battleSettings.asteroidFieldCount = 20;
             battleSettings.asteroidCountModifier = 1.2f;
+            battleSettings.gasCloudCount = 16;
+            battleSettings.systemSizeModifier = 1f;
             battleSettings.researchModifier = 1.1f;
         }
     }

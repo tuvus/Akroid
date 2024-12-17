@@ -12,7 +12,7 @@ public class Player {
     public Player(bool isLocalPlayer) {
         faction = null;
         ownedUnits = new HashSet<Unit>();
-        lockedOwnedUnits = true;
+        lockedOwnedUnits = false;
         this.isLocalPlayer = isLocalPlayer;
     }
 

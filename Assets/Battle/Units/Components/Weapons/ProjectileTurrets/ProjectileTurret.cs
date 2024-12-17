@@ -21,7 +21,7 @@ public class ProjectileTurret : Turret {
                 Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
                     unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
                 projectileTurretScriptableObject.projectileRange *
-                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y);
+                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y * 2);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
