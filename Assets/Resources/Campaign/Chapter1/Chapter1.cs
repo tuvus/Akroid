@@ -273,30 +273,29 @@ public class Chapter1 : CampaingController {
             _ => {
                 if (!skipTutorial) {
                     AddTutorial1();
-                } else {
-                    playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
-                        GetBattleManager()
-                            .SetSimulationTimeScale(playerFaction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / 5);
-                        eventManager.AddEvent(eventManager.CreatePredicateEvent(_ => playerMiningStation.IsBuilt()), () => {
-                            Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
-                            if (battleManager.GetLocalPlayer().faction == playerFaction) {
-                                battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
-                            }
-
-                            playerFactionAI.AddTradeRouteToStation(tradeStation);
-                            playerFaction.AddCredits(10000000);
-                            GetBattleManager().SetSimulationTimeScale(10);
-                            AddResearchQuestLine();
-                        });
-                    }, 20);
+                    return;
                 }
+
+                playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
+                    GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / 5);
+                    eventManager.AddEvent(eventManager.CreatePredicateEvent(_ => playerMiningStation.IsBuilt()), () => {
+                        Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
+                        if (battleManager.GetLocalPlayer().faction == playerFaction) {
+                            battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
+                        }
+
+                        playerFactionAI.AddTradeRouteToStation(tradeStation);
+                        playerFaction.AddCredits(10000000);
+                        GetBattleManager().SetSimulationTimeScale(10);
+                        AddResearchQuestLine();
+                    });
+                }, 20);
             }), 10 * GetTimeScale());
     }
 
     private void AddTutorial1() {
         Fleet setupFleet = playerFaction.fleets.First();
         FactionCommManager playerComm = playerFaction.GetFactionCommManager();
-        playerComm.SendCommunication(playerFaction, "TESSSSSTT.", 1);
         playerComm.SendCommunication(planetFactionAI.faction, "Thanks for the goodbye! We will send you some resources soon.", 5);
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -348,6 +347,7 @@ public class Chapter1 : CampaingController {
             "Here you can see its owner, state, cargo and weapons of the unit. " +
             "Right click again or press the close button to close the panel.", 1 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateOpenObjectPanelEvent(null, false));
+
         // Following Tutorial
         eventChain.AddCommEvent(playerComm, playerFaction,
             "We are currently following a ship in our fleet to keep it visible. " +

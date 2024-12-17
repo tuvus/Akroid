@@ -26,12 +26,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public List<FactionData> factions;
     private int selectedFaction;
-    private int starCount;
-    private int asteroidFieldCount;
-    private float asteroidCountModifier;
-    private int gasCloudCount;
-    private float systemSizeModifier;
-    private float researchModifier;
+    private BattleManager.BattleSettings battleSettings;
     ColorPicker colorPicker = new ColorPicker();
 
     public void Awake() {
@@ -41,12 +36,14 @@ public class SimulationSetup : MonoBehaviour {
     public void OnEnable() {
         StartMenu.Instance.HideAllMenues();
         factions = new List<FactionData>();
-        starCount = 3;
-        asteroidFieldCount = 60;
-        asteroidCountModifier = 1;
-        gasCloudCount = 16;
-        systemSizeModifier = 1;
-        researchModifier = 1.01f;
+        battleSettings = new BattleManager.BattleSettings {
+            starCount = 3,
+            asteroidFieldCount = 60,
+            asteroidCountModifier = 1,
+            gasCloudCount = 16,
+            systemSizeModifier = 1,
+            researchModifier = 1.01f,
+        };
 
         for (int i = 0; i < factionList.childCount; i++) {
             Destroy(factionList.GetChild(i).gameObject);
@@ -58,11 +55,13 @@ public class SimulationSetup : MonoBehaviour {
 
     public void SetupDefaultSimulation() {
         gameObject.SetActive(true);
-        asteroidFieldCount = 80;
-        starCount = 3;
-        asteroidCountModifier = 1.2f;
-        systemSizeModifier = 1.2f;
-        researchModifier = 1.01f;
+        battleSettings = new BattleManager.BattleSettings {
+            asteroidFieldCount = 80,
+            starCount = 3,
+            asteroidCountModifier = 1.2f,
+            systemSizeModifier = 1.2f,
+            researchModifier = 1.01f,
+        };
         ColorPicker colorPicker = new ColorPicker();
         factions.Add(new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
         factions.Add(new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 5, 5));
@@ -73,12 +72,14 @@ public class SimulationSetup : MonoBehaviour {
 
     public void SetupBattleSimulation() {
         gameObject.SetActive(true);
-        asteroidFieldCount = 0;
-        starCount = 0;
-        asteroidCountModifier = 1f;
-        systemSizeModifier = 0.1f;
-        gasCloudCount = 0;
-        researchModifier = 1.01f;
+        battleSettings = new BattleManager.BattleSettings() {
+            asteroidFieldCount = 0,
+            starCount = 0,
+            asteroidCountModifier = 1f,
+            systemSizeModifier = 0.1f,
+            gasCloudCount = 0,
+            researchModifier = 1.01f,
+        };
         factions.Add(new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 45, 1));
         factions.Add(new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(1000000, 1500000), 0, 45, 1));
         StartSimulation();
@@ -88,29 +89,29 @@ public class SimulationSetup : MonoBehaviour {
         editSimulationPanel.SetActive(!editSimulationPanel.activeSelf);
         if (editSimulationPanel.activeSelf) {
             editFactionPanel.SetActive(false);
-            editSimulationStars.SetTextWithoutNotify(starCount.ToString());
-            editSimulationAsteroids.SetTextWithoutNotify(asteroidFieldCount.ToString());
-            editSimulationAsteroidCount.SetTextWithoutNotify(asteroidCountModifier.ToString());
-            editSimulationGasClouds.SetTextWithoutNotify(gasCloudCount.ToString());
-            editSimulationSystemSizeModifier.SetTextWithoutNotify(systemSizeModifier.ToString());
-            editSimulationResearchModifier.SetTextWithoutNotify(researchModifier.ToString());
+            editSimulationStars.SetTextWithoutNotify(battleSettings.starCount.ToString());
+            editSimulationAsteroids.SetTextWithoutNotify(battleSettings.asteroidFieldCount.ToString());
+            editSimulationAsteroidCount.SetTextWithoutNotify(battleSettings.asteroidCountModifier.ToString());
+            editSimulationGasClouds.SetTextWithoutNotify(battleSettings.gasCloudCount.ToString());
+            editSimulationSystemSizeModifier.SetTextWithoutNotify(battleSettings.systemSizeModifier.ToString());
+            editSimulationResearchModifier.SetTextWithoutNotify(battleSettings.researchModifier.ToString());
         }
     }
 
     public void UpdateSimulation() {
         try {
-            starCount = int.Parse(editSimulationStars.text);
-            asteroidFieldCount = int.Parse(editSimulationAsteroids.text);
-            asteroidCountModifier = float.Parse(editSimulationAsteroidCount.text);
-            gasCloudCount = int.Parse(editSimulationGasClouds.text);
-            systemSizeModifier = float.Parse(editSimulationSystemSizeModifier.text);
-            researchModifier = float.Parse(editSimulationResearchModifier.text);
+            battleSettings.starCount = int.Parse(editSimulationStars.text);
+            battleSettings.asteroidFieldCount = int.Parse(editSimulationAsteroids.text);
+            battleSettings.asteroidCountModifier = float.Parse(editSimulationAsteroidCount.text);
+            battleSettings.gasCloudCount = int.Parse(editSimulationGasClouds.text);
+            battleSettings.systemSizeModifier = float.Parse(editSimulationSystemSizeModifier.text);
+            battleSettings.researchModifier = float.Parse(editSimulationResearchModifier.text);
         } catch {
             Debug.LogWarning("Error parsing simulation inputs");
-            starCount = 3;
-            asteroidFieldCount = 20;
-            asteroidCountModifier = 1.2f;
-            researchModifier = 1.1f;
+            battleSettings.starCount = 3;
+            battleSettings.asteroidFieldCount = 20;
+            battleSettings.asteroidCountModifier = 1.2f;
+            battleSettings.researchModifier = 1.1f;
         }
     }
 
@@ -226,8 +227,7 @@ public class SimulationSetup : MonoBehaviour {
         BattleManager battleManager = GameObject.Find("Battle").GetComponent<BattleManager>();
         UIManager uIManager = GameObject.Find("Battle").GetComponent<UIManager>();
         uIManager.PreBattleManagerSetup(battleManager);
-        battleManager.SetupBattle(starCount, asteroidFieldCount, asteroidCountModifier,
-            gasCloudCount, systemSizeModifier, researchModifier, factions);
+        battleManager.SetupBattle(battleSettings, factions);
         uIManager.SetupUIManager();
         Destroy(gameObject);
     }

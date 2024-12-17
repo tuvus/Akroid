@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Faction;
@@ -101,6 +102,15 @@ public class BattleManager : MonoBehaviour {
         }
     }
 
+    public struct BattleSettings {
+        public int starCount;
+        public int asteroidFieldCount;
+        public float asteroidCountModifier;
+        public int gasCloudCount;
+        public float systemSizeModifier;
+        public float researchModifier;
+    }
+
     #region Setup
 
     /// <summary>
@@ -116,42 +126,37 @@ public class BattleManager : MonoBehaviour {
                 new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1),
                 new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1)
             };
-            SetupBattle(0, 0, 1, 0, 0.1f, 1.1f, tempFactions);
+            SetupBattle(new BattleSettings { asteroidCountModifier = 1, systemSizeModifier = 0.1f, researchModifier = 1.1f }, tempFactions);
         }
     }
 
     /// <summary>
-    /// Sets up the battle with manual values
+    /// Sets up the battle with manual values.
     /// </summary>
-    /// <param name="starCount"></param>
-    /// <param name="asteroidFieldCount"></param>
-    /// <param name="asteroidCountModifier"></param>
-    /// <param name="researchModifier"></param>
-    /// <param name="factionDatas"></param>
-    public void SetupBattle(int starCount, int asteroidFieldCount, float asteroidCountModifier, int gasCloudCount, float systemSizeModifier,
-        float researchModifier, List<FactionData> factionDatas) {
+    public void SetupBattle(BattleSettings battleSettings, List<FactionData> factionDatas) {
         if (Instance == null) {
             Instance = this;
         } else {
             return;
         }
 
-        this.systemSizeModifier = systemSizeModifier;
-        this.researchModifier = researchModifier;
+        this.systemSizeModifier = battleSettings.systemSizeModifier;
+        this.researchModifier = battleSettings.researchModifier;
         InitializeBattle();
-        for (int i = 0; i < starCount; i++) {
+        for (int i = 0; i < battleSettings.starCount; i++) {
             CreateNewStar("Star" + (i + 1));
         }
 
-        for (int i = 0; i < asteroidFieldCount; i++) {
-            CreateNewAsteroidField(Vector2.zero, (int)Random.Range(6 * asteroidCountModifier, 14 * asteroidCountModifier));
+        for (int i = 0; i < battleSettings.asteroidFieldCount; i++) {
+            CreateNewAsteroidField(Vector2.zero,
+                (int)Random.Range(6 * battleSettings.asteroidCountModifier, 14 * battleSettings.asteroidCountModifier));
         }
 
         for (int i = 0; i < factionDatas.Count; i++) {
             CreateNewFaction(factionDatas[i], new PositionGiver(Vector2.zero, 0, 1000000, 100, 1000, 10), 100);
         }
 
-        for (int i = 0; i < gasCloudCount; i++) {
+        for (int i = 0; i < battleSettings.gasCloudCount; i++) {
             CreateNewGasCloud(new PositionGiver(Vector2.zero, 1000, 100000, 500, 2000, 3));
         }
 
@@ -168,9 +173,6 @@ public class BattleManager : MonoBehaviour {
         if (factions.Count > 0) LocalPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
         else LocalPlayer.SetFaction(null);
 
-        // LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
-
-        startOfSimulation = Time.unscaledTime;
         battleState = BattleState.Running;
         if (CheckVictory() != null)
             battleState = BattleState.Ended;
@@ -178,30 +180,29 @@ public class BattleManager : MonoBehaviour {
 
     /// <summary>
     /// Sets up the battle with a CampaignController, doesn't spawn any asteroids or stars.
-    /// Lets the CampaignController set the settings.
+    /// Gets the BattleSettings from the CampaignController.
     /// </summary>
-    /// <param name="campaignControler">the given CampaignController</param>
-    public void SetupBattle(CampaingController campaignControler) {
+    /// <param name="campaignController">the given CampaignController</param>
+    public void SetupBattle(CampaingController campaignController) {
         if (Instance == null) {
             Instance = this;
         } else {
             return;
         }
 
-        this.campaignController = campaignControler;
-        systemSizeModifier = campaignControler.systemSizeModifier;
-        researchModifier = campaignControler.researchModifier;
+        this.campaignController = campaignController;
+        systemSizeModifier = campaignController.systemSizeModifier;
+        researchModifier = campaignController.researchModifier;
         InitializeBattle();
         Player LocalPlayer = new Player(true);
         players.Add(LocalPlayer);
         LocalPlayer.SetFaction(null);
         // LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
-        campaignControler.SetupBattle(this);
+        campaignController.SetupBattle(this);
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();
         }
 
-        startOfSimulation = Time.unscaledTime;
         battleState = BattleState.Running;
     }
 
@@ -233,8 +234,8 @@ public class BattleManager : MonoBehaviour {
             PrespawnNewMissile();
         }
 
-        // transform.parent.Find("Player").GetComponent<LocalPlayer>().SetUpPlayer();
         timeScale = 1;
+        startOfSimulation = Time.unscaledTime;
     }
 
     #endregion
@@ -274,7 +275,7 @@ public class BattleManager : MonoBehaviour {
                 return targetPosition.Value;
             }
 
-            distance += positionGiver.incrementDistance * systemSizeModifier;
+            distance += positionGiver.incrementDistance * math.max(.001f, systemSizeModifier);
             if (distance > (positionGiver.maxDistance - positionGiver.incrementDistance) * systemSizeModifier) {
                 return null;
             }

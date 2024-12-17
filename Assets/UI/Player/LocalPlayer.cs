@@ -31,6 +31,7 @@ public class LocalPlayer : MonoBehaviour {
         localPlayerInput.Setup(this, unitSpriteManager);
         playerUI.SetUpUI(localPlayerInput, this, unitSpriteManager);
         SetupFaction(player.faction);
+        localPlayerInput.CenterCamera();
     }
 
     public void SetupFaction(Faction faction) {
