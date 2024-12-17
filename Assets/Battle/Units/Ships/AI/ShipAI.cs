@@ -622,6 +622,7 @@ public class ShipAI {
                     if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
                     ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
                     currentCommandState = CommandType.Move;
+                    return CommandResult.Stop;
                 }
                 //TODO: Create a more robust cargo transfer system
                 long cargoTransferSpeed = 400;

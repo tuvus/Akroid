@@ -73,8 +73,8 @@ public class SimulationFactionAI : FactionAI {
                 continue;
             Fleet targetFleet = (Fleet)faction.closeEnemyGroups[i];
             if (faction.stations.Any(s =>
-                    Vector2.Distance(s.GetPosition(), targetFleet.GetPosition()) <=
-                    threatDistance + targetFleet.GetSize() + targetFleet.maxWeaponRange))
+                Vector2.Distance(s.GetPosition(), targetFleet.GetPosition()) <=
+                threatDistance + targetFleet.GetSize() + targetFleet.maxWeaponRange))
                 continue;
             threats.Add(targetFleet);
         }
@@ -90,9 +90,9 @@ public class SimulationFactionAI : FactionAI {
                     Vector2.Distance(defenseFleet.GetPosition(), currentThreat.GetPosition()) - currentThreat.GetSize();
                 // If there are no closer threats then we should just continue
                 if (distanceToCurrentThreat - defenseFleet.GetSize() <= threatDistance || threats.All(threat =>
-                        (IObject)threat == currentThreat ||
-                        Vector2.Distance(defenseFleet.GetPosition(), threat.GetPosition()) - threat.GetSize() >
-                        distanceToCurrentThreat - 100)) {
+                    (IObject)threat == currentThreat ||
+                    Vector2.Distance(defenseFleet.GetPosition(), threat.GetPosition()) - threat.GetSize() >
+                    distanceToCurrentThreat - 100)) {
                     if (distanceToCurrentThreat <= threatDistance * 2 || currentThreat.GetType() != typeof(Fleet) ||
                         threats.Contains((Fleet)currentThreat))
                         continue;
@@ -152,8 +152,8 @@ public class SimulationFactionAI : FactionAI {
             if (defenseFleet.IsFleetIdle()) {
                 float farthestStationDistance = faction.stations.Max(s => Vector2.Distance(s.GetPosition(), faction.position));
                 Vector2 randomTargetPosition = faction.GetAveragePosition() +
-                                               Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
-                                                   Random.Range(100, farthestStationDistance + 500));
+                    Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
+                        Random.Range(100, farthestStationDistance + 500));
                 defenseFleet.FleetAI.AddFleetAICommand(
                     Command.CreateFormationCommand(defenseFleet.GetPosition(),
                         Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), randomTargetPosition)),
@@ -262,7 +262,9 @@ public class SimulationFactionAI : FactionAI {
                         Command.CreateCollectGasCommand(faction.GetClosestGasCloud(idleShip.GetPosition()), fleetCommand),
                         Command.CommandAction.Replace);
                 } else if (idleShip.IsConstructionShip()) {
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(idleShip.faction ,Station.StationType.MiningStation, faction.GetPosition()), Command.CommandAction.Replace);
+                    idleShip.shipAI.AddUnitAICommand(
+                        Command.CreateBuildStationCommand(idleShip.faction, Station.StationType.MiningStation, faction.GetPosition()),
+                        Command.CommandAction.Replace);
                     return;
                 }
             }
@@ -307,8 +309,8 @@ public class SimulationFactionAI : FactionAI {
         int gasCollectorQueueCount = fleetCommand.GetConstructionBay().GetNumberOfShipsOfTypeFaction(Ship.ShipType.GasCollector, faction);
         bool wantTransport = faction.GetTotalWantedTransports() > faction.GetShipCountOfType(Ship.ShipType.Transport) + transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
-                                     faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 3 + 1;
+            faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 1;
 
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
             if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {
@@ -337,23 +339,20 @@ public class SimulationFactionAI : FactionAI {
                 fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     BattleManager.Instance.GetShipBlueprint(Ship.ShipType.Research), "Science Ship"));
             } else if (randomNumber < 45) {
-                fleetCommand.GetConstructionBay()
-                    .AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
-                        BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                    BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aria)));
             } else if (randomNumber < 80) {
-                fleetCommand.GetConstructionBay()
-                    .AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
-                        BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                    BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Lancer)));
             } else {
-                fleetCommand.GetConstructionBay()
-                    .AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
-                        BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aterna)));
+                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                    BattleManager.Instance.GetShipBlueprint(Ship.ShipClass.Aterna)));
             }
         }
     }
 
     void ManageStationUpgrades() {
-        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 30000) {
+        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 10000) {
             for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
                 if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
                     fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);
