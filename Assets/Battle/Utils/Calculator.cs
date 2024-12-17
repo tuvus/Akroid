@@ -107,26 +107,16 @@ public static class Calculator {
     /// Returns the target rotation relative to the current rotation. Input both as 360, -360 degrees.
     /// </summary>
     public static float GetLocalTargetRotation(float currentRotation, float targetRotation) {
-        if (currentRotation > 180) {
-            currentRotation = -180 + (currentRotation - 180);
-        }
+        if (currentRotation > 180) currentRotation = -180 + (currentRotation - 180);
 
-        if (targetRotation > 180) {
-            targetRotation = -180 + (targetRotation - 180);
-        }
+        if (targetRotation > 180) targetRotation = -180 + (targetRotation - 180);
 
-        if (targetRotation < -180) {
-            targetRotation = 180 + (targetRotation + 180);
-        }
+        if (targetRotation < -180) targetRotation = 180 + (targetRotation + 180);
 
         targetRotation -= currentRotation;
-        if (targetRotation > 180) {
-            targetRotation = -180 + (targetRotation - 180);
-        }
+        if (targetRotation > 180) targetRotation = -180 + (targetRotation - 180);
 
-        if (targetRotation < -180) {
-            targetRotation = 180 + (targetRotation + 180);
-        }
+        if (targetRotation < -180) targetRotation = 180 + (targetRotation + 180);
 
         return targetRotation;
     }

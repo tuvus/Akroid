@@ -6,6 +6,7 @@
 /// to the PlayerUI and it's functions.
 /// </summary>
 public class LocalPlayer : MonoBehaviour {
+    private BattleManager battleManager;
     public Player player { get; private set; }
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
@@ -22,19 +23,19 @@ public class LocalPlayer : MonoBehaviour {
             Destroy(this);
             return;
         }
-
-        this.unitSpriteManager = unitSpriteManager;
         player = battleManager.GetLocalPlayer();
+        player.OnFactionChanged += SetupFaction;
         Instance = this;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
         localPlayerInput.Setup(this, unitSpriteManager);
         playerUI.SetUpUI(localPlayerInput, this, unitSpriteManager);
+        SetupFaction(player.faction);
     }
 
-    public void SetupFaction() {
+    public void SetupFaction(Faction faction) {
         UpdateFactionColors();
-        playerUI.GetPlayerCommsManager().SetupFaction(player.faction);
+        playerUI.playerCommsManager.SetupFaction(faction);
     }
 
     /// <summary>

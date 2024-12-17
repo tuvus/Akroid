@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public class Player {
@@ -6,6 +7,7 @@ public class Player {
     public bool lockedOwnedUnits { get; private set; }
 
     public bool isLocalPlayer { get; private set; }
+    public event Action<Faction> OnFactionChanged = delegate { };
 
     public Player(bool isLocalPlayer) {
         faction = null;

@@ -167,6 +167,7 @@ public class BattleManager : MonoBehaviour {
         players.Add(LocalPlayer);
         if (factions.Count > 0) LocalPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
         else LocalPlayer.SetFaction(null);
+
         // LocalPlayer.Instance.GetLocalPlayerInput().CenterCamera();
 
         startOfSimulation = Time.unscaledTime;
@@ -337,7 +338,7 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
-            new Vector2(10, 10) * Random.Range(0.6f, 1.4f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
+            new Vector2(14, 14) * Random.Range(0.6f, 1.4f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddObject(newStar);

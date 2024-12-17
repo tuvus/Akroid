@@ -92,7 +92,8 @@ public class Chapter1 : CampaingController {
                 new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0, 0),
                 new PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         planet = battleManager.CreateNewPlanet(new Planet.PlanetData(
-            new BattleObject.BattleObjectData("Home", planetFaction.GetPosition(), Random.Range(0, 360), planetFaction),
+            new BattleObject.BattleObjectData("Home", planetFaction.GetPosition(), Random.Range(0, 360), new Vector2(14, 14),
+                planetFaction),
             Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
         moon = battleManager.CreateNewMoon(new Planet.PlanetData(
             new BattleObject.BattleObjectData("Moon", new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5),
@@ -295,6 +296,7 @@ public class Chapter1 : CampaingController {
     private void AddTutorial1() {
         Fleet setupFleet = playerFaction.fleets.First();
         FactionCommManager playerComm = playerFaction.GetFactionCommManager();
+        playerComm.SendCommunication(playerFaction, "TESSSSSTT.", 1);
         playerComm.SendCommunication(planetFactionAI.faction, "Thanks for the goodbye! We will send you some resources soon.", 5);
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCommEvent(playerComm, playerFaction,

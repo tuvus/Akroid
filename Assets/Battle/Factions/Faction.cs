@@ -149,7 +149,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         factionAI = (FactionAI)Activator.CreateInstance(factionData.factionAI, battleManager, this);
         GenerateFaction(factionData, startingResearchCost);
         factionAI.GenerateFactionAI();
-        commManager = new FactionCommManager(this, factionData.leader);
+        commManager = new FactionCommManager(battleManager, this, factionData.leader);
     }
 
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
@@ -591,7 +591,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         return !stations.Concat(stationBlueprints).Any(friendlyStation =>
             friendlyStation.GetStationType() == Station.StationType.MiningStation
             && Vector2.Distance(friendlyStation.GetPosition(), asteroidField.GetPosition()) <=
-                ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize());
+            ((MiningStation)friendlyStation).GetMiningRange() + friendlyStation.GetSize() + asteroidField.GetSize());
     }
 
     /// <summary>

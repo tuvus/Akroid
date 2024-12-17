@@ -92,6 +92,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         unclaimedTerritory = new PlanetFaction(this, null,
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0,
             "This territory is open to claim.");
+        visible = true;
         Spawn();
         SetSize(SetupSize());
     }

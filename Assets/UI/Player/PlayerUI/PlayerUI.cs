@@ -14,7 +14,7 @@ public class PlayerUI : MonoBehaviour {
 
     [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
-    [SerializeField] private PlayerCommsManager playerCommsManager;
+    [field: SerializeField] public PlayerCommsManager playerCommsManager { get; private set; }
     [SerializeField] private PlayerMenueUI playerMenueUI;
 
     [field: SerializeField] public PlayerFactionOverviewUI playerFactionOverviewUI { get; private set; }
@@ -104,6 +104,7 @@ public class PlayerUI : MonoBehaviour {
         });
         timeSpeed.text = "Time: " + Time.timeScale;
         playerEventUI.UpdateEventUI();
+        playerCommsManager.UpdateCommsManager();
         Profiler.EndSample();
     }
 
@@ -304,10 +305,6 @@ public class PlayerUI : MonoBehaviour {
 
     public CommandClick GetCommandClick() {
         return commandClick;
-    }
-
-    public PlayerCommsManager GetPlayerCommsManager() {
-        return playerCommsManager;
     }
 
     public LocalPlayerInput GetLocalPlayerInput() {

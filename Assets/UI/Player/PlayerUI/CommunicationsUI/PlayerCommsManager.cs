@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerCommsManager : MonoBehaviour {
-    PlayerUI playerUI;
+    private PlayerUI playerUI;
     [SerializeField] private GameObject communicationEventPrefab;
     [SerializeField] private GameObject optionPrefab;
     [SerializeField] private GameObject characterPortraitPanel;
@@ -19,8 +19,9 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private Transform communicationLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
     [SerializeField] private Scrollbar verticleScrollbar;
-    bool shown;
-    float portraitTime;
+    private bool shown;
+    private float portraitTime;
+    private bool lockToBottom = false;
 
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
@@ -48,12 +49,13 @@ public class PlayerCommsManager : MonoBehaviour {
             if (factionCommManager.communicationLog.Count > 0) {
                 SetPortrait(factionCommManager.communicationLog[factionCommManager.communicationLog.Count - 1].sender);
             }
+
+            factionCommManager.OnCommunicationRecieved += RecieveNewCommEvent;
         } else {
             HidePanel();
         }
     }
 
-    bool lockToBottom = false;
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
         lockToBottom = verticleScrollbar.value <= 0.1;
@@ -62,7 +64,7 @@ public class PlayerCommsManager : MonoBehaviour {
         SetPortrait(communicationEvent.sender);
     }
 
-    private void LateUpdate() {
+    public void UpdateCommsManager() {
         if (lockToBottom && verticleScrollbar.value > 0.000001) {
             verticleScrollbar.value = 0;
             lockToBottom = false;

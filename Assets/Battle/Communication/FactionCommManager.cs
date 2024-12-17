@@ -1,12 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static CommunicationEvent;
 
 public class FactionCommManager {
+    private BattleManager battleManager;
     public Faction faction { get; private set; }
     public List<CommunicationEvent> communicationLog;
     public List<DelayCommunication> delayedCommunications;
-    [SerializeField] private Character character;
+    private Character character;
+    public event Action<CommunicationEvent> OnCommunicationRecieved = delegate { };
+    public event Action<int> OnCommunicationEventDeativated = delegate { };
 
     public class DelayCommunication {
         public CommunicationEvent newCommunication;
@@ -18,7 +23,8 @@ public class FactionCommManager {
         }
     }
 
-    public FactionCommManager(Faction faction, Character character) {
+    public FactionCommManager(BattleManager battleManager, Faction faction, Character character) {
+        this.battleManager = battleManager;
         this.faction = faction;
         this.character = character;
         communicationLog = new List<CommunicationEvent>();
@@ -26,7 +32,7 @@ public class FactionCommManager {
     }
 
     public void UpdateCommunications() {
-        while (delayedCommunications.Count > 0 && BattleManager.Instance.GetSimulationTime() >= delayedCommunications[0].targetTime) {
+        while (delayedCommunications.Count > 0 && battleManager.GetSimulationTime() >= delayedCommunications[0].targetTime) {
             SendCommunication(delayedCommunications[0]);
             delayedCommunications.RemoveAt(0);
         }
@@ -60,7 +66,7 @@ public class FactionCommManager {
         receivedCommunication.receiver = this;
         communicationLog.Add(receivedCommunication);
         if (IsLocalPlayer()) {
-            // LocalPlayer.Instance.GetPlayerUI().GetPlayerCommsManager().RecieveNewCommEvent(receivedCommunication);
+            OnCommunicationRecieved(receivedCommunication);
         } else if (receivedCommunication.options != null && receivedCommunication.optionChoiceLogic != null) {
             receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
@@ -71,11 +77,12 @@ public class FactionCommManager {
     #endregion
 
     #region HelperMethods
+    public void DeactivateCommunicationEvent(CommunicationEvent communicationEvent) {
+        OnCommunicationEventDeativated(communicationLog.IndexOf(communicationEvent));
+    }
 
     public bool IsLocalPlayer() {
-        // TODO: Fix local player communications
-        return false;
-        // return LocalPlayer.Instance.GetFaction() == faction;
+        return battleManager.players.Any(p => p.faction == faction && p.isLocalPlayer);
     }
 
     public string GetSenderName() {
