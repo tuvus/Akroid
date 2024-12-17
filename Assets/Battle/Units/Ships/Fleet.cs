@@ -203,16 +203,6 @@ public class Fleet : ShipGroup {
     public bool IsDockedWithStation(Station station) {
         return ships.All(s => s.dockedStation == station);
     }
-    //
-    // public void SelectFleet(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
-    //     foreach (Ship ship in ships) {
-    //         ship.SelectObject(strength);
-    //     }
-    // }
-    //
-    // public void UnselectFleet() {
-    //     SelectFleet(UnitSelection.SelectionStrength.Unselected);
-    // }
 
     public override bool IsFleet() {
         return true;

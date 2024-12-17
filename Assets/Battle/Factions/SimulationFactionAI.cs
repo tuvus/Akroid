@@ -82,15 +82,13 @@ public class SimulationFactionAI : FactionAI {
 
     void ManageFleets() {
         foreach (var defenseFleet in defenseFleets.ToList()) {
-            bool recheck = false;
             // In the case we are patrolling, our command will be of type AttackMove, so we want to check for enemy fleets again
             if (defenseFleet.FleetAI.commands.Any(c => c.GetTargetObject() != null)) {
                 IObject currentThreat = defenseFleet.FleetAI.commands.First(c => c.GetTargetObject() != null).GetTargetObject();
                 float distanceToCurrentThreat =
                     Vector2.Distance(defenseFleet.GetPosition(), currentThreat.GetPosition()) - currentThreat.GetSize();
                 // If there are no closer threats then we should just continue
-                if (distanceToCurrentThreat - defenseFleet.GetSize() <= threatDistance || threats.All(threat =>
-                    (IObject)threat == currentThreat ||
+                if (distanceToCurrentThreat - defenseFleet.GetSize() <= threatDistance || threats.All(threat => threat == currentThreat ||
                     Vector2.Distance(defenseFleet.GetPosition(), threat.GetPosition()) - threat.GetSize() >
                     distanceToCurrentThreat - 100)) {
                     if (distanceToCurrentThreat <= threatDistance * 2 || currentThreat.GetType() != typeof(Fleet) ||
@@ -117,7 +115,7 @@ public class SimulationFactionAI : FactionAI {
             }
 
             // Find any extra units that the fleet needs to defend against
-            if (!defenseFleet.FleetAI.HasActionCommand() || recheck) {
+            if (!defenseFleet.FleetAI.HasActionCommand()) {
                 for (int f = 0; f < faction.closeEnemyGroupsDistance.Count; f++) {
                     if (faction.closeEnemyGroupsDistance[f] < faction.GetSize()) {
                         List<Unit> targetUnits = faction.closeEnemyGroups[f].battleObjects.ToList();
@@ -139,9 +137,11 @@ public class SimulationFactionAI : FactionAI {
                             if (closestUnit.IsShip() && ((Ship)closestUnit).fleet != null) {
                                 defenseFleet.FleetAI.AddFleetAICommand(Command.CreateAttackFleetCommand(((Ship)closestUnit).fleet),
                                     Command.CommandAction.Replace);
+                                break;
                             } else {
                                 defenseFleet.FleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(closestUnit),
-                                    Command.CommandAction.AddToEnd);
+                                    Command.CommandAction.Replace);
+                                break;
                             }
                         }
                     }

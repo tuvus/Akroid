@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class FleetUI : ObjectUI {
     public Fleet fleet { get; private set; }
+    [SerializeField] private FleetAI fleetAI;
     private UnitSpriteManager unitSpriteManager;
 
     public void Setup(Fleet fleet, UnitSpriteManager unitSpriteManager) {
         this.fleet = fleet;
         this.unitSpriteManager = unitSpriteManager;
+        fleetAI = fleet.FleetAI;
     }
 
     public IEnumerable<ShipUI> GetShipsUI() {
