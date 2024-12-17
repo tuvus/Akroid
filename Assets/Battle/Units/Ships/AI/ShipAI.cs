@@ -606,7 +606,7 @@ public class ShipAI {
             } else if (currentCommandState == CommandType.CollectGas) {
                 if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
                 foreach (var gasCollector in ship.moduleSystem.Get<GasCollector>()) {
-                    if (!gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
+                    if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
                         return CommandResult.Stop;
                     }
                 }
@@ -623,7 +623,10 @@ public class ShipAI {
                     ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
                     currentCommandState = CommandType.Move;
                 }
-
+                //TODO: Create a more robust cargo transfer system
+                long cargoTransferSpeed = 400;
+                command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, CargoBay.CargoTypes.Gas, ship);
+                currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Idle) {
                 newCommand = true;

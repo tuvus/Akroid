@@ -339,7 +339,7 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
-            new Vector2(14, 14) * Random.Range(0.6f, 1.4f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
+            new Vector2(20, 20) * Random.Range(0.6f, 1.8f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddObject(newStar);
@@ -388,7 +388,7 @@ public class BattleManager : MonoBehaviour {
         float size = Random.Range(40, 80);
         GasCloud newGasCloud = new GasCloud(
             new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
-            (long)(Random.Range(500, 1700) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
+            (long)(Random.Range(1500, 3500) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
         AddObject(newGasCloud);
