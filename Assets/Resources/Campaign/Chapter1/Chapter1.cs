@@ -211,8 +211,8 @@ public class Chapter1 : CampaingController {
         battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
         battleManager.GetLocalPlayer().SetFaction(playerFaction);
-        // battleManager.GetLocalPlayer().GetLocalPlayerInput().SetZoom(400);
-        // battleManager.GetLocalPlayer().GetLocalPlayerInput().StartFollowingUnit(setupFleetShip2);
+        eventManager.SetPlayerZoom(400);
+        eventManager.StartFollowingUnit(miningStationSetupFleet.ships.First(s => s.IsConstructionShip()));
 
         StartTutorial();
         AddMoonQuestLine();
@@ -1137,10 +1137,6 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetFaction.name}, {planetDemocracy.name} and {planetOligarchy.name} have reached a peace agreement due to the robot threat.");
         planetEscalationChain.Build(eventManager)();
-    }
-
-    public override void UpdateController(float deltaTime) {
-        base.UpdateController(deltaTime);
     }
 
     public override string GetPathToChapterFolder() {

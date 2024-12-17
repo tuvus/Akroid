@@ -1,30 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class EventManager {
     public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; private set; }
 
-    // public LocalPlayerGameInput playerGameInput { get; private set; }
-    public float panDelta;
-
     public EventManager() {
-        // this.playerGameInput = playerGameInput;
         ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
-        // LocalPlayer.Instance.GetPlayerUI().playerEventUI.SetEventManager(this);
-        // LocalPlayer.Instance.GetLocalPlayerInput().OnPanEvent += (oldPos, newPos) => panDelta = Vector2.Distance(oldPos, newPos);
     }
 
-    public void UpdateEvents(float deltaTime) {
+    /// <summary>
+    /// Checks the conditions of every event during the regular game update.
+    /// </summary>
+    public virtual void UpdateEvents(float deltaTime) {
         foreach (var activeEvent in ActiveEvents.ToList()) {
             if (activeEvent.Item1.CheckCondition(this, deltaTime)) {
                 ActiveEvents.Remove(activeEvent);
                 activeEvent.Item2();
             }
         }
-
-        panDelta = 0;
     }
 
     public void AddEvent(EventCondition condition, Action action) {
@@ -79,32 +73,34 @@ public class EventManager {
         return new ShipsCommandCondition(shipToMove, Command.CreateCollectGasCommand(gasCloud, returnStation), visualize);
     }
 
-    public EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null, bool visualize = false) {
+    public EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null,
+        bool visualize = false) {
         return new BuildShipsAtStation(shipBlueprint, faction, station, visualize);
     }
 
-    public EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station, bool visualize = false) {
+    public EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station,
+        bool visualize = false) {
         return new BuildShipsAtStation(shipBlueprints, faction, station, visualize);
     }
 
     public EventCondition CreateSelectUnitEvent(Unit unitToSelect, bool visualize = false) {
-        return new PlaceholderCondition(new object[] {unitToSelect, visualize});
+        return new PlaceholderCondition(new object[] { unitToSelect, visualize });
     }
 
     public EventCondition CreateSelectUnitsEvent(HashSet<Unit> unitsToSelect, bool visualize = false) {
-        return new PlaceholderCondition(new object[] {unitsToSelect, visualize});
+        return new PlaceholderCondition(new object[] { unitsToSelect, visualize });
     }
 
     public EventCondition CreateSelectUnitsAmountEvent(HashSet<Unit> unitsToSelect, int amount, bool visualize = false) {
-        return new PlaceholderCondition(new object[] {unitsToSelect, amount, visualize});
+        return new PlaceholderCondition(new object[] { unitsToSelect, amount, visualize });
     }
 
     public EventCondition CreateUnselectUnitsEvent(HashSet<Unit> unitsToUnselect, bool visualize = false) {
-        return new PlaceholderCondition(new object[] {unitsToUnselect, visualize});
+        return new PlaceholderCondition(new object[] { unitsToUnselect, visualize });
     }
 
     public EventCondition CreateSelectFleetEvent(Fleet fleetToSelect, bool visualize = false) {
-        return new PlaceholderCondition(new object[] {fleetToSelect, visualize});
+        return new PlaceholderCondition(new object[] { fleetToSelect, visualize });
     }
 
     public EventCondition CreateOpenObjectPanelEvent(BattleObject objectToSelect, bool visualize = false) {
@@ -134,4 +130,11 @@ public class EventManager {
     public EventCondition CreateLateConditionEvent(Func<EventCondition> eventConditionFunction) {
         return new LateCondition(eventConditionFunction);
     }
+
+    public virtual void SetPlayerZoom(float zoom) { }
+
+    public virtual void CenterPlayerCamera() { }
+
+    public virtual void StartFollowingUnit(Unit unit) { }
+
 }

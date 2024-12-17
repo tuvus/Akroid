@@ -7,18 +7,25 @@
 /// </summary>
 public class LocalPlayer : MonoBehaviour {
     private BattleManager battleManager;
+    private UnitSpriteManager unitSpriteManager;
     public Player player { get; private set; }
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
     public PlayerUI playerUI { get; private set; }
-    private UnitSpriteManager unitSpriteManager;
 
     public enum PlayerState {
         free = 1,
         following = 2,
     }
 
-    public void SetUpPlayer(BattleManager battleManager, UnitSpriteManager unitSpriteManager) {
+    public void PreBattleManagerSetup(BattleManager battleManager, UnitSpriteManager unitSpriteManager) {
+        this.battleManager = battleManager;
+        this.unitSpriteManager = unitSpriteManager;
+        localPlayerInput = GetComponent<LocalPlayerInput>();
+        playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
+    }
+
+    public void SetUpPlayer() {
         if (Instance != null) {
             Destroy(this);
             return;
@@ -26,8 +33,6 @@ public class LocalPlayer : MonoBehaviour {
         player = battleManager.GetLocalPlayer();
         player.OnFactionChanged += SetupFaction;
         Instance = this;
-        localPlayerInput = GetComponent<LocalPlayerInput>();
-        playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
         localPlayerInput.Setup(this, unitSpriteManager);
         playerUI.SetUpUI(localPlayerInput, this, unitSpriteManager);
         SetupFaction(player.faction);

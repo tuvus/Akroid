@@ -4,29 +4,35 @@ public class UIManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public LocalPlayer localPlayer { get; private set; }
     public UnitSpriteManager unitSpriteManager { get; private set; }
+    private UIEventManager uIEventManager;
 
     /// <summary>
     /// Subscription to BattleManager events needs to occur before the system is created.
+    /// Also inject the UIEventManager into BattleManager so that BattleManager doesn't create the non UI one.
     /// This method should be called before the BattleManager is set up.
     /// </summary>
     public void PreBattleManagerSetup(BattleManager battleManager) {
         this.battleManager = battleManager;
         unitSpriteManager = GetComponent<UnitSpriteManager>();
         unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
+        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
+        localPlayer.PreBattleManagerSetup(battleManager, unitSpriteManager);
+        uIEventManager = new UIEventManager(localPlayer, localPlayer.GetLocalPlayerGameInput(), unitSpriteManager);
+        battleManager.SetEventManager(uIEventManager);
     }
 
     /// <summary>
     /// Setup that should be done after the BattleManager is set up
     /// </summary>
     public void SetupUIManager() {
-        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
-        localPlayer.SetUpPlayer(battleManager, unitSpriteManager);
+        localPlayer.SetUpPlayer();
     }
 
     public void LateUpdate() {
         if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();
+        uIEventManager.UpdateUIEvents();
     }
 
     /// <summary>

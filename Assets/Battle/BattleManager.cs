@@ -12,6 +12,7 @@ using Random = UnityEngine.Random;
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
     CampaingController campaignController;
+    public EventManager eventManager { get; private set; }
 
     [field: SerializeField] public float researchModifier { get; private set; }
     [field: SerializeField] public float systemSizeModifier { get; private set; }
@@ -236,6 +237,8 @@ public class BattleManager : MonoBehaviour {
 
         timeScale = 1;
         startOfSimulation = Time.unscaledTime;
+
+        if (eventManager == null) eventManager = new EventManager();
     }
 
     #endregion
@@ -585,9 +588,7 @@ public class BattleManager : MonoBehaviour {
             // LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
         }
 
-        if (campaignController != null) {
-            campaignController.UpdateController(deltaTime);
-        }
+        eventManager.UpdateEvents(deltaTime);
     }
 
     #region HelperMethods
@@ -659,5 +660,10 @@ public class BattleManager : MonoBehaviour {
         return players.First(p => p.isLocalPlayer);
     }
 
+    public void SetEventManager(EventManager eventManager) {
+        if (this.eventManager != null)
+            throw new AggregateException("Trying to set the BattleManager EventManager after the EventManager has already been set!");
+        this.eventManager = eventManager;
+    }
     #endregion
 }

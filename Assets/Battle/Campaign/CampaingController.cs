@@ -8,11 +8,7 @@ public abstract class CampaingController : MonoBehaviour {
 
     public virtual void SetupBattle(BattleManager battleManager) {
         this.battleManager = battleManager;
-        eventManager = new EventManager();
-    }
-
-    public virtual void UpdateController(float deltaTime) {
-        eventManager.UpdateEvents(deltaTime);
+        eventManager = battleManager.eventManager;
     }
 
     public abstract string GetPathToChapterFolder();
