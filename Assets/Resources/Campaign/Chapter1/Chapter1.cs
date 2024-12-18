@@ -328,18 +328,18 @@ public class Chapter1 : CampaingController {
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Our ships are in a fleet, which means if you select one you will select all by default. \n" +
             "Try selecting just one ship in the fleet by holding alt while clicking the ship.", 3 * GetTimeScale());
-        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 1, true));
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "You can see a line coming out of the selected ship, this is where they are going. \n" +
             "Try holding shift to select multiple ships. ");
-        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Exelent. Now click in empty space or press D to deselect the ships.", 1 * GetTimeScale());
-        eventChain.AddCondition(eventManager.CreateUnselectUnitsEvent(battleManager.units, false));
+        eventChain.AddCondition(eventManager.CreateUnselectUnitsEvent(battleManager.units.ToList(), false));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "There is one more way that you can select ships, try clicking and dragging your mouse to do a box select. " +
             "Remember to hold alt while doing it.", 1 * GetTimeScale());
-        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToHashSet(), 2, true));
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountEvent(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateOpenObjectPanelEvent(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));

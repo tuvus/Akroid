@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
 public abstract class EventCondition {
     public enum ConditionType {
         Wait,
@@ -39,5 +34,9 @@ public abstract class EventCondition {
         this.visualize = visualize;
     }
 
+    /// <summary>
+    /// Checks the condition during the simulation frame.
+    /// </summary>
+    /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckCondition(EventManager eventManager, float deltaTime);
 }

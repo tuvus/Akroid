@@ -1,0 +1,13 @@
+public class OpenFactionPanelCondition : UIEventCondition {
+    private Faction factionToSelect;
+
+    public OpenFactionPanelCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
+        Faction factionToSelect, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+        this.factionToSelect = factionToSelect;
+    }
+
+    public override bool CheckUICondition(EventManager eventManager) {
+        if (factionToSelect == null) return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == null;
+        return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == unitSpriteManager.factionUIs[factionToSelect];
+    }
+}
