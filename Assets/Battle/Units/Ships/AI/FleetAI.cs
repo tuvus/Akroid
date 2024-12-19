@@ -210,8 +210,9 @@ public class FleetAI {
     }
 
     /// <summary>
-    /// Moves the fleet in an attacking behaviour based on it's command type.
-    /// May engage fleets or units nearby using a more sophisticated attack strategy.
+    /// Moves the fleet in an attacking behaviour based on its command type.
+    /// The command might find a new fleet target to engage with a more sophisticated attack strategy.
+    /// After the temporary fleet is destroyed it will continue attacking its set target.
     /// </summary>
     CommandResult DoAttackCommand(Command command, float deltaTime) {
         // If there is an enemy fleet nearby lets use DoAttackFleet to engage them
@@ -221,19 +222,19 @@ public class FleetAI {
                 newCommand = true;
         }
 
-        if (command.targetFleet != null && command.targetFleet.ships.Count > 0 && DoAttackFleet(command, deltaTime) == CommandResult.Stop)
-            return CommandResult.Stop;
+        // TODO: If the actual target isn't the targetFleet do a range check to see if it left
+        if (DoAttackFleet(command, deltaTime) == CommandResult.Stop) return CommandResult.Stop;
         if (command.commandType == CommandType.AttackFleet) return CommandResult.ContinueRemove;
 
+        if (command.targetUnit != null && DoAttackUnit(command, deltaTime) == CommandResult.Stop) return CommandResult.Stop;
+        if (command.commandType == CommandType.AttackMoveUnit) return CommandResult.ContinueRemove;
+
         // If there is an enemy unit nearby lets use DoAttackUnit to engage it
-        if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
+        if (command.targetUnit == null || !command.targetUnit.IsTargetable()) {
             command.targetUnit = fleet.enemyUnitsInRange.FirstOrDefault();
             if (command.targetUnit != null || currentCommandState == CommandType.AttackMoveUnit)
                 newCommand = true;
         }
-
-        if (command.targetUnit != null && DoAttackUnit(command, deltaTime) == CommandResult.Stop) return CommandResult.Stop;
-        if (command.commandType == CommandType.AttackMoveUnit) return CommandResult.ContinueRemove;
 
         if (command.protectUnit != null && DoProtectUnit(command, deltaTime) == CommandResult.Stop) return CommandResult.Stop;
         if (command.commandType == CommandType.Protect) return CommandResult.ContinueRemove;
@@ -244,12 +245,7 @@ public class FleetAI {
 
     /// <summary> Moves the fleet's ships into position to attack the enemy fleet </summary>
     private CommandResult DoAttackFleet(Command command, float deltaTime) {
-        //TODO: Add range check here
-        if (command.targetFleet == null) return CommandResult.ContinueRemove;
-
-        // Save the postion for DoAttackMove if the target fleet is destroyed
-        if (command.commandType == CommandType.AttackFleet)
-            command.targetPosition = command.targetFleet.GetPosition();
+        if (command.targetFleet == null || !command.targetFleet.IsTargetable()) return CommandResult.ContinueRemove;
 
         //Sets the target position of the command and tells all ships to attack move
         if (newCommand) {
@@ -394,7 +390,8 @@ public class FleetAI {
             SetFleetMoveCommand(command.destinationStation.position, fleet.GetSize() + command.destinationStation.GetSize() + 10);
             Ship constructionShip = fleet.ships.FirstOrDefault(s => s.IsConstructionShip());
             if (constructionShip != null) {
-                constructionShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(command.destinationStation), CommandAction.Replace);
+                constructionShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(command.destinationStation),
+                    CommandAction.Replace);
             }
 
             currentCommandState = CommandType.Move;

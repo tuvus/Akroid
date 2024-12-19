@@ -303,7 +303,7 @@ public class SelectionGroup {
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {
         if (groupType == GroupType.Fleet) {
-            fleet.fleet.FleetAI.AddFleetAICommand(command, commandAction);
+            fleet.fleet.fleetAI.AddFleetAICommand(command, commandAction);
             return;
         }
 

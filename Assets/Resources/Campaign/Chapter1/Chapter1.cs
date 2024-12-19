@@ -146,15 +146,15 @@ public class Chapter1 : CampaingController {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
                 tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle")
             });
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
             Command.CommandAction.Replace);
-        miningStationSetupFleet.FleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4,
+        miningStationSetupFleet.fleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(), shipyard.GetSize() * 4,
             Command.CommandAction.AddToEnd);
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(),
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateMoveOffsetCommand(miningStationSetupFleet.GetPosition(),
             playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
-        miningStationSetupFleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
@@ -279,7 +279,7 @@ public class Chapter1 : CampaingController {
                 }
 
                 playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
-                    GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / 5);
+                    GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().fleetAI.GetTimeUntilFinishedWithCommand() / 5);
                     eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()), () => {
                         Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
                         if (battleManager.GetLocalPlayer().faction == playerFaction) {
@@ -401,7 +401,7 @@ public class Chapter1 : CampaingController {
 
     void AddTutorial2() {
         FactionCommManager commManager = playerFaction.GetFactionCommManager();
-        GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().FleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
+        GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().fleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
             "Resources on our planet are sparce due to the slow development of resource reusing policy and climate change. " +

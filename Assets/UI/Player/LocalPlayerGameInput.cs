@@ -393,13 +393,13 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             base.CombatUnitButtonPerformed();
         if (selectedUnits.groupType == SelectionGroup.GroupType.Fleet) {
             if (AdditiveButtonPressed && AltButtonPressed) {
-                selectedUnits.fleet.fleet.FleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
+                selectedUnits.fleet.fleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand(), Command.CommandAction.Replace);
             } else if (AdditiveButtonPressed) {
-                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
+                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             } else if (AltButtonPressed) {
-                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
             } else {
-                selectedUnits.fleet.fleet.FleetAI.AddFormationCommand();
+                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand();
             }
         } else if (selectedUnits.objects.Any((o) => o.battleObject.IsShip() && ((Ship)o.battleObject).IsCombatShip())) {
             selectedUnits.RemoveAllNonCombatShips();

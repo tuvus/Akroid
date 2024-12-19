@@ -38,9 +38,9 @@ public class PlayerShipUI : PlayerUIMenu<ShipUI> {
             shipFleet.gameObject.SetActive(true);
             shipFleet.text = "Fleet: " + displayedObject.ship.fleet.GetFleetName();
             shipFleetAI.gameObject.SetActive(true);
-            if (displayedObject.ship.fleet.FleetAI.commands.Count > 0)
-                shipFleetAI.text = "FleetAI: " + displayedObject.ship.fleet.FleetAI.commands.First().commandType.ToString() + ", " +
-                                   displayedObject.ship.fleet.FleetAI.currentCommandState.ToString();
+            if (displayedObject.ship.fleet.fleetAI.commands.Count > 0)
+                shipFleetAI.text = "FleetAI: " + displayedObject.ship.fleet.fleetAI.commands.First().commandType.ToString() + ", " +
+                                   displayedObject.ship.fleet.fleetAI.currentCommandState.ToString();
             else shipFleetAI.text = "FleetAI: Idle";
         } else {
             shipFleet.gameObject.SetActive(false);

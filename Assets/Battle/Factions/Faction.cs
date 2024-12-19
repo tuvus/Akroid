@@ -54,9 +54,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public HashSet<Faction> enemyFactions { get; private set; }
     public HashSet<UnitGroup> unitGroups { get; private set; }
-    [field: SerializeField] public List<UnitGroup> closeEnemyGroups { get; private set; }
+
+    /// <summary>
+    /// Stores close enemy groups stored in ascending order of distance to the faction.
+    /// </summary>
+    public List<UnitGroup> closeEnemyGroups { get; private set; }
+
+    /// <summary>
+    /// The distance to each of the target groups sorted in ascending order of distance to the faction.
+    /// The size of the target group is taken into account
+    /// </summary>
+    public List<float> closeEnemyGroupsDistance { get; private set; }
+
     public UnitGroup baseGroup { get; private set; }
-    [field: SerializeField] public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public struct FactionData {
         public Type factionAI;
@@ -253,17 +263,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void AddEnemyFaction(Faction otherFaction) {
         enemyFactions.Add(otherFaction);
-        // TODO: ADD back faction update when a new enemy is made
-        // if (LocalPlayer.Instance.player.faction == this) {
-        // LocalPlayer.Instance.UpdateFactionColors();
-        // }
     }
 
     public void RemoveEnemyFaction(Faction otherFaction) {
         enemyFactions.Remove(otherFaction);
-        // if (LocalPlayer.Instance.player.faction == this) {
-        // LocalPlayer.Instance.UpdateFactionColors();
-        // }
     }
 
     public void AddUnit(Unit unit) {
@@ -520,24 +523,25 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
     }
 
+    /// <summary>
+    /// Inserts the target group if it is close enough based to closestEnemyGroups.
+    /// </summary>
     void AddEnemyGroup(UnitGroup targetGroup) {
-        if (targetGroup == null || !targetGroup.IsTargetable())
-            return;
+        if (targetGroup == null || !targetGroup.IsTargetable()) return;
         float distance = math.max(0, Vector2.Distance(GetPosition(), targetGroup.GetPosition()) - targetGroup.GetSize());
-        if (distance <= GetSize() * 1.2f + 3000) {
-            for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
-                if (closeEnemyGroupsDistance[f] >= distance) {
-                    closeEnemyGroupsDistance.Insert(f, distance);
+        if (distance > GetSize() * 1.2f + 3000) return;
 
-                    closeEnemyGroups.Insert(f, targetGroup);
-                    return;
-                }
-            }
+        for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
+            if (closeEnemyGroupsDistance[f] < distance) continue;
+            closeEnemyGroupsDistance.Insert(f, distance);
 
-            //Has not been added yet
-            closeEnemyGroups.Add(targetGroup);
-            closeEnemyGroupsDistance.Add(distance);
+            closeEnemyGroups.Insert(f, targetGroup);
+            return;
         }
+
+        //Has not been added yet
+        closeEnemyGroups.Add(targetGroup);
+        closeEnemyGroupsDistance.Add(distance);
     }
 
     public void UpdateFleets(float deltaTime) {

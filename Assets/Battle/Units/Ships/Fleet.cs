@@ -5,7 +5,7 @@ using UnityEngine.Profiling;
 
 public class Fleet : ShipGroup {
     public Faction faction { get; private set; }
-    public FleetAI FleetAI { get; private set; }
+    public FleetAI fleetAI { get; private set; }
     string fleetName;
     public float minShipSpeed { get; private set; }
     public float maxWeaponRange { get; private set; }
@@ -28,7 +28,7 @@ public class Fleet : ShipGroup {
         enemyUnitsInRangeDistance = new List<float>(20);
         minShipSpeed = GetMinShipSpeed();
         maxWeaponRange = GetMaxTurretRange();
-        FleetAI = new FleetAI(this);
+        fleetAI = new FleetAI(this);
     }
 
     public void DisbandFleet() {
@@ -74,13 +74,13 @@ public class Fleet : ShipGroup {
             fleet.AddShip(ship);
         }
 
-        fleet.FleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+        fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
     }
 
     public void UpdateFleet(float deltaTime) {
         UpdateObjectGroup();
         FindEnemies();
-        FleetAI.UpdateAI(deltaTime);
+        fleetAI.UpdateAI(deltaTime);
         for (int i = sentFleets.Count - 1; i >= 0; i--) {
             if (sentFleets[i] == null) {
                 sentFleets.RemoveAt(i);
@@ -134,7 +134,7 @@ public class Fleet : ShipGroup {
     }
 
     public bool IsFleetIdle() {
-        if (FleetAI.commands.Count == 0 || FleetAI.commands[0].commandType == Command.CommandType.Idle)
+        if (fleetAI.commands.Count == 0 || fleetAI.commands[0].commandType == Command.CommandType.Idle)
             return AreShipsIdle();
         return false;
     }

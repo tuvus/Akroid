@@ -10,7 +10,7 @@ public class FleetUI : ObjectUI {
     public void Setup(Fleet fleet, UnitSpriteManager unitSpriteManager) {
         this.fleet = fleet;
         this.unitSpriteManager = unitSpriteManager;
-        fleetAI = fleet.FleetAI;
+        fleetAI = fleet.fleetAI;
     }
 
     public IEnumerable<ShipUI> GetShipsUI() {
