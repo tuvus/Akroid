@@ -196,7 +196,6 @@ public class PlayerUI : MonoBehaviour {
         ShowVictoryUI(true);
     }
 
-
     public void SetDisplayedObject(ObjectUI iObjectUI) {
         Type currentType = iObjectUI.GetType();
         while (currentType != null) {

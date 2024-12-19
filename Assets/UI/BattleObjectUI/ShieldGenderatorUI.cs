@@ -16,7 +16,7 @@ public class ShieldGenderatorUI : ComponentUI {
         base.UpdateObject();
         if (IsVisible()) {
             float shieldPercent = (float)shieldGenerator.shield.health / shieldGenerator.GetMaxShieldStrength();
-            spriteRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
+            shieldRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
             shieldRenderer.enabled = true;
         } else {
             shieldRenderer.enabled = false;

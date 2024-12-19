@@ -226,7 +226,7 @@ public class FleetAI {
         if (command.commandType == CommandType.AttackFleet) return CommandResult.ContinueRemove;
 
         // If there is an enemy unit nearby lets use DoAttackUnit to engage it
-        if (command.targetUnit == null) {
+        if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
             command.targetUnit = fleet.enemyUnitsInRange.FirstOrDefault();
             if (command.targetUnit != null || currentCommandState == CommandType.AttackMoveUnit)
                 newCommand = true;

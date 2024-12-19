@@ -21,13 +21,13 @@ public class ResearchEquipment : ModuleComponent {
             data = Mathf.Min(researchEquipmentScriptableObject.maxData, data + researchEquipmentScriptableObject.researchAmount);
             if (data == researchEquipmentScriptableObject.maxData) {
                 researchTime = researchEquipmentScriptableObject.researchSpeed;
-                return false;
+                return true;
             }
 
             researchTime += researchEquipmentScriptableObject.researchSpeed;
         }
 
-        return true;
+        return false;
     }
 
     public int DownloadData() {

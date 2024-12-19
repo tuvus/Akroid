@@ -564,13 +564,12 @@ public class ShipAI {
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Dock) {
                 currentCommandState = CommandType.Wait;
+                ship.moduleSystem.Get<ResearchEquipment>().ForEach(r => ship.dockedStation.faction.AddScience(r.DownloadData()));
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Wait) {
-                if (ship.moduleSystem.Get<ResearchEquipment>().Any(r => r.WantsMoreData())) {
-                    ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
-                    currentCommandState = CommandType.Move;
-                }
-
+                if (ship.GetHealth() < ship.GetMaxHealth()) return CommandResult.Stop;
+                ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+                currentCommandState = CommandType.Move;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Idle) {
                 newCommand = true;
@@ -624,6 +623,7 @@ public class ShipAI {
                     currentCommandState = CommandType.Move;
                     return CommandResult.Stop;
                 }
+
                 //TODO: Create a more robust cargo transfer system
                 long cargoTransferSpeed = 400;
                 command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, CargoBay.CargoTypes.Gas, ship);
@@ -640,13 +640,8 @@ public class ShipAI {
 
     /// <summary> Sets up the ship to transport goods from one station to another. The transport will only undock when full. </summary>
     CommandResult DoTransportCommand(Command command, float deltaTime) {
-        if (command.destinationStation == null || !command.destinationStation.IsSpawned()) {
-            return CommandResult.StopRemove;
-        }
-
-        if (command.productionStation == null || !command.destinationStation.IsSpawned()) {
-            return CommandResult.StopRemove;
-        }
+        if (command.destinationStation == null || !command.destinationStation.IsSpawned()) return CommandResult.StopRemove;
+        if (command.productionStation == null || !command.productionStation.IsSpawned()) return CommandResult.StopRemove;
 
         //TODO: Create a more robust cargo transfer system
         long cargoTransferSpeed = 400;

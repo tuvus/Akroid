@@ -82,8 +82,10 @@ public class SimulationFactionAI : FactionAI {
 
     void ManageFleets() {
         foreach (var defenseFleet in defenseFleets.ToList()) {
-            // In the case we are patrolling, our command will be of type AttackMove, so we want to check for enemy fleets again
-            if (defenseFleet.FleetAI.commands.Any(c => c.GetTargetObject() != null)) {
+            bool hasTarget = defenseFleet.FleetAI.commands.Any(c => c.GetTargetObject() != null);
+
+            // If we are already dealing with a threat check for closer threats to deal with
+            if (hasTarget) {
                 IObject currentThreat = defenseFleet.FleetAI.commands.First(c => c.GetTargetObject() != null).GetTargetObject();
                 float distanceToCurrentThreat =
                     Vector2.Distance(defenseFleet.GetPosition(), currentThreat.GetPosition()) - currentThreat.GetSize();
@@ -95,9 +97,11 @@ public class SimulationFactionAI : FactionAI {
                         threats.Contains((Fleet)currentThreat))
                         continue;
                 }
+
+                continue;
             }
 
-            // First check if there are any enemy fleets to defend against
+            // Check for new fleet targets
             Fleet threat = null;
             float distanceToThreat = 0;
             foreach (var tempThreat in threats.ToList()) {
