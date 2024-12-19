@@ -9,10 +9,12 @@ public class Shield : BattleObject {
         this.health = health;
         this.shieldGenerator = shieldGenerator;
         this.unit = unit;
+        spawned = true;
     }
 
     public void SetStrength(int strength) {
         health = strength;
+        if (strength > 0) spawned = true;
     }
 
     public void RegenShield(int regenAmount) {
@@ -28,16 +30,12 @@ public class Shield : BattleObject {
             shieldGenerator.DestroyShield();
             health = 0;
             SetVisible(false);
+            spawned = false;
             return returnValue;
         } else {
             return 0;
         }
     }
-
-    // public void RefreshSheild() {
-    //     float shieldPercent = (float)health / shieldGenerator.GetMaxShieldStrength();
-    //     spriteRenderer.color = new Color(0, .4f, 1, .4f * shieldPercent);
-    // }
 
     public Unit GetUnit() {
         return unit;

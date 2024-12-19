@@ -12,8 +12,6 @@ public class ShieldGenerator : ModuleComponent {
         shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
 
         shield = new Shield(this, unit, shieldGeneratorScriptableObject.maxShieldHealth);
-        // shield = Instantiate(shieldGeneratorScriptableObject.shieldPrefab, transform);
-        // shield.transform.localScale = new Vector2(unit.GetSpriteRenderer().sprite.bounds.size.x * 1.6f, unit.GetSpriteRenderer().sprite.bounds.size.x * 4f);
     }
 
     public void UpdateShieldGenerator(float deltaTime) {
@@ -36,6 +34,7 @@ public class ShieldGenerator : ModuleComponent {
 
     public void DestroyShield() {
         shield.SetVisible(false);
+        spawned = false;
         timeTillShieldCount = shieldGeneratorScriptableObject.shieldRecreateSpeed;
     }
 
