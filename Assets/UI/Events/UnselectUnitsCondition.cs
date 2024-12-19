@@ -4,8 +4,8 @@ using System.Linq;
 public class UnSelectUnitsCondition : UIEventCondition {
     private List<Unit> unitsToUnselect;
 
-    public UnSelectUnitsCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
-        List<Unit> units, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public UnSelectUnitsCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, List<Unit> units, bool visualize = false) :
+        base(localPlayer, unitSpriteManager, ConditionType.UnSelectUnits, visualize) {
         unitsToUnselect = units;
     }
 

@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour {
         unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
         localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
         localPlayer.PreBattleManagerSetup(battleManager, unitSpriteManager);
-        uIEventManager = new UIEventManager(localPlayer, localPlayer.GetLocalPlayerGameInput(), unitSpriteManager);
+        uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(), unitSpriteManager);
         battleManager.SetEventManager(uIEventManager);
     }
 

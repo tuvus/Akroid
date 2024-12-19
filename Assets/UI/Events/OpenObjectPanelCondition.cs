@@ -1,9 +1,8 @@
 public class OpenObjectPanelCondition : UIEventCondition {
     private BattleObject objectToSelect;
 
-    public OpenObjectPanelCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
-        BattleObject objectToSelect,
-        bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public OpenObjectPanelCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, BattleObject objectToSelect,
+        bool visualize = false) : base(localPlayer, unitSpriteManager, ConditionType.OpenObjectPanel, visualize) {
         this.objectToSelect = objectToSelect;
     }
 

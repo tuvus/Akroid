@@ -32,14 +32,14 @@ public class PlanetFactionAI : FactionAI {
         faction.ships.ToList().ForEach((s) => idleShips.Add(s));
 
         void produceCivilianShipDelayed() {
-            eventManager.AddEvent(eventManager.CreateWaitEvent(1000 + Random.Range(0, 1000)), () => {
+            eventManager.AddEvent(eventManager.CreateWaitCondition(1000 + Random.Range(0, 1000)), () => {
                 tradeStation.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
                 produceCivilianShipDelayed();
             });
         }
 
-        eventManager.AddEvent(eventManager.CreateWaitEvent(40000), () => { produceCivilianShipDelayed(); });
+        eventManager.AddEvent(eventManager.CreateWaitCondition(40000), () => { produceCivilianShipDelayed(); });
         produceCivilianShipDelayed();
     }
 

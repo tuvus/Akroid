@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class UIEventManager : EventManager {
     private LocalPlayer localPlayer;
@@ -10,7 +9,8 @@ public class UIEventManager : EventManager {
     private UnitSpriteManager unitSpriteManager;
     private List<Action> uIEventList;
 
-    public UIEventManager(LocalPlayer localPlayer, LocalPlayerGameInput playerGameInput, UnitSpriteManager unitSpriteManager) {
+    public UIEventManager(BattleManager battleManager, LocalPlayer localPlayer, LocalPlayerGameInput playerGameInput,
+        UnitSpriteManager unitSpriteManager) : base(battleManager) {
         this.localPlayer = localPlayer;
         playerUI = localPlayer.GetPlayerUI();
         this.playerGameInput = playerGameInput;
@@ -36,50 +36,49 @@ public class UIEventManager : EventManager {
         }
     }
 
-    public override EventCondition CreateSelectUnitEvent(Unit unitToSelect, bool visualize = false) {
+    public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitToSelect,
             visualize);
     }
 
-    public override EventCondition CreateSelectUnitsEvent(List<Unit> unitsToSelect, bool visualize = false) {
+    public override EventCondition CreateSelectUnitsCondition(List<Unit> unitsToSelect, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitsToSelect,
             visualize);
     }
 
-    public override EventCondition CreateSelectUnitsAmountEvent(List<Unit> unitsToSelect, int amount, bool visualize = false) {
+    public override EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitsToSelect,
             amount, visualize);
     }
 
-    public override EventCondition CreateUnselectUnitsEvent(List<Unit> unitsToUnselect, bool visualize = false) {
-        return new UnSelectUnitsCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitsToUnselect,
+    public override EventCondition CreateUnselectUnitsCondition(List<Unit> unitsToUnselect, bool visualize = false) {
+        return new UnSelectUnitsCondition(localPlayer, unitSpriteManager, unitsToUnselect,
             visualize);
     }
 
-    public override EventCondition CreateSelectFleetEvent(Fleet fleetToSelect, bool visualize = false) {
-        return new SelectFleetsCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, fleetToSelect, visualize);
+    public override EventCondition CreateSelectFleetCondition(Fleet fleetToSelect, bool visualize = false) {
+        return new SelectFleetsCondition(localPlayer, unitSpriteManager, fleetToSelect, visualize);
     }
 
-    public override EventCondition CreateOpenObjectPanelEvent(BattleObject objectToSelect, bool visualize = false) {
-        return new OpenObjectPanelCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.OpenObjectPanel, objectToSelect,
+    public override EventCondition CreateOpenObjectPanelCondition(BattleObject objectToSelect, bool visualize = false) {
+        return new OpenObjectPanelCondition(localPlayer, unitSpriteManager, objectToSelect, visualize);
+    }
+
+    public override EventCondition CreateOpenFactionPanelCondition(Faction factionToSelect, bool visualize = false) {
+        return new OpenFactionPanelCondition(localPlayer, unitSpriteManager, factionToSelect,
             visualize);
     }
 
-    public override EventCondition CreateOpenFactionPanelEvent(Faction factionToSelect, bool visualize = false) {
-        return new OpenFactionPanelCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.OpenFactionPanel, factionToSelect,
-            visualize);
+    public override EventCondition CreateFollowUnitCondition(Unit unitToFollow, bool visualize = false) {
+        return new FollowUnitCondition(localPlayer, unitSpriteManager, unitToFollow, visualize);
     }
 
-    public override EventCondition CreateFollowUnitEvent(Unit unitToFollow, bool visualize = false) {
-        return new FollowUnitCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.FollowUnit, unitToFollow, visualize);
+    public override EventCondition CreatePanCondition(float distanceToPan) {
+        return new PanCondtion(localPlayer, unitSpriteManager, distanceToPan);
     }
 
-    public override EventCondition CreatePanEvent(float distanceToPan) {
-        return new PanCondtion(localPlayer, unitSpriteManager, EventCondition.ConditionType.Pan, distanceToPan);
-    }
-
-    public override EventCondition CreateZoomEvent(float zoomTo) {
-        return new ZoomCondtion(localPlayer, unitSpriteManager, EventCondition.ConditionType.Zoom, zoomTo);
+    public override EventCondition CreateZoomCondition(float zoomTo) {
+        return new ZoomCondtion(localPlayer, unitSpriteManager, zoomTo);
     }
 
     public override void SetPlayerZoom(float zoom) {

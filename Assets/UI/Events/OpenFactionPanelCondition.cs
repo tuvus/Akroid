@@ -1,8 +1,8 @@
 public class OpenFactionPanelCondition : UIEventCondition {
     private Faction factionToSelect;
 
-    public OpenFactionPanelCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
-        Faction factionToSelect, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public OpenFactionPanelCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, Faction factionToSelect,
+        bool visualize = false) : base(localPlayer, unitSpriteManager, ConditionType.OpenFactionPanel, visualize) {
         this.factionToSelect = factionToSelect;
     }
 

@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
-    CampaingController campaignController;
+    private CampaingController campaignController;
     public EventManager eventManager { get; private set; }
 
     [field: SerializeField] public float researchModifier { get; private set; }
@@ -42,6 +42,7 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
 
+    public event Action<Faction> OnBattleEnd = delegate { };
     public event Action<Faction> OnFactionCreated = delegate { };
     public event Action<BattleObject> OnObjectCreated = delegate { };
     public event Action<BattleObject> OnObjectRemoved = delegate { };
@@ -169,14 +170,15 @@ public class BattleManager : MonoBehaviour {
             }
         }
 
-        Player LocalPlayer = new Player(true);
-        players.Add(LocalPlayer);
-        if (factions.Count > 0) LocalPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
-        else LocalPlayer.SetFaction(null);
+        Player localPlayer = new Player(true);
+        players.Add(localPlayer);
+        if (factions.Count > 0) localPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
+        else localPlayer.SetFaction(null);
 
         battleState = BattleState.Running;
-        if (CheckVictory() != null)
-            battleState = BattleState.Ended;
+        eventManager.AddEvent(eventManager.CreateVictoryCondition(),
+            () => { EndBattle(factions.ToList().First(f => f.units.Count > 0 && !f.HasEnemy())); }
+        );
     }
 
     /// <summary>
@@ -238,7 +240,7 @@ public class BattleManager : MonoBehaviour {
         timeScale = 1;
         startOfSimulation = Time.unscaledTime;
 
-        if (eventManager == null) eventManager = new EventManager();
+        if (eventManager == null) eventManager = new EventManager(this);
     }
 
     #endregion
@@ -581,28 +583,15 @@ public class BattleManager : MonoBehaviour {
         }
 
         Profiler.EndSample();
-        Faction factionWon = CheckVictory();
-        if (factionWon != null) {
-            // LocalPlayer.Instance.GetPlayerUI().FactionWon(factionWon, GetRealTime(), GetSimulationTime());
-            battleState = BattleState.Ended;
-            // LocalPlayer.Instance.GetLocalPlayerInput().StopSimulationButtonPressed();
-        }
-
         eventManager.UpdateEvents(deltaTime);
     }
 
     #region HelperMethods
 
-    public Faction CheckVictory() {
-        if (battleState != BattleState.Running || campaignController != null)
-            return null;
-        foreach (var faction in factions) {
-            if (faction.units.Count > 0 && !faction.HasEnemy()) {
-                return faction;
-            }
-        }
-
-        return null;
+    public void EndBattle(Faction faction) {
+        OnBattleEnd(faction);
+        battleState = BattleState.Ended;
+        Time.timeScale = 0;
     }
 
     public double GetSimulationTime() {
@@ -648,10 +637,6 @@ public class BattleManager : MonoBehaviour {
         return stationBlueprints.First(station => station.stationScriptableObject.stationType == stationType);
     }
 
-    public void EndBattle() {
-        battleState = BattleState.Ended;
-    }
-
     public static GameObject GetSizeIndicatorPrefab() {
         return Resources.Load<GameObject>("Prefabs/SizeIndicator");
     }
@@ -665,5 +650,6 @@ public class BattleManager : MonoBehaviour {
             throw new AggregateException("Trying to set the BattleManager EventManager after the EventManager has already been set!");
         this.eventManager = eventManager;
     }
+
     #endregion
 }

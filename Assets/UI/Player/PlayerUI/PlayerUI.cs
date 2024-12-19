@@ -7,6 +7,7 @@ using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
 
 public class PlayerUI : MonoBehaviour {
+    private BattleManager battleManager;
     public static PlayerUI Instance { get; protected set; }
     private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
@@ -55,7 +56,8 @@ public class PlayerUI : MonoBehaviour {
     public bool commandRendererShown;
     public bool factionColoring;
 
-    public void SetUpUI(LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+    public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+        this.battleManager = battleManager;
         this.localPlayer = localPlayer;
         Instance = this;
         this.localPlayerInput = localPlayerInput;
@@ -76,6 +78,8 @@ public class PlayerUI : MonoBehaviour {
         foreach (var menu in uIMenusInput) {
             uIMenus.Add(menu.GetMenuType(), menu);
         }
+
+        battleManager.OnBattleEnd += OnBattleEnd;
     }
 
     public void UpdatePlayerUI() {
@@ -178,7 +182,7 @@ public class PlayerUI : MonoBehaviour {
         victoryUI.SetActive(shown);
     }
 
-    public void FactionWon(Faction faction, double realTime, double timeElapsed) {
+    public void OnBattleEnd(Faction faction) {
         if (faction == localPlayer.player.faction) {
             victoryTitle.text = "Victory!";
         } else {
@@ -186,8 +190,9 @@ public class PlayerUI : MonoBehaviour {
         }
 
         victoryFaction.text = faction.name;
-        victoryRealTime.text = "Real time: " + (int)(realTime / 60) + " minutes";
-        victoryElapsedTime.text = "Time elapsed: " + (int)(timeElapsed / 60) + " minutes";
+        victoryRealTime.text = "Real time: " + (int)(battleManager.GetRealTime() / 60) + " minutes";
+        victoryElapsedTime.text = "Time elapsed: " + (int)(battleManager.GetSimulationTime() / 60) + " minutes";
+        localPlayerInput.StopSimulationButtonPressed();
         ShowVictoryUI(true);
     }
 

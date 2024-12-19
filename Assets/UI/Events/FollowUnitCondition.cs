@@ -1,8 +1,8 @@
 public class FollowUnitCondition : UIEventCondition {
     private Unit unitToFollow;
 
-    public FollowUnitCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
-        Unit unitToFollow, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public FollowUnitCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, Unit unitToFollow, bool visualize = false) :
+        base(localPlayer, unitSpriteManager, ConditionType.FollowUnit, visualize) {
         this.unitToFollow = unitToFollow;
     }
 

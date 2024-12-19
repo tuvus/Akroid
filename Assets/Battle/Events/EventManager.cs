@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class EventManager {
+    protected BattleManager battleManager;
     public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; private set; }
 
-    public EventManager() {
+    public EventManager(BattleManager battleManager) {
+        this.battleManager = battleManager;
         ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
     }
 
@@ -25,7 +27,7 @@ public class EventManager {
         ActiveEvents.Add(new Tuple<EventCondition, Action>(condition, action));
     }
 
-    public virtual EventCondition CreateWaitEvent(float timeToWait) {
+    public virtual EventCondition CreateWaitCondition(float timeToWait) {
         return new WaitCondition(timeToWait);
     }
 
@@ -83,52 +85,56 @@ public class EventManager {
         return new BuildShipsAtStation(shipBlueprints, faction, station, visualize);
     }
 
-    public virtual EventCondition CreateSelectUnitEvent(Unit unitToSelect, bool visualize = false) {
+    public virtual EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitToSelect, visualize });
     }
 
-    public virtual EventCondition CreateSelectUnitsEvent(List<Unit> unitsToSelect, bool visualize = false) {
+    public virtual EventCondition CreateSelectUnitsCondition(List<Unit> unitsToSelect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitsToSelect, visualize });
     }
 
-    public virtual EventCondition CreateSelectUnitsAmountEvent(List<Unit> unitsToSelect, int amount, bool visualize = false) {
+    public virtual EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount, bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitsToSelect, amount, visualize });
     }
 
-    public virtual EventCondition CreateUnselectUnitsEvent(List<Unit> unitsToUnselect, bool visualize = false) {
+    public virtual EventCondition CreateUnselectUnitsCondition(List<Unit> unitsToUnselect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitsToUnselect, visualize });
     }
 
-    public virtual EventCondition CreateSelectFleetEvent(Fleet fleetToSelect, bool visualize = false) {
+    public virtual EventCondition CreateSelectFleetCondition(Fleet fleetToSelect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { fleetToSelect, visualize });
     }
 
-    public virtual EventCondition CreateOpenObjectPanelEvent(BattleObject objectToSelect, bool visualize = false) {
+    public virtual EventCondition CreateOpenObjectPanelCondition(BattleObject objectToSelect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { objectToSelect, visualize });
     }
 
-    public virtual EventCondition CreateOpenFactionPanelEvent(Faction factionToSelect, bool visualize = false) {
+    public virtual EventCondition CreateOpenFactionPanelCondition(Faction factionToSelect, bool visualize = false) {
         return new PlaceholderCondition(new object[] { factionToSelect, visualize });
     }
 
-    public virtual EventCondition CreateFollowUnitEvent(Unit unitToFollow, bool visualize = false) {
+    public virtual EventCondition CreateFollowUnitCondition(Unit unitToFollow, bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitToFollow, visualize });
     }
 
-    public virtual EventCondition CreatePanEvent(float distanceToPan) {
+    public virtual EventCondition CreatePanCondition(float distanceToPan) {
         return new PlaceholderCondition(new object[] { distanceToPan });
     }
 
-    public virtual EventCondition CreateZoomEvent(float zoomTo) {
+    public virtual EventCondition CreateZoomCondition(float zoomTo) {
         return new PlaceholderCondition(new object[] { zoomTo });
     }
 
-    public virtual EventCondition CreatePredicateEvent(Predicate<EventManager> predicate) {
+    public virtual EventCondition CreatePredicateCondition(Predicate<EventManager> predicate) {
         return new PredicateCondition(predicate);
     }
 
-    public virtual EventCondition CreateLateConditionEvent(Func<EventCondition> eventConditionFunction) {
+    public virtual EventCondition CreateLateCondition(Func<EventCondition> eventConditionFunction) {
         return new LateCondition(eventConditionFunction);
+    }
+
+    public virtual EventCondition CreateVictoryCondition() {
+        return new VictoryCondition(battleManager);
     }
 
     public virtual void SetPlayerZoom(float zoom) { }

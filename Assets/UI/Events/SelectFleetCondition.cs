@@ -1,8 +1,8 @@
 public class SelectFleetsCondition : UIEventCondition {
     private Fleet fleetToSelect;
 
-    public SelectFleetsCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType, Fleet fleet,
-        bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public SelectFleetsCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, Fleet fleet, bool visualize = false) :
+        base(localPlayer, unitSpriteManager, ConditionType.SelectFleet, visualize) {
         fleetToSelect = fleet;
     }
 

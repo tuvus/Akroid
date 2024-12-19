@@ -3,8 +3,8 @@ using UnityEngine;
 public class PanCondtion : UIEventCondition {
     private float distanceToPan;
 
-    public PanCondtion(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType, float distanceToPan) :
-        base(localPlayer, unitSpriteManager, conditionType) {
+    public PanCondtion(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float distanceToPan) : base(localPlayer,
+        unitSpriteManager, ConditionType.Pan) {
         this.distanceToPan = distanceToPan;
         localPlayer.GetInputManager().OnPanEvent += OnPan;
     }

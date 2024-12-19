@@ -34,7 +34,7 @@ public class LocalPlayer : MonoBehaviour {
         player.OnFactionChanged += SetupFaction;
         Instance = this;
         localPlayerInput.Setup(this, unitSpriteManager);
-        playerUI.SetUpUI(localPlayerInput, this, unitSpriteManager);
+        playerUI.SetUpUI(battleManager, localPlayerInput, this, unitSpriteManager);
         SetupFaction(player.faction);
         localPlayerInput.CenterCamera();
     }

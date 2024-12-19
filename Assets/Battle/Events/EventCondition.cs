@@ -23,6 +23,7 @@ public abstract class EventCondition {
         Predicate,
         LateCondition,
         Placeholder,
+        Victory,
     }
 
     public ConditionType conditionType { get; protected set; }
