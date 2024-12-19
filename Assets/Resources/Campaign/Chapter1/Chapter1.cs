@@ -94,10 +94,12 @@ public class Chapter1 : CampaingController {
         planet = battleManager.CreateNewPlanet(new Planet.PlanetData(
             new BattleObject.BattleObjectData("Home", planetFaction.GetPosition(), Random.Range(0, 360), new Vector2(14, 14),
                 planetFaction),
-            Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)));
+            Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)),
+            Resources.Load<PlanetScriptableObject>(GetPathToChapterFolder() + "/EarthPlanet"));
         moon = battleManager.CreateNewMoon(new Planet.PlanetData(
             new BattleObject.BattleObjectData("Moon", new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5),
-                Random.Range(0, 360), planetFaction), 0, 0.02f, 0.98f));
+                Random.Range(0, 360), planetFaction), 0, 0.02f, 0.98f),
+            Resources.Load<PlanetScriptableObject>(GetPathToChapterFolder() + "/Moon"));
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
                 new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0, 1000, 50, 200, 5),

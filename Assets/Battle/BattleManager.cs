@@ -349,16 +349,16 @@ public class BattleManager : MonoBehaviour {
         return newStar;
     }
 
-    public Planet CreateNewPlanet(Planet.PlanetData planetData) {
-        Planet newPlanet = new Planet(planetData, this);
+    public Planet CreateNewPlanet(Planet.PlanetData planetData, PlanetScriptableObject planetScriptableObject) {
+        Planet newPlanet = new Planet(planetData, this, planetScriptableObject);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
         AddObject(newPlanet);
         return newPlanet;
     }
 
-    public Planet CreateNewMoon(Planet.PlanetData planetData) {
-        Planet newPlanet = new Planet(planetData, this);
+    public Planet CreateNewMoon(Planet.PlanetData planetData, PlanetScriptableObject planetScriptableObject) {
+        Planet newPlanet = new Planet(planetData, this, planetScriptableObject);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
         AddObject(newPlanet);

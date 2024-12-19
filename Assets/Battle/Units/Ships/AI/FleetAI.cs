@@ -394,7 +394,7 @@ public class FleetAI {
             SetFleetMoveCommand(command.destinationStation.position, fleet.GetSize() + command.destinationStation.GetSize() + 10);
             Ship constructionShip = fleet.ships.FirstOrDefault(s => s.IsConstructionShip());
             if (constructionShip != null) {
-                constructionShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(command.destinationStation));
+                constructionShip.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(command.destinationStation), CommandAction.Replace);
             }
 
             currentCommandState = CommandType.Move;

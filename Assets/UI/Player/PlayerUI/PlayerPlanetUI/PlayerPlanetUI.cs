@@ -56,9 +56,9 @@ public class PlayerPlanetUI : PlayerUIMenu<PlanetUI> {
             factionButtonTransorm.gameObject.SetActive(true);
             Button factionButton = factionButtonTransorm.GetChild(0).GetComponent<Button>();
             factionButton.onClick.RemoveAllListeners();
-            factionButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => playerUI.ShowFactionUI(unitSpriteManager.factionUIs[planetFaction.faction])));
 
             if (planetFaction.faction != null) {
+                factionButton.onClick.AddListener(() => playerUI.ShowFactionUI(unitSpriteManager.factionUIs[planetFaction.faction]));
                 factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.faction.name.ToString();
                 factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
                     planetFaction.faction.abbreviatedName.ToString();

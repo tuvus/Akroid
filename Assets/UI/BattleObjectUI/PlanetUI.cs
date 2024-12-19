@@ -1,7 +1,7 @@
 public class PlanetUI : BattleObjectUI {
     public Planet planet { get; private set; }
-
-    public void Setup(Planet planet) {
-        this.planet = planet;
+    public override void Setup(BattleObject battleObject, UIManager uIManager) {
+        base.Setup(battleObject, uIManager);
+        planet = (Planet)battleObject;
     }
 }

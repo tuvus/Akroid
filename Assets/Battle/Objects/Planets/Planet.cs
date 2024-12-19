@@ -5,6 +5,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
+    private PlanetScriptableObject planetScriptableObject;
     /// <summary> Determines the base amount of population that one territory value can hold. </summary>
     public static readonly long populationPerTerritoryValue = 15000;
 
@@ -79,22 +80,24 @@ public class Planet : BattleObject, IPositionConfirmer {
         }
     }
 
-    public Planet(PlanetData planetData, BattleManager battleManager) : base(planetData.battleObjectData, battleManager) {
+    public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) : base(planetData.battleObjectData, battleManager) {
+        this.planetScriptableObject = planetScriptableObject;
         rotationSpeed *= Random.Range(.5f, 1.5f);
         if (Random.Range(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
 
         planetFactions = new Dictionary<Faction, PlanetFaction>();
+        visible = true;
+        Spawn();
+        SetSize(SetupSize());
+
         totalArea = (long)(math.pow(GetSize(), 2) * math.PI);
         areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
             (long)(totalArea * planetData.mediumQualityLandFactor), (long)(totalArea * planetData.lowQualityLandFactor));
         unclaimedTerritory = new PlanetFaction(this, null,
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0,
             "This territory is open to claim.");
-        visible = true;
-        Spawn();
-        SetSize(SetupSize());
     }
 
     /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
@@ -199,6 +202,10 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     public long GetPopulation() {
         return planetFactions.Sum((f) => f.Value.population);
+    }
+
+    public override float GetSpriteSize() {
+        return Calculator.GetSpriteSize(planetScriptableObject.sprite, scale);
     }
 
     public override GameObject GetPrefab() {

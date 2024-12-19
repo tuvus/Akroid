@@ -24,7 +24,7 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<FactionUI> {
     }
 
     protected override void RefreshMiddlePanel() {
-        factionName.text = displayedObject.name;
+        factionName.text = displayedObject.faction.name;
         unitCount.text = "Units: " + displayedObject.faction.units.Count.ToString();
         shipCount.text = "Ships: " + displayedObject.faction.ships.Count.ToString();
         stationCount.text = "Station: " + displayedObject.faction.stations.Count.ToString();
