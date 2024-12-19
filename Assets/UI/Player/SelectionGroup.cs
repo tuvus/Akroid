@@ -156,7 +156,7 @@ public class SelectionGroup {
     }
 
     public void AddUnits(SelectionGroup unitGroup) {
-        AddUnits(unitGroup.GetAllUnits());
+        AddUnits(unitGroup.GetAllUnits().Where(u => !objects.Contains(u)).ToList());
     }
 
     public void AddUnit(UnitUI unit) {

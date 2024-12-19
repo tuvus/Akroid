@@ -9,7 +9,7 @@ public class Shield : BattleObject {
         this.health = health;
         this.shieldGenerator = shieldGenerator;
         this.unit = unit;
-        spawned = true;
+        ReactivateShield();
     }
 
     public void SetStrength(int strength) {
@@ -28,21 +28,21 @@ public class Shield : BattleObject {
         if (health <= 0) {
             int returnValue = -health;
             shieldGenerator.DestroyShield();
-            health = 0;
-            SetVisible(false);
-            spawned = false;
             return returnValue;
         } else {
             return 0;
         }
     }
 
-    public Unit GetUnit() {
-        return unit;
+    public void ReactivateShield() {
+        spawned = true;
+        visible = true;
     }
 
-    public void SetVisible(bool visible) {
-        this.visible = visible;
+    public void DestroyShield() {
+        health = 0;
+        visible = false;
+        spawned = false;
     }
 
     public override GameObject GetPrefab() {

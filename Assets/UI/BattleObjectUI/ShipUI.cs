@@ -15,10 +15,6 @@ public class ShipUI : UnitUI {
         }
     }
 
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        unitSelection.SetSelected(selectionStrength);
-    }
-
     public override bool IsSelectable() {
         return base.IsSelectable() && ship.dockedStation == null;
     }

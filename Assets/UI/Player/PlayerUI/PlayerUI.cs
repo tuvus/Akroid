@@ -71,7 +71,7 @@ public class PlayerUI : MonoBehaviour {
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
         uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, unitSpriteManager, .2f));
-        playerMenueUI.SetupMenueUI(this);
+        playerMenueUI.SetupMenueUI(localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
         foreach (var menu in uIMenusInput) {
             uIMenus.Add(menu.GetMenuType(), menu);
@@ -92,8 +92,8 @@ public class PlayerUI : MonoBehaviour {
         }
 
         int unitCount = 0;
-        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
-            unitCount = ((LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
+        if (localPlayer.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
+            unitCount = ((LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
         }
 
         UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
@@ -179,7 +179,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void FactionWon(Faction faction, double realTime, double timeElapsed) {
-        if (faction == LocalPlayer.Instance.player.faction) {
+        if (faction == localPlayer.player.faction) {
             victoryTitle.text = "Victory!";
         } else {
             victoryTitle.text = "Defeat!";

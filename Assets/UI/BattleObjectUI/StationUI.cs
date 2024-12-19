@@ -23,15 +23,7 @@ public class StationUI : UnitUI {
         }
     }
 
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        unitSelection.SetSelected(selectionStrength);
-    }
-
     public override bool IsSelectable() {
         return base.IsSelectable() && station.IsBuilt();
-    }
-
-    public override void UnselectObject() {
-        unitSelection.SetSelected();
     }
 }

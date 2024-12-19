@@ -319,8 +319,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             }
         }
 
-        if (closestGasCloud != null) return;
-
+        if (closestGasCloud == null) return;
         List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].ship.IsGasCollectorShip()) {

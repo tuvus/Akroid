@@ -20,6 +20,10 @@ public abstract class ComponentUI : BattleObjectUI {
         return moduleComponent.rotation;
     }
 
+    public override bool IsVisible() {
+        return base.IsVisible() && unitUI.IsVisible();
+    }
+
     public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) { }
 
     public override void UnselectObject() { }

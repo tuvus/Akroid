@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerMenueUI : MonoBehaviour {
-    PlayerUI playerUI;
+    private LocalPlayer localPlayer;
+    private PlayerUI playerUI;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
     [SerializeField] private Toggle menueUIEffects;
@@ -17,7 +18,8 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Slider menueUITimeScale;
     private List<Faction> factions;
 
-    public void SetupMenueUI(PlayerUI playerUI) {
+    public void SetupMenueUI(LocalPlayer localPlayer, PlayerUI playerUI) {
+        this.localPlayer = localPlayer;
         this.playerUI = playerUI;
     }
 
@@ -39,10 +41,10 @@ public class PlayerMenueUI : MonoBehaviour {
         menueUICommandRenderer.SetIsOnWithoutNotify(playerUI.commandRendererShown);
         menueUIFactionColors.SetIsOnWithoutNotify(playerUI.factionColoring);
         menueUIFactionSelect.AddOptions(factionNames);
-        if (LocalPlayer.Instance.GetFaction() == null)
+        if (localPlayer.GetFaction() == null)
             menueUIFactionSelect.SetValueWithoutNotify(0);
         else
-            menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(LocalPlayer.Instance.GetFaction()) + 1);
+            menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(localPlayer.GetFaction()) + 1);
         timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
         menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
     }
@@ -75,10 +77,10 @@ public class PlayerMenueUI : MonoBehaviour {
 
     public void ChangeFaction() {
         if (menueUIFactionSelect.value == 0) {
-            // LocalPlayer.Instance.SetupFaction(null);
-        } else if (LocalPlayer.Instance.GetFaction() == null ||
-                   menueUIFactionSelect.value - 1 != factions.IndexOf(LocalPlayer.Instance.GetFaction())) {
-            // LocalPlayer.Instance.SetupFaction(factions[menueUIFactionSelect.value - 1]);
+            localPlayer.player.SetFaction(null);
+            localPlayer.SetupFaction(null);
+        } else if (localPlayer.GetFaction() == null || menueUIFactionSelect.value - 1 != factions.IndexOf(localPlayer.GetFaction())) {
+            localPlayer.player.SetFaction(factions[menueUIFactionSelect.value - 1]);
         }
     }
 

@@ -3,15 +3,13 @@
 public class ShieldGenerator : ModuleComponent {
     public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; private set; }
 
-    //RuntimeStats
     private float timeTillShieldCount;
     public Shield shield { get; private set; }
 
     public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
-
-        shield = new Shield(this, unit, shieldGeneratorScriptableObject.maxShieldHealth);
+        shield = new Shield(this, unit, GetMaxShieldStrength());
     }
 
     public void UpdateShieldGenerator(float deltaTime) {
@@ -19,21 +17,18 @@ public class ShieldGenerator : ModuleComponent {
         if (shield.health == 0) {
             if (timeTillShieldCount <= 0) {
                 shield.SetStrength(GetMaxShieldStrength() / 5);
+                shield.ReactivateShield();
             }
         } else {
             if (timeTillShieldCount <= 0) {
-                RegenerateShields();
+                shield.RegenShield(shieldGeneratorScriptableObject.shieldRegenHealth);
+                timeTillShieldCount += shieldGeneratorScriptableObject.shieldRegenRate;
             }
         }
     }
 
-    public void RegenerateShields() {
-        shield.RegenShield(shieldGeneratorScriptableObject.shieldRegenHealth);
-        timeTillShieldCount += shieldGeneratorScriptableObject.shieldRegenRate;
-    }
-
     public void DestroyShield() {
-        shield.SetVisible(false);
+        shield.DestroyShield();
         spawned = false;
         timeTillShieldCount = shieldGeneratorScriptableObject.shieldRecreateSpeed;
     }

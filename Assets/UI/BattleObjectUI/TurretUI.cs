@@ -51,10 +51,6 @@ public class TurretUI : ComponentUI {
     //     // }
     // }
 
-    public override bool IsVisible() {
-        return base.IsVisible() && unitUI.IsVisible();
-    }
-
     public override void OnUnitDestroyed() {
         spriteRenderer.enabled = false;
     }
