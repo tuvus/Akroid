@@ -7,6 +7,7 @@
 /// </summary>
 public class LocalPlayer : MonoBehaviour {
     private BattleManager battleManager;
+    private UIManager uIManager;
     private UnitSpriteManager unitSpriteManager;
     public Player player { get; private set; }
     public static LocalPlayer Instance { get; private set; }
@@ -18,9 +19,10 @@ public class LocalPlayer : MonoBehaviour {
         following = 2,
     }
 
-    public void PreBattleManagerSetup(BattleManager battleManager, UnitSpriteManager unitSpriteManager) {
+    public void PreBattleManagerSetup(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
-        this.unitSpriteManager = unitSpriteManager;
+        this.uIManager = uIManager;
+        this.unitSpriteManager = uIManager.unitSpriteManager;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
     }
@@ -34,7 +36,7 @@ public class LocalPlayer : MonoBehaviour {
         player.OnFactionChanged += SetupFaction;
         Instance = this;
         localPlayerInput.Setup(this, unitSpriteManager);
-        playerUI.SetUpUI(battleManager, localPlayerInput, this, unitSpriteManager);
+        playerUI.SetUpUI(battleManager, localPlayerInput, this, uIManager);
         SetupFaction(player.faction);
         localPlayerInput.CenterCamera();
     }

@@ -4,7 +4,7 @@ public class UIManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public LocalPlayer localPlayer { get; private set; }
     public UnitSpriteManager unitSpriteManager { get; private set; }
-    private UIEventManager uIEventManager;
+    public UIEventManager uIEventManager { get; private set; }
 
     /// <summary>
     /// Subscription to BattleManager events needs to occur before the system is created.
@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour {
         unitSpriteManager = GetComponent<UnitSpriteManager>();
         unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
         localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
-        localPlayer.PreBattleManagerSetup(battleManager, unitSpriteManager);
+        localPlayer.PreBattleManagerSetup(battleManager, this);
         uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(), unitSpriteManager);
         battleManager.SetEventManager(uIEventManager);
     }

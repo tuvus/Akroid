@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public abstract class UIEventCondition : EventCondition {
     protected LocalPlayer localPlayer;
     protected UnitSpriteManager unitSpriteManager;
@@ -9,7 +11,6 @@ public abstract class UIEventCondition : EventCondition {
     }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
-        // UIEventConditions check during the UI frame and not the simulation frame
         return false;
     }
 
@@ -18,4 +19,9 @@ public abstract class UIEventCondition : EventCondition {
     /// </summary>
     /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckUICondition(EventManager eventManager);
+
+    /// <summary>
+    /// Decideds wich objects should be visualised by this event
+    /// </summary>
+    public abstract List<ObjectUI> GetVisualizedObjects();
 }

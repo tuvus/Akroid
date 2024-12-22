@@ -15,4 +15,9 @@ public class UnSelectUnitsCondition : UIEventCondition {
         return !unitsToUnselect.Select(u => unitSpriteManager.units[u])
             .Any(unitUI => selectedUnits.ContainsObject(unitUI));
     }
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        return unitsToUnselect.Select(u => unitSpriteManager.units[u]).Where(u => selectedUnits.Contains(u)).Cast<ObjectUI>().ToList();
+    }
 }

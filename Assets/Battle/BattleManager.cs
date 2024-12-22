@@ -200,7 +200,6 @@ public class BattleManager : MonoBehaviour {
         Player LocalPlayer = new Player(true);
         players.Add(LocalPlayer);
         LocalPlayer.SetFaction(null);
-        // LocalPlayer.Instance.playerUI.playerEventUI.SetWorldSpaceTransform(GetEventVisulationTransform());
         campaignController.SetupBattle(this);
         foreach (var faction in factions) {
             faction.UpdateObjectGroup();

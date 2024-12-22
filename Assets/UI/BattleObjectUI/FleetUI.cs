@@ -8,6 +8,7 @@ public class FleetUI : ObjectUI {
     private UnitSpriteManager unitSpriteManager;
 
     public void Setup(Fleet fleet, UnitSpriteManager unitSpriteManager) {
+        base.Setup(fleet);
         this.fleet = fleet;
         this.unitSpriteManager = unitSpriteManager;
         fleetAI = fleet.fleetAI;

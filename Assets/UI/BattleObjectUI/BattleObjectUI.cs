@@ -7,7 +7,7 @@ public abstract class BattleObjectUI : ObjectUI {
     public bool active { get; private set; }
 
     public virtual void Setup(BattleObject battleObject, UIManager uIManager) {
-        base.Setup();
+        base.Setup(battleObject);
         this.uIManager = uIManager;
         this.battleObject = battleObject;
         transform.position = battleObject.GetPosition();

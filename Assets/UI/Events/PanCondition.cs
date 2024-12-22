@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PanCondtion : UIEventCondition {
@@ -16,5 +17,9 @@ public class PanCondtion : UIEventCondition {
     private void OnPan(Vector2 oldPos, Vector2 newPos) {
         distanceToPan -= Vector2.Distance(oldPos, newPos);
         if (distanceToPan <= 0) localPlayer.GetInputManager().OnPanEvent -= OnPan;
+    }
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        return new List<ObjectUI>();
     }
 }

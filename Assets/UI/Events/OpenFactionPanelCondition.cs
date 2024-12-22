@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class OpenFactionPanelCondition : UIEventCondition {
     private Faction factionToSelect;
 
@@ -9,5 +11,9 @@ public class OpenFactionPanelCondition : UIEventCondition {
     public override bool CheckUICondition(EventManager eventManager) {
         if (factionToSelect == null) return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == null;
         return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == unitSpriteManager.factionUIs[factionToSelect];
+    }
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        return new List<ObjectUI>();
     }
 }

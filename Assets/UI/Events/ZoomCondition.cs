@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class ZoomCondtion : UIEventCondition {
     private float zoomTo;
     private float startingZoom;
@@ -12,5 +14,9 @@ public class ZoomCondtion : UIEventCondition {
         return startingZoom < zoomTo
             ? localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize >= zoomTo
             : localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize <= zoomTo;
+    }
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        return new List<ObjectUI>();
     }
 }

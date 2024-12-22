@@ -4,13 +4,11 @@ public class FactionUI : ObjectUI {
     public Faction faction { get; private set; }
 
     public void Setup(Faction faction) {
-        base.Setup();
+        base.Setup(faction);
         this.faction = faction;
     }
 
-    public override void UpdateObject() {
-
-    }
+    public override void UpdateObject() { }
 
     public override bool IsSelectable() {
         return true;

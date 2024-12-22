@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class OpenObjectPanelCondition : UIEventCondition {
     private BattleObject objectToSelect;
 
@@ -9,5 +11,10 @@ public class OpenObjectPanelCondition : UIEventCondition {
     public override bool CheckUICondition(EventManager eventManager) {
         if (objectToSelect == null) return localPlayer.GetLocalPlayerGameInput().rightClickedBattleObject == null;
         return localPlayer.GetLocalPlayerGameInput().rightClickedBattleObject == unitSpriteManager.objects[objectToSelect];
+    }
+
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        return new List<ObjectUI>() { unitSpriteManager.objects[objectToSelect] };
     }
 }

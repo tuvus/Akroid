@@ -4,32 +4,36 @@ using System.Linq;
 using UnityEngine;
 
 public class PlayerEventUI : MonoBehaviour {
-    protected PlayerUI playerUI;
-    protected EventManager eventManager;
-    protected Tuple<EventCondition, Action> eventConditionTuple;
-    protected EventCondition visualizedEvent;
-    protected Transform worldSpaceTransform;
+    private LocalPlayer localPlayer;
+    private PlayerUI playerUI;
+    private UIEventManager uIEventManager;
+    private Tuple<EventCondition, Action> eventConditionTuple;
+    private UIEventCondition visualizedEvent;
+    private Transform worldSpaceTransform;
     [SerializeField] GameObject unitHighlight;
 
 
-    public void SetupEventUI(PlayerUI playerUI) {
+    public void SetupEventUI(UIManager uIManager, UIEventManager uIEventManager, LocalPlayer localPlayer, PlayerUI playerUI) {
+        worldSpaceTransform = uIManager.GetEventVisulationTransform();
+        this.localPlayer = localPlayer;
         this.playerUI = playerUI;
+        this.uIEventManager = uIEventManager;
     }
 
     public void UpdateEventUI() {
         bool newEvent = false;
         // Check if we aren't set up yet
-        if (eventManager == null || worldSpaceTransform == null)
+        if (uIEventManager == null || worldSpaceTransform == null)
             return;
-        if (!eventManager.ActiveEvents.Contains(eventConditionTuple)) {
+        if (!uIEventManager.ActiveEvents.Contains(eventConditionTuple)) {
             RemoveVisuals();
             eventConditionTuple = null;
             visualizedEvent = null;
         }
 
         if (visualizedEvent == null) {
-            eventConditionTuple = eventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize);
-            if (eventConditionTuple != null) visualizedEvent = eventConditionTuple.Item1;
+            eventConditionTuple = uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UIEventCondition);
+            if (eventConditionTuple != null) visualizedEvent = (UIEventCondition)eventConditionTuple.Item1;
             newEvent = true;
         }
 
@@ -39,44 +43,8 @@ public class PlayerEventUI : MonoBehaviour {
     }
 
     void VisualizeEvent(bool newEvent) {
-        if (newEvent) {
-            VisualizeObjects(new List<IObject>());
-        }
+        VisualizeObjects(visualizedEvent.GetVisualizedObjects());
 
-        // switch (visualizedEvent.conditionType) {
-        //     case EventCondition.ConditionType.SelectUnit:
-        //         // // If the unit is docked at a station, we need to show the station instead
-        //         // Unit unitToShow = visualizedEvent;
-        //         // if (visualizedEvent.unitToSelect.IsShip() && ((Ship)visualizedEvent.unitToSelect).dockedStation != null) {
-        //         //     unitToShow = ((Ship)visualizedEvent.unitToSelect).dockedStation;
-        //         // }
-        //         //
-        //         // VisualizeObjects(new List<IObject> { unitToShow });
-        //         break;
-        //     case EventCondition.ConditionType.SelectUnits:
-        //     case EventCondition.ConditionType.SelectUnitsAmount:
-        //         HashSet<Unit> selectedUnits = GetSelectedUnits().GetAllUnits().ToHashSet();
-        //         List<Unit> unitsToSelect = visualizedEvent.units.ToList();
-        //         if (GetSelectedUnits().fleet != null) {
-        //             VisualizeObjects(unitsToSelect.Cast<IObject>().ToList());
-        //         } else {
-        //             VisualizeObjects(unitsToSelect.Where((unit) => !selectedUnits.Contains(unit)).Cast<IObject>().ToList());
-        //         }
-        //
-        //         break;
-        //     case EventCondition.ConditionType.OpenObjectPanel:
-        //         if (visualizedEvent.unitToSelect == null)
-        //             break;
-        //         VisualizeObjects(new List<IObject>() { visualizedEvent.unitToSelect });
-        //         break;
-        //     case EventCondition.ConditionType.SelectFleet:
-        //         VisualizeObjects(new List<IObject>() { visualizedEvent.fleetToSelect });
-        //         break;
-        //     case EventCondition.ConditionType.FollowUnit:
-        //         if (visualizedEvent.unitToSelect == null)
-        //             break;
-        //         VisualizeObjects(new List<IObject>() { visualizedEvent.unitToSelect });
-        //         break;
         //     case EventCondition.ConditionType.ShipsDockedAtUnit:
         //         List<IObject> objectsToVisualize = new List<IObject> { visualizedEvent.unitToSelect };
         //         foreach (var ship in visualizedEvent.iObjects.Cast<Ship>().ToList()) {
@@ -172,18 +140,18 @@ public class PlayerEventUI : MonoBehaviour {
         }
     }
 
-    void VisualizeObjects(List<IObject> objectsTovisualize) {
+    void VisualizeObjects(List<ObjectUI> objectsTovisualize) {
         for (int i = 0; i < objectsTovisualize.Count; i++) {
-            IObject obj = objectsTovisualize[i];
+            ObjectUI obj = objectsTovisualize[i];
             if (worldSpaceTransform.childCount <= i)
                 Instantiate(unitHighlight, worldSpaceTransform);
             Transform visualEffect = worldSpaceTransform.GetChild(i);
             visualEffect.GetComponent<SpriteRenderer>().enabled = true;
-            visualEffect.position = obj.GetPosition();
+            visualEffect.position = obj.transform.position;
             float objectSizeDivisor = 3;
-            if (obj.IsGroup())
+            if (obj.iObject.IsGroup())
                 objectSizeDivisor = 4;
-            float objectSize = Math.Max(obj.GetSize() / objectSizeDivisor,
+            float objectSize = Math.Max(obj.iObject.GetSize() / objectSizeDivisor,
                 LocalPlayer.Instance.GetLocalPlayerInput().GetCamera().orthographicSize / 100);
             visualEffect.localScale = new Vector2(objectSize, objectSize);
         }
@@ -193,16 +161,11 @@ public class PlayerEventUI : MonoBehaviour {
         }
     }
 
-    public void SetEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
-    }
-
     public void SetWorldSpaceTransform(Transform worldSpaceTransform) {
         this.worldSpaceTransform = worldSpaceTransform;
     }
 
     private SelectionGroup GetSelectedUnits() {
-        // return EventManager.playerGameInput.GetSelectedUnits();
         return LocalPlayer.Instance.GetLocalPlayerGameInput().GetSelectedUnits();
     }
 }

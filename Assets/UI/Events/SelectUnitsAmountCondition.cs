@@ -18,7 +18,6 @@ public class SelectUnitsAmountCondition : UIEventCondition {
         amountToSelect = units.Count;
     }
 
-
     public SelectUnitsAmountCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
         List<Unit> units, int count, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
         unitsToSelect = units;
@@ -30,5 +29,19 @@ public class SelectUnitsAmountCondition : UIEventCondition {
         SelectionGroup selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits();
         return unitsToSelect.Select(u => unitSpriteManager.units[u])
             .Count(unitUI => selectedUnits.ContainsObject(unitUI)) >= amountToSelect;
+    }
+
+    public override List<ObjectUI> GetVisualizedObjects() {
+        if (conditionType == ConditionType.SelectUnit) {
+            // If the unit is docked at a station, we need to show the station instead
+            if (unitsToSelect.First().IsShip() && ((Ship)unitsToSelect.First()).dockedStation != null)
+                return new List<ObjectUI>() { unitSpriteManager.objects[((Ship)unitsToSelect.First()).dockedStation] };
+
+            return new List<ObjectUI>() { unitSpriteManager.objects[unitsToSelect.First()] };
+        }
+
+        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        bool isFleet = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null;
+        return unitsToSelect.Select(u => unitSpriteManager.units[u]).Where(u => !selectedUnits.Contains(u) || isFleet).Cast<ObjectUI>().ToList();
     }
 }

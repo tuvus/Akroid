@@ -2,9 +2,11 @@ using UnityEngine;
 
 public abstract class ObjectUI : MonoBehaviour {
     protected SpriteRenderer spriteRenderer { get; private set; }
+    public IObject iObject { get; private set; }
 
-    public void Setup() {
+    public void Setup(IObject iObject) {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        this.iObject = iObject;
     }
 
     public abstract void UpdateObject();

@@ -16,7 +16,6 @@ public class UIEventManager : EventManager {
         this.playerGameInput = playerGameInput;
         this.unitSpriteManager = unitSpriteManager;
         uIEventList = new List<Action>();
-        playerUI.playerEventUI.SetEventManager(this);
     }
 
 
@@ -42,12 +41,12 @@ public class UIEventManager : EventManager {
     }
 
     public override EventCondition CreateSelectUnitsCondition(List<Unit> unitsToSelect, bool visualize = false) {
-        return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitsToSelect,
+        return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnits, unitsToSelect,
             visualize);
     }
 
     public override EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount, bool visualize = false) {
-        return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitsToSelect,
+        return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnitsAmount, unitsToSelect,
             amount, visualize);
     }
 

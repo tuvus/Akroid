@@ -56,12 +56,12 @@ public class PlayerUI : MonoBehaviour {
     public bool commandRendererShown;
     public bool factionColoring;
 
-    public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+    public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UIManager uIManager) {
         this.battleManager = battleManager;
         this.localPlayer = localPlayer;
         Instance = this;
         this.localPlayerInput = localPlayerInput;
-        this.unitSpriteManager = unitSpriteManager;
+        this.unitSpriteManager = uIManager.unitSpriteManager;
         CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
@@ -78,6 +78,8 @@ public class PlayerUI : MonoBehaviour {
         foreach (var menu in uIMenusInput) {
             uIMenus.Add(menu.GetMenuType(), menu);
         }
+
+        playerEventUI.SetupEventUI(uIManager, uIManager.uIEventManager, localPlayer, this);
 
         battleManager.OnBattleEnd += OnBattleEnd;
     }
