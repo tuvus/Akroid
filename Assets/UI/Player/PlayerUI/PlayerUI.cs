@@ -19,7 +19,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private PlayerMenueUI playerMenueUI;
 
     [field: SerializeField] public PlayerFactionOverviewUI playerFactionOverviewUI { get; private set; }
-    [field: SerializeField] public PlayerEventUI playerEventUI { get; protected set; }
+    [field: SerializeField] public PlayerEventUIVisualizer playerEventUIVisualizer { get; protected set; }
     [SerializeField] private GameObject factionUI;
     [SerializeField] private GameObject optionsBarUI;
     [SerializeField] private GameObject commandUI;
@@ -79,7 +79,7 @@ public class PlayerUI : MonoBehaviour {
             uIMenus.Add(menu.GetMenuType(), menu);
         }
 
-        playerEventUI.SetupEventUI(uIManager, uIManager.uIEventManager, localPlayer, this);
+        playerEventUIVisualizer.SetupEventUI(uIManager, uIManager.uIEventManager, localPlayer, this);
 
         battleManager.OnBattleEnd += OnBattleEnd;
     }
@@ -109,7 +109,7 @@ public class PlayerUI : MonoBehaviour {
             if (m.IsShown()) m.UpdateUI();
         });
         timeSpeed.text = "Time: " + Time.timeScale;
-        playerEventUI.UpdateEventUI();
+        playerEventUIVisualizer.UpdateEventUI();
         playerCommsManager.UpdateCommsManager();
         Profiler.EndSample();
     }

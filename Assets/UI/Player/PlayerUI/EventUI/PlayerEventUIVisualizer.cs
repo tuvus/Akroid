@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class PlayerEventUI : MonoBehaviour {
+public class PlayerEventUIVisualizer : MonoBehaviour {
     private LocalPlayer localPlayer;
     private PlayerUI playerUI;
     private UIEventManager uIEventManager;
