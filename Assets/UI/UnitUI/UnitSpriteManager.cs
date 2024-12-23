@@ -6,7 +6,9 @@ public class UnitSpriteManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public UIManager uIManager { get; private set; }
 
-    public Dictionary<BattleObject, BattleObjectUI> objects { get; private set; }
+
+    public Dictionary<IObject, ObjectUI> objects { get; private set; }
+    public Dictionary<BattleObject, BattleObjectUI> battleObjects { get; private set; }
     public Dictionary<Unit, UnitUI> units { get; private set; }
     public Dictionary<Fleet, FleetUI> fleetUIs { get; private set; }
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
@@ -14,7 +16,8 @@ public class UnitSpriteManager : MonoBehaviour {
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
         this.uIManager = uIManager;
-        objects = new Dictionary<BattleObject, BattleObjectUI>();
+        objects = new Dictionary<IObject, ObjectUI>();
+        battleObjects = new Dictionary<BattleObject, BattleObjectUI>();
         units = new Dictionary<Unit, UnitUI>();
         fleetUIs = new Dictionary<Fleet, FleetUI>();
         factionUIs = new Dictionary<Faction, FactionUI>();
@@ -29,7 +32,7 @@ public class UnitSpriteManager : MonoBehaviour {
     /// Updates the state of the sprites
     /// </summary>
     public void UpdateSpriteManager() {
-        foreach (var objPair in objects.ToList()) {
+        foreach (var objPair in battleObjects.ToList()) {
             if (objPair.Value == null) {
                 BattleObjectUI objectUI = Instantiate(objPair.Key.GetPrefab()).GetComponent<BattleObjectUI>();
                 objectUI.Setup(objPair.Key, uIManager);
@@ -45,7 +48,7 @@ public class UnitSpriteManager : MonoBehaviour {
                     else if (objectUI is StationUI) objectUI.transform.SetParent(factionUI.GetStationsTransform());
                 }
 
-                objects[objPair.Key] = objectUI;
+                battleObjects[objPair.Key] = objectUI;
                 if (objPair.Key.IsUnit()) units[(Unit)objPair.Key] = (UnitUI)objectUI;
             } else {
                 objPair.Value.UpdateObject();
@@ -70,14 +73,14 @@ public class UnitSpriteManager : MonoBehaviour {
             return;
         }
 
-        objects.Add(battleObject, null);
+        battleObjects.Add(battleObject, null);
         if (battleObject.IsUnit()) {
             units.Add((Unit)battleObject, null);
         }
     }
 
     private void OnObjectRemoved(BattleObject battleObject) {
-        BattleObjectUI battleObjectUI = objects[battleObject];
+        BattleObjectUI battleObjectUI = battleObjects[battleObject];
         // If the object is destroyed before the battleObjectUI has been set up lets skip destroying it
         // Many simulation frames might have occured since the object was registered to be created
         if (battleObjectUI != null) {
@@ -85,7 +88,7 @@ public class UnitSpriteManager : MonoBehaviour {
             Destroy(battleObjectUI.gameObject);
 
         }
-        objects.Remove(battleObject);
+        battleObjects.Remove(battleObject);
         if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
     }
 

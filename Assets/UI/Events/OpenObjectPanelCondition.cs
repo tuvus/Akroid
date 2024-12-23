@@ -10,11 +10,11 @@ public class OpenObjectPanelCondition : UIEventCondition {
 
     public override bool CheckUICondition(EventManager eventManager) {
         if (objectToSelect == null) return localPlayer.GetLocalPlayerGameInput().rightClickedBattleObject == null;
-        return localPlayer.GetLocalPlayerGameInput().rightClickedBattleObject == unitSpriteManager.objects[objectToSelect];
+        return localPlayer.GetLocalPlayerGameInput().rightClickedBattleObject == unitSpriteManager.battleObjects[objectToSelect];
     }
 
 
     public override List<ObjectUI> GetVisualizedObjects() {
-        return new List<ObjectUI>() { unitSpriteManager.objects[objectToSelect] };
+        return new List<ObjectUI>() { unitSpriteManager.battleObjects[objectToSelect] };
     }
 }

@@ -7053,8 +7053,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 0.99999934
-  m_Size: 0.68027216
+  m_Value: 1
+  m_Size: 0.6802721
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -22281,7 +22281,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1674003577351984642}
   m_HandleRect: {fileID: 1105404025253671302}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -33093,7 +33093,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 203353127213737578}
   m_HandleRect: {fileID: 8042583210906613712}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -42328,7 +42328,7 @@ MonoBehaviour:
   <playerCommsManager>k__BackingField: {fileID: 251416266922612947}
   playerMenueUI: {fileID: 3805286146913107314}
   <playerFactionOverviewUI>k__BackingField: {fileID: 6118173523353972393}
-  <playerEventUI>k__BackingField: {fileID: 1953063344893737229}
+  <playerEventUIVisualizer>k__BackingField: {fileID: 1953063344893737229}
   factionUI: {fileID: 8714345814573071572}
   optionsBarUI: {fileID: 3416893312013514920}
   commandUI: {fileID: 1404498682395390749}

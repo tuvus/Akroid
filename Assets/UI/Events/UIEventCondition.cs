@@ -11,6 +11,7 @@ public abstract class UIEventCondition : EventCondition {
     }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
+        // Most UIEventConditions will check their condition during the UI update and not the battle update
         return false;
     }
 

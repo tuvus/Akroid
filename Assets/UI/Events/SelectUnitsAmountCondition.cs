@@ -35,9 +35,9 @@ public class SelectUnitsAmountCondition : UIEventCondition {
         if (conditionType == ConditionType.SelectUnit) {
             // If the unit is docked at a station, we need to show the station instead
             if (unitsToSelect.First().IsShip() && ((Ship)unitsToSelect.First()).dockedStation != null)
-                return new List<ObjectUI>() { unitSpriteManager.objects[((Ship)unitsToSelect.First()).dockedStation] };
+                return new List<ObjectUI>() { unitSpriteManager.battleObjects[((Ship)unitsToSelect.First()).dockedStation] };
 
-            return new List<ObjectUI>() { unitSpriteManager.objects[unitsToSelect.First()] };
+            return new List<ObjectUI>() { unitSpriteManager.battleObjects[unitsToSelect.First()] };
         }
 
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();

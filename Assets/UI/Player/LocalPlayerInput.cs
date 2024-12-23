@@ -291,7 +291,7 @@ public class LocalPlayerInput : MonoBehaviour {
         BattleObjectUI objectUI = null;
         float distance = float.MaxValue;
         Profiler.BeginSample("BattleObjectOverMouse");
-        foreach (BattleObjectUI targetObject in unitSpriteManager.objects.Values) {
+        foreach (BattleObjectUI targetObject in unitSpriteManager.battleObjects.Values) {
             if (!targetObject.IsSelectable()) {
                 continue;
             }

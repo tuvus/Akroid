@@ -44,25 +44,6 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
 
     void VisualizeEvent(bool newEvent) {
         VisualizeObjects(visualizedEvent.GetVisualizedObjects());
-
-        //     case EventCondition.ConditionType.ShipsDockedAtUnit:
-        //         List<IObject> objectsToVisualize = new List<IObject> { visualizedEvent.unitToSelect };
-        //         foreach (var ship in visualizedEvent.iObjects.Cast<Ship>().ToList()) {
-        //             if (ship.dockedStation != visualizedEvent.unitToSelect
-        //                 && !ship.shipAI.commands.Any((command) =>
-        //                     command.commandType == Command.CommandType.Dock &&
-        //                     command.destinationStation == visualizedEvent.unitToSelect)) {
-        //                 if (ship.dockedStation != null) {
-        //                     if (!objectsToVisualize.Contains(ship.dockedStation))
-        //                         objectsToVisualize.Add(ship.dockedStation);
-        //                 } else {
-        //                     objectsToVisualize.Add(ship);
-        //                 }
-        //             }
-        //         }
-        //
-        //         VisualizeObjects(objectsToVisualize);
-        //         break;
         //     case EventCondition.ConditionType.MoveShipsToObject:
         //         // If the unit is docked at a station, we need to show the station instead
         //         Unit unitToShow2 = visualizedEvent.unitToSelect;
