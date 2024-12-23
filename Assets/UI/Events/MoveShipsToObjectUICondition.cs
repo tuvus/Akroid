@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MoveShipsToObjectUICondition : UIWrapperEventCondition<MoveShipsToObject> {
     public MoveShipsToObjectUICondition(MoveShipsToObject conditionLogic, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
-        bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, ConditionType.MoveShipsToObject, visualize) { }
+        bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
 
     public override List<ObjectUI> GetVisualizedObjects() {
         List<ObjectUI> objectsToVisualize = new List<ObjectUI>();

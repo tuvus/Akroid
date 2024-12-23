@@ -1,12 +1,10 @@
-
 public abstract class UIWrapperEventCondition<T> : UIEventCondition where T : EventCondition {
     protected T conditionLogic;
 
-    public UIWrapperEventCondition(T conditionLogic, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
-        ConditionType conditionType, bool visualize = false) : base(localPlayer, unitSpriteManager, conditionType, visualize) {
+    public UIWrapperEventCondition(T conditionLogic, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, bool visualize = false) :
+        base(localPlayer, unitSpriteManager, conditionLogic.conditionType, visualize) {
         this.conditionLogic = conditionLogic;
     }
-
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
         return conditionLogic.CheckCondition(eventManager, deltaTime);

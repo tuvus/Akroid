@@ -15,6 +15,7 @@ public class OpenObjectPanelCondition : UIEventCondition {
 
 
     public override List<ObjectUI> GetVisualizedObjects() {
+        if (objectToSelect == null) return new List<ObjectUI>();
         return new List<ObjectUI>() { unitSpriteManager.battleObjects[objectToSelect] };
     }
 }

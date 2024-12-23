@@ -35,18 +35,55 @@ public class UIEventManager : EventManager {
         }
     }
 
-    public override EventCondition MoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, float distance = 0,
+    public override EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, float distance = 0,
         bool visualize = false) {
         return new MoveShipsToObjectUICondition(
-            (MoveShipsToObject)base.MoveShipToObject(shipToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            (MoveShipsToObject)base.CreateMoveShipToObject(shipToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
             unitSpriteManager, visualize);
     }
 
-    public override EventCondition MoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo, float distance = 0,
+    public override EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo, float distance = 0,
         bool visualize = false) {
         return new MoveShipsToObjectUICondition(
-            (MoveShipsToObject)base.MoveShipsToObject(shipsToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            (MoveShipsToObject)base.CreateMoveShipsToObject(shipsToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
             unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateDockShipAtUnit(Ship shipToDock, Station unitToDockAt, bool visualize = false) {
+        return new DockShipsAtUnitUICondition((DockShipsAtUnitCondition)base.CreateDockShipAtUnit(shipToDock, unitToDockAt, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateDockShipsAtUnit(List<Ship> shipsToDock, Station unitToDockAt, bool visualize = false) {
+        return new DockShipsAtUnitUICondition((DockShipsAtUnitCondition)base.CreateDockShipsAtUnit(shipsToDock, unitToDockAt, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateCommandMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, bool visualize = false) {
+        return new ShipCommandMoveToObjectsUICondition(
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObject(shipToMove, objectToCommandMoveTo, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateCommandMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo,
+        bool visualize = false) {
+        return new ShipCommandMoveToObjectsUICondition(
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObject(shipsToMove, objectToCommandMoveTo, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateCommandMoveShipToObjects(Ship shipToMove, List<IObject> objectsToCommandToMoveTo,
+        bool visualize = false) {
+        return new ShipCommandMoveToObjectsUICondition(
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObjects(shipToMove, objectsToCommandToMoveTo, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateCommandMoveShipsToObjects(List<Ship> shipsToMove, List<IObject> objectsToCommandToMoveTo,
+        bool visualize = false) {
+        return new ShipCommandMoveToObjectsUICondition(
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObjects(shipsToMove, objectsToCommandToMoveTo, visualize),
+            localPlayer, unitSpriteManager, visualize);
     }
 
     public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {

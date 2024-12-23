@@ -398,8 +398,9 @@ public class FleetAI {
             newCommand = false;
         }
 
-        if (fleet.AreShipsIdle() && command.destinationStation.IsBuilt()) {
-            SetFleetDockTarget(command.destinationStation);
+        if (command.destinationStation.IsBuilt()) {
+            fleet.ships.Where(s => s.IsIdle() && s.dockedStation != command.destinationStation).ToList()
+                .ForEach(s => s.shipAI.AddUnitAICommand(CreateDockCommand(command.destinationStation, fleet.minShipSpeed), CommandAction.Replace));
             currentCommandState = CommandType.Dock;
         }
 

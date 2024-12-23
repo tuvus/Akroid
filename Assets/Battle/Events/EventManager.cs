@@ -35,16 +35,16 @@ public class EventManager {
         return new IdleShipsCondition(shipsToIdle, visualize);
     }
 
-    public static Tuple<EventCondition, Action> ConditionalWait() {
+    public static Tuple<EventCondition, Action> CreateConditionalWait() {
         WaitTriggerCondition triggerCondition = new WaitTriggerCondition();
         return new Tuple<EventCondition, Action>(triggerCondition, triggerCondition.completer);
     }
 
-    public virtual EventCondition MoveShipToObject(Ship shipToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+    public virtual EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
         return new MoveShipsToObject(shipToMove, objectToMoveTo, distance, visualize);
     }
 
-    public virtual EventCondition MoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+    public virtual EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
         return new MoveShipsToObject(shipsToMove, objectToMoveTo, distance, visualize);
     }
 

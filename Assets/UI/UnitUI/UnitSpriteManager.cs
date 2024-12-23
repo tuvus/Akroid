@@ -85,7 +85,7 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnObjectRemoved(IObject iObject) {
-        Destroy(objects[iObject]);
+        Destroy(objects[iObject].gameObject);
         objects.Remove(iObject);
     }
 
@@ -128,7 +128,7 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnFleetRemove(Fleet fleet) {
-        Destroy(fleetUIs[fleet]);
+        Destroy(fleetUIs[fleet].gameObject);
         fleetUIs.Remove(fleet);
         objects.Remove(fleet);
     }
