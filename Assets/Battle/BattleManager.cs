@@ -44,8 +44,10 @@ public class BattleManager : MonoBehaviour {
 
     public event Action<Faction> OnBattleEnd = delegate { };
     public event Action<Faction> OnFactionCreated = delegate { };
-    public event Action<BattleObject> OnObjectCreated = delegate { };
-    public event Action<BattleObject> OnObjectRemoved = delegate { };
+    public event Action<IObject> OnObjectCreated = delegate { };
+    public event Action<IObject> OnObjectRemoved = delegate { };
+    public event Action<BattleObject> OnBattleObjectCreated = delegate { };
+    public event Action<BattleObject> OnBattleObjectRemoved = delegate { };
     public event Action<Fleet> OnFleetCreated = delegate { };
     public event Action<Fleet> OnFleetRemoved = delegate { };
 
@@ -298,7 +300,7 @@ public class BattleManager : MonoBehaviour {
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);
-        AddObject(newShip);
+        AddBattleObject(newShip);
         return newShip;
     }
 
@@ -321,7 +323,7 @@ public class BattleManager : MonoBehaviour {
             stationsInProgress.Add(newStation);
         }
 
-        AddObject(newStation);
+        AddBattleObject(newStation);
 
         return newStation;
     }
@@ -337,7 +339,7 @@ public class BattleManager : MonoBehaviour {
             stationsInProgress.Add(newStation);
         }
 
-        AddObject(newStation);
+        AddBattleObject(newStation);
         return newStation;
     }
 
@@ -346,7 +348,7 @@ public class BattleManager : MonoBehaviour {
             new Vector2(20, 20) * Random.Range(0.6f, 1.8f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
-        AddObject(newStar);
+        AddBattleObject(newStar);
         return newStar;
     }
 
@@ -354,7 +356,7 @@ public class BattleManager : MonoBehaviour {
         Planet newPlanet = new Planet(planetData, this, planetScriptableObject);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
-        AddObject(newPlanet);
+        AddBattleObject(newPlanet);
         return newPlanet;
     }
 
@@ -362,7 +364,7 @@ public class BattleManager : MonoBehaviour {
         Planet newPlanet = new Planet(planetData, this, planetScriptableObject);
         newPlanet.SetupPosition(planetData.battleObjectData.positionGiver);
         planets.Add(newPlanet);
-        AddObject(newPlanet);
+        AddBattleObject(newPlanet);
         return newPlanet;
     }
 
@@ -380,12 +382,13 @@ public class BattleManager : MonoBehaviour {
                 (long)(Random.Range(400, 600) * size * resourceModifier), asteroidBlueprints[Random.Range(0, asteroidBlueprints.Count)]);
             newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 10), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
-            AddObject(newAsteroid);
+            AddBattleObject(newAsteroid);
         }
 
         // The Asteroid field position must be set after the asteroids have been generated so that we know the size of the asteroid field
         newAsteroidField.SetupAsteroidFieldPosition(positionGiver);
         asteroidFields.Add(newAsteroidField);
+        AddObject(newAsteroidField);
     }
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
@@ -395,21 +398,28 @@ public class BattleManager : MonoBehaviour {
             (long)(Random.Range(1500, 3500) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
-        AddObject(newGasCloud);
+        AddBattleObject(newGasCloud);
     }
 
     #endregion
 
     #region ObjectLists
-
-    private void AddObject(BattleObject battleObject) {
-        objects.Add(battleObject);
-        OnObjectCreated.Invoke(battleObject);
+    private void AddObject(IObject iObject) {
+        OnObjectCreated.Invoke(iObject);
     }
 
-    private void RemoveObject(BattleObject battleObject) {
+    private void RemoveBattleObject(IObject iObject) {
+        OnObjectRemoved.Invoke(iObject);
+    }
+
+    private void AddBattleObject(BattleObject battleObject) {
+        objects.Add(battleObject);
+        OnBattleObjectCreated.Invoke(battleObject);
+    }
+
+    private void RemoveBattleObject(BattleObject battleObject) {
         objects.Remove(battleObject);
-        OnObjectRemoved.Invoke(battleObject);
+        OnBattleObjectRemoved.Invoke(battleObject);
     }
 
     public void BuildStationBlueprint(Station station) {
@@ -444,19 +454,19 @@ public class BattleManager : MonoBehaviour {
 
     public void RemoveDestroyedUnit(Unit unit) {
         destroyedUnits.Remove(unit);
-        RemoveObject(unit);
+        RemoveBattleObject(unit);
     }
 
     public void AddProjectile(Projectile projectile) {
         usedProjectiles.Add(projectile);
         unusedProjectiles.Remove(projectile);
-        AddObject(projectile);
+        AddBattleObject(projectile);
     }
 
     public void RemoveProjectile(Projectile projectile) {
         usedProjectiles.Remove(projectile);
         unusedProjectiles.Add(projectile);
-        RemoveObject(projectile);
+        RemoveBattleObject(projectile);
     }
 
     public Projectile GetNewProjectile() {
@@ -476,13 +486,13 @@ public class BattleManager : MonoBehaviour {
     public void AddMissile(Missile missile) {
         usedMissiles.Add(missile);
         unusedMissiles.Remove(missile);
-        AddObject(missile);
+        AddBattleObject(missile);
     }
 
     public void RemoveMissile(Missile missile) {
         usedMissiles.Remove(missile);
         unusedMissiles.Add(missile);
-        RemoveObject(missile);
+        RemoveBattleObject(missile);
     }
 
     public Missile GetNewMissile() {

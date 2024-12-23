@@ -228,7 +228,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = false;
+        bool skipTutorial = true;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -473,7 +473,7 @@ public class Chapter1 : CampaingController {
             "Now press Q and click on the asteroid field highlighted nearby to issue a move command to it.");
         List<AsteroidField> closestAsteroidFields = battleManager.asteroidFields.ToList()
             .OrderBy(a => Vector2.Distance(shuttle.GetPosition(), a.GetPosition())).ToList();
-        movementTutorial.AddCondition(eventManager.CreateCommandMoveShipToObject(shuttle, closestAsteroidFields.First(), true));
+        movementTutorial.AddCondition(eventManager.MoveShipToObject(shuttle, closestAsteroidFields.First(), 30, true));
         // Make sure the ship isn't moving
         movementTutorial.AddCondition(eventManager.CreateWaitUntilShipsIdle(new List<Ship> { shuttle }));
         movementTutorial.AddCommEvent(playerComm, playerFaction,
@@ -528,7 +528,7 @@ public class Chapter1 : CampaingController {
             "It would be a great help if you could help us out by sending your ship to the gas field that we have marked.",
             20 * GetTimeScale());
         GasCloud targetGasCloud = researchFaction.GetClosestGasCloud(researchStation.GetPosition());
-        researchChain.AddCondition(eventManager.CreateCommandMoveShipToObject(shuttle, targetGasCloud, true));
+        researchChain.AddCondition(eventManager.MoveShipToObject(shuttle, targetGasCloud, 10, true));
         researchChain.AddAction(() => playerFaction.AddScience(100));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "We have recieved some preliminary data about the gas. The high density of the gas cloud is spectacular! " +
@@ -609,7 +609,7 @@ public class Chapter1 : CampaingController {
             "We heard that " + shipyardFaction.name + " finished your contract to build the research ship we requested! " +
             "Could you send the ship to investigate this wierd asteroid field?", 5 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateLateCondition(() =>
-            eventManager.CreateCommandMoveShipToObject(researchShip, battleManager.asteroidFields.Last(), true)));
+            eventManager.MoveShipToObject(researchShip, battleManager.asteroidFields.Last(), 30, true)));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "...What is this?", 5 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,

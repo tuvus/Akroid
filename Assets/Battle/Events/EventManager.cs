@@ -40,6 +40,14 @@ public class EventManager {
         return new Tuple<EventCondition, Action>(triggerCondition, triggerCondition.completer);
     }
 
+    public virtual EventCondition MoveShipToObject(Ship shipToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+        return new MoveShipsToObject(shipToMove, objectToMoveTo, distance, visualize);
+    }
+
+    public virtual EventCondition MoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+        return new MoveShipsToObject(shipsToMove, objectToMoveTo, distance, visualize);
+    }
+
     public virtual EventCondition CreateDockShipAtUnit(Ship shipToDock, Station unitToDockAt, bool visualize = false) {
         return new DockShipsAtUnitCondition(shipToDock, unitToDockAt, visualize);
     }

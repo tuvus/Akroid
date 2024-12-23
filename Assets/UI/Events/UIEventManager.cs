@@ -35,6 +35,20 @@ public class UIEventManager : EventManager {
         }
     }
 
+    public override EventCondition MoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, float distance = 0,
+        bool visualize = false) {
+        return new MoveShipsToObjectUICondition(
+            (MoveShipsToObject)base.MoveShipToObject(shipToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            unitSpriteManager, visualize);
+    }
+
+    public override EventCondition MoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo, float distance = 0,
+        bool visualize = false) {
+        return new MoveShipsToObjectUICondition(
+            (MoveShipsToObject)base.MoveShipsToObject(shipsToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            unitSpriteManager, visualize);
+    }
+
     public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitToSelect,
             visualize);
