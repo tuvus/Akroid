@@ -24,7 +24,7 @@ public class MiningStationAI : StationAI {
         float miningAmount = GetMiningStation().GetMiningAmount() / GetMiningStation().GetMiningSpeed();
         float cargoPerTransport = 4800;
         float transportSpeed = 20;
-        wantedTransports = Mathf.RoundToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
+        wantedTransports = Mathf.CeilToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
     }
 
     public override void UpdateAI(float deltaTime) {
