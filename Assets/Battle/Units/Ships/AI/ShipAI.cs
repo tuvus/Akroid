@@ -769,7 +769,7 @@ public class ShipAI {
             }
 
             ship.Explode();
-            return CommandResult.StopRemove;
+            return CommandResult.Stop;
         }
 
         return CommandResult.Stop;

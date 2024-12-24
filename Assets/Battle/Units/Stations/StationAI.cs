@@ -6,11 +6,10 @@ public class StationAI {
     [SerializeField] protected float waitSpeed;
     [SerializeField] protected float cargoSpeed;
     protected float waitTime;
-    public event Action<Ship> OnBuildShip;
+    public event Action<Ship> OnBuildShip = delegate { };
 
     public StationAI(Station station) {
         this.station = station;
-        OnBuildShip = delegate { };
     }
 
     public virtual void UpdateAI(float deltaTime) {

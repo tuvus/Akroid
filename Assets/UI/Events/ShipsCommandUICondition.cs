@@ -13,7 +13,7 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
             .Where(ship => !selectedUnits.Contains(unitSpriteManager.units[ship]) && !conditionLogic.DoesShipHaveCommand(ship))) {
             if (ship.dockedStation != null) {
                 StationUI stationUI = (StationUI)unitSpriteManager.units[ship.dockedStation];
-                if (!selectedUnits.Contains(stationUI)) selectedUnits.Add(stationUI);
+                if (!selectedUnits.Contains(stationUI)) objectsToVisualize.Add(stationUI);
                 continue;
             }
             objectsToVisualize.Add(unitSpriteManager.units[ship]);
@@ -53,10 +53,12 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
                 objectsToVisualize.Add(unitSpriteManager.units[command.productionStation]);
                 break;
             case Command.CommandType.Research:
-                objectsToVisualize.Add(unitSpriteManager.objects[command.targetStar]);
+                if (command.targetStar != null) objectsToVisualize.Add(unitSpriteManager.objects[command.targetStar]);
+                else objectsToVisualize.AddRange(unitSpriteManager.objects.Values.Where(o => o is StarUI));
                 break;
             case Command.CommandType.CollectGas:
-                objectsToVisualize.Add(unitSpriteManager.objects[command.targetGasCloud]);
+                if (command.targetGasCloud != null) objectsToVisualize.Add(unitSpriteManager.objects[command.targetGasCloud]);
+                else objectsToVisualize.AddRange(unitSpriteManager.objects.Values.Where(o => o is GasCloudUI));
                 break;
             case Command.CommandType.Colonize:
                 objectsToVisualize.Add(unitSpriteManager.objects[command.targetPlanet]);

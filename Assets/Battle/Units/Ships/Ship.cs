@@ -74,6 +74,11 @@ public class Ship : Unit {
             this.faction = faction;
             this.shipScriptableObject = shipScriptableObject;
         }
+        public ShipBlueprint(ShipBlueprint shipBlueprint, Faction faction) {
+            this.name = shipBlueprint.name;
+            this.faction = faction;
+            this.shipScriptableObject = shipBlueprint.shipScriptableObject;
+        }
     }
 
     [System.Serializable]

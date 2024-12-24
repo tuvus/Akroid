@@ -91,6 +91,24 @@ public class UIEventManager : EventManager {
             localPlayer, unitSpriteManager, visualize);
     }
 
+    public override EventCondition CreateCommandShipToCollectGas(Ship shipToMove, GasCloud gasCloud = null, Station returnStation = null,
+        bool visualize = false) {
+        return new ShipsCommandUICondition((ShipsCommandCondition)base.CreateCommandShipToCollectGas(shipToMove, gasCloud, returnStation,
+            visualize), localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null,
+        bool visualize = false) {
+        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipAtStation(shipBlueprint, faction, station,
+            visualize), localPlayer, unitSpriteManager, visualize);
+    }
+
+    public override EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station,
+        bool visualize = false) {
+        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipsAtStation(shipBlueprints, faction, station,
+            visualize), localPlayer, unitSpriteManager, visualize);
+    }
+
     public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitToSelect,
             visualize);
@@ -134,6 +152,10 @@ public class UIEventManager : EventManager {
 
     public override EventCondition CreateZoomCondition(float zoomTo) {
         return new ZoomCondtion(localPlayer, unitSpriteManager, zoomTo);
+    }
+
+    public override EventCondition CreateLateCondition(Func<EventCondition> eventConditionFunction) {
+        return new LateUICondition((LateCondition)base.CreateLateCondition(eventConditionFunction), localPlayer, unitSpriteManager);
     }
 
     public override void SetPlayerZoom(float zoom) {

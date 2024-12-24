@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public class BuildShipsAtStation : EventCondition {
     public List<Ship.ShipBlueprint> shipBlueprintsToBuild { get; private set; }
@@ -19,10 +20,16 @@ public class BuildShipsAtStation : EventCondition {
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
         if (!subscribed) {
-            station.stationAI.OnBuildShip += s => shipBlueprintsToBuild
-                .RemoveAll(b => b.shipScriptableObject == s.shipScriptableObject && b.faction == s.faction);
+            station.stationAI.OnBuildShip += OnBuildShip;
+            subscribed = true;
         }
 
         return shipBlueprintsToBuild.Count == 0;
+    }
+
+    private void OnBuildShip(Ship ship) {
+        shipBlueprintsToBuild.Remove(
+            shipBlueprintsToBuild.FirstOrDefault(b => b.shipScriptableObject == ship.shipScriptableObject && b.faction == ship.faction));
+        if (shipBlueprintsToBuild.Count == 0) station.stationAI.OnBuildShip -= OnBuildShip;
     }
 }

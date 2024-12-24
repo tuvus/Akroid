@@ -48,35 +48,6 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         objectsToVisualize.Clear();
         visualizedEvent.GetVisualizedObjects(objectsToVisualize);
         VisualizeObjects(objectsToVisualize);
-        //     case EventCondition.ConditionType.CommandDockShipToUnit:
-        //         HashSet<Unit> selectedUnits4 = GetSelectedUnits().GetAllUnits().ToHashSet();
-        //         if (selectedUnits4.Count != 1 || !selectedUnits4.Contains(visualizedEvent.iObjects.First())) {
-        //             VisualizeObjects(new List<IObject>() { visualizedEvent.iObjects.First() });
-        //         } else {
-        //             ShipAI shipAI = ((Ship)visualizedEvent.iObjects.First()).shipAI;
-        //             if (!shipAI.commands.Any((c) =>
-        //                     c.commandType == Command.CommandType.Dock &&
-        //                     c.destinationStation == (Station)visualizedEvent.iObjects.Last())) {
-        //                 VisualizeObjects(new List<IObject>() { visualizedEvent.iObjects.Last() });
-        //             }
-        //         }
-        //
-        //         break;
-        //     case EventCondition.ConditionType.CommandShipToCollectGas:
-        //         HashSet<Unit> selectedUnits5 = GetSelectedUnits().GetAllUnits().ToHashSet();
-        //         if (selectedUnits5.Count != 1 || !selectedUnits5.Contains(visualizedEvent.iObjects.First())) {
-        //             VisualizeObjects(new List<IObject>() { visualizedEvent.iObjects.First() });
-        //         }
-        //
-        //         break;
-        //     case EventCondition.ConditionType.LateCondition:
-        //         if (visualizedEvent.eventCondition != null && visualizedEvent.eventCondition.visualize) {
-        //             visualizedEvent = visualizedEvent.eventCondition;
-        //             VisualizeEvent(newEvent);
-        //         }
-        //
-        //         break;
-        // }
     }
 
     void RemoveVisuals() {

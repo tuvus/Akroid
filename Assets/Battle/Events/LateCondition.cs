@@ -22,7 +22,10 @@ public class LateCondition : EventCondition {
     }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
-        if (eventCondition == null) eventCondition = eventConditionFunction();
+        if (eventCondition == null) {
+            eventCondition = eventConditionFunction();
+            visualize = eventCondition.visualize;
+        }
         return eventCondition.CheckCondition(eventManager, deltaTime);
     }
 }

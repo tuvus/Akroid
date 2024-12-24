@@ -40,11 +40,13 @@ public class EventManager {
         return new Tuple<EventCondition, Action>(triggerCondition, triggerCondition.completer);
     }
 
-    public virtual EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+    public virtual EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToMoveTo, float distance = 0f,
+        bool visualize = false) {
         return new MoveShipsToObject(shipToMove, objectToMoveTo, distance, visualize);
     }
 
-    public virtual EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f, bool visualize = false) {
+    public virtual EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f,
+        bool visualize = false) {
         return new MoveShipsToObject(shipsToMove, objectToMoveTo, distance, visualize);
     }
 
@@ -65,7 +67,8 @@ public class EventManager {
         return new ShipCommandMoveToObjectsCondition(shipToMove, objectsToCommandToMoveTo, visualize);
     }
 
-    public virtual EventCondition CreateCommandMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo, bool visualize = false) {
+    public virtual EventCondition CreateCommandMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo,
+        bool visualize = false) {
         return new ShipCommandMoveToObjectsCondition(shipsToMove, objectToCommandMoveTo, visualize);
     }
 
@@ -85,12 +88,13 @@ public class EventManager {
 
     public virtual EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null,
         bool visualize = false) {
-        return new BuildShipsAtStation(shipBlueprint, faction, station, visualize);
+        return new BuildShipsAtStation(new Ship.ShipBlueprint(shipBlueprint, faction), faction, station, visualize);
     }
 
     public virtual EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station,
         bool visualize = false) {
-        return new BuildShipsAtStation(shipBlueprints, faction, station, visualize);
+        return new BuildShipsAtStation(shipBlueprints.Select(b => new Ship.ShipBlueprint(b, faction)).ToList(), faction, station,
+            visualize);
     }
 
     public virtual EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
@@ -150,5 +154,4 @@ public class EventManager {
     public virtual void CenterPlayerCamera() { }
 
     public virtual void StartFollowingUnit(Unit unit) { }
-
 }
