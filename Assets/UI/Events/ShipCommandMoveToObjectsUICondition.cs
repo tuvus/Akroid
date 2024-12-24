@@ -6,8 +6,7 @@ public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipC
     public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic, LocalPlayer localPlayer,
         UnitSpriteManager unitSpriteManager, bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        List<ObjectUI> objectsToVisualize = new List<ObjectUI>();
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         foreach (var ship in conditionLogic.shipsToMove) {
             ShipUI shipUI = (ShipUI)unitSpriteManager.units[ship];
@@ -35,7 +34,5 @@ public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipC
                 objectsToVisualize.Add(shipUI);
             }
         }
-
-        return objectsToVisualize;
     }
 }

@@ -13,7 +13,7 @@ public class FollowUnitCondition : UIEventCondition {
         return localPlayer.GetLocalPlayerInput().followUnit == unitSpriteManager.units[unitToFollow];
     }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        return new List<ObjectUI>() { unitSpriteManager.units[unitToFollow] };
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+        objectsToVisualize.Add(unitSpriteManager.units[unitToFollow]);
     }
 }

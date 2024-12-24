@@ -13,7 +13,5 @@ public class OpenFactionPanelCondition : UIEventCondition {
         return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == unitSpriteManager.factionUIs[factionToSelect];
     }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        return new List<ObjectUI>();
-    }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
 }

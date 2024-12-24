@@ -14,7 +14,7 @@ public class SelectFleetsCondition : UIEventCondition {
         return selectedUnits.fleet == unitSpriteManager.fleetUIs[fleetToSelect];
     }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        return fleetToSelect.ships.Select(s => unitSpriteManager.units[s]).Cast<ObjectUI>().ToList();
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+        objectsToVisualize.AddRange(fleetToSelect.ships.Select(s => unitSpriteManager.units[s]).Cast<ObjectUI>().ToList());
     }
 }

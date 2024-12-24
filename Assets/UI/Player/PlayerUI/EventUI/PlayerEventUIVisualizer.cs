@@ -11,6 +11,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     private UIEventCondition visualizedEvent;
     private Transform worldSpaceTransform;
     [SerializeField] GameObject unitHighlight;
+    private List<ObjectUI> objectsToVisualize;
 
 
     public void SetupEventUI(UIManager uIManager, UIEventManager uIEventManager, LocalPlayer localPlayer, PlayerUI playerUI) {
@@ -18,6 +19,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         this.localPlayer = localPlayer;
         this.playerUI = playerUI;
         this.uIEventManager = uIEventManager;
+        objectsToVisualize = new List<ObjectUI>();
     }
 
     public void UpdateEventUI() {
@@ -43,7 +45,9 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     }
 
     void VisualizeEvent(bool newEvent) {
-        VisualizeObjects(visualizedEvent.GetVisualizedObjects());
+        objectsToVisualize.Clear();
+        visualizedEvent.GetVisualizedObjects(objectsToVisualize);
+        VisualizeObjects(objectsToVisualize);
         //     case EventCondition.ConditionType.CommandDockShipToUnit:
         //         HashSet<Unit> selectedUnits4 = GetSelectedUnits().GetAllUnits().ToHashSet();
         //         if (selectedUnits4.Count != 1 || !selectedUnits4.Contains(visualizedEvent.iObjects.First())) {

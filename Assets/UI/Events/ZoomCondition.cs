@@ -16,7 +16,5 @@ public class ZoomCondtion : UIEventCondition {
             : localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize <= zoomTo;
     }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        return new List<ObjectUI>();
-    }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
 }

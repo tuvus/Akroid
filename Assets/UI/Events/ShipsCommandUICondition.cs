@@ -6,8 +6,7 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
     public ShipsCommandUICondition(ShipsCommandCondition conditionLogic, LocalPlayer localPlayer,
         UnitSpriteManager unitSpriteManager, bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        List<ObjectUI> objectsToVisualize = new List<ObjectUI>();
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
 
         foreach (var ship in conditionLogic.shipsToCommand
@@ -67,7 +66,5 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
             default:
                 throw new NotSupportedException("The visualization of the command condition " + command.commandType + " is not supported yet");
         }
-
-        return objectsToVisualize;
     }
 }

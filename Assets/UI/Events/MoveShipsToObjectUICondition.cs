@@ -7,9 +7,7 @@ public class MoveShipsToObjectUICondition : UIWrapperEventCondition<MoveShipsToO
     public MoveShipsToObjectUICondition(MoveShipsToObject conditionLogic, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
         bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        List<ObjectUI> objectsToVisualize = new List<ObjectUI>();
-
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         Predicate<Ship> shipHasMoveToObjectCommand = ship => ship.shipAI.commands.Any((command) =>
             command.commandType == Command.CommandType.Move && Vector2.Distance(command.targetPosition,
                 conditionLogic.objectToMoveTo.GetPosition()) <=
@@ -37,7 +35,5 @@ public class MoveShipsToObjectUICondition : UIWrapperEventCondition<MoveShipsToO
             conditionLogic.objectToMoveTo.GetSize() + s.GetSize() + conditionLogic.distance || !shipHasMoveToObjectCommand(s))) {
             objectsToVisualize.Add(unitSpriteManager.objects[conditionLogic.objectToMoveTo]);
         }
-
-        return objectsToVisualize;
     }
 }

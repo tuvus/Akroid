@@ -22,7 +22,8 @@ public abstract class UIEventCondition : EventCondition {
     public abstract bool CheckUICondition(EventManager eventManager);
 
     /// <summary>
-    /// Decideds wich objects should be visualised by this event
+    /// Decideds wich objects should be visualised by this event.
+    /// Returns the objects in the list given to avoid garbage collection
     /// </summary>
-    public abstract List<ObjectUI> GetVisualizedObjects();
+    public abstract void GetVisualizedObjects(List<ObjectUI> objectsToVisualise);
 }

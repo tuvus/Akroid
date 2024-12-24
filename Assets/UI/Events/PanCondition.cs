@@ -19,7 +19,5 @@ public class PanCondtion : UIEventCondition {
         if (distanceToPan <= 0) localPlayer.GetInputManager().OnPanEvent -= OnPan;
     }
 
-    public override List<ObjectUI> GetVisualizedObjects() {
-        return new List<ObjectUI>();
-    }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
 }
