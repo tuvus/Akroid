@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using static Turret;
 
 public abstract class TurretScriptableObject : ComponentScriptableObject {
@@ -13,6 +14,7 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float fireSpeed;
     public float reloadSpeed;
     public int maxAmmo;
+    public Vector2 baseScale = Vector2.one;
 
     public virtual float GetDamagePerSecond() {
         return 0;

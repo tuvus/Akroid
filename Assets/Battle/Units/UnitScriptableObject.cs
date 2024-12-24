@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static CargoBay;
 
 public class UnitScriptableObject : ScriptableObject {
@@ -17,6 +18,7 @@ public class UnitScriptableObject : ScriptableObject {
     [SerializeField] protected ModuleSystem.System[] systems;
     [SerializeField] protected IModule[] modules;
     public DestroyEffectScriptableObject destroyEffect;
+    public Vector2 baseScale = Vector2.one;
 
     public void OnValidate() {
         if (systems == null) {

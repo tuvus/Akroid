@@ -27,6 +27,7 @@ public abstract class Turret : ModuleComponent {
         base(battleManager, module, unit, componentScriptableObject) {
         turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
 
+        scale *= turretScriptableObject.baseScale;
         SetSize(GetSpriteSize());
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
             turretScriptableObject.maxAmmo);

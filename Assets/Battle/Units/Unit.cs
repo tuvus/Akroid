@@ -29,6 +29,7 @@ public abstract class Unit : BattleObject {
         enemyUnitsInRangeDistance = new List<float>(20);
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
+        scale = unitScriptableObject.baseScale * scale;
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());

@@ -7,13 +7,13 @@ public class LaserUI : BattleObjectUI {
     private Laser laser;
     private bool fireing;
 
-    public override void Setup(BattleObject battleObject, UIManager uIManager) {
+    public void Setup(BattleObject battleObject, UIManager uIManager, LaserTurretUI laserTurret) {
         base.Setup(battleObject, uIManager);
         laser = (Laser)battleObject;
         spriteRenderer.enabled = false;
         startHighlight.enabled = false;
         endHighlight.enabled = false;
-        transform.localScale = new Vector2(laser.laserTurret.laserTurretScriptableObject.laserSize, 1);
+        transform.localScale = new Vector2(laser.laserTurret.laserTurretScriptableObject.laserSize, 1) / laserTurret.laserTurret.scale;
         startHighlight.transform.localScale = new Vector2(.2f, .2f);
         endHighlight.transform.localScale = new Vector2(.2f, .2f);
     }
@@ -24,21 +24,23 @@ public class LaserUI : BattleObjectUI {
             if (!fireing) {
                 startHighlight.enabled = uIManager.GetEffectsShown();
             }
+
             fireing = true;
 
             transform.localPosition = new Vector2(0, 0);
             transform.rotation = transform.parent.rotation;
-            spriteRenderer.size = new Vector2(spriteRenderer.size.x, laser.laserLength);
-            transform.Translate(Vector2.up * (laser.laserLength / 2 + laser.laserTurret.GetTurretOffSet()));
+            float laserLength = laser.laserLength / transform.lossyScale.y;
+            spriteRenderer.size = new Vector2(spriteRenderer.size.x, laserLength);
+            transform.Translate(Vector2.up * ((laserLength / 2 + laser.laserTurret.GetTurretOffSet())));
 
             if (laser.hitPoint != null) {
-                endHighlight.transform.localPosition = new Vector2(0, laser.laserLength / 2);
+                endHighlight.transform.localPosition = new Vector2(0, laserLength / 2);
                 endHighlight.enabled = uIManager.GetEffectsShown();
             } else {
                 endHighlight.enabled = false;
             }
 
-            startHighlight.transform.localPosition = new Vector2(0, -laser.laserLength / 2);
+            startHighlight.transform.localPosition = new Vector2(0, -laserLength / 2);
 
             if (laser.fireTime > 0) {
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);

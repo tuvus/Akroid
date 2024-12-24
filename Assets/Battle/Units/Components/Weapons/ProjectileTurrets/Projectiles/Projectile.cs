@@ -12,7 +12,7 @@ public class Projectile : BattleObject {
     public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
 
     public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage,
-        float projectileRange, float offset, float scale) {
+        float projectileRange, float offset, float projectileScale) {
         this.faction = faction;
         this.position = position;
         this.rotation = rotation;
@@ -23,6 +23,7 @@ public class Projectile : BattleObject {
         this.projectileRange = projectileRange;
         distance = 0;
         hit = false;
+        scale = new Vector2(projectileScale, projectileScale) / 2;
 
         Activate(true);
         SetSize(SetupSize());

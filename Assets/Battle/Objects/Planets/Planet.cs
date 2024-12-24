@@ -5,7 +5,8 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
-    private PlanetScriptableObject planetScriptableObject;
+    public PlanetScriptableObject planetScriptableObject { get; private set; }
+
     /// <summary> Determines the base amount of population that one territory value can hold. </summary>
     public static readonly long populationPerTerritoryValue = 15000;
 

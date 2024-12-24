@@ -25,6 +25,7 @@ MonoBehaviour:
   fireSpeed: 0.2
   reloadSpeed: 2
   maxAmmo: 5
+  baseScale: {x: 0.6, y: 0.6}
   laserDamagePerSecond: 90
   fireDuration: 0.1
   fadeDuration: 0.05

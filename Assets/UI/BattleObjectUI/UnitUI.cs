@@ -14,6 +14,7 @@ public abstract class UnitUI : BattleObjectUI {
         base.Setup(battleObject, uIManager);
         this.unit = (Unit)battleObject;
         spriteRenderer.sprite = unit.unitScriptableObject.sprite;
+        spriteRenderer.enabled = false;
         unitSelection = transform.GetChild(0).GetComponent<UnitSelection>();
         unitSelection.SetupSelection(this, uIManager);
         components = new List<ComponentUI>();

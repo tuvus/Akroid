@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: EarthPlanet
   m_EditorClassIdentifier: 
   sprite: {fileID: -947529837, guid: 1df60e8981cb5034eb9692bc08014a92, type: 3}
+  hasAtmosphere: 1

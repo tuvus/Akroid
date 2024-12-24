@@ -98,7 +98,7 @@ public class Chapter1 : CampaingController {
             Resources.Load<PlanetScriptableObject>(GetPathToChapterFolder() + "/EarthPlanet"));
         moon = battleManager.CreateNewMoon(new Planet.PlanetData(
                 new BattleObject.BattleObjectData("Moon", new PositionGiver(planetFaction.GetPosition(), 500, 50000, 300, 5000, 5),
-                    Random.Range(0, 360), planetFaction), 0, 0.02f, 0.98f),
+                    Random.Range(0, 360), new Vector2(8, 8), planetFaction), 0, 0.02f, 0.98f),
             Resources.Load<PlanetScriptableObject>(GetPathToChapterFolder() + "/Moon"));
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
@@ -344,7 +344,8 @@ public class Chapter1 : CampaingController {
         eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
-        eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));
+        eventChain.AddCondition(
+            eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Here you can see its owner, state, cargo and weapons of the unit. " +
             "Right click again or press the close button to close the panel.", 1 * GetTimeScale());

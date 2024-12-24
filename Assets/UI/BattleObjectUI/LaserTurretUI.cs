@@ -1,12 +1,12 @@
 public class LaserTurretUI : TurretUI {
-    private LaserTurret laserTurret;
+    public LaserTurret laserTurret { get; private set; }
     private LaserUI laserUI;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);
         laserTurret = (LaserTurret)battleObject;
         laserUI = Instantiate(laserTurret.laser.GetPrefab(), transform).GetComponent<LaserUI>();
-        laserUI.Setup(laserTurret.laser, uIManager);
+        laserUI.Setup(laserTurret.laser, uIManager, this);
     }
 
     public override void UpdateObject() {
