@@ -33,7 +33,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     void ManageIdleShips() {
-        foreach (var ship in idleShips.Where((s) => s.IsIdle() && s.IsTransportShip())) {
+        foreach (var ship in idleShips.Where((s) => s.IsIdle() && s.IsTransportShip() && s.fleet == null)) {
             if (tradeRoutes.Count == 0) break;
             nextStationToSendTo++;
             if (nextStationToSendTo >= tradeRoutes.Count)

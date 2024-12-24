@@ -218,7 +218,7 @@ public class Chapter1 : CampaingController {
 
         StartTutorial();
         AddMoonQuestLine();
-        AddWarEscalationEventLine();
+        // AddWarEscalationEventLine();
         AddPiratesEventLine();
     }
 
@@ -441,9 +441,7 @@ public class Chapter1 : CampaingController {
         FactionCommManager playerComm = playerFaction.GetFactionCommManager();
         GetBattleManager().SetSimulationTimeScale(1);
         Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
-        if (battleManager.GetLocalPlayer().faction == playerFaction) {
-            battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
-        }
+        if (battleManager.GetLocalPlayer().faction == playerFaction) battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
 
         EventChainBuilder movementTutorial = new EventChainBuilder();
         playerComm.SendCommunication(new CommunicationEvent(planetFactionAI.faction.GetFactionCommManager(),

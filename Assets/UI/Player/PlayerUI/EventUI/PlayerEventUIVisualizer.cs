@@ -44,46 +44,6 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
 
     void VisualizeEvent(bool newEvent) {
         VisualizeObjects(visualizedEvent.GetVisualizedObjects());
-        //     case EventCondition.ConditionType.MoveShipsToObject:
-        //         // If the unit is docked at a station, we need to show the station instead
-        //         Unit unitToShow2 = visualizedEvent.unitToSelect;
-        //         HashSet<Unit> selectedUnits3 = GetSelectedUnits().GetAllUnits().ToHashSet();
-        //         if (selectedUnits3.Contains(unitToShow2) && selectedUnits3.Count == 1) {
-        //             VisualizeObjects(new List<IObject> { visualizedEvent.iObject });
-        //         } else {
-        //             if (((Ship)visualizedEvent.unitToSelect).dockedStation != null) {
-        //                 unitToShow2 = ((Ship)visualizedEvent.unitToSelect).dockedStation;
-        //             }
-        //
-        //             VisualizeObjects(new List<IObject> { unitToShow2, visualizedEvent.iObject });
-        //         }
-        //
-        //         break;
-        //     case EventCondition.ConditionType.CommandMoveShipToObjectSequence:
-        //         HashSet<Unit> selectedUnits2 = GetSelectedUnits().GetAllUnits().ToHashSet();
-        //         if (selectedUnits2.Count != 1 || !selectedUnits2.Contains(visualizedEvent.unitToSelect)) {
-        //             VisualizeObjects(new List<IObject>() { visualizedEvent.unitToSelect });
-        //         } else {
-        //             ShipAI shipAI = ((Ship)visualizedEvent.unitToSelect).shipAI;
-        //             int objectIndex = 0;
-        //             foreach (var command in shipAI.commands) {
-        //                 if (command.commandType == Command.CommandType.Move
-        //                     && Vector2.Distance(command.targetPosition, visualizedEvent.iObjects[objectIndex].GetPosition()) <=
-        //                     visualizedEvent.unitToSelect.GetSize() + visualizedEvent.iObjects[objectIndex].GetSize()) {
-        //                     objectIndex++;
-        //                     if (objectIndex == visualizedEvent.iObjects.Count) break;
-        //                 }
-        //             }
-        //
-        //             if (objectIndex < visualizedEvent.iObjects.Count) {
-        //                 VisualizeObjects(new List<IObject>() { visualizedEvent.iObjects[objectIndex] });
-        //             } else {
-        //                 VisualizeObjects(new());
-        //             }
-        //         }
-        //
-        //         break;
-        //
         //     case EventCondition.ConditionType.CommandDockShipToUnit:
         //         HashSet<Unit> selectedUnits4 = GetSelectedUnits().GetAllUnits().ToHashSet();
         //         if (selectedUnits4.Count != 1 || !selectedUnits4.Contains(visualizedEvent.iObjects.First())) {

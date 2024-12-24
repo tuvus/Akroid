@@ -86,6 +86,11 @@ public class UIEventManager : EventManager {
             localPlayer, unitSpriteManager, visualize);
     }
 
+    public override EventCondition CreateCommandDockShipToUnit(Ship shipToMove, Station unitToDockAt, bool visualize = false) {
+        return new ShipsCommandUICondition((ShipsCommandCondition)base.CreateCommandDockShipToUnit(shipToMove, unitToDockAt, visualize),
+            localPlayer, unitSpriteManager, visualize);
+    }
+
     public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
         return new SelectUnitsAmountCondition(localPlayer, unitSpriteManager, EventCondition.ConditionType.SelectUnit, unitToSelect,
             visualize);
