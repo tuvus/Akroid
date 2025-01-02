@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class UIManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
@@ -29,7 +30,9 @@ public class UIManager : MonoBehaviour {
     }
 
     public void LateUpdate() {
+        Profiler.BeginSample("Update UI Objects");
         if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
+        Profiler.EndSample();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();
         uIEventManager.UpdateUIEvents();

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class UnitSpriteManager : MonoBehaviour {
@@ -13,6 +12,8 @@ public class UnitSpriteManager : MonoBehaviour {
     public Dictionary<Unit, UnitUI> units { get; private set; }
     public Dictionary<Fleet, FleetUI> fleetUIs { get; private set; }
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
+    public HashSet<ObjectUI> objectsToUpdate { get; private set; }
+    private HashSet<BattleObject> objectsToCreate;
 
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
@@ -22,6 +23,8 @@ public class UnitSpriteManager : MonoBehaviour {
         units = new Dictionary<Unit, UnitUI>();
         fleetUIs = new Dictionary<Fleet, FleetUI>();
         factionUIs = new Dictionary<Faction, FactionUI>();
+        objectsToUpdate = new HashSet<ObjectUI>();
+        objectsToCreate = new HashSet<BattleObject>();
         battleManager.OnFactionCreated += OnFactionCreated;
         battleManager.OnObjectCreated += OnObjectCreated;
         battleManager.OnBattleObjectCreated += OnBattleObjectCreated;
@@ -34,29 +37,33 @@ public class UnitSpriteManager : MonoBehaviour {
     /// Updates the state of the sprites
     /// </summary>
     public void UpdateSpriteManager() {
-        foreach (var objPair in battleObjects.ToList()) {
-            if (objPair.Value == null) {
-                BattleObjectUI battleObjectUI = Instantiate(objPair.Key.GetPrefab()).GetComponent<BattleObjectUI>();
-                battleObjectUI.Setup(objPair.Key, uIManager);
-                if (battleObjectUI is StarUI) battleObjectUI.transform.SetParent(uIManager.GetStarTransform());
-                else if (battleObjectUI is PlanetUI) battleObjectUI.transform.SetParent(uIManager.GetPlanetsTransform());
-                else if (battleObjectUI is GasCloudUI) battleObjectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
-                else if (battleObjectUI is AsteroidUI) battleObjectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
-                else if (battleObjectUI is ProjectileUI) battleObjectUI.transform.SetParent(uIManager.GetProjectileTransform());
-                else if (battleObjectUI is MissileUI) battleObjectUI.transform.SetParent(uIManager.GetMissileTransform());
-                else if (battleObjectUI.battleObject.faction != null) {
-                    FactionUI factionUI = factionUIs[battleObjectUI.battleObject.faction];
-                    if (battleObjectUI is ShipUI) battleObjectUI.transform.SetParent(factionUI.GetShipTransform());
-                    else if (battleObjectUI is StationUI) battleObjectUI.transform.SetParent(factionUI.GetStationsTransform());
-                }
-
-                battleObjects[objPair.Key] = battleObjectUI;
-                objects[objPair.Key] = battleObjectUI;
-                if (objPair.Key.IsUnit()) units[(Unit)objPair.Key] = (UnitUI)battleObjectUI;
-            } else {
-                objPair.Value.UpdateObject();
-            }
+        CreateNewObjects();
+        foreach (var objectUI in objectsToUpdate) {
+            objectUI.UpdateObject();
         }
+    }
+
+    private void CreateNewObjects() {
+        foreach (var iObject in objectsToCreate) {
+            BattleObjectUI battleObjectUI = Instantiate(iObject.GetPrefab()).GetComponent<BattleObjectUI>();
+            battleObjectUI.Setup(iObject, uIManager);
+            if (battleObjectUI is StarUI) battleObjectUI.transform.SetParent(uIManager.GetStarTransform());
+            else if (battleObjectUI is PlanetUI) battleObjectUI.transform.SetParent(uIManager.GetPlanetsTransform());
+            else if (battleObjectUI is GasCloudUI) battleObjectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
+            else if (battleObjectUI is AsteroidUI) battleObjectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
+            else if (battleObjectUI is ProjectileUI) battleObjectUI.transform.SetParent(uIManager.GetProjectileTransform());
+            else if (battleObjectUI is MissileUI) battleObjectUI.transform.SetParent(uIManager.GetMissileTransform());
+            else if (battleObjectUI.battleObject.faction != null) {
+                FactionUI factionUI = factionUIs[battleObjectUI.battleObject.faction];
+                if (battleObjectUI is ShipUI) battleObjectUI.transform.SetParent(factionUI.GetShipTransform());
+                else if (battleObjectUI is StationUI) battleObjectUI.transform.SetParent(factionUI.GetStationsTransform());
+            }
+
+            battleObjects.Add(iObject, battleObjectUI);
+            objects.Add(iObject, battleObjectUI);
+            if (iObject.IsUnit()) units.Add((Unit)iObject, (UnitUI)battleObjectUI);
+        }
+        objectsToCreate.Clear();
     }
 
     private void OnFactionCreated(Faction faction) {
@@ -71,7 +78,6 @@ public class UnitSpriteManager : MonoBehaviour {
     /// Handles creating all other objects.
     /// </summary>
     private void OnObjectCreated(IObject iObject) {
-        ObjectUI objectUI = null;
         if (iObject is AsteroidField asteroidField) {
             AsteroidFieldUI asteroidFieldUI =
                 Instantiate((GameObject)Resources.Load("Prefabs/AsteroidField"), uIManager.GetAsteroidFieldTransform())
@@ -79,6 +85,8 @@ public class UnitSpriteManager : MonoBehaviour {
             asteroidFieldUI.Setup(asteroidField);
             objects.Add(asteroidField, asteroidFieldUI);
             return;
+        } else if (iObject is BattleObject battleObject) {
+            objectsToCreate.Add(battleObject);
         }
 
         throw new Exception("Creating an object without the UI!");
@@ -99,9 +107,7 @@ public class UnitSpriteManager : MonoBehaviour {
             return;
         }
 
-        battleObjects.Add(battleObject, null);
-        objects.Add(battleObject, null);
-        if (battleObject.IsUnit()) units.Add((Unit)battleObject, null);
+        objectsToCreate.Add(battleObject);
     }
 
     private void OnOnBattleObjectRemoved(BattleObject battleObject) {
@@ -111,11 +117,17 @@ public class UnitSpriteManager : MonoBehaviour {
         if (battleObjectUI != null) {
             battleObjectUI.OnBattleObjectRemoved();
             Destroy(battleObjectUI.gameObject);
+        } else if (objectsToCreate.Contains(battleObject)) {
+            objectsToCreate.Remove(battleObject);
+            return;
+        } else {
+            throw new Exception("Trying to remove an object UI that doesn't exist!");
         }
 
         battleObjects.Remove(battleObject);
         objects.Remove(battleObject);
         if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
+        if (objectsToUpdate.Contains(battleObjectUI)) objectsToUpdate.Remove(battleObjectUI);
     }
 
     private void OnFleetCreated(Fleet fleet) {

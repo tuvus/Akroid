@@ -50,6 +50,7 @@ public abstract class UnitUI : BattleObjectUI {
                 shieldGeneratorUI.Setup(moduleComponent, uIManager, this);
             }
         }
+        uIManager.unitSpriteManager.objectsToUpdate.Add(this);
     }
 
     public override float GetRotation() {
