@@ -376,7 +376,7 @@ MonoBehaviour:
     resources: 
     totalResourcesRequired: 0
   - name: Mining Station
-    stationScriptableObject: {fileID: 11400000, guid: 51a747427e783d94f90e5dd5eeeae964,
+    stationScriptableObject: {fileID: 11400000, guid: 93acbaa08c4a46e4ca8eaa8ed55b04b3,
       type: 2}
     stationCost: 0
     resourcesTypes: 

@@ -33,7 +33,7 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
-  baseScale: {x: 1, y: 1}
+  baseScale: {x: 0.3, y: 0.3}
   stationType: 3
   repairAmount: 100
   repairSpeed: 5
