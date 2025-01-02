@@ -3,13 +3,14 @@ using UnityEngine;
 using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
-class ProjectileTurretScriptableObject : TurretScriptableObject {
+public class ProjectileTurretScriptableObject : TurretScriptableObject {
     [Tooltip("Max at around 150")] public float fireVelocity;
     public float fireAccuracy;
     public int minDamage;
     public int maxDamage;
     public float projectileRange;
     public GameObject projectilePrefab;
+    public float flashSpeed = 0.5f;
 
     public override float GetDamagePerSecond() {
         float time = reloadSpeed;

@@ -22,34 +22,7 @@ public class TurretUI : ComponentUI {
         base.UpdateObject();
         if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unitUI.unit.faction.GetColorTint();
         else spriteRenderer.color = Color.white;
-        // if (flash.enabled) {
-        //     flashTime -= deltaTime;
-        //     if (flashTime <= 0) {
-        //         flashTime = 0;
-        //         flash.enabled = false;
-        //     } else {
-        //         flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, flashTime / flashSpeed);
-        //     }
-        // }
     }
-
-    void Fire() {
-        // flash.enabled = BattleManager.Instance.GetEffectsShown();
-        // flash.color = new Color(flash.color.r, flash.color.g, flash.color.b, 1);
-        flashTime = flashSpeed;
-    }
-
-    // public override void StopFiring() {
-    //     base.StopFiring();
-    //     // flash.enabled = false;
-    // }
-    //
-    // public override void ShowEffects(bool shown) {
-    //     base.ShowEffects(shown);
-    //     // if (flash.enabled) {
-    //     // flash.enabled = shown;
-    //     // }
-    // }
 
     public override void OnUnitDestroyed() {
         spriteRenderer.enabled = false;

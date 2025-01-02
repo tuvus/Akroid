@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 
 public class ProjectileTurret : Turret {
-    ProjectileTurretScriptableObject projectileTurretScriptableObject;
+    public ProjectileTurretScriptableObject projectileTurretScriptableObject { get; private set; }
+    public double lastFlashTime { get; private set; }
 
     public ProjectileTurret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
+        lastFlashTime = -projectileTurretScriptableObject.flashSpeed;
     }
 
     public override bool Fire() {
@@ -28,6 +30,7 @@ public class ProjectileTurret : Turret {
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
         }
 
+        lastFlashTime = battleManager.GetSimulationTime();
         return reloadController.Empty();
     }
 

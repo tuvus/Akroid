@@ -23,26 +23,31 @@ public abstract class UnitUI : BattleObjectUI {
         destroyEffectUI.SetupDestroyEffect(this, unit.unitScriptableObject.destroyEffect, uIManager, spriteRenderer);
         destroyed = false;
         for (var i = 0; i < prefabModuleSystem.modules.Count; i++) {
-            if (unit.moduleSystem.modules[i].componentScriptableObject is EmptyScriptableObject) continue;
-            var system = unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]];
+            ModuleComponent moduleComponent = unit.moduleSystem.modules[i];
+            if (moduleComponent.componentScriptableObject is EmptyScriptableObject) continue;
+            Module module = prefabModuleSystem.modules[i];
+            var system = unit.moduleSystem.moduleToSystem[moduleComponent];
+
             if (system.type == PrefabModuleSystem.SystemType.Turret) {
                 TurretUI turretUI;
-                if (unit.moduleSystem.moduleToSystem[unit.moduleSystem.modules[i]].component is LaserTurretScriptableObject) {
-                    turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<LaserTurretUI>();
+                if (unit.moduleSystem.moduleToSystem[moduleComponent].component is LaserTurretScriptableObject) {
+                    turretUI = module.gameObject.AddComponent<LaserTurretUI>();
+                } else if (unit.moduleSystem.moduleToSystem[moduleComponent].component is ProjectileTurretScriptableObject) {
+                    turretUI = module.gameObject.AddComponent<ProjectileTurretUI>();
                 } else {
-                    turretUI = prefabModuleSystem.modules[i].gameObject.AddComponent<TurretUI>();
+                    turretUI = module.gameObject.AddComponent<TurretUI>();
                 }
 
                 components.Add(turretUI);
-                turretUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
+                turretUI.Setup(moduleComponent, uIManager, this);
             } else if (system.type == PrefabModuleSystem.SystemType.Thruster) {
-                ThrusterUI thrusterUI = prefabModuleSystem.modules[i].gameObject.AddComponent<ThrusterUI>();
+                ThrusterUI thrusterUI = module.gameObject.AddComponent<ThrusterUI>();
                 components.Add(thrusterUI);
-                thrusterUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
+                thrusterUI.Setup(moduleComponent, uIManager, this);
             } else if (system.type == PrefabModuleSystem.SystemType.Utility && system.component is ShieldGeneratorScriptableObject) {
-                ShieldGenderatorUI shieldGeneratorUI = prefabModuleSystem.modules[i].gameObject.AddComponent<ShieldGenderatorUI>();
+                ShieldGenderatorUI shieldGeneratorUI = module.gameObject.AddComponent<ShieldGenderatorUI>();
                 components.Add(shieldGeneratorUI);
-                shieldGeneratorUI.Setup(unit.moduleSystem.modules[i], uIManager, this);
+                shieldGeneratorUI.Setup(moduleComponent, uIManager, this);
             }
         }
     }
