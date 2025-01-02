@@ -18,7 +18,8 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
-    [SerializeField] private Scrollbar verticleScrollbar;
+    [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private RectTransform contentTransform;
     private bool shown;
     private float portraitTime;
     private bool lockToBottom = false;
@@ -58,15 +59,16 @@ public class PlayerCommsManager : MonoBehaviour {
 
 
     public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
-        lockToBottom = verticleScrollbar.value <= 0.1;
+        lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1
+            || contentTransform.rect.height <= scrollRect.GetComponent<RectTransform>().rect.height;
         ShowPanel();
         CreateCommEvent(communicationEvent);
         SetPortrait(communicationEvent.sender);
     }
 
     public void UpdateCommsManager() {
-        if (lockToBottom && verticleScrollbar.value > 0.000001) {
-            verticleScrollbar.value = 0;
+        if (lockToBottom && scrollRect.verticalNormalizedPosition > 0.0001) {
+            scrollRect.verticalNormalizedPosition = 0;
             lockToBottom = false;
         }
 
@@ -97,6 +99,7 @@ public class PlayerCommsManager : MonoBehaviour {
     void ChooseCommuncationEventOption(CommunicationEvent communicationEvent, GameObject commEvent, int optionIndex) {
         communicationEvent.ChooseOption(optionIndex);
         if (!communicationEvent.isActive) {
+            lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1;
             for (int i = commEvent.transform.GetChild(1).childCount - 1; i >= 0; i--) {
                 DestroyImmediate(commEvent.transform.GetChild(1).GetChild(i).gameObject);
             }
@@ -104,6 +107,7 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     public void OnCommunicationEventDeactivate(int communicationEventIndex) {
+        lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1;
         for (int i = communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1; i >= 0; i--) {
             DestroyImmediate(communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i).gameObject);
         }
