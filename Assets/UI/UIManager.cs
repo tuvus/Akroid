@@ -35,57 +35,6 @@ public class UIManager : MonoBehaviour {
         uIEventManager.UpdateUIEvents();
     }
 
-    /// <summary>
-    /// Determines whether the effects will be shown or not.
-    /// </summary>
-    /// <param name="shown"></param>
-    public void ShowEffects(bool shown) {
-        // ShowParticles(shown && LocalPlayer.Instance.GetPlayerUI().particles);
-        // foreach (var unit in units) {
-        //     unit.ShowEffects(shown);
-        // }
-        // foreach (var projectile in projectiles) {
-        //     projectile.ShowEffects(shown);
-        // }
-        // foreach (var missile in missiles) {
-        //     missile.ShowEffects(shown);
-        // }
-        // foreach (var destroyedUnit in destroyedUnits) {
-        //     destroyedUnit.ShowEffects(shown);
-        // }
-    }
-
-    /// <summary>
-    /// Determines whether or not the particles in the game are rendered or not.
-    /// Will not be called with the same shown value twice in a row.
-    /// </summary>
-    /// <param name="shown"></param>
-    public void ShowParticles(bool shown) {
-        // foreach (var unit in units) {
-        //     unit.ShowParticles(shown);
-        // }
-        // foreach (var projectile in projectiles) {
-        //     projectile.ShowParticles(shown);
-        // }
-        // foreach (var missile in missiles) {
-        //     missile.ShowParticles(shown);
-        // }
-        // foreach (var destroyedUnits in destroyedUnits) {
-        //     destroyedUnits.ShowParticles(shown);
-        // }
-    }
-
-    /// <summary>
-    /// Determines whether all units and icorns should show their unique faction color
-    /// or their diplomatic status.
-    /// </summary>
-    /// <param name="shown"></param>
-    public void ShowFactionColoring(bool shown) {
-        // foreach (var unit in units) {
-        // unit.ShowFactionColor(shown);
-        // }
-    }
-
     public bool GetEffectsShown() {
         return PlayerUI.Instance.effects;
     }

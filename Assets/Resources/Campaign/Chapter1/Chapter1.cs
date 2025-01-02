@@ -61,7 +61,7 @@ public class Chapter1 : CampaingController {
                     Random.Range(1, 2) * 5400, 0, 0, 0), new PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 0, 5000, 100, 1000, 2), Random.Range(5, 10),
+            battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 1000, 10000, 100, 1000, 2), Random.Range(5, 10),
                 10);
         }
 
@@ -218,7 +218,7 @@ public class Chapter1 : CampaingController {
 
         StartTutorial();
         AddMoonQuestLine();
-        // AddWarEscalationEventLine();
+        AddWarEscalationEventLine();
         AddPiratesEventLine();
     }
 
@@ -364,7 +364,7 @@ public class Chapter1 : CampaingController {
         eventChain.AddCondition(eventManager.CreateZoomCondition(30000));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "You can barely see the stations, planet, the many asteroid fields and gas clouds. " +
-            "Our minning team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
+            "Our mining team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Zoom in and right click on the planet to view the political state. This is our home.", 6 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(planet, true));
@@ -464,7 +464,7 @@ public class Chapter1 : CampaingController {
             }, true), 2 * GetTimeScale());
         movementTutorial.AddCommEvent(playerComm, playerFaction,
             "Lets learn about ship movement and investigate the nearby asteroid fields. " +
-            "Open the minning station panel and click on the civilian ship button in the hangar, then close the menu.",
+            "Open the mining station panel and click on the civilian ship button in the hangar, then close the menu.",
             10 * GetTimeScale());
         movementTutorial.AddCondition(eventManager.CreateSelectUnitCondition(shuttle, true));
         movementTutorial.AddCondition(eventManager.CreateOpenObjectPanelCondition(null, true));
@@ -590,7 +590,7 @@ public class Chapter1 : CampaingController {
             "I'm sure the gas would be very helpfull for the people back on " + planet.objectName + ".", 10 * GetTimeScale());
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Select our gas colector ship in the shipyard, close the station menu and press E to select the gas collection command. " +
-            "Then click on a gas cloud near our minning station to issue a command.", 25 * GetTimeScale());
+            "Then click on a gas cloud near our mining station to issue a command.", 25 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateLateCondition(() =>
             eventManager.CreateCommandShipToCollectGas(gasCollector, null, null, true)));
         researchChain.AddCommEvent(playerComm, playerFaction,
@@ -932,7 +932,7 @@ public class Chapter1 : CampaingController {
             resourceCosts[CargoBay.CargoTypes.Metal] *= 1.25;
         });
         pirateChain.AddCommEvent(planetCommManager, playerFaction,
-            $"Pirates have siezed the {otherMiningFaction.name}'s minning station!\n" +
+            $"Pirates have siezed the {otherMiningFaction.name}'s mining station!\n" +
             "We will have a harder time securing metal for the planet at this rate!", 3 * GetTimeScale());
         pirateChain.Build(eventManager)();
     }
