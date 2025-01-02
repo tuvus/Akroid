@@ -111,18 +111,16 @@ public class UnitSpriteManager : MonoBehaviour {
     }
 
     private void OnOnBattleObjectRemoved(BattleObject battleObject) {
-        BattleObjectUI battleObjectUI = battleObjects[battleObject];
         // If the object is destroyed before the battleObjectUI has been set up lets skip destroying it
         // Many simulation frames might have occured since the object was registered to be created
-        if (battleObjectUI != null) {
-            battleObjectUI.OnBattleObjectRemoved();
-            Destroy(battleObjectUI.gameObject);
-        } else if (objectsToCreate.Contains(battleObject)) {
+        if (!battleObjects.ContainsKey(battleObject)) {
+            if (!objectsToCreate.Contains(battleObject)) throw new Exception("Trying to remove an object UI that doesn't exist!");
             objectsToCreate.Remove(battleObject);
             return;
-        } else {
-            throw new Exception("Trying to remove an object UI that doesn't exist!");
         }
+        BattleObjectUI battleObjectUI = battleObjects[battleObject];
+        battleObjectUI.OnBattleObjectRemoved();
+        Destroy(battleObjectUI.gameObject);
 
         battleObjects.Remove(battleObject);
         objects.Remove(battleObject);

@@ -300,11 +300,12 @@ public class LocalPlayerInput : MonoBehaviour {
             float size = targetObject.battleObject.GetSize();
             if (targetObject is UnitUI unitUI) size *= Mathf.Max(1, unitUI.unitSelection.GetSize());
 
-            if (tempDistance <  size && tempDistance < distance) {
+            if (tempDistance < size && tempDistance < distance) {
                 objectUI = targetObject;
                 distance = tempDistance;
             }
         }
+
         Profiler.EndSample();
         return objectUI;
     }
@@ -331,6 +332,15 @@ public class LocalPlayerInput : MonoBehaviour {
 
     public ActionType GetActionType() {
         return actionType;
+    }
+
+    public bool IsObjectInViewingField(ObjectUI objectUI) {
+        Vector2 position = mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition());
+        // We can find the object screen size of the object by taking a point [size] distance away and getting its screen position
+        float objectScreenSize = position.x - mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0)).x;
+        // Check if the position is within all four bounds of the screen
+        return position.y >= -objectScreenSize && position.y - objectScreenSize <= Screen.height &&
+            position.x >= -objectScreenSize && position.x - objectScreenSize <= Screen.width;
     }
 
     public Vector2 GetMousePosition() {

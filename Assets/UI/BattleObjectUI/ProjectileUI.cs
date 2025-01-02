@@ -12,11 +12,12 @@ public class ProjectileUI : BattleObjectUI {
         projectile = (Projectile)battleObject;
         spriteRenderer.enabled = true;
         highlight.enabled = uIManager.GetEffectsShown();
+        uIManager.unitSpriteManager.objectsToUpdate.Add(this);
     }
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (projectile.hit && !hit) {
+        if (projectile.hit && !hit && uIManager.localPlayer.GetInputManager().IsObjectInViewingField(this)) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;

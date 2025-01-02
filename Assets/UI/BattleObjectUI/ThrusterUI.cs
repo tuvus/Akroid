@@ -17,9 +17,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (shipUI.ship.thrusting && uIManager.GetEffectsShown()) {
-            if (uIManager.GetParticlesShown() && !particle.isPlaying) BeginThrust();
-            else if (particle.isPlaying) EndThrust();
+        if (shipUI.ship.thrusting && uIManager.GetEffectsShown() && uIManager.localPlayer.GetInputManager().IsObjectInViewingField(shipUI)) {
+            BeginThrust();
             thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
         } else if (particle.isPlaying) {
             EndThrust();
@@ -32,6 +31,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public void BeginThrust() {
         if (uIManager.GetParticlesShown() && !particle.isPlaying) particle.Play();
+        else if (!uIManager.GetParticlesShown() && particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
     }
 
     public void EndThrust() {

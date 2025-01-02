@@ -15,6 +15,7 @@ public class MissileUI : BattleObjectUI {
         spriteRenderer.enabled = true;
         if (uIManager.GetParticlesShown()) thrust.Play();
         destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager, spriteRenderer);
+        uIManager.unitSpriteManager.objectsToUpdate.Add(this);
     }
 
     public override void UpdateObject() {
