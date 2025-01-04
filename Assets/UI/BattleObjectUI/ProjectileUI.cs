@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ProjectileUI : BattleObjectUI {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
+    private LocalPlayerInput localPlayerInput;
 
     private Projectile projectile;
     private bool hit;
@@ -13,11 +15,12 @@ public class ProjectileUI : BattleObjectUI {
         spriteRenderer.enabled = true;
         highlight.enabled = uIManager.GetEffectsShown();
         uIManager.unitSpriteManager.objectsToUpdate.Add(this);
+        localPlayerInput = uIManager.localPlayer.GetInputManager();
     }
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (projectile.hit && !hit && uIManager.localPlayer.GetInputManager().IsObjectInViewingField(this)) {
+        if (projectile.hit && !hit && localPlayerInput.IsObjectInViewingField(this) && localPlayerInput.ShouldShowCloseUpGraphics()) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;

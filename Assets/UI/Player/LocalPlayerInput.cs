@@ -334,6 +334,7 @@ public class LocalPlayerInput : MonoBehaviour {
         return actionType;
     }
 
+    /// <returns> True if the object is visible by the camera, false otherwise. </returns>
     public bool IsObjectInViewingField(ObjectUI objectUI) {
         Vector2 position = mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition());
         // We can find the object screen size of the object by taking a point [size] distance away and getting its screen position
@@ -341,6 +342,11 @@ public class LocalPlayerInput : MonoBehaviour {
         // Check if the position is within all four bounds of the screen
         return position.y >= -objectScreenSize && position.y - objectScreenSize <= Screen.height &&
             position.x >= -objectScreenSize && position.x - objectScreenSize <= Screen.width;
+    }
+
+    /// <returns> Determines if close up detailed graphics should be shown depending on how zoomed out the camera is. </returns>
+    public bool ShouldShowCloseUpGraphics() {
+        return mainCamera.orthographicSize < 5000;
     }
 
     public Vector2 GetMousePosition() {

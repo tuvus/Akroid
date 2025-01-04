@@ -5,6 +5,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
     private ShipUI shipUI;
     private ParticleSystem particle;
     private LensFlare thrusterFlare;
+    private LocalPlayerInput localPlayerInput;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);
@@ -13,12 +14,16 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         Instantiate(thruster.GetPrefab(), transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
+        thrusterFlare.enabled = false;
+        localPlayerInput = uIManager.localPlayer.GetInputManager();
     }
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (shipUI.ship.thrusting && uIManager.GetEffectsShown() && uIManager.localPlayer.GetInputManager().IsObjectInViewingField(shipUI)) {
+        if (IsVisible() && shipUI.ship.thrusting && uIManager.GetEffectsShown() && localPlayerInput.IsObjectInViewingField(shipUI) &&
+            localPlayerInput.ShouldShowCloseUpGraphics()) {
             BeginThrust();
+            thrusterFlare.enabled = true;
             thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
         } else if (particle.isPlaying) {
             EndThrust();
@@ -35,7 +40,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
     }
 
     public void EndThrust() {
-        thrusterFlare.brightness = 0;
+        thrusterFlare.enabled = false;
         if (particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
     }
 

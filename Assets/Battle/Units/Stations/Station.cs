@@ -46,9 +46,6 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public StationAI stationAI { get; protected set; }
-    public int repairAmount;
-    public float repairSpeed;
-    public float rotationSpeed;
     public float repairTime { get; protected set; }
     protected bool built;
 
@@ -80,9 +77,9 @@ public class Station : Unit, IPositionConfirmer {
             faction.GetFactionAI().OnStationBuilt(this);
         }
 
-        rotationSpeed *= Random.Range(.5f, 1.5f);
+        stationScriptableObject.rotationSpeed *= Random.Range(.5f, 1.5f);
         if (Random.Range(-1, 1) < 0) {
-            rotationSpeed *= -1;
+            stationScriptableObject.rotationSpeed *= -1;
         }
 
         visible = true;
@@ -137,11 +134,11 @@ public class Station : Unit, IPositionConfirmer {
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
             Profiler.BeginSample("UpdateRotation");
-            SetRotation(rotation + rotationSpeed * deltaTime);
+            SetRotation(rotation + stationScriptableObject.rotationSpeed * deltaTime);
             Profiler.EndSample();
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
-                repairTime += repairSpeed;
+                repairTime += stationScriptableObject.repairSpeed;
             }
         }
     }
@@ -242,7 +239,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public int RepairUnit(Unit unit, int amount) {
         int leftOver = unit.Repair(amount);
-        repairTime += repairSpeed * (amount - leftOver) / repairAmount;
+        repairTime += stationScriptableObject.repairSpeed * (amount - leftOver) / stationScriptableObject.repairAmount;
         return leftOver;
     }
 
@@ -279,7 +276,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public int GetRepairAmount() {
-        return (int)(repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return (int)(stationScriptableObject.repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public StationType GetStationType() {
