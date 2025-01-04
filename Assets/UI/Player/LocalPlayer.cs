@@ -76,15 +76,9 @@ public class LocalPlayer : MonoBehaviour {
 
 
     public RelationType GetRelationToUnit(Unit unit) {
-        if (GetFaction() == null)
-            return RelationType.Neutral;
-        if (player.ownedUnits.Contains(unit))
-            return RelationType.Owned;
-        if (GetFaction() == unit.faction)
-            return RelationType.Friendly;
-        if (GetFaction().IsAtWarWithFaction(unit.faction))
-            return RelationType.Enemy;
-        return RelationType.Neutral;
+        if (player.ownedUnits.Contains(unit)) return RelationType.Owned;
+        return GetRelationToFaction(unit.faction);
+
     }
 
     public RelationType GetRelationToFaction(Faction faction) {

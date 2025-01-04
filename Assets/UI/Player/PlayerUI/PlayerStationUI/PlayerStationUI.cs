@@ -43,13 +43,13 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     }
 
     protected override bool ShouldShowLeftPanel() {
-        bool isEnemy = LocalPlayer.Instance.GetRelationToUnit(displayedObject.station) == LocalPlayer.RelationType.Enemy;
+        bool isEnemy = localPlayer.GetRelationToUnit(displayedObject.station) == LocalPlayer.RelationType.Enemy;
         return !isEnemy && (displayedObject.station.GetStationType() == Station.StationType.Shipyard ||
             displayedObject.station.GetStationType() == Station.StationType.FleetCommand);
     }
 
     protected override bool ShouldShowRightPanel() {
-        bool isEnemy = LocalPlayer.Instance.GetRelationToUnit(displayedObject.station) == LocalPlayer.RelationType.Enemy;
+        bool isEnemy = localPlayer.GetRelationToUnit(displayedObject.station) == LocalPlayer.RelationType.Enemy;
         return !isEnemy && displayedObject.station.moduleSystem.Get<Hangar>().Any();
     }
 
@@ -69,7 +69,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         }
 
         UpdateCargoBayUI(displayedObject.station.moduleSystem.Get<CargoBay>().FirstOrDefault(),
-            LocalPlayer.Instance.GetRelationToUnit(displayedObject.station) != LocalPlayer.RelationType.Enemy);
+            localPlayer.GetRelationToUnit(displayedObject.station) != LocalPlayer.RelationType.Enemy);
     }
 
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
@@ -119,7 +119,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         if (shipYardOrUpgrade) {
             UpdateShipBlueprintUI();
         } else {
-            BattleObjectUI displayedObject = LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject();
+            BattleObjectUI displayedObject = localPlayer.GetLocalPlayerInput().GetDisplayedBattleObject();
             if (displayedObject == base.displayedObject ||
                 !(displayedObject == upgradeDisplayUnit && upgradeDisplayUnit != null
                     && (!upgradeDisplayUnit.battleObject.IsShip() || ((Ship)upgradeDisplayUnit.battleObject).dockedStation ==
@@ -163,10 +163,10 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             cargoBayButton.gameObject.SetActive(true);
             cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
             long cost;
-            if (LocalPlayer.Instance.GetFaction() != null) {
+            if (localPlayer.GetFaction() != null) {
                 cost = ((Shipyard)displayedObject.battleObject).GetConstructionBay()
-                    .GetCreditCostOfShip(LocalPlayer.Instance.player.faction, blueprint.shipScriptableObject);
-                button.interactable = LocalPlayer.Instance.GetFaction().credits >= cost;
+                    .GetCreditCostOfShip(localPlayer.player.faction, blueprint.shipScriptableObject);
+                button.interactable = localPlayer.GetFaction().credits >= cost;
             } else {
                 cost = blueprint.shipScriptableObject.cost;
                 button.interactable = false;
@@ -182,17 +182,17 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
     public void ShipBlueprintButtonPressed(int index) {
         if (((Shipyard)displayedObject.battleObject).GetConstructionBay()
-            .AddConstructionToQueue(new Ship.ShipConstructionBlueprint(LocalPlayer.Instance.GetFaction(), shipBlueprints[index]))) {
+            .AddConstructionToQueue(new Ship.ShipConstructionBlueprint(localPlayer.GetFaction(), shipBlueprints[index]))) {
             UpdateConstructionUI(((Shipyard)displayedObject.battleObject).GetConstructionBay());
             UpdateShipBlueprintUI();
         }
     }
 
     void UpdateUpgradeBlueprintUI() {
-        if (LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject() != null &&
-            LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject().battleObject.IsShip() &&
-            ((Ship)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject().battleObject).dockedStation == displayedObject.station)
-            upgradeDisplayUnit = (ShipUI)LocalPlayer.Instance.GetLocalPlayerInput().GetDisplayedBattleObject();
+        if (localPlayer.GetLocalPlayerInput().GetDisplayedBattleObject() != null &&
+            localPlayer.GetLocalPlayerInput().GetDisplayedBattleObject().battleObject.IsShip() &&
+            ((Ship)localPlayer.GetLocalPlayerInput().GetDisplayedBattleObject().battleObject).dockedStation == displayedObject.station)
+            upgradeDisplayUnit = (ShipUI)localPlayer.GetLocalPlayerInput().GetDisplayedBattleObject();
         else
             upgradeDisplayUnit = null;
         if (upgradeDisplayUnit == null)
@@ -258,7 +258,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
                 (100 - (blueprint.GetTotalResourcesLeftToUse() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
             constructionBayButton.GetComponent<Image>().color =
-                LocalPlayer.Instance.GetColorOfRelationType(LocalPlayer.Instance.GetRelationToFaction(blueprint.GetFaction()));
+                localPlayer.GetColorOfRelationType(localPlayer.GetRelationToFaction(blueprint.GetFaction()));
         }
 
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
@@ -272,8 +272,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
     public void ConstructionButtonPressed(int index) {
         ConstructionBay constructionBay = ((Shipyard)displayedObject.station).GetConstructionBay();
-        if (LocalPlayer.Instance.GetFaction() != null &&
-            constructionBay.buildQueue[index].GetFaction() == LocalPlayer.Instance.GetFaction()) {
+        if (localPlayer.GetFaction() != null &&
+            constructionBay.buildQueue[index].GetFaction() == localPlayer.GetFaction()) {
             constructionBay.RemoveBlueprintFromQueue(index);
             UpdateConstructionUI(constructionBay);
         }
@@ -282,10 +282,6 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     protected override void RefreshRightPanel() {
         Hangar hangar = displayedObject.station.moduleSystem.Get<Hangar>().First();
         shipsInHangar.Clear();
-        LocalPlayerSelectionInput localPlayerSelection = null;
-        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
-            localPlayerSelection = (LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput();
-        }
 
         for (int i = 0; i < hangar.ships.Count; i++) {
             shipsInHangar.Add(hangar.ships[i]);
@@ -312,7 +308,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
                 ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick
                 .AddListener(new UnityEngine.Events.UnityAction(() => HangarInfoButtonPressed(f)));
-            // hangarBayButton.GetComponent<Image>().color = ship.GetUnitSelection().GetColor();
+            hangarBayButton.GetComponent<Image>().color = localPlayer.GetColorOfRelationType(localPlayer.GetRelationToUnit(ship));
         }
 
         for (int i = shipsInHangar.Count; i < hangarList.childCount; i++) {
@@ -321,8 +317,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     }
 
     public void HangarButtonPressed(int index) {
-        if (LocalPlayer.Instance.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
-            LocalPlayerSelectionInput localPlayerSelection = (LocalPlayerSelectionInput)LocalPlayer.Instance.GetLocalPlayerInput();
+        if (localPlayer.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
+            LocalPlayerSelectionInput localPlayerSelection = (LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput();
 
             if (localPlayerSelection.AdditiveButtonPressed) {
                 localPlayerSelection.ToggleSelectedUnit(unitSpriteManager.units[shipsInHangar[index]]);
@@ -332,13 +328,13 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
             RefreshRightPanel();
         }
-        //if (LocalPlayer.Instance.player.ownedUnits.Contains(displayedStation) || shipsInHangar[index].faction == LocalPlayer.Instance.GetFaction())
+        //if (localPlayer.player.ownedUnits.Contains(displayedStation) || shipsInHangar[index].faction == localPlayer.GetFaction())
         //    shipsInHangar[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
     }
 
     public void HangarInfoButtonPressed(int index) {
-        LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
-        LocalPlayer.Instance.GetPlayerUI().SetDisplayedObject(unitSpriteManager.units[shipsInHangar[index]]);
+        localPlayer.GetPlayerUI().CloseAllMenus();
+        localPlayer.GetPlayerUI().SetDisplayedObject(unitSpriteManager.units[shipsInHangar[index]]);
     }
 
     public void OpenFactionMenu() {
