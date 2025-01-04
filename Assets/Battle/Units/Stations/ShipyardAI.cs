@@ -1,8 +1,13 @@
+using System.Linq;
+
 public class ShipyardAI : StationAI {
     public bool autoCollectCargo;
 
     public ShipyardAI(Station station) : base(station) {
         autoCollectCargo = true;
+        CargoBay cargoBay = station.moduleSystem.Get<CargoBay>().First();
+        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 4);
+        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Gas, 4);
     }
 
     public override void UpdateAI(float deltaTime) {
@@ -10,7 +15,7 @@ public class ShipyardAI : StationAI {
     }
 
     protected override void ManageStationRepair() {
-        int repairAmmount = GetShipyard().GetRepairAmount();
+        int repairAmmount = (int)(GetShipyard().GetRepairAmount() * station.faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
         if (repairAmmount > 0 && station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
         foreach (var ship in station.GetAllDockedShips()) {

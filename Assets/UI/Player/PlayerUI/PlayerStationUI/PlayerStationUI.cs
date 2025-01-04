@@ -75,22 +75,36 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     void UpdateCargoBayUI(CargoBay cargoBay, bool isFriendlyFaction) {
         if (isFriendlyFaction && cargoBay != null) {
             cargoHeader.transform.parent.parent.gameObject.SetActive(true);
-            cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetUsedCargoBays() + "/" + cargoBay.GetMaxCargoBays();
+            cargoBaysStatus.text = "Cargo bays in use " + cargoBay.GetCargoBaysUsed() + "/" + cargoBay.GetMaxCargoBays();
             cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
-            for (int i = 0; i < cargoBay.cargoBays.Count; i++) {
-                if (cargoBayList.childCount <= i) {
-                    Instantiate(cargoBayButtonPrefab, cargoBayList);
-                }
 
-                Transform cargoBayButton = cargoBayList.GetChild(i);
-                cargoBayButton.gameObject.SetActive(true);
-                cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = cargoBay.cargoBayTypes[i].ToString();
-                cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = NumFormatter.ConvertNumber(cargoBay.cargoBays[i]);
-                cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text =
-                    ((cargoBay.cargoBays[i] * 100) / cargoBay.GetCargoBayCapacity()).ToString() + "%";
+            int cargoBayIndex = 0;
+            foreach (var cargoBayType in cargoBay.cargoBays) {
+                int numberOfCargoBaysUsed = cargoBay.GetCargoBaysUsedByType(cargoBayType.Key);
+                for (int i = 0; i < numberOfCargoBaysUsed; i++) {
+                    if (cargoBayList.childCount <= cargoBayIndex + i) {
+                        Instantiate(cargoBayButtonPrefab, cargoBayList);
+                    }
+
+                    // If we are not the last cargo bay then we are guaranteed to be full.
+                    long amount = cargoBay.GetCargoBayCapacity();
+                    int percent = 100;
+                    // If we are the last cargo bay then we need to calculate how full we are.
+                    if (i == numberOfCargoBaysUsed - 1 && cargoBayType.Value / cargoBay.GetCargoBayCapacity() < numberOfCargoBaysUsed) {
+                        amount = cargoBayType.Value % cargoBay.GetCargoBayCapacity();
+                        percent = (int)(amount * 100 / cargoBay.GetCargoBayCapacity());
+                    }
+
+                    Transform cargoBayButton = cargoBayList.GetChild(cargoBayIndex + i);
+                    cargoBayButton.gameObject.SetActive(true);
+                    cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = cargoBayType.Key.ToString();
+                    cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = amount.ToString();
+                    cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text = percent.ToString() + "%";
+                }
+                cargoBayIndex+=numberOfCargoBaysUsed;
             }
 
-            for (int i = cargoBay.cargoBays.Count; i < cargoBayList.childCount; i++) {
+            for (int i = cargoBayIndex; i < cargoBayList.childCount; i++) {
                 cargoBayList.GetChild(i).gameObject.SetActive(false);
             }
 

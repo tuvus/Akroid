@@ -11,7 +11,7 @@ public class StartMenuTests {
     }
 
     [UnityTest]
-    [Explicit, Category("integration")]
+    [Explicit, Category("Integration Tests")]
     public IEnumerator BattleSimulationLoads() {
         yield return new WaitForSeconds(0.1f);
         Assert.NotNull(GameObject.Find("Akroid"));

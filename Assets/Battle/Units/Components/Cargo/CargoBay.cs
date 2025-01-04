@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 
+/// <summary>
+/// Handles storing resources in multiple cargo bays.
+/// Each cargo bay may only store one resource up to its cargoBayCapacity
+/// Does not hold a list of cargo bays but instead calculates how many cargo bays are being used based on how much cargo of a type is being stored.
+/// This allows us to easily reserve cargo bays based on the type of resource.
+/// </summary>
 public class CargoBay : ModuleComponent {
     public enum CargoTypes {
         All = -1,
@@ -13,119 +21,113 @@ public class CargoBay : ModuleComponent {
 
     CargoBayScriptableObject cargoBayScriptableObject;
 
-    public List<CargoTypes> cargoBayTypes = new List<CargoTypes>();
-    public List<long> cargoBays = new List<long>();
+    public Dictionary<CargoTypes, long> cargoBays { get; private set; } = new();
+    private int cargoBaysInUse;
 
-    public CargoBay(BattleManager battleManager, IModule module, Unit unit,
-        ComponentScriptableObject componentScriptableObject) :
+    /// <summary>
+    /// How many cargo bays are reserved for each type of cargo.
+    /// Does not change when the amount of cargo bays used by the type changes.
+    /// The All type should not be put in here.
+    /// </summary>
+    private Dictionary<CargoTypes, int> reservedBaysType = new();
+
+    /// <summary>
+    /// The number of empty cargo bays that are reserved.
+    /// The sum of every entry in reservedBaysType.
+    /// </summary>
+    private int reservedCargoBays;
+
+    public CargoBay(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
+        foreach (var cargoType in Enum.GetValues(typeof(CargoTypes)).Cast<CargoTypes>()) {
+            if (cargoType != CargoTypes.All) {
+                cargoBays.Add(cargoType, 0);
+                reservedBaysType.Add(cargoType, 0);
+            }
+        }
     }
 
-    /// <returns> Returns Cargo that was not loaded. </returns>
+    /// <returns> Returns the amount of cargo that could not be loaded. </returns>
     public long LoadCargo(long cargoToLoad, CargoTypes cargoType) {
-        //Puts Cargo in existing cargo bays
-        for (int i = 0; i < cargoBays.Count; i++) {
-            cargoToLoad = AddCargoToBay(cargoToLoad, cargoType, i);
-            if (cargoToLoad <= 0)
-                return 0;
+        // Puts Cargo into the existing half full cargo bay
+        long openSpaceInUsedBay = cargoBayScriptableObject.cargoBaySize - cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
+        if (openSpaceInUsedBay != cargoBayScriptableObject.cargoBaySize) {
+            cargoBays[cargoType] += math.min(cargoToLoad, openSpaceInUsedBay);
+            cargoToLoad -= math.min(cargoToLoad, openSpaceInUsedBay);
         }
 
-        //Puts Cargo in new cargo bays
-        if (cargoToLoad > 0) {
-            while (GetOpenCargoBays() > 0 && cargoToLoad > 0) {
-                cargoToLoad = AddNewCargoBay(cargoToLoad, cargoType);
-            }
-        }
+        if (cargoToLoad <= 0) return cargoToLoad;
 
-        return cargoToLoad;
+        // Puts Cargo in new cargo bays
+        int cargoBaysToLoad = math.min(GetOpenCargoBays(cargoType),
+            // The minimum number of open cargo bays needed to fill all of our cargo (using the ceiling function)
+            (int)((cargoToLoad + cargoBayScriptableObject.cargoBaySize - 1) / cargoBayScriptableObject.cargoBaySize));
+        long actualCargoToLoad = math.min(cargoBaysToLoad * cargoBayScriptableObject.cargoBaySize, cargoToLoad);
+        cargoBays[cargoType] += actualCargoToLoad;
+        cargoBaysInUse += cargoBaysToLoad;
+
+        // Calculate if we loaded cargo into any reserved cargo bays
+        int previousCargoBaysInUse = GetCargoBaysUsedByType(cargoType) - cargoBaysToLoad;
+        // If we hadn't filled all of the reserved cargo bays then account for the new reserved cargo bays in use
+        if (previousCargoBaysInUse < reservedBaysType[cargoType])
+            reservedCargoBays -= math.min(cargoBaysToLoad, reservedBaysType[cargoType] - previousCargoBaysInUse);
+        return cargoToLoad - actualCargoToLoad;
     }
 
-    /// <returns> The extra unadded cargo </returns>
-    long AddCargoToBay(long cargoToAdd, CargoTypes cargoType, int cargoBayNumber) {
-        if (cargoBayTypes[cargoBayNumber] != cargoType)
-            return cargoToAdd;
-        if (cargoBays[cargoBayNumber] + cargoToAdd <= cargoBayScriptableObject.cargoBaySize) {
-            cargoBays[cargoBayNumber] += cargoToAdd;
-            return 0;
-        }
 
-        long returnValue = cargoToAdd + cargoBays[cargoBayNumber] - cargoBayScriptableObject.cargoBaySize;
-        cargoBays[cargoBayNumber] = cargoBayScriptableObject.cargoBaySize;
-        return returnValue;
-    }
-
-    /// <returns> The extra unadded cargo </returns>
-    long AddNewCargoBay(long cargoAmount, CargoTypes cargoType) {
-        if (cargoBays.Count < cargoBayScriptableObject.maxCargoBays) {
-            if (cargoAmount <= cargoBayScriptableObject.cargoBaySize) {
-                cargoBays.Add(cargoAmount);
-                cargoBayTypes.Add(cargoType);
-                return 0;
-            } else {
-                cargoBays.Add(cargoBayScriptableObject.cargoBaySize);
-                cargoBayTypes.Add(cargoType);
-                return cargoAmount - cargoBayScriptableObject.cargoBaySize;
-            }
-        }
-
-        return cargoAmount;
-    }
-
-    int GetOpenCargoBays() {
-        return cargoBayScriptableObject.maxCargoBays - cargoBays.Count;
-    }
-
-    /// <summary>
-    /// Returns Unused Cargo
-    /// </summary>
+    /// <summary> Returns the amount of cargo that could not be used. </summary>
     public long UseCargo(long cargoAmount, CargoTypes cargoType) {
-        long cargoToUse = cargoAmount;
-        for (int i = 0; i < cargoBays.Count; i++) {
-            cargoToUse = UseCargoFromBay(cargoAmount, cargoType, i);
-            if (cargoToUse <= 0)
-                return 0;
-        }
+        if (cargoType == CargoTypes.All) {
+            foreach (var allCargoType in allCargoTypes) {
+                cargoAmount = UseCargo(cargoAmount, allCargoType);
+                if (cargoAmount <= 0) return cargoAmount;
+            }
 
-        return cargoToUse;
-    }
-
-    /// <summary>
-    /// Returns Unused Cargo
-    /// </summary>
-    long UseCargoFromBay(long cargoAmount, CargoTypes cargoType, int cargoBayNumber) {
-        if (cargoType != cargoBayTypes[cargoBayNumber])
             return cargoAmount;
-        if (cargoBays[cargoBayNumber] > cargoAmount) {
-            cargoBays[cargoBayNumber] -= cargoAmount;
-            return 0;
-        } else {
-            long cargo = cargoAmount -= cargoBays[cargoBayNumber];
-            cargoBays.RemoveAt(cargoBayNumber);
-            cargoBayTypes.RemoveAt(cargoBayNumber);
-            return cargo;
         }
+
+        long cargoToUse = math.min(cargoAmount, cargoBays[cargoType]);
+
+        int previousCargoBaysInUse = GetCargoBaysUsedByType(cargoType);
+        cargoBays[cargoType] -= cargoToUse;
+        int newCargoBaysInUse = GetCargoBaysUsedByType(cargoType);
+        cargoBaysInUse -= previousCargoBaysInUse - newCargoBaysInUse;
+
+        // Check if we have freed any reserved cargo bays that should remain reserved
+        if (newCargoBaysInUse < reservedBaysType[cargoType])
+            reservedCargoBays += math.min(reservedBaysType[cargoType] - newCargoBaysInUse, previousCargoBaysInUse - newCargoBaysInUse);
+
+        return cargoAmount - cargoToUse;
     }
 
     public void LoadCargoFromBay(CargoBay cargoBay, CargoTypes cargoType, long maxLoad = long.MaxValue) {
-        long openSpace = GetOpenCargoCapacityOfType(cargoType);
-        if (openSpace <= 0)
+        if (cargoType == CargoTypes.All) {
+            foreach (var allCargoType in allCargoTypes) {
+                long cargoToLoadOfType = math.min(maxLoad, GetOpenCargoCapacityOfType(allCargoType));
+                long cargoLoaded = cargoToLoadOfType - cargoBay.UseCargo(cargoToLoadOfType, allCargoType);
+                LoadCargo(cargoLoaded, allCargoType);
+                maxLoad -= cargoLoaded;
+            }
+
             return;
-        long targetAvailableCargo = cargoBay.GetAllCargo(cargoType);
-        long cargoToTransfer = Unity.Mathematics.math.min(targetAvailableCargo, Unity.Mathematics.math.min(openSpace, maxLoad));
-        cargoBay.UseCargo(cargoToTransfer, cargoType);
-        LoadCargo(cargoToTransfer, cargoType);
+        }
+
+        long cargoToLoad = math.min(maxLoad, GetOpenCargoCapacityOfType(cargoType));
+        LoadCargo(cargoToLoad - cargoBay.UseCargo(cargoToLoad, cargoType), cargoType);
+    }
+
+    /// <returns> The amount of empty cargo bays that can be used for this cargo type. </returns>
+    private int GetOpenCargoBays(CargoTypes cargoType) {
+        if (cargoType == CargoTypes.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
+        return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse - reservedCargoBays +
+            math.max(0, reservedBaysType[cargoType] - GetCargoBaysUsedByType(cargoType));
     }
 
     public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
-        long totalCargoCapacity = 0;
-        for (int i = 0; i < cargoBays.Count; i++) {
-            if (cargoBayTypes[i] == cargoType || cargoType == CargoTypes.All) {
-                totalCargoCapacity += cargoBayScriptableObject.cargoBaySize - cargoBays[i];
-            }
-        }
-
-        return totalCargoCapacity + (GetOpenCargoBays() * cargoBayScriptableObject.cargoBaySize);
+        long openSpaceFromUsedCargoBays = 0;
+        if (cargoType != CargoTypes.All) openSpaceFromUsedCargoBays = cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
+        return openSpaceFromUsedCargoBays + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
     }
 
     public bool IsCargoFullOfType(CargoTypes cargoTypes) {
@@ -137,22 +139,17 @@ public class CargoBay : ModuleComponent {
     }
 
     public long GetAllCargo(CargoTypes cargoType) {
-        if (cargoType == CargoTypes.All) {
-            return allCargoTypes.Sum((t) => GetAllCargo(t));
-        }
-
-        long totalCargo = 0;
-        for (int i = 0; i < cargoBays.Count; i++) {
-            if (cargoBayTypes[i] == cargoType) {
-                totalCargo += cargoBays[i];
-            }
-        }
-
-        return totalCargo;
+        if (cargoType == CargoTypes.All) return allCargoTypes.Sum((t) => GetAllCargo(t));
+        return cargoBays[cargoType];
     }
 
-    public int GetUsedCargoBays() {
-        return cargoBays.Count;
+    public int GetCargoBaysUsed() {
+        return cargoBaysInUse;
+    }
+
+    public int GetCargoBaysUsedByType(CargoTypes cargoType) {
+        if (cargoType == CargoTypes.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
+        return (int)((cargoBays[cargoType] + cargoBayScriptableObject.cargoBaySize - 1) / cargoBayScriptableObject.cargoBaySize);
     }
 
     public int GetMaxCargoBays() {
@@ -161,5 +158,15 @@ public class CargoBay : ModuleComponent {
 
     public long GetCargoBayCapacity() {
         return cargoBayScriptableObject.cargoBaySize;
+    }
+
+    public void AddReservedCargoBays(CargoTypes cargoType, int amount) {
+        int oldReservedBays = reservedBaysType[cargoType];
+        reservedBaysType[cargoType] += amount;
+        reservedCargoBays += amount;
+        int cargoBaysUsed = GetCargoBaysUsedByType(cargoType);
+        if (cargoBaysUsed > oldReservedBays) {
+            reservedCargoBays -= math.min(amount, cargoBaysUsed - oldReservedBays);
+        }
     }
 }

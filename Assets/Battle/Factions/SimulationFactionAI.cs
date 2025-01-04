@@ -15,7 +15,7 @@ public class SimulationFactionAI : FactionAI {
     public bool autoCommandFleets;
     public bool autoConstruction;
     public int minCombatShips = 10;
-    public int maxCombatShips = 20;
+    public int maxCombatShips = 25;
 
     public SimulationFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) {
         autoConstruction = true;

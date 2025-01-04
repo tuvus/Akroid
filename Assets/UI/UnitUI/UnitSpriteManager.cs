@@ -63,6 +63,7 @@ public class UnitSpriteManager : MonoBehaviour {
             objects.Add(iObject, battleObjectUI);
             if (iObject.IsUnit()) units.Add((Unit)iObject, (UnitUI)battleObjectUI);
         }
+
         objectsToCreate.Clear();
     }
 
@@ -118,6 +119,7 @@ public class UnitSpriteManager : MonoBehaviour {
             objectsToCreate.Remove(battleObject);
             return;
         }
+
         BattleObjectUI battleObjectUI = battleObjects[battleObject];
         battleObjectUI.OnBattleObjectRemoved();
         Destroy(battleObjectUI.gameObject);

@@ -5,10 +5,10 @@ using NUnit.Framework;
 using UnityEngine;
 
 public class ModuleSystemTests {
+    [Explicit, Category("Unit Tests")]
     [Test]
     public void SetupFromScriptableObject() {
         // Setup
-        var battleMananger = new Mock<BattleManager>();
         var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
         var unit = new Mock<Unit>();
         var component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
@@ -25,7 +25,7 @@ public class ModuleSystemTests {
         }, new List<IModule>() { mockModule });
 
         // What is actually being tested
-        var moduleSystem = new ModuleSystem(battleMananger.Object, unit.Object, unitScriptableObject);
+        var moduleSystem = new ModuleSystem(null, unit.Object, unitScriptableObject);
 
         Assert.AreEqual(1, moduleSystem.systems.Count);
         Assert.AreEqual("TestSystem", moduleSystem.systems.First().name);
@@ -36,10 +36,10 @@ public class ModuleSystemTests {
         Assert.AreEqual(Vector2.zero, moduleSystem.modules.First().GetPosition());
     }
 
+    [Explicit, Category("Unit Tests")]
     [Test]
     public void UpgradeModuleComponent() {
         // Setup
-        var battleMananger = new Mock<BattleManager>();
         var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
         var faction = new MockFaction();
         var unit = new Mock<Unit>();
@@ -64,7 +64,7 @@ public class ModuleSystemTests {
                 component),
         }, new List<IModule>() { mockModule });
 
-        var moduleSystem = new ModuleSystem(battleMananger.Object, unit.Object, unitScriptableObject);
+        var moduleSystem = new ModuleSystem(null, unit.Object, unitScriptableObject);
 
         Assert.AreEqual(component, moduleSystem.modules.First().componentScriptableObject);
         moduleSystem.UpgradeSystem(0, unit.Object);
@@ -74,7 +74,7 @@ public class ModuleSystemTests {
         Assert.True(moduleSystem.modules.Any(m => m.componentScriptableObject == upgradeComponent));
         Assert.True(moduleSystem.moduleToSystem.Keys.Any(m => m.componentScriptableObject == upgradeComponent));
         Assert.True(moduleSystem.moduleToSystem[moduleSystem.modules.First(m => m.componentScriptableObject == upgradeComponent)] ==
-                    moduleSystem.systems.First());
+            moduleSystem.systems.First());
     }
 
     class MockUnitScriptableObject : UnitScriptableObject {
