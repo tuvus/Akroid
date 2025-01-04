@@ -90,7 +90,7 @@ public class LocalPlayerInput : MonoBehaviour {
         playerInput.Enable();
         timeStepIndex = 1;
         doingUnitClickAction = false;
-        canvasScaler = LocalPlayer.Instance.playerUI.GetComponentInParent<CanvasScaler>();
+        canvasScaler = localPlayer.playerUI.GetComponentInParent<CanvasScaler>();
     }
 
     public virtual void ChangeFaction() {
@@ -113,7 +113,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     void UpdateZoom(float scroll) {
-        if (LocalPlayer.Instance.GetPlayerUI().FreezeZoom())
+        if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
         float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * 50));
 
@@ -175,13 +175,17 @@ public class LocalPlayerInput : MonoBehaviour {
             transform.position = followUnit.unit.position;
         } else if (displayedBattleObject != null) {
             SetCameraPosition(displayedBattleObject.battleObject.position);
-        } else if (LocalPlayer.Instance.GetFaction() != null && LocalPlayer.Instance.GetFaction().stations.Count > 0) {
-            SetCameraPosition(LocalPlayer.Instance.GetFaction().stations.First().position);
+        } else if (localPlayer.GetFaction() != null && localPlayer.GetFaction().stations.Count > 0) {
+            SetCameraPosition(localPlayer.GetFaction().stations.First().position);
+        } else if (localPlayer.GetFaction() != null && localPlayer.GetFaction().units.Count > 0) {
+            SetCameraPosition(localPlayer.GetFaction().units.First().position);
+        } else {
+            SetCameraPosition(Vector2.zero);
         }
     }
 
     protected virtual void PrimaryMouseDown() {
-        if (primaryMousePressed == true || LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
+        if (primaryMousePressed == true || localPlayer.GetPlayerUI().IsAMenueShown())
             return;
         primaryMousePressed = true;
         leftClickedBattleObject = mouseOverBattleObject;
@@ -191,7 +195,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void PrimaryMouseUp() {
         primaryMousePressed = false;
-        if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenueShown())
             return;
         if (leftClickedBattleObject != null && !doingUnitClickAction) {
             displayedBattleObject = leftClickedBattleObject;
@@ -207,7 +211,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void SecondaryMouseHeld() {
-        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+        if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() / 1200);
             OnPanEvent(oldPosition, GetCamera().transform.position);
@@ -216,13 +220,13 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
-        if (!LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
+        if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
             if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
-                LocalPlayer.Instance.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
+                localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
                 rightClickedBattleObject = null;
             }
         } else {
-            LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
+            localPlayer.GetPlayerUI().CloseAllMenus();
         }
     }
 
@@ -260,8 +264,8 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     void EscapeButtonPressed() {
-        if (LocalPlayer.Instance.GetPlayerUI().IsAMenueShown()) {
-            LocalPlayer.Instance.GetPlayerUI().CloseAllMenus();
+        if (localPlayer.GetPlayerUI().IsAMenueShown()) {
+            localPlayer.GetPlayerUI().CloseAllMenus();
             return;
         }
 
