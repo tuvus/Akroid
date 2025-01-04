@@ -650,7 +650,7 @@ public class FleetAI {
             } else if (command.commandType == CommandType.AttackFleet) {
                 if (command.targetFleet == null) continue;
                 positions.Add(command.targetFleet.GetPosition());
-            } else if (command.commandType == CommandType.Dock) {
+            } else if (command.commandType == CommandType.Dock || command.commandType == CommandType.BuildStation) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
             } else if (command.commandType == CommandType.AttackMove) {

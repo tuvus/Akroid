@@ -23,8 +23,6 @@ public class MiningStation : Station {
         if (this.built) {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
-
-        GetMiningStationAI().SetupMiningStation();
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {

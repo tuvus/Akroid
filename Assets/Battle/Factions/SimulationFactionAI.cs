@@ -307,7 +307,7 @@ public class SimulationFactionAI : FactionAI {
         int stationBuilderQueueCount =
             fleetCommand.GetConstructionBay().GetNumberOfShipsOfClassFaction(Ship.ShipClass.StationBuilder, faction);
         int gasCollectorQueueCount = fleetCommand.GetConstructionBay().GetNumberOfShipsOfTypeFaction(Ship.ShipType.GasCollector, faction);
-        bool wantTransport = faction.GetTotalWantedTransports() > faction.GetShipCountOfType(Ship.ShipType.Transport) + transportQueueCount;
+        bool wantTransport = faction.GetTotalWantedTransports() > transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
             faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
         int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 5;

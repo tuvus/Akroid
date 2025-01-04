@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -14,6 +15,10 @@ public class MiningStationAI : StationAI {
     public void SetupMiningStation() {
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
+        } else if (station.faction.stations.Any(s => s.GetStationType() == Station.StationType.Shipyard || s.GetStationType() == Station.StationType.FleetCommand)) {
+            SetupWantedTrasports(station.faction.stations
+                .First(s => s.GetStationType() == Station.StationType.Shipyard || s.GetStationType() == Station.StationType.FleetCommand)
+                .GetPosition());
         } else {
             SetupWantedTrasports(station.faction.GetPosition());
         }
@@ -23,7 +28,7 @@ public class MiningStationAI : StationAI {
         float distance = Vector2.Distance(station.GetPosition(), targetPosition) * 2;
         float miningAmount = GetMiningStation().GetMiningAmount() / GetMiningStation().GetMiningSpeed();
         float cargoPerTransport = 4800;
-        float transportSpeed = 20;
+        float transportSpeed = 17.25f;
         wantedTransports = Mathf.CeilToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
     }
 

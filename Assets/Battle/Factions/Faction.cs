@@ -689,6 +689,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
+        int temp = activeMiningStations.Where(station => station.IsSpawned())
+            .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
         return activeMiningStations.Where(station => station.IsSpawned())
             .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
     }

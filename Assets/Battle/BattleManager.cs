@@ -313,6 +313,7 @@ public class BattleManager : MonoBehaviour {
             newStation = new Shipyard(battleObjectData, this, stationScriptableObject, built);
         } else if (stationScriptableObject.stationType == StationType.MiningStation) {
             newStation = new MiningStation(battleObjectData, this, (MiningStationScriptableObject)stationScriptableObject, built);
+            ((MiningStation)newStation).GetMiningStationAI().SetupMiningStation();
         } else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
 
         newStation.SetupPosition(battleObjectData.positionGiver);
@@ -335,6 +336,7 @@ public class BattleManager : MonoBehaviour {
         if (built) {
             units.Add(newStation);
             stations.Add(newStation);
+            newStation.GetMiningStationAI().SetupMiningStation();
         } else {
             stationsInProgress.Add(newStation);
         }
