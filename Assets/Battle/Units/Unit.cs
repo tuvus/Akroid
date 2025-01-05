@@ -17,6 +17,7 @@ public abstract class Unit : BattleObject {
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
+    private bool turretsHibernating;
 
     public Unit() { }
 
@@ -30,6 +31,7 @@ public abstract class Unit : BattleObject {
         minWeaponRange = float.MaxValue;
         maxWeaponRange = float.MinValue;
         scale = unitScriptableObject.baseScale * scale;
+        turretsHibernating = false;
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
@@ -106,9 +108,12 @@ public abstract class Unit : BattleObject {
 
     protected virtual void UpdateWeapons(float deltaTime) {
         Profiler.BeginSample("Weapons");
+        if (!turretsHibernating || (enemyUnitsInRange.Count > 0 && enemyUnitsInRangeDistance.First() <= maxWeaponRange)) {
+            turretsHibernating = moduleSystem.Get<Turret>().All(t => t.UpdateTurret(deltaTime));
+            turretsHibernating = turretsHibernating && moduleSystem.Get<MissileLauncher>()
+                .All(m => m.UpdateMissileLauncher(deltaTime));
+        }
 
-        moduleSystem.Get<Turret>().ForEach(t => t.UpdateTurret(deltaTime));
-        moduleSystem.Get<MissileLauncher>().ForEach(m => m.UpdateMissileLauncher(deltaTime));
         Profiler.EndSample();
     }
 
@@ -361,14 +366,14 @@ public abstract class Unit : BattleObject {
 
     public float GetUnitDamagePerSecond() {
         return moduleSystem.Get<Turret>().Sum(t => t.GetDamagePerSecond())
-               + moduleSystem.Get<LaserTurret>().Sum(t => t.GetDamagePerSecond())
-               + moduleSystem.Get<MissileLauncher>().Sum(t => t.GetDamagePerSecond());
+            + moduleSystem.Get<LaserTurret>().Sum(t => t.GetDamagePerSecond())
+            + moduleSystem.Get<MissileLauncher>().Sum(t => t.GetDamagePerSecond());
     }
 
     public int GetWeaponCount() {
         return moduleSystem.Get<Turret>().Count
-               + moduleSystem.Get<LaserTurret>().Count
-               + moduleSystem.Get<MissileLauncher>().Count;
+            + moduleSystem.Get<LaserTurret>().Count
+            + moduleSystem.Get<MissileLauncher>().Count;
     }
 
     public override float GetSpriteSize() {

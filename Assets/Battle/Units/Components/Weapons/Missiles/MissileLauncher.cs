@@ -19,8 +19,6 @@ public class MissileLauncher : ModuleComponent {
     public TargetingBehaviors targeting;
 
     public Unit targetUnit;
-    private bool hibernating;
-
     private static float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
@@ -33,20 +31,15 @@ public class MissileLauncher : ModuleComponent {
         findNewTargetUpdateTime = Random.Range(0, 0.2f);
     }
 
-    public void UpdateMissileLauncher(float deltaTime) {
-        if (hibernating && unit.GetEnemyUnitsInRange().Count == 0) {
-            return;
-        } else if (MissileLauncherHibernationStatus()) {
-            hibernating = true;
-            return;
-        }
+    /// <returns>True if the turret is hibernating, false otherwise </returns>
+    public bool UpdateMissileLauncher(float deltaTime) {
+        if (MissileLauncherHibernationStatus()) return true;
 
-        hibernating = false;
         Profiler.BeginSample("UpdateMissileLauncher");
         reloadController.UpdateReloadController(deltaTime, faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
         if (!reloadController.ReadyToFire()) {
             Profiler.EndSample();
-            return;
+            return false;
         }
 
         if (findNewTargetUpdateTime > 0)
@@ -62,6 +55,7 @@ public class MissileLauncher : ModuleComponent {
         }
 
         Profiler.EndSample();
+        return false;
     }
 
     public bool MissileLauncherHibernationStatus() {

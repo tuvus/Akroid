@@ -19,7 +19,6 @@ public abstract class Turret : ModuleComponent {
     public Vector2 targetVector;
     public Unit targetUnit;
     private bool aimed;
-    private bool hibernating;
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
@@ -36,20 +35,16 @@ public abstract class Turret : ModuleComponent {
         SetSize(SetupSize());
     }
 
-    public virtual void UpdateTurret(float deltaTime) {
-        if (hibernating && unit.GetEnemyUnitsInRange().Count == 0) {
-            return;
-        } else if (TurretHibernationStatus()) {
-            hibernating = true;
-            return;
-        }
+    /// <returns>True if the turret is hibernating, false otherwise </returns>
+    public virtual bool UpdateTurret(float deltaTime) {
+        if (TurretHibernationStatus()) return true;
 
-        hibernating = false;
         Profiler.BeginSample("UpdateTurretAction");
         UpdateTurretReload(deltaTime);
         UpdateTurretAim(deltaTime);
         UpdateTurretWeapon(deltaTime);
         Profiler.EndSample();
+        return false;
     }
 
     protected virtual bool TurretHibernationStatus() {

@@ -3,13 +3,12 @@ using System.Linq;
 using UnityEngine;
 
 public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
-    [field: SerializeField] public BattleManager battleManager { get; private set; }
-    [field: SerializeField] public HashSet<T> battleObjects { get; private set; }
-    [field: SerializeField] public Vector2 position { get; private set; }
-    [field: SerializeField] public Vector2 averagePosition { get; private set; }
-    [field: SerializeField] public float size { get; private set; }
+    public BattleManager battleManager { get; private set; }
+    public HashSet<T> battleObjects { get; private set; }
+    public Vector2 position { get; private set; }
+    public Vector2 averagePosition { get; private set; }
+    public float size { get; private set; }
     public bool deleteGroupWhenEmpty { get; private set; }
-    //public Transform sizeIndicator { get; private set; }
 
     public ObjectGroup() {
         battleObjects = new HashSet<T>(10);
@@ -20,7 +19,6 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
         this.battleManager = battleManager;
         battleObjects = objects;
         this.deleteGroupWhenEmpty = deleteGroupWhenEmpty;
-        //sizeIndicator = Instantiate(BattleManager.GetSizeIndicatorPrefab(), transform).transform;
         if (setupGroupPositionAndSize)
             UpdateObjectGroup(changeSizeIndicatorPosition);
     }
@@ -32,9 +30,6 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
     public void UpdateObjectGroup(bool changeSizeIndicatorPosition = false) {
         CalculateObjectGroupCenters();
         size = CalculateObjectGroupSize();
-        //sizeIndicator.localScale = new Vector3(GetSize() / transform.localScale.x * 2, GetSize() / transform.localScale.y * 2, 1);
-        //if (changeSizeIndicatorPosition)
-        //    sizeIndicator.position = position;
     }
 
 
