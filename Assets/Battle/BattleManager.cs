@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
@@ -473,6 +474,7 @@ public class BattleManager : MonoBehaviour {
         AddBattleObject(projectile);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void RemoveProjectile(Projectile projectile) {
         usedProjectiles.Remove(projectile);
         unusedProjectiles.Add(projectile);
@@ -593,6 +595,7 @@ public class BattleManager : MonoBehaviour {
         foreach (var projectile in usedProjectiles.ToList()) {
             projectile.UpdateProjectile(deltaTime);
         }
+        // UpdateCollectionParallel(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime));
         Profiler.EndSample();
 
         Profiler.BeginSample("MissilesUpdate");

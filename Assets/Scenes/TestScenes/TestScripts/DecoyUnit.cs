@@ -31,11 +31,11 @@ public class DecoyUnit : Unit {
 
     public override void Explode() { }
 
-    public override int TakeDamage(int damage) {
+    public override void TakeDamage(int damage) {
         //print(damage);
         health -= damage;
         unitScriptableObject.maxHealth -= damage;
-        return 0;
+        return;
     }
 
     public override Vector2 GetVelocity() {

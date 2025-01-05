@@ -23,15 +23,8 @@ public class Shield : BattleObject {
             health = shieldGenerator.GetMaxShieldStrength();
     }
 
-    public int TakeDamage(int takeDamage) {
+    public void TakeDamage(int takeDamage) {
         health -= takeDamage;
-        if (health <= 0) {
-            int returnValue = -health;
-            shieldGenerator.DestroyShield();
-            return returnValue;
-        } else {
-            return 0;
-        }
     }
 
     public void ReactivateShield() {

@@ -137,8 +137,8 @@ public class Laser : BattleObject {
         int damage = GetDamage(deltaTime, true);
         if (hitUnit.GetShields() > 0) {
             foreach (var shieldGenerator in hitUnit.moduleSystem.Get<ShieldGenerator>()) {
-                damage = shieldGenerator.shield.TakeDamage(damage);
-                if (damage <= 0) return;
+                shieldGenerator.shield.TakeDamage(damage);
+                return;
             }
         }
         hitUnit.TakeDamage(damage);

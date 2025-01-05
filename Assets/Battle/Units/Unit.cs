@@ -56,6 +56,11 @@ public abstract class Unit : BattleObject {
     #region Update
 
     public virtual void UpdateUnit(float deltaTime) {
+        if (Destroyed()) {
+            Explode();
+            return;
+        }
+
         if (IsTargetable() && HasWeapons())
             UpdateWeapons(deltaTime);
 
@@ -109,8 +114,8 @@ public abstract class Unit : BattleObject {
         if (turretsHibernating && GetEnemyUnitsInRange().Count == 0 &&
             GetEnemyUnitsInRangeDistance().First() > maxWeaponRange + size) return;
         Profiler.BeginSample("Weapons");
-        moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating );
-        moduleSystem.Get<MissileLauncher>().ForEach(m => turretsHibernating =  m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
+        moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating);
+        moduleSystem.Get<MissileLauncher>().ForEach(m => turretsHibernating = m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
         Profiler.EndSample();
     }
 
@@ -124,22 +129,9 @@ public abstract class Unit : BattleObject {
 
     #region UnitControlls
 
-
-    public virtual int TakeDamage(int damage) {
-        if (IsSpawned()) {
-            health -= damage;
-            if (Destroyed()) {
-                int returnValue = -health;
-                health = 0;
-                Explode();
-                return returnValue;
-            }
-
-            return 0;
-        }
-
-        Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
-        return 0;
+    public virtual void TakeDamage(int damage) {
+        if (!IsSpawned()) Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
+        health -= damage;
     }
 
     protected override void Despawn(bool removeImmediately) {

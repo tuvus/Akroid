@@ -14,6 +14,7 @@ public class UnitSpriteManager : MonoBehaviour {
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
     public HashSet<ObjectUI> objectsToUpdate { get; private set; }
     private HashSet<BattleObject> objectsToCreate;
+    private HashSet<BattleObject> objectsToRemove;
 
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
@@ -25,10 +26,11 @@ public class UnitSpriteManager : MonoBehaviour {
         factionUIs = new Dictionary<Faction, FactionUI>();
         objectsToUpdate = new HashSet<ObjectUI>();
         objectsToCreate = new HashSet<BattleObject>();
+        objectsToRemove = new HashSet<BattleObject>();
         battleManager.OnFactionCreated += OnFactionCreated;
         battleManager.OnObjectCreated += OnObjectCreated;
         battleManager.OnBattleObjectCreated += OnBattleObjectCreated;
-        battleManager.OnBattleObjectRemoved += OnOnBattleObjectRemoved;
+        battleManager.OnBattleObjectRemoved += o => objectsToRemove.Add(o);
         battleManager.OnFleetCreated += OnFleetCreated;
         battleManager.OnFleetRemoved += OnFleetRemove;
     }
@@ -37,6 +39,10 @@ public class UnitSpriteManager : MonoBehaviour {
     /// Updates the state of the sprites
     /// </summary>
     public void UpdateSpriteManager() {
+        foreach (var battleObject in objectsToRemove) {
+            OnBattleObjectRemoved(battleObject);
+        }
+        objectsToRemove.Clear();
         CreateNewObjects();
         foreach (var objectUI in objectsToUpdate) {
             objectUI.UpdateObject();
@@ -111,7 +117,7 @@ public class UnitSpriteManager : MonoBehaviour {
         objectsToCreate.Add(battleObject);
     }
 
-    private void OnOnBattleObjectRemoved(BattleObject battleObject) {
+    private void OnBattleObjectRemoved(BattleObject battleObject) {
         // If the object is destroyed before the battleObjectUI has been set up lets skip destroying it
         // Many simulation frames might have occured since the object was registered to be created
         if (!battleObjects.ContainsKey(battleObject)) {
