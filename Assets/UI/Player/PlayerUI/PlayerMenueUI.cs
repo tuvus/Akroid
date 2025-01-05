@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerMenueUI : MonoBehaviour {
     private LocalPlayer localPlayer;
     private PlayerUI playerUI;
+    [SerializeField] private Toggle menueUIMultiThreading;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
     [SerializeField] private Toggle menueUIEffects;
@@ -32,6 +33,12 @@ public class PlayerMenueUI : MonoBehaviour {
             factionNames.Add(faction.name);
         }
 
+        if (!PlayerPrefs.HasKey("Threading")) {
+            PlayerPrefs.SetInt("Threading", 0);
+            PlayerPrefs.Save();
+        }
+
+        menueUIMultiThreading.SetIsOnWithoutNotify(PlayerPrefs.GetInt("Threading") == 1);
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.SetIsOnWithoutNotify(playerUI.showUnitCombatIndicators);
@@ -47,6 +54,11 @@ public class PlayerMenueUI : MonoBehaviour {
             menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(localPlayer.GetFaction()) + 1);
         timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
         menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
+    }
+
+    public void SetMultiThreading() {
+        PlayerPrefs.SetInt("Threading", menueUIMultiThreading.isOn ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     public void SetUnitZoomIndicators() {

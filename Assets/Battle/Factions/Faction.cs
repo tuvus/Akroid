@@ -503,14 +503,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
     }
 
-    public void UpdateFaction(float deltaTime) {
-        Profiler.BeginSample("FindingEnemies");
-        commManager.UpdateCommunications();
-        UpdateNearbyEnemyUnits();
-        Profiler.EndSample();
-        factionAI.UpdateFactionAI(deltaTime);
-    }
-
     public void UpdateNearbyEnemyUnits() {
         closeEnemyGroups.Clear();
         closeEnemyGroupsDistance.Clear();
@@ -521,6 +513,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 AddEnemyGroup(enemyGroup);
             }
         }
+    }
+
+    public void UpdateFaction(float deltaTime) {
+        commManager.UpdateCommunications();
+        factionAI.UpdateFactionAI(deltaTime);
     }
 
     /// <summary>
@@ -545,15 +542,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFleets(float deltaTime) {
-        foreach (var fleet in fleets.ToList()) {
-            Profiler.BeginSample("UpdateFleet");
-            fleet.UpdateFleet(deltaTime);
-            Profiler.EndSample();
-        }
+        fleets.ToList().ForEach(f => f.UpdateFleet(deltaTime));
     }
 
     public void UpdateFactionResearch() {
-        DiscoverResearchArea((ResearchAreas)Random.Range(0, 3));
+        DiscoverResearchArea((ResearchAreas)new Unity.Mathematics.Random((uint)baseGroup.battleObjects.Count).NextInt(0, 3));
     }
 
     void UpdateUnitWeaponRanges() {

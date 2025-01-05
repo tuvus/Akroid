@@ -68,7 +68,7 @@ public class Ship : Unit {
         public ShipScriptableObject shipScriptableObject;
 
         protected ShipBlueprint(Faction faction, ShipScriptableObject shipScriptableObject, string name = null) {
-            if (name == null) this.name = shipScriptableObject.name;
+            if (name == null) this.name = shipScriptableObject.unitName;
             else this.name = name;
 
             this.faction = faction;
@@ -152,9 +152,8 @@ public class Ship : Unit {
         }
     }
 
-    protected override void FindEnemies() {
-        if (fleet == null)
-            base.FindEnemies();
+    public override void FindEnemies() {
+        if (fleet == null) base.FindEnemies();
     }
 
     void UpdateMovement(float deltaTime) {

@@ -78,8 +78,6 @@ public class Fleet : ShipGroup {
     }
 
     public void UpdateFleet(float deltaTime) {
-        UpdateObjectGroup();
-        FindEnemies();
         fleetAI.UpdateAI(deltaTime);
         for (int i = sentFleets.Count - 1; i >= 0; i--) {
             if (sentFleets[i] == null) {
@@ -88,7 +86,7 @@ public class Fleet : ShipGroup {
         }
     }
 
-    void FindEnemies() {
+    public void FindEnemies() {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();

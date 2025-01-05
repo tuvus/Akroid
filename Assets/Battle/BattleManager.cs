@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -51,6 +52,7 @@ public class BattleManager : MonoBehaviour {
     public event Action<Fleet> OnFleetCreated = delegate { };
     public event Action<Fleet> OnFleetRemoved = delegate { };
 
+    [SerializeField] private bool threaded = true;
     public bool instantHit;
     public float timeScale;
     public static bool quickStart = true;
@@ -406,6 +408,7 @@ public class BattleManager : MonoBehaviour {
     #endregion
 
     #region ObjectLists
+
     private void AddObject(IObject iObject) {
         OnObjectCreated.Invoke(iObject);
     }
@@ -540,36 +543,53 @@ public class BattleManager : MonoBehaviour {
         if (battleState == BattleState.Setup) return;
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
-        foreach (var faction in factions.ToList()) {
-            Profiler.BeginSample("EarlyFactionUpdate");
-            faction.EarlyUpdateFaction();
-            Profiler.EndSample();
+
+        if (PlayerPrefs.HasKey("Threading")) {
+            threaded = PlayerPrefs.GetInt("Threading") == 1;
         }
 
-        foreach (var faction in factions.ToList()) {
-            Profiler.BeginSample("FactionUpdate");
+        Profiler.BeginSample("EarlyFactionsUpdate");
+        UpdateCollectionParallel(factions, f => f.EarlyUpdateFaction());
+        Profiler.EndSample();
+
+        Profiler.BeginSample("FactionsFindingEnemies");
+        UpdateCollectionParallel(factions, f => f.UpdateNearbyEnemyUnits());
+        Profiler.EndSample();
+
+        Profiler.BeginSample("FactionUpdate");
+        foreach (var faction in factions) {
             faction.UpdateFaction(deltaTime);
-            Profiler.EndSample();
         }
+        Profiler.EndSample();
 
-        foreach (var faction in factions.ToList()) {
+        Profiler.BeginSample("FleetsFindingEnemies");
+        UpdateCollectionParallel(factions.SelectMany(f => f.fleets).ToList(), f => f.FindEnemies());
+        Profiler.EndSample();
+
+        Profiler.BeginSample("FleetsUpdate");
+        foreach (var faction in factions) {
             faction.UpdateFleets(deltaTime);
         }
+        Profiler.EndSample();
 
+        Profiler.BeginSample("UnitsFindingEnemies");
+        UpdateCollectionParallel(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies());
+        Profiler.EndSample();
+
+        Profiler.BeginSample("UnitsUpdate");
         foreach (var unit in units.ToList()) {
-            Profiler.BeginSample("UnitUpdate");
             Profiler.BeginSample(unit.GetUnitName());
             unit.UpdateUnit(deltaTime);
             Profiler.EndSample();
-            Profiler.EndSample();
         }
+        Profiler.EndSample();
 
         Profiler.BeginSample("ProjectilesUpdate");
         foreach (var projectile in usedProjectiles.ToList()) {
             projectile.UpdateProjectile(deltaTime);
         }
-
         Profiler.EndSample();
+
         Profiler.BeginSample("MissilesUpdate");
         foreach (var missile in usedMissiles.ToList()) {
             missile.UpdateMissile(deltaTime);
@@ -595,6 +615,16 @@ public class BattleManager : MonoBehaviour {
 
         Profiler.EndSample();
         eventManager.UpdateEvents(deltaTime);
+    }
+
+    public void UpdateCollectionParallel<T>(ICollection<T> collection, Action<T> action) {
+        if (threaded) {
+            Parallel.ForEach(collection, c => action.Invoke(c));
+        } else {
+            foreach (var c in collection) {
+                action.Invoke(c);
+            }
+        }
     }
 
     #region HelperMethods

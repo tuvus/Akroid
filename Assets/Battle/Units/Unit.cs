@@ -56,10 +56,8 @@ public abstract class Unit : BattleObject {
     #region Update
 
     public virtual void UpdateUnit(float deltaTime) {
-        if (IsTargetable() && HasWeapons()) {
-            FindEnemies();
+        if (IsTargetable() && HasWeapons())
             UpdateWeapons(deltaTime);
-        }
 
         if (IsSpawned()) {
             moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
@@ -67,7 +65,8 @@ public abstract class Unit : BattleObject {
         }
     }
 
-    protected virtual void FindEnemies() {
+    public virtual void FindEnemies() {
+        if (!IsTargetable() || !HasWeapons()) return;
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
