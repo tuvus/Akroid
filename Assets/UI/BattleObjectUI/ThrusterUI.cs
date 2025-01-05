@@ -20,8 +20,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (IsVisible() && shipUI.ship.thrusting && uIManager.GetEffectsShown() && localPlayerInput.IsObjectInViewingField(shipUI) &&
-            localPlayerInput.ShouldShowCloseUpGraphics()) {
+        if (IsVisible() && shipUI.ship.thrusting && uIManager.GetEffectsShown() &&
+            localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(shipUI)) {
             BeginThrust();
             thrusterFlare.enabled = true;
             thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;

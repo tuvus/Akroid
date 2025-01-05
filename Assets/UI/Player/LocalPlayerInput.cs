@@ -295,12 +295,11 @@ public class LocalPlayerInput : MonoBehaviour {
         BattleObjectUI objectUI = null;
         float distance = float.MaxValue;
         Profiler.BeginSample("BattleObjectOverMouse");
+        Vector2 mouseWorldPosition = GetMouseWorldPosition();
         foreach (BattleObjectUI targetObject in unitSpriteManager.battleObjects.Values) {
-            if (!targetObject.IsSelectable()) {
-                continue;
-            }
+            if (!targetObject.IsSelectable()) continue;
 
-            float tempDistance = Vector2.Distance(GetMouseWorldPosition(), targetObject.battleObject.position);
+            float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.battleObject.position);
             float size = targetObject.battleObject.GetSize();
             if (targetObject is UnitUI unitUI) size *= Mathf.Max(1, unitUI.unitSelection.GetSize());
 

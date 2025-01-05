@@ -20,7 +20,7 @@ public class ProjectileUI : BattleObjectUI {
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (projectile.hit && !hit && localPlayerInput.IsObjectInViewingField(this) && localPlayerInput.ShouldShowCloseUpGraphics()) {
+        if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(this)) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;
