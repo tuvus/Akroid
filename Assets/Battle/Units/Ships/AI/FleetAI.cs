@@ -245,7 +245,10 @@ public class FleetAI {
 
     /// <summary> Moves the fleet's ships into position to attack the enemy fleet </summary>
     private CommandResult DoAttackFleet(Command command, float deltaTime) {
-        if (command.targetFleet == null || !command.targetFleet.IsTargetable()) return CommandResult.ContinueRemove;
+        if (command.targetFleet == null || !command.targetFleet.IsTargetable()) {
+            command.targetFleet = null;
+            return CommandResult.ContinueRemove;
+        }
 
         //Sets the target position of the command and tells all ships to attack move
         if (newCommand) {
@@ -400,7 +403,8 @@ public class FleetAI {
 
         if (command.destinationStation.IsBuilt()) {
             fleet.ships.Where(s => s.IsIdle() && s.dockedStation != command.destinationStation).ToList()
-                .ForEach(s => s.shipAI.AddUnitAICommand(CreateDockCommand(command.destinationStation, fleet.minShipSpeed), CommandAction.Replace));
+                .ForEach(s => s.shipAI.AddUnitAICommand(CreateDockCommand(command.destinationStation, fleet.minShipSpeed),
+                    CommandAction.Replace));
             currentCommandState = CommandType.Dock;
         }
 
@@ -647,7 +651,8 @@ public class FleetAI {
             } else if (command.commandType == CommandType.Follow) {
                 if (command.targetUnit == null) continue;
                 positions.Add(command.targetUnit.GetPosition());
-            } else if (command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.AttackMove) {
+            } else if (command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit ||
+                command.commandType == CommandType.AttackMove) {
                 if (command.targetFleet != null) positions.Add(command.targetFleet.GetPosition());
                 if (command.commandType == CommandType.AttackFleet) continue;
                 if (command.targetUnit != null) positions.Add(command.targetUnit.GetPosition());

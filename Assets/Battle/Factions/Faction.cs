@@ -546,7 +546,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFactionResearch() {
-        DiscoverResearchArea((ResearchAreas)new Unity.Mathematics.Random((uint)baseGroup.battleObjects.Count).NextInt(0, 3));
+        DiscoverResearchArea((ResearchAreas)Random.Range(0, 3));
     }
 
     void UpdateUnitWeaponRanges() {

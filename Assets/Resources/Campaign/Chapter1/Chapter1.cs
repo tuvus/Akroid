@@ -61,7 +61,8 @@ public class Chapter1 : CampaingController {
                     Random.Range(1, 2) * 5400, 0, 0, 0), new PositionGiver(Vector2.zero, 10000, 50000, 500, 1000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
         for (int i = 0; i < Random.Range(12, 17); i++) {
-            battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 1000, 10000, 100, 1000, 2), Random.Range(5, 10),
+            battleManager.CreateNewAsteroidField(new PositionGiver(playerFaction.GetPosition(), 100, 10000, 100, 300, 2),
+                Random.Range(5, 10),
                 10);
         }
 
@@ -218,7 +219,6 @@ public class Chapter1 : CampaingController {
 
         StartTutorial();
         AddMoonQuestLine();
-        AddWarEscalationEventLine();
         AddPiratesEventLine();
     }
 
@@ -228,7 +228,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = false;
+        bool skipTutorial = true;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -290,6 +290,7 @@ public class Chapter1 : CampaingController {
                         playerFaction.AddCredits(10000000);
                         GetBattleManager().SetSimulationTimeScale(10);
                         AddResearchQuestLine();
+                        AddWarEscalationEventLine();
                     });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -312,7 +313,7 @@ public class Chapter1 : CampaingController {
             "Try clicking and holding your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreatePanCondition(40));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "If you ever get lost, try pressing V to center your camera again.", 2 * GetTimeScale());
+            "Try pressing V to center your camera again, this can be helful if you get lost.", 2 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Now scroll out to view more of the solar system.", 7 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateZoomCondition(2000));
@@ -325,30 +326,41 @@ public class Chapter1 : CampaingController {
 
         // Selection Tutorial
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Well done! Now lets try selecting the ships. Click on one of them to select our fleet.", 2 * GetTimeScale());
+            "Well done! Now lets try selecting the ships.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Our ships are in a fleet, which means when you click a ship you will select the fleet by default.", 5 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try clicking on of the ships to select our fleet.", 5 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectFleetCondition(playerFaction.fleets.First(), true));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Our ships are in a fleet, which means if you select one you will select all by default. \n" +
-            "Try selecting just one ship in the fleet by holding alt while clicking the ship.", 3 * GetTimeScale());
+            "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Hold alt while clicking a ship to select it.", 3 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "You can see a line coming out of the selected ship, this is where they are going. \n" +
-            "Try holding shift to select multiple ships. ");
+            "You can see a line coming out of the selected ship, this shows where their current command is going.", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "If you want to select more units you can hold shift while clicking it to add it to our current selection.",
+            7 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try adding another ship to our current selection.", 9 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Exelent. Now click in empty space or press D to deselect the ships.", 1 * GetTimeScale());
+            "Exelent! Now deselect the ships by clicking on empty space or by pressing D.", 1 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateUnselectUnitsCondition(battleManager.units.ToList(), false));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "There is one more way that you can select ships, try clicking and dragging your mouse to do a box select. " +
-            "Remember to hold alt while doing it.", 1 * GetTimeScale());
+            "There is one more way that you can select ships. " +
+            "Try holding alt then click and dragging your mouse to do a box selection until it contains a few of the ships.",
+            1 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Here you can see its owner, state, cargo and weapons of the unit. " +
-            "Right click again or press the close button to close the panel.", 1 * GetTimeScale());
+            "Here you can see its owner, state, cargo and weapons of the unit. ", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Right click again or press the close button to close the panel.", 4 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(null, false));
 
         // Following Tutorial
@@ -405,32 +417,36 @@ public class Chapter1 : CampaingController {
         GetBattleManager().SetSimulationTimeScale(playerFaction.fleets.First().fleetAI.GetTimeUntilFinishedWithCommand() / (120 + 40));
         EventChainBuilder eventChainBuilder = new EventChainBuilder();
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
-            "Resources on our planet are sparce due to the slow development of resource reusing policy and climate change. " +
-            "This is starting to build tension between the major nations. " +
-            "Luckily our space instillations are independent of any individual nation so there shouldn't be any space wars out here.",
+            "As you might already know, resources on our planet are sparse due to the slow development of resource reusing policy and climate change. " +
+            "The impact of the resource crisis is starting to build tension between the major nations. " +
+            "Luckily our space instillations are independent of any nation so there shouldn't be any space wars out here.",
             5 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
             "Overpopulation has ignited an effort to colonize other planets in the system. " +
-            "That is, however a long way off, to start we have been developing the first moon colony. " +
-            "We'll see how well it works out.", 35 * GetTimeScale());
+            "It is a long way off however, to start we have been developing the first moon colony. " +
+            "We will see how well it works out.", 35 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
             "Space technology is relatively new and we are starting to harvest asteroid fields to help solve our resource problems back at " +
-            planet.objectName + ".", 20 * GetTimeScale());
+            planet.objectName + ".\n" +
+            "However there is some worry that not even all the metal from this solar system will support our consumption.",
+            20 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
-            "We haven't figured out how to travel to other solar systems yet. " +
-            "It might take a hundred years or so until, if it is even possible. " +
-            "We have an advanced space research station far out in the solar system is working on this.", 15 * GetTimeScale());
+            "We haven't figured out how to travel to other solar systems yet, " +
+            "it might take a hundred years or so until, if it is even possible. " +
+            "We have an advanced space research station far out in the solar system working on this.", 15 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
-            "There was a big boom in civilian space travel once a general purpose space ship came into production in our first designated shipyard.",
+            "Now that we have some general-purpouse space ship designs in production at our shipyard we expect a boom in civilian space travel.",
             15 * GetTimeScale());
         eventChainBuilder.AddCommEvent(commManager, playerFaction,
-            "AI technology is also on the rise and may aid space exploration, but like all things, recent research has been limited by the resource crisis.",
+            "AI technology is also on the rise and may aid us in space exploration." +
+            "But like all things, recent research has been limited by the resource crisis.",
             15 * GetTimeScale());
         eventChainBuilder.Build(eventManager, () => {
             commManager.SendCommunication(planetFactionAI.faction, "We are about to arrive at our destination!");
             commManager.SendCommunication(playerFaction,
                 "Thats it until until we reach the mining site. \n " +
-                "Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n " +
+                "Remember that you can press the [<, >, ?] keys to change how quickly the game time passes. \n ", 15 * GetTimeScale());
+            commManager.SendCommunication(playerFaction,
                 "In the mean time feel free to click the \"Controls help\" button in the top right and read the controls.",
                 15 * GetTimeScale());
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
@@ -463,9 +479,12 @@ public class Chapter1 : CampaingController {
                     })
             }, true), 2 * GetTimeScale());
         movementTutorial.AddCommEvent(playerComm, playerFaction,
-            "Lets learn about ship movement and investigate the nearby asteroid fields. " +
-            "Open the mining station panel and click on the civilian ship button in the hangar, then close the menu.",
-            10 * GetTimeScale());
+            "Lets learn about ship movement and investigate the nearby asteroid fields. ", 5 * GetTimeScale());
+        movementTutorial.AddCommEvent(playerComm, playerFaction,
+            "Open the mining station menue by right clicking on it.", 4 * GetTimeScale());
+        movementTutorial.AddCondition(eventManager.CreateOpenObjectPanelCondition(playerMiningStation, true));
+        movementTutorial.AddCommEvent(playerComm, playerFaction,
+            "Now click on the button named \"Shuttle\" in the hanger to select it and close the station menu.", 1 * GetTimeScale());
         movementTutorial.AddCondition(eventManager.CreateSelectUnitCondition(shuttle, true));
         movementTutorial.AddCondition(eventManager.CreateOpenObjectPanelCondition(null, true));
         movementTutorial.AddCondition(eventManager.CreateSelectUnitCondition(shuttle, true));
@@ -473,23 +492,30 @@ public class Chapter1 : CampaingController {
             "Now press Q and click on the asteroid field highlighted nearby to issue a move command to it.");
         List<AsteroidField> closestAsteroidFields = battleManager.asteroidFields.ToList()
             .OrderBy(a => Vector2.Distance(shuttle.GetPosition(), a.GetPosition())).ToList();
+        movementTutorial.AddCondition(eventManager.CreateCommandMoveShipToObject(shuttle, closestAsteroidFields.First(), true));
+        movementTutorial.AddCommEvent(playerComm, playerFaction,
+            "I'll speed up the time for you.", 1 * GetTimeScale());
+        movementTutorial.AddAction(() => battleManager.SetSimulationTimeScale(10));
         movementTutorial.AddCondition(eventManager.CreateMoveShipToObject(shuttle, closestAsteroidFields.First(), 30, true));
         // Make sure the ship isn't moving
         movementTutorial.AddCondition(eventManager.CreateWaitUntilShipsIdle(new List<Ship> { shuttle }));
+        movementTutorial.AddAction(() => battleManager.SetSimulationTimeScale(1));
         movementTutorial.AddCommEvent(playerComm, playerFaction,
             "Lets survey some more asteroid fields. " +
             "Hold shift while issuing a move command to add the command to the ships command queue. " +
-            "Tell the ship to move to the asteroid fields when they are highlighted.");
+            "Try queueing some more movement commands to the asteroid fields highlighted.");
         movementTutorial.AddCondition(eventManager.CreateCommandMoveShipToObjects(shuttle,
             closestAsteroidFields.GetRange(1, 4).Cast<IObject>().ToList(), true));
         movementTutorial.AddAction(() => battleManager.SetSimulationTimeScale(10));
         movementTutorial.AddCommEvent(playerComm, playerFaction,
-            "Issue a dock command by selecting the ship and the move command and clicking on the station. " +
-            "We can also add a command to the start of the queue by holding alt, try it!", 10 * GetTimeScale());
+            "Now try docking to the station by pressing Q issuing a move command and clicking on the mining station. " +
+            "We can also add a command to the start of the queue by holding alt while issuing the command. " +
+            "Try it!", 10 * GetTimeScale());
         movementTutorial.AddCondition(eventManager.CreateDockShipsAtUnit(new List<Ship> { shuttle }, playerMiningStation, true));
         movementTutorial.AddCommEvent(playerComm, playerFaction,
-            "Great job, this concludes the movement practice for now.", 2 * GetTimeScale());
+            "Great job, this concludes the movement practice.", 2 * GetTimeScale());
         movementTutorial.AddAction(AddResearchQuestLine);
+        movementTutorial.AddAction(AddWarEscalationEventLine);
     }
 
     void AddResearchQuestLine() {
@@ -500,40 +526,46 @@ public class Chapter1 : CampaingController {
 
         EventChainBuilder researchChain = new EventChainBuilder();
         researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
-            "Send your shuttle over to our research station station. " +
-            "We have some science experiments to do.", 20);
+            "Hello there, this is " + researchCommManager.GetSenderName() + ". " +
+            "I'm the lead reasearcher of the " + researchStation.objectName + ".", 5 * GetTimeScale());
+        researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
+            "I see that your mining operations are all set up. ", 7 * GetTimeScale());
+        researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
+            "We could use your help investigating some resources that might play a role in interstellar travel. " +
+            "Could you send your shuttle over to our research station station to help us out with some?", 5 * GetTimeScale());
         researchChain.AddAction(() => {
             eventManager.AddEvent(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, false), () => {
                 playerComm.SendCommunication(playerFaction,
-                    "Our ship is on route! Remember that you can always use the [<, >, ?] keys to change the speed of time.",
+                    "Our ship is on route to the " + researchStation.objectName +
+                    "! Remember that you can always use the [<, >, ?] keys to change the speed of time.",
                     5 * GetTimeScale());
             });
             playerComm.SendCommunication(playerFaction,
-                "The Research station is far away. You will have to scroll out and pan around to see it.", 20 * GetTimeScale());
+                "The Research station was built far away to experiment with minimal gravity from the sun. " +
+                "You will have to scroll out and pan around to see it.", 20 * GetTimeScale());
         });
         researchChain.AddCondition(eventManager.CreateDockShipAtUnit(shuttle, researchStation, true));
         researchChain.AddCommEvent(playerComm, researchFaction,
             "Our shuttle has arrived at your research station. What would you like for us to do?", 2 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "Good to see that you got here safely! \n " +
-            "Our station was sent up as a combined reasearch initiative. " +
-            "We were initially supported by most of the factions back on the planet. " +
-            "However, now that tensions are building it is too risky for them to invest into research that could benefit some factions more than others.",
+            "Our station was sent up as a combined reasearch initiative to investigate possibilities for interstellar travel. " +
             2 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We have found some interesting gas clouds farther from the sun and they may contain rare gases that could be usefull back on the planet. " +
-            "Unfortunately we don't have the funding to construct a science ship with expensive equipment.", 30 * GetTimeScale());
+            "We were initially supported by most of the factions back on the planet. " +
+            "However, now that tensions are building it is too risky for them to invest into research that could benefit some factions more than others.",
+            16 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "Our research could greatly help you and the rest of space exploration. \n" +
-            "It would be a great help if you could help us out by sending your ship to the gas field that we have marked.",
-            20 * GetTimeScale());
+            "We have found some interesting gas clouds farther from the sun and they may contain low-density gases that could be usefull back on the planet. " +
+            "Unfortunately we don't have the funding to construct a science ship with expensive equipment.", 16 * GetTimeScale());
+        researchChain.AddCommEvent(researchCommManager, playerFaction,
+            "It would be a great help if you could send your ship to the gas field that we have marked.",
+            18 * GetTimeScale());
         GasCloud targetGasCloud = researchFaction.GetClosestGasCloud(researchStation.GetPosition());
         researchChain.AddCondition(eventManager.CreateMoveShipToObject(shuttle, targetGasCloud, 10, true));
-        researchChain.AddAction(() => playerFaction.AddScience(100));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We have recieved some preliminary data about the gas. The high density of the gas cloud is spectacular! " +
-            "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship. \n" +
-            "Were sending you our descoveries as well.", 5 * GetTimeScale());
+            "We have recieved some preliminary data about the gas. The low-density of the gas cloud is spectacular! " +
+            "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship.", 3 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "Could you bring the ship back to our station with a sample to farther analyze the gas?", 15 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, true));
@@ -543,8 +575,11 @@ public class Chapter1 : CampaingController {
         researchChain.AddAction(() => {
             EventChainBuilder spendResearchChain = new EventChainBuilder();
             spendResearchChain.AddCommEvent(playerComm, playerFaction,
-                "We have converted the data that we recieved from " + researchFaction.name + ". \n" +
-                "Lets spend this science, click the top left button to open the faction panel.", 3 * GetTimeScale());
+                "Here's some of the data that you collected.", 3 * GetTimeScale());
+            spendResearchChain.AddAction(() => playerFaction.AddScience(100));
+            spendResearchChain.AddCommEvent(playerComm, playerFaction,
+                "We have processed the data that we recieved from " + researchFaction.name + " as science. \n" +
+                "Lets put it to use. Click the top left button to open the faction panel.", 5 * GetTimeScale());
             spendResearchChain.AddCondition(eventManager.CreateOpenFactionPanelCondition(playerFaction, true));
             spendResearchChain.AddCommEvent(playerComm, playerFaction,
                 "There are three research fields: Engineering, Electricity and Chemicals. " +
@@ -835,9 +870,9 @@ public class Chapter1 : CampaingController {
 
         buildEscapeShipChain.AddCommEvent(playerComm, planetFaction,
             "Seems like the resources that we collect will be quite usefull. We'll try to send you what we can.", GetTimeScale() * 12);
-        buildEscapeShipChain.AddCommEvent(shipyardCommManager, shipyardFaction,
+        buildEscapeShipChain.AddCommEvent(playerComm, shipyardFaction,
             "Seems like the resources that we collect will be quite usefull. We'll try to send you what we can.");
-        buildEscapeShipChain.AddCommEvent(shipyardCommManager, researchFaction,
+        buildEscapeShipChain.AddCommEvent(playerComm, researchFaction,
             "Seems like the resources that we collect will be quite usefull. We'll try to send you what we can.");
 
         buildEscapeShipChain.AddCommEvent(planetCommManager, shipyardFaction,
@@ -848,10 +883,10 @@ public class Chapter1 : CampaingController {
             $"Sounds great! Lets try and build it quickly, the siutation on {planet.objectName} might change");
 
         buildEscapeShipChain.AddCommEvent(playerComm, playerFaction,
-            "Build the Aterna ship at the shipyard.", GetTimeScale() * 16);
+            "Build the Colonizer ship at the shipyard.", GetTimeScale() * 16);
 
         buildEscapeShipChain.AddCondition(eventManager.CreateBuildShipAtStation(
-            battleManager.shipBlueprints.First(s => s.shipScriptableObject.shipClass == Ship.ShipClass.Aterna), playerFaction, shipyard,
+            battleManager.shipBlueprints.First(s => s.shipScriptableObject.shipType == Ship.ShipType.Colonizer), playerFaction, shipyard,
             true));
         Ship colonizer = null;
         buildEscapeShipChain.AddAction(() => colonizer = playerFaction.ships.First(s => s.GetShipClass() == Ship.ShipClass.Aterna));
@@ -904,7 +939,7 @@ public class Chapter1 : CampaingController {
 
         EventChainBuilder pirateChain = new EventChainBuilder();
         pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()));
-        pirateChain.AddCondition(eventManager.CreateWaitCondition(300));
+        pirateChain.AddCondition(eventManager.CreateWaitCondition(600));
         pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ =>
             tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())));
         pirateChain.AddAction(() => {
@@ -982,13 +1017,12 @@ public class Chapter1 : CampaingController {
         FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
 
         EventChainBuilder planetEscalationChain = new EventChainBuilder();
-        planetEscalationChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()));
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(600));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(1200));
         planetEscalationChain.AddAction(() => {
-            planetOligarchy.GetFactionAI().attackSpeed = 3f;
-            planetOligarchy.GetFactionAI().attackStrength = .1f;
-            planetDemocracy.GetFactionAI().attackSpeed = 6f;
-            planetOligarchy.GetFactionAI().attackStrength = .06f;
+            planetOligarchy.GetFactionAI().attackSpeed = 6f;
+            planetOligarchy.GetFactionAI().attackStrength = .04f;
+            planetDemocracy.GetFactionAI().attackSpeed = 9f;
+            planetDemocracy.GetFactionAI().attackStrength = .03f;
         });
         planetEscalationChain.AddAction(() => planetOligarchy.StartWar(planetDemocracy));
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
@@ -1001,12 +1035,12 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planetEmpire.StartWar(planetDemocracy);
             planetEmpire.StartWar(planetOligarchy);
-            planetEmpire.GetFactionAI().attackSpeed = 2.5f;
+            planetEmpire.GetFactionAI().attackSpeed = 5f;
             planetEmpire.GetFactionAI().attackStrength = .04f;
-            planetOligarchy.GetFactionAI().attackSpeed = 4f;
-            planetOligarchy.GetFactionAI().attackStrength = .08f;
-            planetDemocracy.GetFactionAI().attackSpeed = 5f;
-            planetDemocracy.GetFactionAI().attackStrength = .08f;
+            planetOligarchy.GetFactionAI().attackSpeed = 6f;
+            planetOligarchy.GetFactionAI().attackStrength = .05f;
+            planetDemocracy.GetFactionAI().attackSpeed = 7f;
+            planetDemocracy.GetFactionAI().attackStrength = .04f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
@@ -1019,7 +1053,7 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(500));
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetOligarchy.name} has developed a new war robot technology, it will probably tip the war in their favor.");
-        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(20000));
+        planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(100000));
         planetEscalationChain.AddAction(() => {
             robotFaction = battleManager.CreateNewFaction(
                 new Faction.FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 2000, 0,
@@ -1035,10 +1069,10 @@ public class Chapter1 : CampaingController {
                 oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5));
             oligarchyTerritory.SubtractFrom(planet.planetFactions[robotFaction].territory);
         });
-        for (int i = 0; i < 5; i++) {
-            planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(30));
+        for (int i = 0; i < 20; i++) {
+            planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(20));
             planetEscalationChain.AddAction(() => {
-                planet.planetFactions[planetOligarchy].AddForce(20000);
+                planet.planetFactions[planetOligarchy].AddForce(70000);
                 Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;
                 Planet.PlanetTerritory territoryInfiltrated = new Planet.PlanetTerritory(oligarchyTerritory.highQualityArea / 5,
                     oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5);
@@ -1049,22 +1083,24 @@ public class Chapter1 : CampaingController {
         // Uprising Occurs
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"A robot uprising has begun within the {planetOligarchy.name}");
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(30));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(100));
         planetEscalationChain.AddAction(() =>
-            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(30));
+            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(60));
         planetEscalationChain.AddAction(() =>
-            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(30));
+            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(60));
         planetEscalationChain.AddAction(() =>
-            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(20));
+            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(60));
         planetEscalationChain.AddAction(() =>
-            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(20000)));
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(20));
+            planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(60));
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(30000000L);
             robotFaction.StartWar(planetOligarchy);
+            robotFaction.GetFactionAI().attackSpeed = 4f;
+            robotFaction.GetFactionAI().attackStrength = .05f;
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetOligarchy].force < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetOligarchy].territory);
@@ -1074,10 +1110,11 @@ public class Chapter1 : CampaingController {
                     planet.RemoveFaction(planetOligarchy);
                 });
         });
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(80));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(180));
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);
             robotFaction.StartWar(planetDemocracy);
+            robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetDemocracy].force < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetDemocracy].territory);
@@ -1087,10 +1124,11 @@ public class Chapter1 : CampaingController {
                     planet.RemoveFaction(planetDemocracy);
                 });
         });
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(80));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(180));
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(30000000L);
             robotFaction.StartWar(planetEmpire);
+            robotFaction.GetFactionAI().attackStrength = .09f;
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetEmpire].force < 1000000), () => {
                 planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[planetEmpire].territory);
                 planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetEmpire].force);
@@ -1103,6 +1141,7 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);
             robotFaction.StartWar(minorFactions);
+            robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions[minorFactions].force < 1000000), () => {
                 planet.planetFactions[planetFaction].territory.AddFrom(planet.planetFactions[minorFactions].territory);
                 planet.planetFactions[planetFaction].AddForce(planet.planetFactions[minorFactions].force);
@@ -1128,8 +1167,6 @@ public class Chapter1 : CampaingController {
             return alliedForce < 6000000000L;
         }));
         planetEscalationChain.AddAction(() => {
-            eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetOligarchy].force < 100),
-                () => { planet.RemoveFaction(planetOligarchy); });
             planet.planetFactions[robotFaction].AddForce(200000000L);
             robotFaction.StartWar(planetFaction);
             planetEmpire.EndWar(planetDemocracy);

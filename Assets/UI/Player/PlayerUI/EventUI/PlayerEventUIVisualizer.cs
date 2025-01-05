@@ -33,7 +33,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
             visualizedEvent = null;
         }
 
-        if (visualizedEvent == null) {
+        if (visualizedEvent == null || !visualizedEvent.visualize) {
             eventConditionTuple = uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UIEventCondition);
             if (eventConditionTuple != null) visualizedEvent = (UIEventCondition)eventConditionTuple.Item1;
             newEvent = true;
