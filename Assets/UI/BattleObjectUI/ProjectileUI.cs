@@ -19,17 +19,17 @@ public class ProjectileUI : BattleObjectUI {
     }
 
     public override void UpdateObject() {
+        if (!projectile.spawned) {
+            spriteRenderer.enabled = false;
+            highlight.enabled = false;
+            particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            uIManager.unitSpriteManager.objectsToUpdate.Remove(this);
+        }
         base.UpdateObject();
         if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(this)) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;
         }
-    }
-
-    public override void OnBattleObjectRemoved() {
-        spriteRenderer.enabled = false;
-        highlight.enabled = false;
-        particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 }

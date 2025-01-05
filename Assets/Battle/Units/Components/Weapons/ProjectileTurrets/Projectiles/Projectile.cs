@@ -106,6 +106,7 @@ public class Projectile : BattleObject {
             battleManager.RemoveProjectile(this);
         }
 
+        spawned = activate;
         visible = activate;
     }
 

@@ -349,7 +349,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     /// <returns> Determines if close up detailed graphics should be shown depending on how zoomed out the camera is. </returns>
     public bool ShouldShowCloseUpGraphics() {
-        return mainCamera.orthographicSize < 5000;
+        return mainCamera.orthographicSize < 3000;
     }
 
     public Vector2 GetMousePosition() {

@@ -13,7 +13,7 @@ public class ShieldGenerator : ModuleComponent {
     }
 
     public void UpdateShieldGenerator(float deltaTime) {
-        if (spawned && shield.health <= 0) DestroyShield();
+        if (shield.spawned && shield.health <= 0) DestroyShield();
         timeTillShieldCount -= deltaTime * unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldRegen);
         if (shield.health == 0) {
             if (timeTillShieldCount <= 0) {

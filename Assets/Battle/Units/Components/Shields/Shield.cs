@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 public class Shield : BattleObject {
     private Unit unit;
@@ -24,7 +25,7 @@ public class Shield : BattleObject {
     }
 
     public void TakeDamage(int takeDamage) {
-        health -= takeDamage;
+        health = math.max(0, health - takeDamage);
     }
 
     public void ReactivateShield() {

@@ -592,10 +592,7 @@ public class BattleManager : MonoBehaviour {
         Profiler.EndSample();
 
         Profiler.BeginSample("ProjectilesUpdate");
-        foreach (var projectile in usedProjectiles.ToList()) {
-            projectile.UpdateProjectile(deltaTime);
-        }
-        // UpdateCollectionParallel(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime));
+        UpdateCollectionParallel(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime));
         Profiler.EndSample();
 
         Profiler.BeginSample("MissilesUpdate");

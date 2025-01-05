@@ -644,12 +644,15 @@ public class FleetAI {
                 (command.commandType == CommandType.Protect) {
                 if (command.protectUnit == null) continue;
                 positions.Add(command.protectUnit.GetPosition());
-            } else if (command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.Follow) {
+            } else if (command.commandType == CommandType.Follow) {
                 if (command.targetUnit == null) continue;
                 positions.Add(command.targetUnit.GetPosition());
-            } else if (command.commandType == CommandType.AttackFleet) {
-                if (command.targetFleet == null) continue;
-                positions.Add(command.targetFleet.GetPosition());
+            } else if (command.commandType == CommandType.AttackFleet || command.commandType == CommandType.AttackMoveUnit || command.commandType == CommandType.AttackMove) {
+                if (command.targetFleet != null) positions.Add(command.targetFleet.GetPosition());
+                if (command.commandType == CommandType.AttackFleet) continue;
+                if (command.targetUnit != null) positions.Add(command.targetUnit.GetPosition());
+                if (command.commandType == CommandType.AttackMoveUnit) continue;
+                positions.Add(command.targetPosition);
             } else if (command.commandType == CommandType.Dock || command.commandType == CommandType.BuildStation) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
