@@ -244,6 +244,11 @@ public class BattleManager : MonoBehaviour {
         startOfSimulation = Time.unscaledTime;
 
         if (eventManager == null) eventManager = new EventManager(this);
+
+        shipBlueprints.ForEach(b => Resources.Load<GameObject>(b.shipScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
+        stationBlueprints.ForEach(b => Resources.Load<GameObject>(b.stationScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
     }
 
     #endregion

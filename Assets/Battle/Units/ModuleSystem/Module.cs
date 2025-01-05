@@ -8,6 +8,7 @@ public class Module : MonoBehaviour, IModule {
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
 
     [field: SerializeField] public int system { get; private set; }
+    [field: SerializeField] public Vector2 position { get; private set; }
     [field: SerializeField] public float rotation { get; private set; }
     [field: SerializeField] public float minRotate { get; private set; }
     [field: SerializeField] public float maxRotate { get; private set; }
@@ -25,6 +26,10 @@ public class Module : MonoBehaviour, IModule {
         this.maxRotate = maxRotate;
     }
 
+    public void SetupData() {
+        position = transform.position;
+    }
+
     public void DecrementSystemIndex() {
         system--;
     }
@@ -34,7 +39,7 @@ public class Module : MonoBehaviour, IModule {
     }
 
     public Vector2 GetPosition() {
-        return transform.position;
+        return position;
     }
 
     public float GetRotation() {
