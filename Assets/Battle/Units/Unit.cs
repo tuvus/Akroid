@@ -106,14 +106,14 @@ public abstract class Unit : BattleObject {
     }
 
     protected virtual void UpdateWeapons(float deltaTime) {
-        Profiler.BeginSample("Weapons");
-        if (!turretsHibernating || (enemyUnitsInRange.Count > 0 && enemyUnitsInRangeDistance.First() <= maxWeaponRange)) {
+        if (!turretsHibernating || (GetEnemyUnitsInRange().Count > 0 && GetEnemyUnitsInRangeDistance().First() <= maxWeaponRange + size)) {
+            Profiler.BeginSample("Weapons");
             turretsHibernating = moduleSystem.Get<Turret>().All(t => t.UpdateTurret(deltaTime));
             turretsHibernating = turretsHibernating && moduleSystem.Get<MissileLauncher>()
                 .All(m => m.UpdateMissileLauncher(deltaTime));
+            Profiler.EndSample();
         }
 
-        Profiler.EndSample();
     }
 
     public void UpdateDestroyedUnit(float deltaTime) {

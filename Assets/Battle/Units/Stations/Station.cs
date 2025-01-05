@@ -133,10 +133,10 @@ public class Station : Unit, IPositionConfirmer {
             base.UpdateUnit(deltaTime);
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
-            Profiler.BeginSample("UpdateRotation");
             SetRotation(rotation + stationScriptableObject.rotationSpeed * deltaTime);
-            Profiler.EndSample();
+            Profiler.BeginSample("UpdateStationAI");
             stationAI.UpdateAI(deltaTime);
+            Profiler.EndSample();
             if (repairTime <= 0) {
                 repairTime += stationScriptableObject.repairSpeed;
             }
