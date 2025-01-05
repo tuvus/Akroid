@@ -37,7 +37,7 @@ public class SimulationFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         Profiler.BeginSample("FactionAI");
         base.UpdateFactionAI(deltaTime);
-        if (fleetCommand != null) {
+        if (fleetCommand != null && fleetCommand.IsSpawned()) {
             updateTime -= deltaTime;
             if (updateTime <= 0) {
                 if (autoCommandFleets && defenseFleets.Count + attackFleets.Count > 0) {

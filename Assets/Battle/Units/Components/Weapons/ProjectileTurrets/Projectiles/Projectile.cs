@@ -71,10 +71,12 @@ public class Projectile : BattleObject {
                     if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
 
                     foreach (var shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
-                        shieldGenerator.shield.TakeDamage(damage);
-                        position = tempPosition;
-                        Explode(targetUnit);
-                        return true;
+                        if (shieldGenerator.shield.IsSpawned()) {
+                            shieldGenerator.shield.TakeDamage(damage);
+                            position = tempPosition;
+                            Explode(targetUnit);
+                            return true;
+                        }
                     }
 
                     targetUnit.TakeDamage(damage);

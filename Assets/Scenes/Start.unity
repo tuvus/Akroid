@@ -2055,7 +2055,7 @@ PrefabInstance:
     - target: {fileID: 703651401512718216, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}
       propertyPath: m_text
-      value: Asteroids
+      value: Asteroid count modifier
       objectReference: {fileID: 0}
     - target: {fileID: 1169385908361690992, guid: c64798cdc3e28274787496bbd02ff14b,
         type: 3}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -129,6 +130,7 @@ public abstract class Unit : BattleObject {
 
     #region UnitControlls
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public virtual void TakeDamage(int damage) {
         if (!IsSpawned()) Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
         health -= damage;

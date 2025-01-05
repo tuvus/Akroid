@@ -1,4 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using System.Runtime.CompilerServices;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Shield : BattleObject {
@@ -24,6 +25,7 @@ public class Shield : BattleObject {
             health = shieldGenerator.GetMaxShieldStrength();
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void TakeDamage(int takeDamage) {
         health = math.max(0, health - takeDamage);
     }
