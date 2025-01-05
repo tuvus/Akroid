@@ -68,7 +68,7 @@ public class Chapter1 : CampaingController {
 
         playerMiningStation = (MiningStation)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Mining Station", playerFaction.GetPosition(), Random.Range(0, 360), playerFaction),
-            battleManager.GetStationBlueprint(Station.StationType.MiningStation).stationScriptableObject, false);
+            Resources.Load<StationScriptableObject>(GetPathToChapterFolder() + "/MiningStation"), false);
 
 
         otherMiningFaction =
@@ -217,9 +217,15 @@ public class Chapter1 : CampaingController {
         eventManager.SetPlayerZoom(400);
         eventManager.StartFollowingUnit(miningStationSetupFleet.ships.First(s => s.IsConstructionShip()));
 
+        battleManager.shipBlueprints.Where(b => b.shipScriptableObject.shipType == Ship.ShipType.Fighter ||
+                b.shipScriptableObject.shipType == Ship.ShipType.Cruiser ||
+                b.shipScriptableObject.shipType == Ship.ShipType.Dreadnaught).ToList()
+            .ForEach(b => battleManager.shipBlueprints.Remove(b));
+
         StartTutorial();
         AddMoonQuestLine();
         AddPiratesEventLine();
+        AddEasterEggs();
     }
 
     /// <summary>
@@ -549,7 +555,7 @@ public class Chapter1 : CampaingController {
             "Our shuttle has arrived at your research station. What would you like for us to do?", 2 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "Good to see that you got here safely! \n " +
-            "Our station was sent up as a combined reasearch initiative to investigate possibilities for interstellar travel. " +
+            "Our station was sent up as a combined reasearch initiative to investigate possibilities for interstellar travel. ",
             2 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "We were initially supported by most of the factions back on the planet. " +
@@ -565,7 +571,8 @@ public class Chapter1 : CampaingController {
         researchChain.AddCondition(eventManager.CreateMoveShipToObject(shuttle, targetGasCloud, 10, true));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "We have recieved some preliminary data about the gas. The low-density of the gas cloud is spectacular! " +
-            "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship.", 3 * GetTimeScale());
+            "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship.",
+            3 * GetTimeScale());
         researchChain.AddCommEvent(researchCommManager, playerFaction,
             "Could you bring the ship back to our station with a sample to farther analyze the gas?", 15 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, true));
@@ -594,7 +601,7 @@ public class Chapter1 : CampaingController {
         });
         researchChain.AddCondition(eventManager.CreateDockShipsAtUnit(new List<Ship> { shuttle }, researchStation, true));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "Thanks for the gas! We won't be needing your ship anytime soon so you are free to use it again." +
+            "Thanks for the gas! We won't be needing your ship anytime soon so you are free to use it again. " +
             "We'll need some time to analyse this gas, I'm sure it will be of use.", 3 * GetTimeScale());
         researchChain.AddCommEvent(playerComm, researchFaction,
             "Sounds great! Let us know if you find anything interesting about the gas.", 5 * GetTimeScale());
@@ -626,6 +633,11 @@ public class Chapter1 : CampaingController {
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Select our gas colector ship in the shipyard, close the station menu and press E to select the gas collection command. " +
             "Then click on a gas cloud near our mining station to issue a command.", 25 * GetTimeScale());
+        researchChain.AddAction(() => {
+            playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
+            playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
+        });
+
         researchChain.AddCondition(eventManager.CreateLateCondition(() =>
             eventManager.CreateCommandShipToCollectGas(gasCollector, null, null, true)));
         researchChain.AddCommEvent(playerComm, playerFaction,
@@ -1178,6 +1190,27 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetFaction.name}, {planetDemocracy.name} and {planetOligarchy.name} have reached a peace agreement due to the robot threat.");
         planetEscalationChain.Build(eventManager)();
+    }
+
+    void AddEasterEggs() {
+        eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => moon.planetFactions.ContainsKey(playerFaction)),
+            () => {
+                planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
+                    "Uhhh, you weren't supposed to be the one to colonize the moon. We already did that!");
+                playerFaction.AddScience(1000);
+                eventManager.AddEvent(eventManager.CreateWaitCondition(200), () => {
+                    moon.planetFactions[playerFaction].AddPopulation(300);
+                    moon.planetFactions[playerFaction].AddForce(100);
+                });
+            });
+        eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions.ContainsKey(playerFaction)),
+            () => {
+                planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
+                    planet.objectName + " is already colonized. That was a waste of a colonizer.");
+                planet.planetFactions[playerFaction].AddPopulation(1000000000);
+                planet.planetFactions[playerFaction].AddForce(1000000000);
+                playerFaction.AddScience(1000);
+            });
     }
 
     public override string GetPathToChapterFolder() {

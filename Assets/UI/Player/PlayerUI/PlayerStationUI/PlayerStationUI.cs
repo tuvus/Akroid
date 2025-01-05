@@ -45,7 +45,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     protected override bool ShouldShowLeftPanel() {
         bool isEnemy = localPlayer.GetRelationToUnit(displayedObject.station) == LocalPlayer.RelationType.Enemy;
         return !isEnemy && (displayedObject.station.GetStationType() == Station.StationType.Shipyard ||
-            displayedObject.station.GetStationType() == Station.StationType.FleetCommand);
+            displayedObject.station.GetStationType() == Station.StationType.FleetCommand ||
+            displayedObject.station.GetStationType() == Station.StationType.TradeStation);
     }
 
     protected override bool ShouldShowRightPanel() {

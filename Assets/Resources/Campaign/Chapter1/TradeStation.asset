@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: TradeStation
   m_EditorClassIdentifier: 
-  cost: 97460
-  resourceTypes: 0100000002000000
-  resourceCosts: c141000000000000a900000000000000
+  cost: 95966
+  resourceTypes: 01000000
+  resourceCosts: 943f000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   unitName: TradeStation
   maxHealth: 9346
@@ -22,11 +22,11 @@ MonoBehaviour:
   systems:
   - name: LowerTurrets
     type: 3
-    component: {fileID: 11400000, guid: 85d546068a4c8ff4ebf5a2e567fbb750, type: 2}
+    component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
   - name: UpperTurrets
     type: 3
-    component: {fileID: 11400000, guid: 1fe3b375b1e0f6d489777cf95ef63694, type: 2}
+    component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
   - name: Utility
     type: 1
@@ -45,7 +45,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
   stationType: 5
   repairAmount: 500
   repairSpeed: 5
-  rotationSpeed: 0.1
+  rotationSpeed: -0.054106947
