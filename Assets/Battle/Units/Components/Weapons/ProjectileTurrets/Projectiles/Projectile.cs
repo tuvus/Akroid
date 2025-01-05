@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Profiling;
 
 public class Projectile : BattleObject {
     private float speed;
@@ -85,7 +86,6 @@ public class Projectile : BattleObject {
                 }
             }
         }
-
         return false;
     }
 

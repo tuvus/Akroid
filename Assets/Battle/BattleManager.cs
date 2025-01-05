@@ -664,7 +664,7 @@ public class BattleManager : MonoBehaviour {
         // foreach (var missile in missiles) {
         //     missile.SetParticleSpeed(time);
         // }
-        // instantHit = time > 10;
+        instantHit = time > 10;
     }
 
     public double GetRealTime() {

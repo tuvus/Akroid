@@ -106,14 +106,12 @@ public abstract class Unit : BattleObject {
     }
 
     protected virtual void UpdateWeapons(float deltaTime) {
-        if (!turretsHibernating || (GetEnemyUnitsInRange().Count > 0 && GetEnemyUnitsInRangeDistance().First() <= maxWeaponRange + size)) {
-            Profiler.BeginSample("Weapons");
-            turretsHibernating = moduleSystem.Get<Turret>().All(t => t.UpdateTurret(deltaTime));
-            turretsHibernating = turretsHibernating && moduleSystem.Get<MissileLauncher>()
-                .All(m => m.UpdateMissileLauncher(deltaTime));
-            Profiler.EndSample();
-        }
-
+        if (turretsHibernating && GetEnemyUnitsInRange().Count == 0 &&
+            GetEnemyUnitsInRangeDistance().First() > maxWeaponRange + size) return;
+        Profiler.BeginSample("Weapons");
+        moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating );
+        moduleSystem.Get<MissileLauncher>().ForEach(m => turretsHibernating =  m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
+        Profiler.EndSample();
     }
 
     public void UpdateDestroyedUnit(float deltaTime) {
@@ -125,6 +123,7 @@ public abstract class Unit : BattleObject {
     #endregion
 
     #region UnitControlls
+
 
     public virtual int TakeDamage(int damage) {
         if (IsSpawned()) {
