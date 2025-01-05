@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d21f91b94093424e9925688a4c0db5b, type: 3}
   m_Name: MiningStation
   m_EditorClassIdentifier: 
-  cost: 23400
+  cost: 23488
   resourceTypes: 01000000
-  resourceCosts: 5c0d000000000000
+  resourceCosts: 380e000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   unitName: MiningStation
   maxHealth: 2300
@@ -26,7 +26,7 @@ MonoBehaviour:
     moduleSize: 0
   - name: Utility
     type: 1
-    component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
+    component: {fileID: 11400000, guid: fe5fa6cf3e14010dea71ad2bce09ca8d, type: 2}
     moduleSize: 0
   - name: Utility
     type: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
   stationType: 3
   repairAmount: 100
   repairSpeed: 5
-  rotationSpeed: -0.1631094
+  rotationSpeed: 0.103538096
   miningAmount: 300
   miningSpeed: 10
   miningRange: 500

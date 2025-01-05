@@ -234,7 +234,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = true;
+        bool skipTutorial = false;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -297,6 +297,8 @@ public class Chapter1 : CampaingController {
                         GetBattleManager().SetSimulationTimeScale(10);
                         AddResearchQuestLine();
                         AddWarEscalationEventLine();
+                        playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
+                        playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
                     });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -456,7 +458,11 @@ public class Chapter1 : CampaingController {
                 "In the mean time feel free to click the \"Controls help\" button in the top right and read the controls.",
                 15 * GetTimeScale());
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
-                () => { AddStationTutorial(); });
+                () => {
+                    AddStationTutorial();
+                    playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
+                    playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
+                });
         })();
     }
 
@@ -633,11 +639,6 @@ public class Chapter1 : CampaingController {
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Select our gas colector ship in the shipyard, close the station menu and press E to select the gas collection command. " +
             "Then click on a gas cloud near our mining station to issue a command.", 25 * GetTimeScale());
-        researchChain.AddAction(() => {
-            playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-            playerMiningStation.moduleSystem.Get<CargoBay>().First().AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
-        });
-
         researchChain.AddCondition(eventManager.CreateLateCondition(() =>
             eventManager.CreateCommandShipToCollectGas(gasCollector, null, null, true)));
         researchChain.AddCommEvent(playerComm, playerFaction,
@@ -1198,17 +1199,27 @@ public class Chapter1 : CampaingController {
                 planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
                     "Uhhh, you weren't supposed to be the one to colonize the moon. We already did that!");
                 playerFaction.AddScience(1000);
-                eventManager.AddEvent(eventManager.CreateWaitCondition(200), () => {
-                    moon.planetFactions[playerFaction].AddPopulation(300);
-                    moon.planetFactions[playerFaction].AddForce(100);
-                });
+                moon.planetFactions[playerFaction].AddPopulation(300);
+                moon.planetFactions[playerFaction].AddForce(100);
             });
         eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => planet.planetFactions.ContainsKey(playerFaction)),
             () => {
                 planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
                     planet.objectName + " is already colonized. That was a waste of a colonizer.");
-                planet.planetFactions[playerFaction].AddPopulation(1000000000);
+                planet.planetFactions[playerFaction].AddPopulation(10000000000);
                 planet.planetFactions[playerFaction].AddForce(1000000000);
+                var worldSpaceUnionTerritory = planet.planetFactions[planetFaction].territory;
+                planet.planetFactions[playerFaction].territory.AddFrom(new Planet.PlanetTerritory(worldSpaceUnionTerritory.highQualityArea / 2,
+                    worldSpaceUnionTerritory.mediumQualityArea / 2, worldSpaceUnionTerritory.lowQualityArea / 2));
+                worldSpaceUnionTerritory.SubtractFrom(planet.planetFactions[playerFaction].territory);
+                eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => robotFaction != null),
+                    () => {
+                        robotFaction.StartWar(playerFaction);
+                        playerFaction.GetFactionAI().attackSpeed = 4;
+                        playerFaction.GetFactionAI().attackStrength = .05f;
+                        playerFaction.GetFactionCommManager().SendCommunication(playerFaction,
+                            "The " + robotFaction.name + "s have started fighting us!");
+                    });
                 playerFaction.AddScience(1000);
             });
     }
