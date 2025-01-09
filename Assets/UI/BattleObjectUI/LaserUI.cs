@@ -1,4 +1,6 @@
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class LaserUI : BattleObjectUI {
     [SerializeField] private SpriteRenderer startHighlight;
@@ -6,6 +8,7 @@ public class LaserUI : BattleObjectUI {
 
     private Laser laser;
     private bool fireing;
+    private AudioSource audioSource;
 
     public void Setup(BattleObject battleObject, UIManager uIManager, LaserTurretUI laserTurret) {
         base.Setup(battleObject, uIManager);
@@ -16,6 +19,16 @@ public class LaserUI : BattleObjectUI {
         transform.localScale = new Vector2(laser.laserTurret.laserTurretScriptableObject.laserSize, 1) / laserTurret.laserTurret.scale;
         startHighlight.transform.localScale = new Vector2(.2f, .2f);
         endHighlight.transform.localScale = new Vector2(.2f, .2f);
+        audioSource = transform.GetChild(2).gameObject.GetComponent<AudioSource>();
+        audioSource.resource = Resources.Load<AudioResource>("Audio/Laser");
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1;
+        audioSource.rolloffMode = AudioRolloffMode.Linear;
+        audioSource.minDistance = 20;
+        audioSource.maxDistance = 120;
+        audioSource.dopplerLevel = 0;
+        audioSource.volume = .2f;
+        audioSource.loop = true;
     }
 
     public override void UpdateObject() {
@@ -23,6 +36,7 @@ public class LaserUI : BattleObjectUI {
         if (laser.fireing) {
             if (!fireing) {
                 startHighlight.enabled = uIManager.GetEffectsShown();
+                audioSource.Play();
             }
 
             fireing = true;
@@ -31,7 +45,7 @@ public class LaserUI : BattleObjectUI {
             transform.rotation = transform.parent.rotation;
             float laserLength = laser.laserLength / transform.lossyScale.y;
             spriteRenderer.size = new Vector2(spriteRenderer.size.x, laserLength);
-            transform.Translate(Vector2.up * ((laserLength / 2 + laser.laserTurret.GetTurretOffSet())));
+            transform.Translate(Vector2.up * (laserLength / 2 + laser.laserTurret.GetTurretOffSet()));
 
             if (laser.hitPoint != null) {
                 endHighlight.transform.localPosition = new Vector2(0, laserLength / 2);
@@ -54,10 +68,17 @@ public class LaserUI : BattleObjectUI {
                 endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g,
                     laser.fadeTime / laser.laserTurret.GetFadeDuration());
             }
+
+            Vector2 cameraPosition = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().transform.position;
+            // Move the audio source to the closest point on the laser to the camera.
+            transform.GetChild(2).position = Vector2.MoveTowards(transform.position,
+                Calculator.GetClosestPointToAPointOnALine(transform.position, laser.laserTurret.GetWorldRotation(), cameraPosition),
+                math.min(Vector2.Distance(transform.position, cameraPosition), laserLength / 2));
         } else if (!laser.fireing && fireing) {
             fireing = false;
             startHighlight.enabled = false;
             endHighlight.enabled = false;
+            audioSource.Stop();
         }
     }
 

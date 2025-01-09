@@ -122,7 +122,7 @@ public static class Calculator {
     }
 
     /// <summary>
-    /// Returns true if the relativePosition is in the field of view of the turret.
+    /// Returns true if the relativePosition is in the field of view of the turret's firing angle.
     /// </summary>
     public static bool IsTargetInSight(float currentShipRotation, Vector2 relativeTargetPos, float minRotate, float maxRotate) {
         float realDeg = GetAngleOutOfPosition(relativeTargetPos);
@@ -176,6 +176,7 @@ public static class Calculator {
 
     /// <summary>
     /// Gets the closest way to rotate to an angle with a deadzone.
+    /// A deadzone is the area that the turret can't rotate to or through.
     /// </summary>
     public static float GetRotationWithDeadzone(float localRotation, float localTargetRotation, float minRotate, float maxRotate) {
         if (localRotation != localTargetRotation) {

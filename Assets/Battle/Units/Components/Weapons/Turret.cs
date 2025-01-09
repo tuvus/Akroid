@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Profiling;
+using Random = UnityEngine.Random;
 
 public abstract class Turret : ModuleComponent {
     public enum TargetingBehaviors {
@@ -22,10 +24,11 @@ public abstract class Turret : ModuleComponent {
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
+    public event Action OnFire = delegate { };
+
     public Turret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
-
         scale *= turretScriptableObject.baseScale;
         SetSize(GetSpriteSize());
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
@@ -251,6 +254,7 @@ public abstract class Turret : ModuleComponent {
     /// <returns>Should a new unit be targeted or not?</returns>
     public virtual bool Fire() {
         reloadController.Fire();
+        OnFire();
         return true;
     }
 
