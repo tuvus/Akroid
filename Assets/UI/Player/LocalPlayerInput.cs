@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
 
-[DefaultExecutionOrder(-1)]
 public class LocalPlayerInput : MonoBehaviour {
     PlayerInput playerInput;
     protected UnitSpriteManager unitSpriteManager;
@@ -38,6 +37,9 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected bool primaryMousePressed;
     protected bool secondaryMousePressed;
+
+    Vector2 rightClickStartPosition;
+    float maxRightClickDistance;
 
     public bool AltButtonPressed { get; private set; }
 
@@ -208,9 +210,11 @@ public class LocalPlayerInput : MonoBehaviour {
         secondaryMousePressed = true;
         pastMousePosition = GetMousePosition();
         rightClickedBattleObject = mouseOverBattleObject;
+        rightClickStartPosition = GetMousePosition();
     }
 
     protected virtual void SecondaryMouseHeld() {
+        maxRightClickDistance = Mathf.Max(maxRightClickDistance, Vector2.Distance(rightClickStartPosition, GetMousePosition()));
         if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() / 1200);
@@ -220,14 +224,18 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
-        if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
-            if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
-                localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
-                rightClickedBattleObject = null;
+        if (maxRightClickDistance < 1) {
+            if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
+                if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
+                    localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
+                    rightClickedBattleObject = null;
+                }
+            } else {
+                localPlayer.GetPlayerUI().CloseAllMenus();
             }
-        } else {
-            localPlayer.GetPlayerUI().CloseAllMenus();
         }
+
+        maxRightClickDistance = 0;
     }
 
     public void SlowdownSimulationButtonPressed() {
@@ -341,7 +349,8 @@ public class LocalPlayerInput : MonoBehaviour {
     public bool IsObjectInViewingField(ObjectUI objectUI) {
         Vector2 position = mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition());
         // We can find the object screen size of the object by taking a point [size] distance away and getting its screen position
-        float objectScreenSize = position.x - mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0)).x;
+        float objectScreenSize = position.x -
+            mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0)).x;
         // Check if the position is within all four bounds of the screen
         return position.y >= -objectScreenSize && position.y - objectScreenSize <= Screen.height &&
             position.x >= -objectScreenSize && position.x - objectScreenSize <= Screen.width;

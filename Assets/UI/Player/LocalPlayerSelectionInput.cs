@@ -8,8 +8,6 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     [SerializeField] RectTransform selectionBox;
     Vector2 boxStartPosition;
-    Vector2 rightClickStartPosition;
-    float maxRightClickDistance;
 
     [SerializeField] protected SelectionGroup selectedUnits;
     private SelectionGroup objectsInSelectionBox;
@@ -74,33 +72,9 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             EndBoxSelection();
     }
 
-    protected override void SecondaryMouseDown() {
-        base.SecondaryMouseDown();
-        rightClickStartPosition = GetMousePosition();
-    }
-
-    protected override void SecondaryMouseHeld() {
-        base.SecondaryMouseHeld();
-        maxRightClickDistance = Mathf.Max(maxRightClickDistance, Vector2.Distance(rightClickStartPosition, GetMousePosition()));
-    }
-
     protected override void SecondaryMouseUp() {
         base.SecondaryMouseUp();
-        //EndBoxSelection();
-        if (maxRightClickDistance < 1) {
-            if (rightClickedBattleObject == null) {
-                //CreateShipCommand(GetMouseWorldPosition());
-            } else {
-                if (selectedUnits.GetAllShips().Count > 0) {
-                    //CreateShipCommand(GetMouseWorldPosition());
-                } else {
-                    //StartFollowingUnit(rightClickedUnit);
-                    //rightClickedUnit = null;
-                }
-            }
-        }
-
-        maxRightClickDistance = 0;
+        EndBoxSelection();
     }
 
     void SetButtonDown() {
