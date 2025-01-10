@@ -3,18 +3,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class CampaignSetup : MonoBehaviour {
-    [SerializeField] GameObject campaignChapterPanel;
+    private StartMenu startMenu;
 
-    private void Awake() {
-        ShowCampaingChapterPanel(false);
+    public void SetStartMenu(StartMenu startMenu) {
+        this.startMenu = startMenu;
     }
 
     public void StartCampaignChapter(int chapter) {
+        startMenu.buttonSound.Play();
+        gameObject.SetActive(true);
         StartCoroutine(ChangeScenes(chapter));
     }
 
     public void ShowCampaingChapterPanel(bool show) {
-        campaignChapterPanel.SetActive(show);
+        startMenu.buttonSound.Play();
+        gameObject.SetActive(show);
     }
 
     public IEnumerator ChangeScenes(int chapter) {

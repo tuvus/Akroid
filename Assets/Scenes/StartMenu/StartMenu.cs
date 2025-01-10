@@ -10,12 +10,15 @@ public class StartMenu : MonoBehaviour {
         StartMenue,
         SimulationMenue,
         CampaingMenue,
-        OptionMenue,
+        SimulationSetupMenu,
+        CampaingSetup,
     }
 
     [SerializeField] private StartMenuState state;
     [SerializeField] TMP_Text versionText;
-
+    [field:SerializeField] public AudioSource buttonSound { get; private set; }
+    [SerializeField] private SimulationSetup simulationSetup;
+    [SerializeField] private CampaignSetup campaignSetup;
     public void Awake() {
         if (Instance == null) {
             Instance = this;
@@ -24,6 +27,7 @@ public class StartMenu : MonoBehaviour {
         }
         HideAllMenues();
         SetStartMenu();
+        buttonSound.Stop();
         versionText.text = "Version: " + Application.version;
     }
 
@@ -32,12 +36,17 @@ public class StartMenu : MonoBehaviour {
         ShowStartMenue(false);
         ShowSimulationMenue(false);
         ShowCampaignMenue(false);
+        simulationSetup.gameObject.SetActive(false);
+        campaignSetup.gameObject.SetActive(false);
+        simulationSetup.SetStartMenu(this);
+        campaignSetup.SetStartMenu(this);
     }
 
     #region StartMenue
     public void SetStartMenu() {
         HideAllMenues();
         ShowStartMenue(true);
+        buttonSound.Play();
         state = StartMenuState.StartMenue;
     }
 
@@ -53,6 +62,7 @@ public class StartMenu : MonoBehaviour {
         HideAllMenues();
         ShowSimulationMenue(true);
         state = StartMenuState.SimulationMenue;
+        buttonSound.Play();
     }
 
     public void ShowSimulationMenue(bool trueOrFalse) {
@@ -66,6 +76,7 @@ public class StartMenu : MonoBehaviour {
     public void SetCampaignMenu() {
         HideAllMenues();
         ShowCampaignMenue(true);
+        buttonSound.Play();
         state = StartMenuState.CampaingMenue;
     }
 
@@ -74,6 +85,13 @@ public class StartMenu : MonoBehaviour {
     }
 
     #endregion
+
+    public void SetSimulationSetup() {
+        HideAllMenues();
+        buttonSound.Play();
+        state = StartMenuState.SimulationSetupMenu;
+        simulationSetup.ShowSimulationSetup();
+    }
 
     public void ExitGame() {
         Application.Quit();

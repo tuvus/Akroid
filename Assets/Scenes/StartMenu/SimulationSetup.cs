@@ -27,14 +27,15 @@ public class SimulationSetup : MonoBehaviour {
     public List<FactionData> factions;
     private int selectedFaction;
     private BattleManager.BattleSettings battleSettings;
-    ColorPicker colorPicker = new ColorPicker();
+    private ColorPicker colorPicker = new ColorPicker();
+    private StartMenu startMenu;
 
-    public void Awake() {
-        gameObject.SetActive(false);
+    public void SetStartMenu(StartMenu startMenu) {
+        this.startMenu = startMenu;
     }
 
-    public void OnEnable() {
-        StartMenu.Instance.HideAllMenues();
+    public void ShowSimulationSetup() {
+        gameObject.SetActive(true);
         factions = new List<FactionData>();
         battleSettings = new BattleManager.BattleSettings {
             starCount = 3,
@@ -54,6 +55,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SetupDefaultSimulation() {
+        startMenu.buttonSound.Play();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings {
             asteroidFieldCount = 80,
@@ -72,6 +74,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SetupBattleSimulation() {
+        startMenu.buttonSound.Play();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings() {
             asteroidFieldCount = 0,
@@ -87,6 +90,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void ToggleSimulationSettings() {
+        startMenu.buttonSound.Play();
         editSimulationPanel.SetActive(!editSimulationPanel.activeSelf);
         if (editSimulationPanel.activeSelf) {
             editFactionPanel.SetActive(false);
@@ -156,6 +160,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SelectFaction(int factionIndex) {
+        startMenu.buttonSound.Play();
         if (factionIndex == -1 || factionIndex == selectedFaction) {
             selectedFaction = -1;
             editFactionPanel.SetActive(false);
@@ -184,12 +189,14 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void RemoveSelectedFaction() {
+        startMenu.buttonSound.Play();
         factions.RemoveAt(selectedFaction);
         Destroy(factionList.GetChild(selectedFaction).gameObject);
         SelectFaction(-1);
     }
 
     public void StartSimulation() {
+        startMenu.buttonSound.Play();
         StartCoroutine(ChangeScenes());
     }
 
@@ -233,10 +240,5 @@ public class SimulationSetup : MonoBehaviour {
         battleManager.SetupBattle(battleSettings, factions);
         uIManager.SetupUIManager();
         Destroy(gameObject);
-    }
-
-    public void Back() {
-        StartMenu.Instance.SetSimulationMenu();
-        gameObject.SetActive(false);
     }
 }
