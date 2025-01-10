@@ -55,6 +55,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SetupDefaultSimulation() {
+        ShowSimulationSetup();
         startMenu.buttonSound.Play();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings {
@@ -74,6 +75,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SetupBattleSimulation() {
+        ShowSimulationSetup();
         startMenu.buttonSound.Play();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings() {
