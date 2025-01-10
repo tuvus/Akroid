@@ -253,14 +253,14 @@ public class FleetAI {
         //Sets the target position of the command and tells all ships to attack move
         if (newCommand) {
             newCommand = false;
+            currentCommandState = CommandType.FormationLocation;
             // If we are far away form the target fleet form up before attacking
             if (Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) > fleet.GetMaxTurretRange() * 1.2) {
-                currentCommandState = CommandType.FormationLocation;
                 AssignShipsToFormationLocation(command.targetFleet.GetPosition(), fleet.GetSize() / 2);
                 return CommandResult.Stop;
+            } else {
+                SetShipsIdle();
             }
-            SetShipsIdle();
-            currentCommandState = CommandType.Move;
         }
 
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
@@ -269,7 +269,7 @@ public class FleetAI {
         }
 
         if (currentCommandState == CommandType.Move
-            && Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) <= fleet.GetMaxTurretRange()) {
+            && Vector2.Distance(fleet.GetPosition(), command.targetFleet.GetPosition()) <= fleet.GetMaxTurretRange() + fleet.size) {
             SetAllShipsSpeed();
             currentCommandState = CommandType.AttackFleet;
         } else if (currentCommandState == CommandType.AttackFleet) {
