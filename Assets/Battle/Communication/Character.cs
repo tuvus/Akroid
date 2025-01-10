@@ -14,14 +14,15 @@ public class Character {
     public static Character GenerateCharacter() {
         int random = UnityEngine.Random.Range(0, 3);
         if (random == 0) {
-            GameObject prefab = (GameObject)Resources.Load("Prefabs/Characters/Fire Boy");
-            return new Character(prefab.name, prefab);
+            return CreateCharacter("Firon");
         } else if (random == 1) {
-            GameObject prefab = (GameObject)Resources.Load("Prefabs/Characters/Moth Man");
-            return new Character(prefab.name, prefab);
+            return CreateCharacter("Thom");
         } else {
-            GameObject prefab = (GameObject)Resources.Load("Prefabs/Characters/Owl");
-            return new Character(prefab.name, prefab);
+            return CreateCharacter("Lwo");
         }
+    }
+
+    public static Character CreateCharacter(String prefabName) {
+        return new Character(prefabName, (GameObject)Resources.Load("Prefabs/Characters/" + prefabName));
     }
 }
