@@ -86,13 +86,22 @@ public class PlayerUI : MonoBehaviour {
 
     public void UpdatePlayerUI() {
         Profiler.BeginSample("PlayerUI");
-        command.text = localPlayerInput.GetActionType().ToString();
+
+        if ((localPlayerInput.displayedFleet != null || localPlayerInput.displayedBattleObject != null) &&
+            localPlayerInput.GetActionType() != LocalPlayerInput.ActionType.None &&
+            localPlayerInput.GetActionType() != LocalPlayerInput.ActionType.Selecting) {
+            commandUI.SetActive(true);
+            command.text = localPlayerInput.GetActionType().ToString();
+        } else {
+            commandUI.SetActive(false);
+        }
+
         if (localPlayer.player.faction != null) {
             factionUI.SetActive(true);
             factionName.text = localPlayer.player.faction.name;
             factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(localPlayer.player.faction.credits);
             factionScience.text = "Science: " + NumFormatter.ConvertNumber(localPlayer.player.faction.science) + " (" +
-                                  localPlayer.player.faction.Discoveries + ")";
+                localPlayer.player.faction.Discoveries + ")";
         } else {
             factionUI.SetActive(false);
         }
@@ -151,7 +160,8 @@ public class PlayerUI : MonoBehaviour {
             }
         } else if (battleObjectUI.battleObject.IsPlanet()) {
             objectStatusUI.RefreshPlayerObjectStatusUI(battleObjectUI, unitCount);
-        } else if (battleObjectUI.battleObject.IsStar() || battleObjectUI.battleObject.IsAsteroid() || battleObjectUI.battleObject.IsGasCloud()) {
+        } else if (battleObjectUI.battleObject.IsStar() || battleObjectUI.battleObject.IsAsteroid() ||
+            battleObjectUI.battleObject.IsGasCloud()) {
             objectStatusUI.RefreshPlayerObjectStatusUI(battleObjectUI, unitCount);
         }
     }
@@ -301,8 +311,8 @@ public class PlayerUI : MonoBehaviour {
 
     public bool IsAMenueShown() {
         return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf
-               || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf || starUI.activeSelf
-               || asteroidUI.activeSelf || gasCloudUI.activeSelf;
+            || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf || starUI.activeSelf
+            || asteroidUI.activeSelf || gasCloudUI.activeSelf;
     }
 
     public bool IsAnObjectMenuShown() {
