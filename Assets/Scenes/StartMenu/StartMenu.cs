@@ -94,6 +94,7 @@ public class StartMenu : MonoBehaviour {
     }
 
     public void ExitGame() {
+        buttonSound.Play();
         Application.Quit();
     }
 }
