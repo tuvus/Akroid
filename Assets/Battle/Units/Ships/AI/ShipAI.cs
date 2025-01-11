@@ -563,6 +563,11 @@ public class ShipAI {
                 currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
             } else if (currentCommandState == CommandType.Dock) {
+                if (ship.dockedStation == null) {
+                    // The station must have been destroyed
+                    return CommandResult.StopRemove;
+                }
+
                 currentCommandState = CommandType.Wait;
                 ship.moduleSystem.Get<ResearchEquipment>().ForEach(r => ship.dockedStation.faction.AddScience(r.DownloadData()));
                 return CommandResult.Stop;

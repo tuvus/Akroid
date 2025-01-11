@@ -555,81 +555,42 @@ public class BattleManager : MonoBehaviour {
             threaded = PlayerPrefs.GetInt("Threading") == 1;
         }
 
-        Profiler.BeginSample("EarlyFactionsUpdate");
-        UpdateCollectionParallel(factions, f => f.EarlyUpdateFaction());
-        Profiler.EndSample();
-
-        Profiler.BeginSample("FactionsFindingEnemies");
-        UpdateCollectionParallel(factions, f => f.UpdateNearbyEnemyUnits());
-        Profiler.EndSample();
-
-        Profiler.BeginSample("FactionUpdate");
-        foreach (var faction in factions) {
-            faction.UpdateFaction(deltaTime);
-        }
-        Profiler.EndSample();
-
-        Profiler.BeginSample("FleetsFindingEnemies");
-        UpdateCollectionParallel(factions.SelectMany(f => f.fleets).ToList(), f => f.FindEnemies());
-        Profiler.EndSample();
-
-        Profiler.BeginSample("FleetsUpdate");
-        foreach (var faction in factions) {
-            faction.UpdateFleets(deltaTime);
-        }
-        Profiler.EndSample();
-
-        Profiler.BeginSample("UnitsFindingEnemies");
-        UpdateCollectionParallel(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies());
-        Profiler.EndSample();
-
-        Profiler.BeginSample("UnitsUpdate");
-        foreach (var unit in units.ToList()) {
-            Profiler.BeginSample(unit.GetUnitName());
-            unit.UpdateUnit(deltaTime);
+        UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
+        UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
+        UpdateCollection(factions.SelectMany(f => f.fleets).ToList(), f => f.FindEnemies(), "FleetsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
+        UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(), "UnitsFindingEnemies");
+        UpdateCollection(units.ToList(), u => {
+            Profiler.BeginSample(u.GetUnitName());
+            u.UpdateUnit(deltaTime);
             Profiler.EndSample();
-        }
-        Profiler.EndSample();
+        }, "UnitsUpdate", false);
 
-        Profiler.BeginSample("ProjectilesUpdate");
-        UpdateCollectionParallel(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime));
-        Profiler.EndSample();
+        UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
+        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate", false);
+        UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
+        UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
+        UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
 
-        Profiler.BeginSample("MissilesUpdate");
-        foreach (var missile in usedMissiles.ToList()) {
-            missile.UpdateMissile(deltaTime);
-        }
-
-        Profiler.EndSample();
-        Profiler.BeginSample("DestroyedUnitsUpdate");
-        foreach (var destroyedUnit in destroyedUnits.ToList()) {
-            destroyedUnit.UpdateDestroyedUnit(deltaTime);
-        }
-
-        Profiler.EndSample();
-        Profiler.BeginSample("StarsUpdate");
-        foreach (var star in stars.ToList()) {
-            star.UpdateStar(deltaTime);
-        }
-
-        Profiler.EndSample();
-        Profiler.BeginSample("PlanetsUpdate");
-        foreach (var planet in planets) {
-            planet.UpdatePlanet(deltaTime);
-        }
-
-        Profiler.EndSample();
         eventManager.UpdateEvents(deltaTime);
     }
 
-    public void UpdateCollectionParallel<T>(ICollection<T> collection, Action<T> action) {
-        if (threaded) {
+    /// <summary>
+    /// Handles apply an action to a collection of objects in parallel or serial depending on the input
+    /// and if the player want to use multithreading.
+    /// </summary>
+    public void UpdateCollection<T>(ICollection<T> collection, Action<T> action, String profileName, bool parallel = true) {
+        Profiler.BeginSample(profileName);
+        if (threaded && parallel) {
             Parallel.ForEach(collection, c => action.Invoke(c));
         } else {
             foreach (var c in collection) {
                 action.Invoke(c);
             }
         }
+
+        Profiler.EndSample();
     }
 
     #region HelperMethods
