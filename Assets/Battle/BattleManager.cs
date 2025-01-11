@@ -481,6 +481,7 @@ public class BattleManager : MonoBehaviour {
         RemoveBattleObject(projectile);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public Projectile GetNewProjectile() {
         if (unusedProjectiles.Count == 0) {
             PreSpawnNewProjectile();
@@ -495,6 +496,7 @@ public class BattleManager : MonoBehaviour {
         unusedProjectiles.Add(newProjectile);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void AddMissile(Missile missile) {
         usedMissiles.Add(missile);
         unusedMissiles.Remove(missile);
@@ -566,7 +568,8 @@ public class BattleManager : MonoBehaviour {
             u.UpdateUnit(deltaTime);
             Profiler.EndSample();
         }, "UnitsUpdate", false);
-
+        UpdateCollection(units.Where(u => u.IsTargetable() && u.HasWeapons()).ToList(),
+            u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate", false);
         UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
         UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate", false);
         UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);

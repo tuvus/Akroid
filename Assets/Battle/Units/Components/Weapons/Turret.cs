@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Profiling;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public abstract class Turret : ModuleComponent {
     public enum TargetingBehaviors {
@@ -23,6 +22,8 @@ public abstract class Turret : ModuleComponent {
     private bool aimed;
     private float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
+    private Random random;
+    private float turretOffset;
 
     public event Action OnFire = delegate { };
 
@@ -33,8 +34,11 @@ public abstract class Turret : ModuleComponent {
         SetSize(GetSpriteSize());
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
             turretScriptableObject.maxAmmo);
-        findNewTargetUpdateTime = Random.Range(0, 0.2f);
+        random = new Random((uint)battleManager.units.Count + 1);
+        findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
         visible = true;
+        turretOffset = (turretScriptableObject.turretSprite.rect.size.y - turretScriptableObject.turretSprite.pivot.y) * scale.y /
+            turretScriptableObject.turretSprite.pixelsPerUnit;
         SetSize(SetupSize());
     }
 
@@ -42,11 +46,9 @@ public abstract class Turret : ModuleComponent {
     public virtual bool UpdateTurret(float deltaTime) {
         if (TurretHibernationStatus()) return true;
 
-        Profiler.BeginSample("UpdateTurretAction");
         UpdateTurretReload(deltaTime);
         UpdateTurretAim(deltaTime);
         UpdateTurretWeapon(deltaTime);
-        Profiler.EndSample();
         return false;
     }
 
@@ -139,7 +141,7 @@ public abstract class Turret : ModuleComponent {
     private bool IsTargetBetter(Unit newTarget, Unit oldTarget) {
         if (oldTarget == null)
             return true;
-        if (Random.Range(0, 10) < 3) return true;
+        if (random.NextInt(0, 10) < 3) return true;
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (turretScriptableObject.targeting == TargetingBehaviors.closest) {
@@ -279,8 +281,7 @@ public abstract class Turret : ModuleComponent {
     }
 
     public float GetTurretOffSet() {
-        return (turretScriptableObject.turretSprite.rect.size.y - turretScriptableObject.turretSprite.pivot.y) * scale.y /
-            turretScriptableObject.turretSprite.pixelsPerUnit;
+        return turretOffset;
     }
 
     public virtual float GetReloadTimeModifier() {

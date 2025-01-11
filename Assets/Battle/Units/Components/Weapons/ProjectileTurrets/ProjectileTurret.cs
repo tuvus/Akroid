@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public class ProjectileTurret : Turret {
     public ProjectileTurretScriptableObject projectileTurretScriptableObject { get; private set; }
@@ -13,20 +14,21 @@ public class ProjectileTurret : Turret {
 
     public override bool Fire() {
         base.Fire();
+        var random = new Random((uint)battleManager.units.Count + 1);
         if (!battleManager.instantHit) {
             Projectile projectile = battleManager.GetNewProjectile();
             projectile.SetProjectile(unit.faction,
                 GetWorldPosition(),
-                GetWorldRotation() + Random.Range(-projectileTurretScriptableObject.fireAccuracy,
+                GetWorldRotation() + random.NextFloat(-projectileTurretScriptableObject.fireAccuracy,
                     projectileTurretScriptableObject.fireAccuracy),
                 unit.GetVelocity(), projectileTurretScriptableObject.fireVelocity,
-                Mathf.RoundToInt(Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
+                Mathf.RoundToInt(random.NextFloat(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
                     unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
                 projectileTurretScriptableObject.projectileRange *
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y * 2);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
-                Random.Range(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
+                random.NextFloat(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)));
         }
 

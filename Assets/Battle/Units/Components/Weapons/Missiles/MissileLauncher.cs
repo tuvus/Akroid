@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Profiling;
 
 [RequireComponent(typeof(ReloadController))]
 public class MissileLauncher : ModuleComponent {
@@ -35,10 +34,8 @@ public class MissileLauncher : ModuleComponent {
     public bool UpdateMissileLauncher(float deltaTime) {
         if (MissileLauncherHibernationStatus()) return true;
 
-        Profiler.BeginSample("UpdateMissileLauncher");
         reloadController.UpdateReloadController(deltaTime, faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
         if (!reloadController.ReadyToFire()) {
-            Profiler.EndSample();
             return false;
         }
 
@@ -54,7 +51,6 @@ public class MissileLauncher : ModuleComponent {
             targetUnit = null;
         }
 
-        Profiler.EndSample();
         return false;
     }
 

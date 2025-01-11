@@ -62,9 +62,6 @@ public abstract class Unit : BattleObject {
             return;
         }
 
-        if (IsTargetable() && HasWeapons())
-            UpdateWeapons(deltaTime);
-
         if (IsSpawned()) {
             moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
             moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
@@ -111,13 +108,12 @@ public abstract class Unit : BattleObject {
         }
     }
 
-    protected virtual void UpdateWeapons(float deltaTime) {
+    public virtual void UpdateWeapons(float deltaTime) {
+        if (!spawned) return;
         if (turretsHibernating && GetEnemyUnitsInRange().Count == 0 &&
             GetEnemyUnitsInRangeDistance().First() > maxWeaponRange + size) return;
-        Profiler.BeginSample("Weapons");
         moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating);
         moduleSystem.Get<MissileLauncher>().ForEach(m => turretsHibernating = m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
-        Profiler.EndSample();
     }
 
     public void UpdateDestroyedUnit(float deltaTime) {
