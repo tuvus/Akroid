@@ -206,7 +206,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(planetScriptableObject.sprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(planetScriptableObject.spriteBounds, scale);
     }
 
     public override GameObject GetPrefab() {

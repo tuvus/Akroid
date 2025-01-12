@@ -160,7 +160,7 @@ public class Missile : BattleObject {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(missileScriptableObject.sprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(missileScriptableObject.spriteBounds, scale);
     }
 
     public DestroyEffect GetDestroyEffect() {

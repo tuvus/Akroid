@@ -4,4 +4,11 @@ using UnityEngine;
 public class GasCloudScriptableObject : ScriptableObject {
     public Sprite sprite;
     public CargoBay.CargoTypes type;
+    public Vector2 spriteBounds { get; private set; }
+
+    public void OnValidate() {
+        if (sprite != null) {
+            spriteBounds = Calculator.GetSpriteBounds(sprite);
+        }
+    }
 }

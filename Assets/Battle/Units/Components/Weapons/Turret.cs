@@ -297,6 +297,6 @@ public abstract class Turret : ModuleComponent {
     public virtual void StopFiring() { }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(turretScriptableObject.turretSprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(turretScriptableObject.spriteBounds, scale);
     }
 }

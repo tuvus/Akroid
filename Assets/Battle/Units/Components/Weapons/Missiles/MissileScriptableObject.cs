@@ -12,4 +12,11 @@ public class MissileScriptableObject : ScriptableObject {
     public Sprite sprite;
     public DestroyEffectScriptableObject destroyEffect;
     public float timeAfterExpire;
+    public Vector2 spriteBounds { get; private set; }
+
+    public void OnValidate() {
+        if (sprite != null) {
+            spriteBounds = Calculator.GetSpriteBounds(sprite);
+        }
+    }
 }

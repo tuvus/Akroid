@@ -365,7 +365,7 @@ public abstract class Unit : BattleObject {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(unitScriptableObject.sprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(unitScriptableObject.spriteBounds, scale);
     }
 
     public DestroyEffect GetDestroyEffect() {

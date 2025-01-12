@@ -19,6 +19,7 @@ public class UnitScriptableObject : ScriptableObject {
     [SerializeField] protected IModule[] modules;
     public DestroyEffectScriptableObject destroyEffect;
     public Vector2 baseScale = Vector2.one;
+    public Vector2 spriteBounds { get; private set; }
 
     public void OnValidate() {
         if (systems == null) {
@@ -41,6 +42,10 @@ public class UnitScriptableObject : ScriptableObject {
             }
 
             modules = prefabModuleSystem.modules.Cast<IModule>().ToArray();
+        }
+
+        if (sprite != null) {
+            spriteBounds = Calculator.GetSpriteBounds(sprite);
         }
 
         UpdateCosts();

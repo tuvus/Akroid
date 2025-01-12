@@ -241,7 +241,11 @@ public static class Calculator {
         return targetPosition + (localVelocity * time);
     }
 
-    public static float GetSpriteSize(Sprite sprite, Vector2 scale) {
-        return Mathf.Max(sprite.rect.size.x / 2, sprite.rect.size.y / 2) / sprite.pixelsPerUnit;
+    public static float GetSpriteSizeFromBounds(Vector2 bounds, Vector2 scale) {
+        return Mathf.Max(bounds.x * scale.x / 2, bounds.y * scale.y / 2);
+    }
+
+    public static Vector2 GetSpriteBounds(Sprite sprite) {
+        return sprite.rect.size / sprite.pixelsPerUnit;
     }
 }

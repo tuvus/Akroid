@@ -37,7 +37,7 @@ public class GasCloud : BattleObject, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * scale.x;
+        return GetSpriteSize();
     }
 
     /// <returns>The amount mined</returns>
@@ -57,7 +57,7 @@ public class GasCloud : BattleObject, IPositionConfirmer {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(gasCloudScriptableObject.sprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(gasCloudScriptableObject.spriteBounds, scale);
     }
 
     public override GameObject GetPrefab() {

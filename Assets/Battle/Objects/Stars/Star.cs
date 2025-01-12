@@ -18,7 +18,7 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     protected override float SetupSize() {
-        return GetSpriteSize() * scale.x;
+        return GetSpriteSize();
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -64,7 +64,7 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSize(starScriptableObject.sprite, scale);
+        return Calculator.GetSpriteSizeFromBounds(starScriptableObject.spriteBounds, scale);
     }
 
     public override GameObject GetPrefab() {
