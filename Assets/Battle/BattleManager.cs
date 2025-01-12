@@ -423,11 +423,13 @@ public class BattleManager : MonoBehaviour {
         OnObjectRemoved.Invoke(iObject);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private void AddBattleObject(BattleObject battleObject) {
         objects.Add(battleObject);
         OnBattleObjectCreated.Invoke(battleObject);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private void RemoveBattleObject(BattleObject battleObject) {
         objects.Remove(battleObject);
         OnBattleObjectRemoved.Invoke(battleObject);
@@ -469,8 +471,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void AddProjectile(Projectile projectile) {
-        usedProjectiles.Add(projectile);
-        unusedProjectiles.Remove(projectile);
         AddBattleObject(projectile);
     }
 
@@ -483,11 +483,12 @@ public class BattleManager : MonoBehaviour {
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     public Projectile GetNewProjectile() {
-        if (unusedProjectiles.Count == 0) {
-            PreSpawnNewProjectile();
-        }
+        if (unusedProjectiles.Count == 0) PreSpawnNewProjectile();
 
-        return unusedProjectiles.First();
+        Projectile projectile = unusedProjectiles.First();
+        unusedProjectiles.Remove(projectile);
+        usedProjectiles.Add(projectile);
+        return projectile;
     }
 
     public void PreSpawnNewProjectile() {
@@ -498,8 +499,6 @@ public class BattleManager : MonoBehaviour {
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     public void AddMissile(Missile missile) {
-        usedMissiles.Add(missile);
-        unusedMissiles.Remove(missile);
         AddBattleObject(missile);
     }
 
@@ -509,12 +508,14 @@ public class BattleManager : MonoBehaviour {
         RemoveBattleObject(missile);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public Missile GetNewMissile() {
-        if (unusedMissiles.Count == 0) {
-            PrespawnNewMissile();
-        }
+        if (unusedMissiles.Count == 0) PrespawnNewMissile();
 
-        return unusedMissiles.First();
+        Missile missile = unusedMissiles.First();
+        usedMissiles.Add(missile);
+        unusedMissiles.Remove(missile);
+        return missile;
     }
 
     public void PrespawnNewMissile() {

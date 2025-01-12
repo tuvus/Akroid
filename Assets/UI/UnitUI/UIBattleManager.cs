@@ -46,10 +46,19 @@ public class UIBattleManager : MonoBehaviour {
 
     private void CreateNewObjects() {
         foreach (var iObject in objectsToCreate) {
-            if (iObject is Projectile projectile && objects.ContainsKey(projectile)) {
-                battleObjects[projectile].Setup(projectile, uIManager);
+            if (iObject.GetPrefab() == null) return;
+            if (iObject.GetPrefab().GetComponent<BattleObjectUI>() == null) {
+                Debug.LogWarning(iObject.objectName + " had a prefab path but did not have a UI component");
+                return;
             }
 
+            if (iObject is Projectile projectile && objects.ContainsKey(projectile)) {
+                battleObjects[projectile].Setup(projectile, uIManager);
+                return;
+            } else if (iObject is Missile missile && objects.ContainsKey(missile)) {
+                battleObjects[missile].Setup(missile, uIManager);
+                return;
+            }
 
             BattleObjectUI battleObjectUI = Instantiate(iObject.GetPrefab()).GetComponent<BattleObjectUI>();
             battleObjectUI.Setup(iObject, uIManager);
@@ -108,16 +117,6 @@ public class UIBattleManager : MonoBehaviour {
     /// Registers a sprite for creation, doesn't actually create the object here.
     /// </summary>
     private void OnBattleObjectCreated(BattleObject battleObject) {
-        if (battleObject.GetPrefab() == null) return;
-        if (battleObject.GetPrefab().GetComponent<BattleObjectUI>() == null) {
-            Debug.LogWarning(battleObject.objectName + " had a prefab path but did not have a UI component");
-            return;
-        }
-
-        if (battleObject is Projectile projectile) {
-            objectsToCreate.Add(projectile);
-        }
-
         objectsToCreate.Add(battleObject);
     }
 
@@ -131,7 +130,7 @@ public class UIBattleManager : MonoBehaviour {
         }
 
         BattleObjectUI battleObjectUI = battleObjects[battleObject];
-        if (battleObjectUI is ProjectileUI) {
+        if (battleObjectUI is ProjectileUI || battleObjectUI is MissileUI) {
             battleObjectUI.OnBattleObjectRemoved();
             return;
         }
