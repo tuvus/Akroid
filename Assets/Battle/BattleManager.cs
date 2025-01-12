@@ -571,7 +571,7 @@ public class BattleManager : MonoBehaviour {
         }, "UnitsUpdate", false);
         UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
         UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
-        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate", false);
+        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate");
         UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
         UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
         UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
