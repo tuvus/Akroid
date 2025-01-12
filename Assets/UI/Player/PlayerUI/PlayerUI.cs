@@ -11,7 +11,7 @@ public class PlayerUI : MonoBehaviour {
     public static PlayerUI Instance { get; protected set; }
     private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
-    private UnitSpriteManager unitSpriteManager;
+    private UIBattleManager uiBattleManager;
 
     [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
@@ -61,7 +61,7 @@ public class PlayerUI : MonoBehaviour {
         this.localPlayer = localPlayer;
         Instance = this;
         this.localPlayerInput = localPlayerInput;
-        this.unitSpriteManager = uIManager.unitSpriteManager;
+        this.uiBattleManager = uIManager.uiBattleManager;
         CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
@@ -72,7 +72,7 @@ public class PlayerUI : MonoBehaviour {
         commandRendererShown = true;
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
-        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, unitSpriteManager, .2f));
+        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uiBattleManager, .2f));
         playerMenueUI.SetupMenueUI(localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
         foreach (var menu in uIMenusInput) {
@@ -226,7 +226,7 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ShowLocalFaction() {
-        ShowFactionUI(unitSpriteManager.factionUIs[localPlayer.GetFaction()]);
+        ShowFactionUI(uiBattleManager.factionUIs[localPlayer.GetFaction()]);
     }
 
     public void CloseAllMenus() {

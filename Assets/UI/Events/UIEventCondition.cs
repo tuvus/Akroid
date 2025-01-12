@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 public abstract class UIEventCondition : EventCondition {
     protected LocalPlayer localPlayer;
-    protected UnitSpriteManager unitSpriteManager;
+    protected UIBattleManager uiBattleManager;
 
-    public UIEventCondition(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, ConditionType conditionType,
+    public UIEventCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType,
         bool visualize = false) : base(conditionType, visualize) {
         this.localPlayer = localPlayer;
-        this.unitSpriteManager = unitSpriteManager;
+        this.uiBattleManager = uiBattleManager;
     }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {

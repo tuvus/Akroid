@@ -8,7 +8,7 @@
 public class LocalPlayer : MonoBehaviour {
     private BattleManager battleManager;
     private UIManager uIManager;
-    private UnitSpriteManager unitSpriteManager;
+    private UIBattleManager uiBattleManager;
     public Player player { get; private set; }
     public static LocalPlayer Instance { get; private set; }
     private LocalPlayerInput localPlayerInput;
@@ -22,7 +22,7 @@ public class LocalPlayer : MonoBehaviour {
     public void PreBattleManagerSetup(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
         this.uIManager = uIManager;
-        this.unitSpriteManager = uIManager.unitSpriteManager;
+        this.uiBattleManager = uIManager.uiBattleManager;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
     }
@@ -35,7 +35,7 @@ public class LocalPlayer : MonoBehaviour {
         player = battleManager.GetLocalPlayer();
         player.OnFactionChanged += SetupFaction;
         Instance = this;
-        localPlayerInput.Setup(this, unitSpriteManager);
+        localPlayerInput.Setup(this, uiBattleManager);
         playerUI.SetUpUI(battleManager, localPlayerInput, this, uIManager);
         SetupFaction(player.faction);
         localPlayerInput.CenterCamera();
@@ -130,7 +130,7 @@ public class LocalPlayer : MonoBehaviour {
     }
 
     public FactionUI GetFactionUI() {
-        return unitSpriteManager.factionUIs[player.faction];
+        return uiBattleManager.factionUIs[player.faction];
     }
 
     #endregion

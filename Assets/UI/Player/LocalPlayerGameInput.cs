@@ -3,8 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 public class LocalPlayerGameInput : LocalPlayerSelectionInput {
-    public override void Setup(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
-        base.Setup(localPlayer, unitSpriteManager);
+    public override void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+        base.Setup(localPlayer, uiBattleManager);
         GetPlayerInput().Player.ClearCommands.started += context => ClearCommands();
 
         GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPreformed();

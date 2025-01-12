@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class LocalPlayerInput : MonoBehaviour {
     PlayerInput playerInput;
-    protected UnitSpriteManager unitSpriteManager;
+    protected UIBattleManager uiBattleManager;
     protected LocalPlayer localPlayer;
 
     public enum ActionType {
@@ -61,9 +61,9 @@ public class LocalPlayerInput : MonoBehaviour {
     int timeStepIndex;
     protected CanvasScaler canvasScaler;
 
-    public virtual void Setup(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
+    public virtual void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
         this.localPlayer = localPlayer;
-        this.unitSpriteManager = unitSpriteManager;
+        this.uiBattleManager = uiBattleManager;
         mainCamera = transform.GetChild(0).GetComponent<Camera>();
         background = GetComponentInChildren<Background>();
         background.SetupBackground();
@@ -304,7 +304,7 @@ public class LocalPlayerInput : MonoBehaviour {
         float distance = float.MaxValue;
         Profiler.BeginSample("BattleObjectOverMouse");
         Vector2 mouseWorldPosition = GetMouseWorldPosition();
-        foreach (BattleObjectUI targetObject in unitSpriteManager.battleObjects.Values) {
+        foreach (BattleObjectUI targetObject in uiBattleManager.battleObjects.Values) {
             if (!targetObject.IsSelectable()) continue;
 
             float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.battleObject.position);
@@ -322,7 +322,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     public virtual void UnitDestroyed(Unit unit) {
-        if (GetDisplayedBattleObject() == unitSpriteManager.units[unit]) displayedBattleObject = null;
+        if (GetDisplayedBattleObject() == uiBattleManager.units[unit]) displayedBattleObject = null;
     }
 
     public PlayerInput GetPlayerInput() {

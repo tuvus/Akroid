@@ -5,17 +5,17 @@ using UnityEngine;
 public class FleetUI : ObjectUI {
     public Fleet fleet { get; private set; }
     [SerializeField] private FleetAI fleetAI;
-    private UnitSpriteManager unitSpriteManager;
+    private UIBattleManager uiBattleManager;
 
-    public void Setup(Fleet fleet, UnitSpriteManager unitSpriteManager) {
+    public void Setup(Fleet fleet, UIBattleManager uiBattleManager) {
         base.Setup(fleet);
         this.fleet = fleet;
-        this.unitSpriteManager = unitSpriteManager;
+        this.uiBattleManager = uiBattleManager;
         fleetAI = fleet.fleetAI;
     }
 
     public IEnumerable<ShipUI> GetShipsUI() {
-        return fleet.ships.Select(s => (ShipUI)unitSpriteManager.units[s]);
+        return fleet.ships.Select(s => (ShipUI)uiBattleManager.units[s]);
     }
 
     public override void UpdateObject() { }

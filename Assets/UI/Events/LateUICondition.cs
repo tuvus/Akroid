@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class LateUICondition : UIWrapperEventCondition<LateCondition> {
     public LateUICondition(LateCondition conditionLogic, LocalPlayer localPlayer,
-        UnitSpriteManager unitSpriteManager) : base(conditionLogic, localPlayer, unitSpriteManager, true) { }
+        UIBattleManager uiBattleManager) : base(conditionLogic, localPlayer, uiBattleManager, true) { }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
         bool condition = base.CheckCondition(eventManager, deltaTime);

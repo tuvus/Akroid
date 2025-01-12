@@ -4,7 +4,7 @@ public class ZoomCondtion : UIEventCondition {
     private float zoomTo;
     private float startingZoom;
 
-    public ZoomCondtion(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float zoomTo) : base(localPlayer, unitSpriteManager,
+    public ZoomCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float zoomTo) : base(localPlayer, uiBattleManager,
         ConditionType.Zoom) {
         this.zoomTo = zoomTo;
         startingZoom = localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;

@@ -4,19 +4,19 @@ using System.Linq;
 
 public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondition> {
     public ShipsCommandUICondition(ShipsCommandCondition conditionLogic, LocalPlayer localPlayer,
-        UnitSpriteManager unitSpriteManager, bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
+        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
 
         foreach (var ship in conditionLogic.shipsToCommand
-            .Where(ship => !selectedUnits.Contains(unitSpriteManager.units[ship]) && !conditionLogic.DoesShipHaveCommand(ship))) {
+            .Where(ship => !selectedUnits.Contains(uiBattleManager.units[ship]) && !conditionLogic.DoesShipHaveCommand(ship))) {
             if (ship.dockedStation != null) {
-                StationUI stationUI = (StationUI)unitSpriteManager.units[ship.dockedStation];
+                StationUI stationUI = (StationUI)uiBattleManager.units[ship.dockedStation];
                 if (!selectedUnits.Contains(stationUI)) objectsToVisualize.Add(stationUI);
                 continue;
             }
-            objectsToVisualize.Add(unitSpriteManager.units[ship]);
+            objectsToVisualize.Add(uiBattleManager.units[ship]);
         }
 
         Command command = conditionLogic.commandCondition;
@@ -29,39 +29,39 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
             case Command.CommandType.AttackMove:
                 break;
             case Command.CommandType.AttackMoveUnit:
-                objectsToVisualize.Add(unitSpriteManager.units[command.targetUnit]);
+                objectsToVisualize.Add(uiBattleManager.units[command.targetUnit]);
                 break;
             case Command.CommandType.AttackFleet:
-                objectsToVisualize.Add(unitSpriteManager.fleetUIs[command.targetFleet]);
+                objectsToVisualize.Add(uiBattleManager.fleetUIs[command.targetFleet]);
                 break;
             case Command.CommandType.Follow:
-                objectsToVisualize.Add(unitSpriteManager.units[command.targetUnit]);
+                objectsToVisualize.Add(uiBattleManager.units[command.targetUnit]);
                 break;
             case Command.CommandType.Protect:
-                objectsToVisualize.Add(unitSpriteManager.units[command.protectUnit]);
+                objectsToVisualize.Add(uiBattleManager.units[command.protectUnit]);
                 break;
             case Command.CommandType.Formation:
             case Command.CommandType.FormationLocation:
                 break;
             case Command.CommandType.Dock:
-                objectsToVisualize.Add(unitSpriteManager.units[command.destinationStation]);
+                objectsToVisualize.Add(uiBattleManager.units[command.destinationStation]);
                 break;
             case Command.CommandType.UndockCommand:
                 break;
             case Command.CommandType.Transport:
             case Command.CommandType.TransportDelay:
-                objectsToVisualize.Add(unitSpriteManager.units[command.productionStation]);
+                objectsToVisualize.Add(uiBattleManager.units[command.productionStation]);
                 break;
             case Command.CommandType.Research:
-                if (command.targetStar != null) objectsToVisualize.Add(unitSpriteManager.objects[command.targetStar]);
-                else objectsToVisualize.AddRange(unitSpriteManager.objects.Values.Where(o => o is StarUI));
+                if (command.targetStar != null) objectsToVisualize.Add(uiBattleManager.objects[command.targetStar]);
+                else objectsToVisualize.AddRange(uiBattleManager.objects.Values.Where(o => o is StarUI));
                 break;
             case Command.CommandType.CollectGas:
-                if (command.targetGasCloud != null) objectsToVisualize.Add(unitSpriteManager.objects[command.targetGasCloud]);
-                else objectsToVisualize.AddRange(unitSpriteManager.objects.Values.Where(o => o is GasCloudUI));
+                if (command.targetGasCloud != null) objectsToVisualize.Add(uiBattleManager.objects[command.targetGasCloud]);
+                else objectsToVisualize.AddRange(uiBattleManager.objects.Values.Where(o => o is GasCloudUI));
                 break;
             case Command.CommandType.Colonize:
-                objectsToVisualize.Add(unitSpriteManager.objects[command.targetPlanet]);
+                objectsToVisualize.Add(uiBattleManager.objects[command.targetPlanet]);
                 break;
             case Command.CommandType.BuildStation:
                 break;

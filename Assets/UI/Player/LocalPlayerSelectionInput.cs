@@ -15,8 +15,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
 
-    public override void Setup(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager) {
-        base.Setup(localPlayer, unitSpriteManager);
+    public override void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+        base.Setup(localPlayer, uiBattleManager);
         selectedUnits = new SelectionGroup();
         objectsInSelectionBox = new SelectionGroup();
 
@@ -113,7 +113,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 return;
             foreach (var unit in localPlayer.player.ownedUnits) {
                 if (unit.IsShip() && ((Ship)unit).IsCombatShip()) {
-                    selectedUnits.AddShip((ShipUI)unitSpriteManager.units[unit]);
+                    selectedUnits.AddShip((ShipUI)uiBattleManager.units[unit]);
                 }
             }
 
@@ -155,7 +155,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         if (mouseOverBattleObject != null)
             objectsInSelectionBox.AddBattleObject(mouseOverBattleObject);
 
-        foreach (UnitUI unitUI in unitSpriteManager.units.Values) {
+        foreach (UnitUI unitUI in uiBattleManager.units.Values) {
             if (!unitUI.IsSelectable() || unitUI == rightClickedBattleObject || unitUI == mouseOverBattleObject)
                 continue;
             Vector2 screenPosition = GetCamera().WorldToScreenPoint(unitUI.unit.position);
@@ -214,7 +214,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         ClearSelectedBattleObjects();
         selectedUnits.AddBattleObjects(newBattleObjects);
         if (!AdditiveButtonPressed && !AltButtonPressed && AreUnitsInUnitGroupInOneFleet(selectedUnits)) {
-            FleetUI fleetUI = unitSpriteManager.fleetUIs[selectedUnits.GetShip().ship.fleet];
+            FleetUI fleetUI = uiBattleManager.fleetUIs[selectedUnits.GetShip().ship.fleet];
             ClearSelectedBattleObjects();
             selectedUnits.SetFleet(fleetUI);
             selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
@@ -336,7 +336,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     public override void UnitDestroyed(Unit unit) {
         base.UnitDestroyed(unit);
-        selectedUnits.RemoveUnit(unitSpriteManager.units[unit]);
+        selectedUnits.RemoveUnit(uiBattleManager.units[unit]);
     }
 
     public SelectionGroup GetSelectedUnits() {

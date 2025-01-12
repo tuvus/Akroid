@@ -4,8 +4,8 @@ using UnityEngine;
 public class PanCondtion : UIEventCondition {
     private float distanceToPan;
 
-    public PanCondtion(LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager, float distanceToPan) : base(localPlayer,
-        unitSpriteManager, ConditionType.Pan) {
+    public PanCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float distanceToPan) : base(localPlayer,
+        uiBattleManager, ConditionType.Pan) {
         this.distanceToPan = distanceToPan;
         localPlayer.GetInputManager().OnPanEvent += OnPan;
     }

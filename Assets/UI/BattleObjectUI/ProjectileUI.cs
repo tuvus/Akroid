@@ -14,7 +14,7 @@ public class ProjectileUI : BattleObjectUI {
         projectile = (Projectile)battleObject;
         spriteRenderer.enabled = true;
         highlight.enabled = uIManager.GetEffectsShown();
-        uIManager.unitSpriteManager.objectsToUpdate.Add(this);
+        uIManager.uiBattleManager.objectsToUpdate.Add(this);
         localPlayerInput = uIManager.localPlayer.GetInputManager();
     }
 
@@ -23,7 +23,7 @@ public class ProjectileUI : BattleObjectUI {
             spriteRenderer.enabled = false;
             highlight.enabled = false;
             particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-            uIManager.unitSpriteManager.objectsToUpdate.Remove(this);
+            uIManager.uiBattleManager.objectsToUpdate.Remove(this);
         }
         base.UpdateObject();
         if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(this)) {

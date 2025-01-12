@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipCommandMoveToObjectsCondition> {
     public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic, LocalPlayer localPlayer,
-        UnitSpriteManager unitSpriteManager, bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
+        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         foreach (var ship in conditionLogic.shipsToMove) {
-            ShipUI shipUI = (ShipUI)unitSpriteManager.units[ship];
+            ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             ShipAI shipAI = ship.shipAI;
             int objectIndex = 0;
             foreach (var command in shipAI.commands) {
@@ -25,10 +25,10 @@ public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipC
             if (objectIndex >= conditionLogic.objectsToMoveTo.Count) continue;
 
             if (selectedUnits.Contains(shipUI)) {
-                ObjectUI objectUI = unitSpriteManager.objects[conditionLogic.objectsToMoveTo[objectIndex]];
+                ObjectUI objectUI = uiBattleManager.objects[conditionLogic.objectsToMoveTo[objectIndex]];
                 if (!objectsToVisualize.Contains(objectUI)) objectsToVisualize.Add(objectUI);
             } else if (ship.dockedStation != null) {
-                StationUI dockedStationUI = (StationUI)unitSpriteManager.units[ship.dockedStation];
+                StationUI dockedStationUI = (StationUI)uiBattleManager.units[ship.dockedStation];
                 if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
             } else {
                 objectsToVisualize.Add(shipUI);

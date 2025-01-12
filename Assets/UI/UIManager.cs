@@ -4,7 +4,7 @@ using UnityEngine.Profiling;
 public class UIManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public LocalPlayer localPlayer { get; private set; }
-    public UnitSpriteManager unitSpriteManager { get; private set; }
+    public UIBattleManager uiBattleManager { get; private set; }
     public UIEventManager uIEventManager { get; private set; }
 
     /// <summary>
@@ -14,11 +14,11 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void PreBattleManagerSetup(BattleManager battleManager) {
         this.battleManager = battleManager;
-        unitSpriteManager = GetComponent<UnitSpriteManager>();
-        unitSpriteManager.SetupUnitSpriteManager(battleManager, this);
+        uiBattleManager = GetComponent<UIBattleManager>();
+        uiBattleManager.SetupUnitSpriteManager(battleManager, this);
         localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
         localPlayer.PreBattleManagerSetup(battleManager, this);
-        uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(), unitSpriteManager);
+        uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(), uiBattleManager);
         battleManager.SetEventManager(uIEventManager);
     }
 
@@ -31,7 +31,7 @@ public class UIManager : MonoBehaviour {
 
     public void LateUpdate() {
         Profiler.BeginSample("Update UI Objects");
-        if (battleManager.battleState != BattleManager.BattleState.Setup) unitSpriteManager.UpdateSpriteManager();
+        if (battleManager.battleState != BattleManager.BattleState.Setup) uiBattleManager.UpdateSpriteManager();
         Profiler.EndSample();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();

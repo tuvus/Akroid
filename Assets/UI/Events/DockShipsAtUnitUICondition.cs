@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class DockShipsAtUnitUICondition : UIWrapperEventCondition<DockShipsAtUnitCondition> {
-    public DockShipsAtUnitUICondition(DockShipsAtUnitCondition conditionLogic, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
-        bool visualize = false) : base(conditionLogic, localPlayer, unitSpriteManager, visualize) { }
+    public DockShipsAtUnitUICondition(DockShipsAtUnitCondition conditionLogic, LocalPlayer localPlayer, UIBattleManager uiBattleManager,
+        bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
         Predicate<Ship> shipHasDockCommandToUnit = ship => ship.shipAI.commands.Any((command) =>
@@ -12,10 +12,10 @@ public class DockShipsAtUnitUICondition : UIWrapperEventCondition<DockShipsAtUni
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
 
         if (conditionLogic.shipsToDock.Any(s => s.dockedStation != conditionLogic.unitToDockTo && !shipHasDockCommandToUnit(s))) {
-            objectsToVisualize.Add(unitSpriteManager.units[conditionLogic.unitToDockTo]);
+            objectsToVisualize.Add(uiBattleManager.units[conditionLogic.unitToDockTo]);
         }
 
         objectsToVisualize.AddRange(conditionLogic.shipsToDock.Where(s => s.dockedStation != conditionLogic.unitToDockTo &&
-            !selectedUnits.Contains(unitSpriteManager.units[s]) && !shipHasDockCommandToUnit(s)).Select(s => unitSpriteManager.units[s]));
+            !selectedUnits.Contains(uiBattleManager.units[s]) && !shipHasDockCommandToUnit(s)).Select(s => uiBattleManager.units[s]));
     }
 }

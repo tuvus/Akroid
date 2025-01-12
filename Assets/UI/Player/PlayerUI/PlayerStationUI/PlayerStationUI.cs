@@ -322,9 +322,9 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             LocalPlayerSelectionInput localPlayerSelection = (LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput();
 
             if (localPlayerSelection.AdditiveButtonPressed) {
-                localPlayerSelection.ToggleSelectedUnit(unitSpriteManager.units[shipsInHangar[index]]);
+                localPlayerSelection.ToggleSelectedUnit(uiBattleManager.units[shipsInHangar[index]]);
             } else {
-                localPlayerSelection.SelectBattleObjects(unitSpriteManager.units[shipsInHangar[index]]);
+                localPlayerSelection.SelectBattleObjects(uiBattleManager.units[shipsInHangar[index]]);
             }
 
             RefreshRightPanel();
@@ -335,11 +335,11 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
     public void HangarInfoButtonPressed(int index) {
         localPlayer.GetPlayerUI().CloseAllMenus();
-        localPlayer.GetPlayerUI().SetDisplayedObject(unitSpriteManager.units[shipsInHangar[index]]);
+        localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.units[shipsInHangar[index]]);
     }
 
     public void OpenFactionMenu() {
         Faction faction = displayedObject.station.faction;
-        playerUI.ShowFactionUI(unitSpriteManager.factionUIs[faction]);
+        playerUI.ShowFactionUI(uiBattleManager.factionUIs[faction]);
     }
 }

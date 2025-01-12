@@ -105,6 +105,6 @@ public class PlayerShipUI : PlayerUIMenu<ShipUI> {
 
     public void OpenFactionMenu() {
         Faction faction = displayedObject.ship.faction;
-        playerUI.ShowFactionUI(unitSpriteManager.factionUIs[faction]);
+        playerUI.ShowFactionUI(uiBattleManager.factionUIs[faction]);
     }
 }

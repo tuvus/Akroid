@@ -58,7 +58,7 @@ public class PlayerPlanetUI : PlayerUIMenu<PlanetUI> {
             factionButton.onClick.RemoveAllListeners();
 
             if (planetFaction.faction != null) {
-                factionButton.onClick.AddListener(() => playerUI.ShowFactionUI(unitSpriteManager.factionUIs[planetFaction.faction]));
+                factionButton.onClick.AddListener(() => playerUI.ShowFactionUI(uiBattleManager.factionUIs[planetFaction.faction]));
                 factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.faction.name.ToString();
                 factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
                     planetFaction.faction.abbreviatedName.ToString();
@@ -86,6 +86,6 @@ public class PlayerPlanetUI : PlayerUIMenu<PlanetUI> {
 
     public void OpenFactionMenu() {
         Faction faction = displayedObject.planet.faction;
-        playerUI.ShowFactionUI(unitSpriteManager.factionUIs[faction]);
+        playerUI.ShowFactionUI(uiBattleManager.factionUIs[faction]);
     }
 }

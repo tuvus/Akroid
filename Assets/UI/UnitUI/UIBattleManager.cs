@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class UnitSpriteManager : MonoBehaviour {
+public class UIBattleManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public UIManager uIManager { get; private set; }
 
@@ -46,6 +46,11 @@ public class UnitSpriteManager : MonoBehaviour {
 
     private void CreateNewObjects() {
         foreach (var iObject in objectsToCreate) {
+            if (iObject is Projectile projectile && objects.ContainsKey(projectile)) {
+                battleObjects[projectile].Setup(projectile, uIManager);
+            }
+
+
             BattleObjectUI battleObjectUI = Instantiate(iObject.GetPrefab()).GetComponent<BattleObjectUI>();
             battleObjectUI.Setup(iObject, uIManager);
             if (battleObjectUI is StarUI) battleObjectUI.transform.SetParent(uIManager.GetStarTransform());
@@ -109,9 +114,8 @@ public class UnitSpriteManager : MonoBehaviour {
             return;
         }
 
-        if (battleObject is Projectile projectile && objects.ContainsKey(projectile)) {
-            battleObjects[projectile].Setup(projectile, uIManager);
-            return;
+        if (battleObject is Projectile projectile) {
+            objectsToCreate.Add(projectile);
         }
 
         objectsToCreate.Add(battleObject);
@@ -127,8 +131,8 @@ public class UnitSpriteManager : MonoBehaviour {
         }
 
         BattleObjectUI battleObjectUI = battleObjects[battleObject];
-        if (battleObjectUI is ProjectileUI projectileUI) {
-            projectileUI.OnBattleObjectRemoved();
+        if (battleObjectUI is ProjectileUI) {
+            battleObjectUI.OnBattleObjectRemoved();
             return;
         }
 

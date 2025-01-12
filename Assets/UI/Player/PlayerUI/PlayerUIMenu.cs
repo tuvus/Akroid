@@ -10,7 +10,7 @@ using UnityEngine;
 /// Therefore we must use an abstract class instead. Thankfully this workaround actually works.
 /// </summary>
 public abstract class IPlayerUIMenu : MonoBehaviour {
-    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
+    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIBattleManager uiBattleManager,
         float updateSpeed);
 
     public abstract void SetDisplayedObject(ObjectUI objectUI);
@@ -27,7 +27,7 @@ public abstract class IPlayerUIMenu : MonoBehaviour {
 public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     protected LocalPlayer localPlayer;
     protected PlayerUI playerUI;
-    protected UnitSpriteManager unitSpriteManager;
+    protected UIBattleManager uiBattleManager;
     [SerializeField] private float updateSpeed;
     private float updateTime;
     public T displayedObject { get; protected set; }
@@ -36,12 +36,12 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     [SerializeField] protected GameObject leftPanel;
     [SerializeField] protected GameObject rightPanel;
 
-    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UnitSpriteManager unitSpriteManager,
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIBattleManager uiBattleManager,
         float updateSpeed) {
         this.playerUI = playerUI;
         this.localPlayer = localPlayer;
         this.updateSpeed = updateSpeed;
-        this.unitSpriteManager = unitSpriteManager;
+        this.uiBattleManager = uiBattleManager;
     }
 
     public override void SetDisplayedObject(ObjectUI objectUI) {

@@ -9,7 +9,7 @@ public class StarUI : BattleObjectUI {
         base.Setup(battleObject, uIManager);
         this.star = (Star)battleObject;
         glare = transform.GetChild(0).GetComponent<SpriteRenderer>();
-        uIManager.unitSpriteManager.objectsToUpdate.Add(this);
+        uIManager.uiBattleManager.objectsToUpdate.Add(this);
     }
 
     public override void UpdateObject() {

@@ -8,8 +8,8 @@ public class PlayerGroupInput : LocalPlayerGameInput {
 
     int fleetNumber = 10;
 
-    public override void Setup(LocalPlayer localPlayer,UnitSpriteManager unitSpriteManager) {
-        base.Setup(localPlayer, unitSpriteManager);
+    public override void Setup(LocalPlayer localPlayer,UIBattleManager uiBattleManager) {
+        base.Setup(localPlayer, uiBattleManager);
         for (int i = 0; i < fleetNumber; i++) {
             SelectionGroup newGroup = new SelectionGroup();
             groups.Add(newGroup);
