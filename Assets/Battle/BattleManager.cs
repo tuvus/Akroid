@@ -569,8 +569,7 @@ public class BattleManager : MonoBehaviour {
             u.UpdateUnit(deltaTime);
             Profiler.EndSample();
         }, "UnitsUpdate", false);
-        UpdateCollection(units.Where(u => u.IsTargetable() && u.HasWeapons()).ToList(),
-            u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
+        UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
         UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
         UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate", false);
         UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);

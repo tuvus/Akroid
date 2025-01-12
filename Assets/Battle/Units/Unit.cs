@@ -109,7 +109,7 @@ public abstract class Unit : BattleObject {
     }
 
     public virtual void UpdateWeapons(float deltaTime) {
-        if (!spawned) return;
+        if (!IsTargetable() || !HasWeapons()) return;
         if (turretsHibernating && GetEnemyUnitsInRange().Count == 0 &&
             GetEnemyUnitsInRangeDistance().First() > maxWeaponRange + size) return;
         moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating);
