@@ -75,7 +75,7 @@ public class ShipAI {
 
     public void UpdateAI(float deltaTime) {
         if (commands.Count > 0) {
-            Profiler.BeginSample("ShipAI ResolveCommand");
+            // Profiler.BeginSample("ShipAI ResolveCommand");
             CommandResult result = ResolveCommand(commands[0], deltaTime);
             if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
                 commands.RemoveAt(0);
@@ -84,7 +84,7 @@ public class ShipAI {
 
             if (result == CommandResult.ContinueRemove || result == CommandResult.Continue)
                 UpdateAI(deltaTime);
-            Profiler.EndSample();
+            // Profiler.EndSample();
         }
     }
 

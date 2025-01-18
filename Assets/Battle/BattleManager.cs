@@ -561,7 +561,7 @@ public class BattleManager : MonoBehaviour {
         UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
         UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
         UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
-        UpdateCollection(factions.SelectMany(f => f.fleets).ToList(), f => f.FindEnemies(), "FleetsFindingEnemies");
+        UpdateCollection(factions.SelectMany(f => f.fleets), f => f.FindEnemies(), "FleetsFindingEnemies");
         UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
         UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(), "UnitsFindingEnemies");
         UpdateCollection(units.ToList(), u => {
@@ -583,7 +583,7 @@ public class BattleManager : MonoBehaviour {
     /// Handles apply an action to a collection of objects in parallel or serial depending on the input
     /// and if the player want to use multithreading.
     /// </summary>
-    public void UpdateCollection<T>(ICollection<T> collection, Action<T> action, String profileName, bool parallel = true) {
+    public void UpdateCollection<T>(IEnumerable<T> collection, Action<T> action, String profileName, bool parallel = true) {
         Profiler.BeginSample(profileName);
         if (threaded && parallel) {
             Parallel.ForEach(collection, c => action.Invoke(c));

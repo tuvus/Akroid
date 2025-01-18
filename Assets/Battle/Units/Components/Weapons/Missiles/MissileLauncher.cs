@@ -1,4 +1,5 @@
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 [RequireComponent(typeof(ReloadController))]
 public class MissileLauncher : ModuleComponent {
@@ -27,7 +28,8 @@ public class MissileLauncher : ModuleComponent {
 
         reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
             missileLauncherScriptableObject.maxAmmo);
-        findNewTargetUpdateTime = Random.Range(0, 0.2f);
+        var random = new Random((uint)battleManager.objects.Count);
+        findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
     }
 
     /// <returns>True if the turret is hibernating, false otherwise </returns>

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Ship;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public class Station : Unit, IPositionConfirmer {
     public enum StationType {
@@ -48,6 +48,7 @@ public class Station : Unit, IPositionConfirmer {
     public StationAI stationAI { get; protected set; }
     public float repairTime { get; protected set; }
     protected bool built;
+    private Random random;
 
     public Station(BattleObjectData battleObjectData, BattleManager battleManager, StationScriptableObject stationScriptableObject,
         bool built) : base(battleObjectData, battleManager, stationScriptableObject) {
@@ -76,9 +77,10 @@ public class Station : Unit, IPositionConfirmer {
             Spawn();
             faction.GetFactionAI().OnStationBuilt(this);
         }
+        random = new Random((uint)battleManager.objects.Count);
 
-        stationScriptableObject.rotationSpeed *= Random.Range(.5f, 1.5f);
-        if (Random.Range(-1, 1) < 0) {
+        stationScriptableObject.rotationSpeed *= random.NextFloat(.5f, 1.5f);
+        if (random.NextBool()) {
             stationScriptableObject.rotationSpeed *= -1;
         }
 
@@ -134,9 +136,7 @@ public class Station : Unit, IPositionConfirmer {
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
             SetRotation(rotation + stationScriptableObject.rotationSpeed * deltaTime);
-            Profiler.BeginSample("UpdateStationAI");
             stationAI.UpdateAI(deltaTime);
-            Profiler.EndSample();
             if (repairTime <= 0) {
                 repairTime += stationScriptableObject.repairSpeed;
             }
@@ -183,7 +183,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0,
         bool? undock = false) {
-        return BuildShip(new BattleObjectData(shipName, position, Random.Range(0, 360), faction), shipScriptableObject, cost, undock);
+        return BuildShip(new BattleObjectData(shipName, position, random.NextFloat(0, 360), faction), shipScriptableObject, cost, undock);
     }
 
     /// <summary>
@@ -192,10 +192,6 @@ public class Station : Unit, IPositionConfirmer {
     /// If undock is false, docks the ship
     /// If undock is null, it doesn't dock the ship at all.
     /// </summary>
-    /// <param name="factionIndex"></param>
-    /// <param name="shipData"></param>
-    /// <param name="cost"></param>
-    /// <param name="undock"></param>
     /// <returns>The newly built ship</returns>
     public virtual Ship BuildShip(BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject, long cost = 0,
         bool? undock = false) {
@@ -262,15 +258,6 @@ public class Station : Unit, IPositionConfirmer {
     #endregion
 
     #region GetMethods
-
-    public override bool Destroyed() {
-        if (GetHealth() > 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     public bool IsBuilt() {
         return built;
     }

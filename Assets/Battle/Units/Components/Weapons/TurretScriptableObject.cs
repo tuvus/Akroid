@@ -5,7 +5,6 @@ using static Turret;
 public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float DPS;
     public Sprite turretSprite;
-    public float turretOffset;
 
     public float range;
     public float rotateSpeed;
@@ -16,6 +15,7 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public int maxAmmo;
     public Vector2 baseScale = Vector2.one;
     public Vector2 spriteBounds { get; private set; }
+    public float turretOffset { get; private set; }
 
     public virtual float GetDamagePerSecond() {
         return 0;
@@ -26,6 +26,9 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
         base.OnValidate();
         if (turretSprite != null) {
             spriteBounds = Calculator.GetSpriteBounds(turretSprite);
+            turretOffset = (turretSprite.rect.size.y - turretSprite.pivot.y) /
+                turretSprite.pixelsPerUnit;
+
         }
     }
 }

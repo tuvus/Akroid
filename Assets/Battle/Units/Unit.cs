@@ -15,6 +15,7 @@ public abstract class Unit : BattleObject {
     private float minWeaponRange;
     protected Vector2 velocity;
     private DestroyEffect destroyEffect;
+    public bool hasWeapons { get; private set; }
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
@@ -33,6 +34,7 @@ public abstract class Unit : BattleObject {
         maxWeaponRange = float.MinValue;
         scale = unitScriptableObject.baseScale * scale;
         turretsHibernating = false;
+        hasWeapons = moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
@@ -70,7 +72,7 @@ public abstract class Unit : BattleObject {
 
     public virtual void FindEnemies() {
         if (!IsTargetable() || !HasWeapons()) return;
-        Profiler.BeginSample("FindingEnemies");
+        // Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
         float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition());
@@ -80,7 +82,7 @@ public abstract class Unit : BattleObject {
             FindEnemyGroup(faction.closeEnemyGroups[i]);
         }
 
-        Profiler.EndSample();
+        // Profiler.EndSample();
     }
 
     void FindEnemyGroup(UnitGroup targetGroup) {
@@ -308,14 +310,15 @@ public abstract class Unit : BattleObject {
         return moduleSystem.Get<ShieldGenerator>().Sum(s => s.GetMaxShieldStrength());
     }
 
-    public abstract bool Destroyed();
-
+    public bool Destroyed() {
+        return GetHealth() <= 0;
+    }
     public virtual Vector2 GetVelocity() {
         return velocity;
     }
 
     public bool HasWeapons() {
-        return moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
+        return hasWeapons;
     }
 
     public virtual List<Unit> GetEnemyUnitsInRange() {

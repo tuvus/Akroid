@@ -38,15 +38,12 @@ public class MiningStationAI : StationAI {
     }
 
     private void UpdateMiningStation() {
-        Profiler.BeginSample("UpdateMiningStationAI");
         if (!GetMiningStation().activelyMining && !GetMiningStation().activelyMining && transportShips.Count > 0) {
             for (int i = transportShips.Count - 1; i >= 0; i--) {
                 transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 transportShips.RemoveAt(i);
             }
         }
-
-        Profiler.EndSample();
     }
 
     public void AddTransportShip(Ship ship) {

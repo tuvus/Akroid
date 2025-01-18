@@ -37,8 +37,7 @@ public abstract class Turret : ModuleComponent {
         random = new Random((uint)battleManager.units.Count + 1);
         findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
         visible = true;
-        turretOffset = (turretScriptableObject.turretSprite.rect.size.y - turretScriptableObject.turretSprite.pivot.y) * scale.y /
-            turretScriptableObject.turretSprite.pixelsPerUnit;
+        turretOffset = turretScriptableObject.turretOffset * scale.y;
         SetSize(SetupSize());
     }
 

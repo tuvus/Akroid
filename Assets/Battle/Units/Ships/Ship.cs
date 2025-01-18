@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -145,9 +146,9 @@ public class Ship : Unit {
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
         if (IsSpawned()) {
-            Profiler.BeginSample("ShipAction");
+            // Profiler.BeginSample("ShipAction");
             UpdateMovement(deltaTime);
-            Profiler.EndSample();
+            // Profiler.EndSample();
             shipAI.UpdateAI(deltaTime);
         }
     }
@@ -303,8 +304,7 @@ public class Ship : Unit {
             faction.GetFactionAI().RemoveShip(this);
         }
 
-        if (dockedStation != null)
-            UndockShip(position);
+        if (dockedStation != null) UndockShip(position);
         shipAction = ShipAction.MoveLateral;
         this.movePosition = position;
     }
@@ -381,6 +381,8 @@ public class Ship : Unit {
         battleManager.DestroyShip(this);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+
     public void DockShip(Station station) {
         if (station.DockShip(this)) {
             visible = false;
@@ -401,6 +403,7 @@ public class Ship : Unit {
         UndockShip(Calculator.GetAngleOutOfTwoPositions(this.position, position));
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void UndockShip(float angle) {
         dockedStation.UndockShip(this);
         visible = true;
@@ -432,9 +435,7 @@ public class Ship : Unit {
         return movePosition;
     }
 
-    public override bool Destroyed() {
-        return GetHealth() <= 0;
-    }
+
 
     public ShipClass GetShipClass() {
         return shipScriptableObject.shipClass;
