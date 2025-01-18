@@ -10,8 +10,7 @@ public class CampaignSetup : MonoBehaviour {
     public void StartCampaignChapter(int chapter) {
         startMenu.buttonSound.Play();
         gameObject.SetActive(true);
-        SceneLoader loader = gameObject.AddComponent<SceneLoader>();
-        loader.LoadBattle("Campaign/Chapter" + chapter + "/Chapter" + chapter);
+        SceneLoader.LoadBattle("Campaign/Chapter" + chapter + "/Chapter" + chapter);
     }
 
     public void ShowCampaingChapterPanel(bool show) {

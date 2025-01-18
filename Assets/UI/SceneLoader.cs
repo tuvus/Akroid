@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,44 +9,52 @@ public class SceneLoader : MonoBehaviour {
     private List<Faction.FactionData> factions;
     private string campaignControllerPath;
 
-    public void LoadBattle(BattleManager.BattleSettings battleSettings, List<Faction.FactionData> factions) {
-        this.battleSettings = battleSettings;
-        this.factions = factions;
-        StartCoroutine(LoadBattleScene(false));
+    public static void LoadBattle(BattleManager.BattleSettings battleSettings, List<Faction.FactionData> factions) {
+        SceneLoader sceneLoader = new GameObject("Loader").AddComponent<SceneLoader>();
+        sceneLoader.battleSettings = battleSettings;
+        sceneLoader.factions = factions;
+        sceneLoader.StartCoroutine(sceneLoader.LoadBattleScene(false));
     }
 
-    public void LoadBattle(string campaignControllerPath) {
-        this.campaignControllerPath = campaignControllerPath;
-        StartCoroutine(LoadBattleScene(true));
+    public static void LoadBattle(string campaignControllerPath) {
+        SceneLoader sceneLoader = new GameObject("Loader").AddComponent<SceneLoader>();
+        sceneLoader.campaignControllerPath = campaignControllerPath;
+        sceneLoader.StartCoroutine(sceneLoader.LoadBattleScene(true));
     }
 
     private IEnumerator LoadBattleScene(bool campaign) {
         yield return null;
         BattleManager.quickStart = false;
+        GameObject startCamera = GameObject.Find("Main Camera");
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
         asyncLoad.allowSceneActivation = false;
         while (asyncLoad.progress < 0.9f) {
             yield return null;
         }
 
-        DestroyImmediate(Camera.main.gameObject);
         asyncLoad.allowSceneActivation = true;
         while (!asyncLoad.isDone) {
             yield return null;
         }
 
-        transform.DetachChildren();
-        transform.SetParent(null);
+        // Unfortunatly unity gives no good way to handle multiple audio listeners when loading a new scene.
+        // The current solution I have found is to have a deactivated camera object with an audio listener in the loading scene
+        // and deactivating the previous camera right before activating the loading camera.
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Loading"));
+        GameObject loadingCamera = FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            .Where(o => o.name == "Loading Camera").First();
+        startCamera.SetActive(false);
+        loadingCamera.SetActive(true);
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        DestroyImmediate(GameObject.Find("Main Camera").GetComponent<AudioListener>());
+
+        // Load the Battle Scene
         asyncLoad = SceneManager.LoadSceneAsync("Battle", LoadSceneMode.Additive);
         asyncLoad.allowSceneActivation = false;
         while (asyncLoad.progress < 0.9f) {
             yield return null;
         }
 
-        DestroyImmediate(Camera.main.gameObject);
+        DestroyImmediate(loadingCamera);
         asyncLoad.allowSceneActivation = true;
         while (!asyncLoad.isDone) {
             yield return null;

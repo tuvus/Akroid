@@ -197,7 +197,6 @@ public class SimulationSetup : MonoBehaviour {
 
     public void StartSimulation() {
         startMenu.buttonSound.Play();
-        SceneLoader loader = gameObject.AddComponent<SceneLoader>();
-        loader.LoadBattle(battleSettings, factions);
+        SceneLoader.LoadBattle(battleSettings, factions);
     }
 }
