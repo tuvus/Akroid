@@ -28,7 +28,7 @@ public class MissileLauncher : ModuleComponent {
 
         reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
             missileLauncherScriptableObject.maxAmmo);
-        var random = new Random((uint)battleManager.objects.Count);
+        var random = new Random((uint)battleManager.objects.Count + 1);
         findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
     }
 

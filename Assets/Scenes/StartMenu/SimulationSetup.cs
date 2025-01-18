@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Faction;
 
@@ -199,48 +197,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void StartSimulation() {
         startMenu.buttonSound.Play();
-        StartCoroutine(ChangeScenes());
-    }
-
-    public IEnumerator ChangeScenes() {
-        yield return null;
-        BattleManager.quickStart = false;
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
-        asyncLoad.allowSceneActivation = false;
-        while (asyncLoad.progress < 0.9f) {
-            yield return null;
-        }
-
-        DestroyImmediate(Camera.main.gameObject);
-        asyncLoad.allowSceneActivation = true;
-        while (!asyncLoad.isDone) {
-            yield return null;
-        }
-
-        transform.DetachChildren();
-        transform.SetParent(null);
-        SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Loading"));
-        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        DestroyImmediate(GameObject.Find("Main Camera").GetComponent<AudioListener>());
-        asyncLoad = SceneManager.LoadSceneAsync("Battle", LoadSceneMode.Additive);
-        asyncLoad.allowSceneActivation = false;
-        while (asyncLoad.progress < 0.9f) {
-            yield return null;
-        }
-
-        DestroyImmediate(Camera.main.gameObject);
-        asyncLoad.allowSceneActivation = true;
-        while (!asyncLoad.isDone) {
-            yield return null;
-        }
-
-        SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
-        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        BattleManager battleManager = GameObject.Find("Battle").GetComponent<BattleManager>();
-        UIManager uIManager = GameObject.Find("Battle").GetComponent<UIManager>();
-        uIManager.PreBattleManagerSetup(battleManager);
-        battleManager.SetupBattle(battleSettings, factions);
-        uIManager.SetupUIManager();
-        Destroy(gameObject);
+        SceneLoader loader = gameObject.AddComponent<SceneLoader>();
+        loader.LoadBattle(battleSettings, factions);
     }
 }
