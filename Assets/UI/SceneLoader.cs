@@ -24,7 +24,6 @@ public class SceneLoader : MonoBehaviour {
 
     private IEnumerator LoadBattleScene(bool campaign) {
         yield return null;
-        BattleManager.quickStart = false;
         GameObject startCamera = GameObject.Find("Main Camera");
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
         asyncLoad.allowSceneActivation = false;

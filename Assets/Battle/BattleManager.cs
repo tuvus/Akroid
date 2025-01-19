@@ -56,11 +56,10 @@ public class BattleManager : MonoBehaviour {
     [SerializeField] private bool threaded = true;
     public bool instantHit;
     public float timeScale;
-    public static bool quickStart = true;
 
     float startOfSimulation;
     double simulationTime;
-    [field: SerializeField] public BattleState battleState { get; private set; }
+    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.Setup;
 
     public enum BattleState {
         Setup,
@@ -119,24 +118,6 @@ public class BattleManager : MonoBehaviour {
     }
 
     #region Setup
-
-    /// <summary>
-    /// Sets up the battle with only two factions, used for debugging.
-    /// Two factions means better performance for faster debugging.
-    /// </summary>
-    protected virtual void Start() {
-        battleState = BattleState.Setup;
-        if (quickStart == true) {
-            Debug.Log("Setting up test scene");
-            ColorPicker colorPicker = new ColorPicker();
-            List<FactionData> tempFactions = new List<FactionData> {
-                new FactionData("Faction1", "F1", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1),
-                new FactionData("Faction2", "F2", colorPicker.PickColor(), Random.Range(50000, 80000), 0, 50, 1)
-            };
-            SetupBattle(new BattleSettings { asteroidCountModifier = 1, systemSizeModifier = 0.1f, researchModifier = 1.1f }, tempFactions);
-        }
-    }
-
     /// <summary>
     /// Sets up the battle with manual values.
     /// </summary>
