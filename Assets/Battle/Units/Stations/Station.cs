@@ -49,6 +49,7 @@ public class Station : Unit, IPositionConfirmer {
     public float repairTime { get; protected set; }
     protected bool built;
     private Random random;
+    private float rotationSpeed;
 
     public Station(BattleObjectData battleObjectData, BattleManager battleManager, StationScriptableObject stationScriptableObject,
         bool built) : base(battleObjectData, battleManager, stationScriptableObject) {
@@ -79,9 +80,9 @@ public class Station : Unit, IPositionConfirmer {
         }
         random = new Random((uint)battleManager.battleObjects.Count + 1);
 
-        stationScriptableObject.rotationSpeed *= random.NextFloat(.5f, 1.5f);
+        rotationSpeed = stationScriptableObject.rotationSpeed * random.NextFloat(.5f, 1.5f);
         if (random.NextBool()) {
-            stationScriptableObject.rotationSpeed *= -1;
+            rotationSpeed *= -1;
         }
 
         visible = true;
@@ -135,7 +136,7 @@ public class Station : Unit, IPositionConfirmer {
             base.UpdateUnit(deltaTime);
             if (enemyUnitsInRange.Count == 0)
                 repairTime -= deltaTime;
-            SetRotation(rotation + stationScriptableObject.rotationSpeed * deltaTime);
+            SetRotation(rotation + rotationSpeed * deltaTime);
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
                 repairTime += stationScriptableObject.repairSpeed;

@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour {
     }
 
     public bool GetEffectsShown() {
-        return PlayerUI.Instance.effects;
+        return localPlayer.playerUI.effects;
     }
 
     /// <summary>
@@ -51,11 +51,11 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     /// <returns>whether or not the particles should be shown</returns>
     public bool GetParticlesShown() {
-        return PlayerUI.Instance.effects && PlayerUI.Instance.particles;
+        return localPlayer.playerUI.effects && localPlayer.playerUI.particles;
     }
 
     public bool GetFactionColoringShown() {
-        return PlayerUI.Instance.factionColoring;
+        return localPlayer.playerUI.factionColoring;
     }
 
     public Transform GetFactionsTransform() {

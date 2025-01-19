@@ -183,7 +183,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (factionData.stations > 0) {
             BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
             Station fleetCommand = battleManager.CreateNewStation(
-                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0, 360), this),
+                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0f, 360f), this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
