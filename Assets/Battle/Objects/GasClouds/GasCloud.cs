@@ -10,7 +10,7 @@ public class GasCloud : BattleObject, IPositionConfirmer {
         GasCloudScriptableObject gasCloudScriptableObject) : base(battleObjectData, battleManager) {
         this.gasCloudScriptableObject = gasCloudScriptableObject;
         this.resources = resources;
-        color = UnityEngine.Color.HSVToRGB(Random.Range(.25f, .29f), Random.Range(.8f, 1f), Random.Range(.6f, 8f));
+        color = UnityEngine.Color.HSVToRGB(random.NextFloat(.25f, .29f), random.NextFloat(.8f, 1f), random.NextFloat(.6f, 8f));
         color = new Color(color.r, color.g, color.b, .5f);
         visible = true;
         Spawn();

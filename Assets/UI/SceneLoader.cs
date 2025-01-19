@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -53,24 +54,35 @@ public class SceneLoader : MonoBehaviour {
             yield return null;
         }
 
-        DestroyImmediate(loadingCamera);
         asyncLoad.allowSceneActivation = true;
         while (!asyncLoad.isDone) {
             yield return null;
         }
 
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
-        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
-        BattleManager battleManager = GameObject.Find("Battle").GetComponent<BattleManager>();
-        UIManager uIManager = GameObject.Find("Battle").GetComponent<UIManager>();
+        Transform gameTransform = GameObject.Find("Game").transform;
+        BattleManager battleManager = gameTransform.GetChild(0).GetComponent<BattleManager>();
+        UIManager uIManager = gameTransform.GetChild(0).GetComponent<UIManager>();
         uIManager.PreBattleManagerSetup(battleManager);
+        battleManager.InitializeBattle();
         if (campaign) {
-            CampaingController campaingController = Instantiate(Resources.Load<GameObject>(campaignControllerPath),
-                GameObject.Find("Game").transform).GetComponent<CampaingController>();
-            battleManager.SetupBattle(campaingController);
-        } else battleManager.SetupBattle(battleSettings, factions);
+            CampaingController campaingController = Instantiate(Resources.Load<GameObject>(campaignControllerPath), gameTransform)
+                .GetComponent<CampaingController>();
+            Task.Run(() => battleManager.SetupBattle(campaingController));
+        } else {
+            Task.Run(() => battleManager.SetupBattle(battleSettings, factions));
+        }
+        while (battleManager.battleState != BattleManager.BattleState.Setup) {
+            yield return null;
+        }
 
+        loadingCamera.SetActive(false);
+        // Activate the battle camera and the canvas for the UI
+        gameTransform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+        gameTransform.GetChild(1).GetChild(1).gameObject.SetActive(true);
         uIManager.SetupUIManager();
+        battleManager.StartBattle();
+        SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
         Destroy(gameObject);
     }
 }

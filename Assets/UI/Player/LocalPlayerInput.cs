@@ -3,11 +3,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
+using Random = Unity.Mathematics.Random;
 
 public class LocalPlayerInput : MonoBehaviour {
     PlayerInput playerInput;
     protected UIBattleManager uiBattleManager;
     protected LocalPlayer localPlayer;
+    protected Random random;
 
     public enum ActionType {
         None,
@@ -64,6 +66,7 @@ public class LocalPlayerInput : MonoBehaviour {
     public virtual void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
         this.localPlayer = localPlayer;
         this.uiBattleManager = uiBattleManager;
+        random = new Random((uint)(Time.time * 1000));
         mainCamera = transform.GetChild(0).GetComponent<Camera>();
         background = GetComponentInChildren<Background>();
         background.SetupBackground();
@@ -338,7 +341,8 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     private void OnDisable() {
-        playerInput.Disable();
+        if (playerInput != null)
+            playerInput.Disable();
     }
 
     public ActionType GetActionType() {

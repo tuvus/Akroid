@@ -21,7 +21,7 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         else

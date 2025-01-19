@@ -395,7 +395,7 @@ public class Ship : Unit {
     }
 
     public void UndockShip() {
-        UndockShip(UnityEngine.Random.Range(0f, 360f));
+        UndockShip(random.NextFloat(0f, 360f));
         velocity = Vector2.zero;
     }
 

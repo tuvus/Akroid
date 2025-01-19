@@ -1,4 +1,5 @@
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 [System.Serializable]
 public class Command {
@@ -107,21 +108,21 @@ public class Command {
         };
     }
 
-    public static Command CreateAttackMoveCommand(Vector2 targetPosition, float maxSpeed = float.MaxValue) {
+    public static Command CreateAttackMoveCommand(Vector2 targetPosition, Random random, float maxSpeed = float.MaxValue) {
         return new Command(CommandType.AttackMove) {
             targetPosition = targetPosition,
             maxSpeed = maxSpeed,
-            waitTime = Random.Range(0, 0.2f)
+            waitTime = random.NextFloat(0, 0.2f)
         };
     }
 
-    public static Command CreateAttackMoveCommand(Unit targetUnit, float maxSpeed = float.MaxValue,
+    public static Command CreateAttackMoveCommand(Unit targetUnit, Random random, float maxSpeed = float.MaxValue,
         bool useAlternateCommandOnceDone = false) {
         return new Command(CommandType.AttackMoveUnit) {
             targetUnit = targetUnit,
             maxSpeed = maxSpeed,
             useAlternateCommandOnceDone = useAlternateCommandOnceDone,
-            waitTime = Random.Range(0, 0.2f)
+            waitTime = random.NextFloat(0, 0.2f)
         };
     }
 
@@ -162,8 +163,8 @@ public class Command {
         };
     }
 
-    public static Command CreateUndockCommand() {
-        return CreateUndockCommand(Random.Range(0, 360f));
+    public static Command CreateUndockCommand(Random random) {
+        return CreateUndockCommand(random.NextFloat(0, 360f));
     }
 
     public static Command CreateUndockCommand(float rotation) {
@@ -217,11 +218,10 @@ public class Command {
         };
     }
 
-    public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position) {
+    public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position, Random random) {
         return CreateBuildStationCommand(faction.battleManager.CreateNewStation(
             new BattleObject.BattleObjectData(stationType.ToString(), new BattleManager.PositionGiver(position, 0, 1000, 100, 0, 2),
-                Random.Range(0, 360),
-                faction),
+                random.NextFloat(0, 360), faction),
             faction.battleManager.GetStationBlueprint(stationType).stationScriptableObject, false));
     }
 

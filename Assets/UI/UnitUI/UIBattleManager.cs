@@ -14,7 +14,7 @@ public class UIBattleManager : MonoBehaviour {
     public Dictionary<Fleet, FleetUI> fleetUIs { get; private set; }
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
     public HashSet<ObjectUI> objectsToUpdate { get; private set; }
-    private HashSet<BattleObject> objectsToCreate;
+    private HashSet<IObject> objectsToCreate;
 
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
@@ -25,13 +25,9 @@ public class UIBattleManager : MonoBehaviour {
         fleetUIs = new Dictionary<Fleet, FleetUI>();
         factionUIs = new Dictionary<Faction, FactionUI>();
         objectsToUpdate = new HashSet<ObjectUI>();
-        objectsToCreate = new HashSet<BattleObject>();
-        battleManager.OnFactionCreated += OnFactionCreated;
+        objectsToCreate = new HashSet<IObject>();
         battleManager.OnObjectCreated += OnObjectCreated;
-        battleManager.OnBattleObjectCreated += OnBattleObjectCreated;
-        battleManager.OnBattleObjectRemoved += OnOnBattleObjectRemoved;
-        battleManager.OnFleetCreated += OnFleetCreated;
-        battleManager.OnFleetRemoved += OnFleetRemove;
+        battleManager.OnObjectRemoved += OnObjectRemoved;
     }
 
     /// <summary>
@@ -46,22 +42,49 @@ public class UIBattleManager : MonoBehaviour {
 
     private void CreateNewObjects() {
         foreach (var iObject in objectsToCreate) {
-            if (iObject.GetPrefab() == null) return;
-            if (iObject.GetPrefab().GetComponent<BattleObjectUI>() == null) {
-                Debug.LogWarning(iObject.objectName + " had a prefab path but did not have a UI component");
-                return;
+            if (iObject is AsteroidField asteroidField) {
+                AsteroidFieldUI asteroidFieldUI =
+                    Instantiate((GameObject)Resources.Load("Prefabs/AsteroidField"), uIManager.GetAsteroidFieldTransform())
+                        .GetComponent<AsteroidFieldUI>();
+                asteroidFieldUI.Setup(asteroidField);
+                objects.Add(asteroidField, asteroidFieldUI);
+                continue;
+            } else if (iObject is Faction faction) {
+                FactionUI factionUI = Instantiate((GameObject)Resources.Load("Prefabs/Faction"),
+                    uIManager.GetFactionsTransform()).GetComponent<FactionUI>();
+                factionUI.Setup(faction);
+                factionUIs.Add(faction, factionUI);
+                objects.Add(faction, factionUI);
+                continue;
+            } else if (iObject is Fleet fleet) {
+                FactionUI factionUI = factionUIs[fleet.faction];
+                FleetUI fleetUI = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"),
+                    factionUI.GetFleetTransform()).GetComponent<FleetUI>();
+                fleetUI.Setup(fleet, this);
+                fleetUIs.Add(fleet, fleetUI);
+                objects.Add(fleet, fleetUI);
+                continue;
             }
+
+            if (iObject is not BattleObject)
+                throw new Exception("Object does not have a UI representation");
+
+            BattleObject battleObject = (BattleObject)iObject;
+            if (battleObject.GetPrefab() == null)
+                throw new Exception(battleObject.objectName + " did not have a prefab path");
+            if (battleObject.GetPrefab().GetComponent<BattleObjectUI>() == null)
+                throw new Exception(battleObject.objectName + " had a prefab path but did not have a UI component");
 
             if (iObject is Projectile projectile && objects.ContainsKey(projectile)) {
                 battleObjects[projectile].Setup(projectile, uIManager);
-                return;
+                continue;
             } else if (iObject is Missile missile && objects.ContainsKey(missile)) {
                 battleObjects[missile].Setup(missile, uIManager);
-                return;
+                continue;
             }
 
-            BattleObjectUI battleObjectUI = Instantiate(iObject.GetPrefab()).GetComponent<BattleObjectUI>();
-            battleObjectUI.Setup(iObject, uIManager);
+            BattleObjectUI battleObjectUI = Instantiate(battleObject.GetPrefab()).GetComponent<BattleObjectUI>();
+            battleObjectUI.Setup(battleObject, uIManager);
             if (battleObjectUI is StarUI) battleObjectUI.transform.SetParent(uIManager.GetStarTransform());
             else if (battleObjectUI is PlanetUI) battleObjectUI.transform.SetParent(uIManager.GetPlanetsTransform());
             else if (battleObjectUI is GasCloudUI) battleObjectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
@@ -74,88 +97,43 @@ public class UIBattleManager : MonoBehaviour {
                 else if (battleObjectUI is StationUI) battleObjectUI.transform.SetParent(factionUI.GetStationsTransform());
             }
 
-            battleObjects.Add(iObject, battleObjectUI);
+            battleObjects.Add(battleObject, battleObjectUI);
             objects.Add(iObject, battleObjectUI);
-            if (iObject.IsUnit()) units.Add((Unit)iObject, (UnitUI)battleObjectUI);
+            if (battleObject.IsUnit()) units.Add((Unit)iObject, (UnitUI)battleObjectUI);
         }
 
         objectsToCreate.Clear();
-    }
-
-    private void OnFactionCreated(Faction faction) {
-        FactionUI factionUI = Instantiate((GameObject)Resources.Load("Prefabs/Faction"),
-            uIManager.GetFactionsTransform()).GetComponent<FactionUI>();
-        factionUI.Setup(faction);
-        factionUIs.Add(faction, factionUI);
-        objects.Add(faction, factionUI);
     }
 
     /// <summary>
     /// Handles creating all other objects.
     /// </summary>
     private void OnObjectCreated(IObject iObject) {
-        if (iObject is AsteroidField asteroidField) {
-            AsteroidFieldUI asteroidFieldUI =
-                Instantiate((GameObject)Resources.Load("Prefabs/AsteroidField"), uIManager.GetAsteroidFieldTransform())
-                    .GetComponent<AsteroidFieldUI>();
-            asteroidFieldUI.Setup(asteroidField);
-            objects.Add(asteroidField, asteroidFieldUI);
-            return;
-        } else if (iObject is BattleObject battleObject) {
-            objectsToCreate.Add(battleObject);
-        }
-
-        throw new Exception("Creating an object without the UI!");
+        objectsToCreate.Add(iObject);
     }
 
     private void OnObjectRemoved(IObject iObject) {
+        // If the object is destroyed before the objectUI has been set up lets skip destroying it
+        // Many simulation frames might have occured since the object was registered to be created
+        if (!objects.ContainsKey(iObject)) {
+            if (!objectsToCreate.Contains(iObject)) throw new Exception("Trying to remove an object UI that doesn't exist!");
+            objectsToCreate.Remove(iObject);
+            return;
+        }
+
+        if (iObject is BattleObject battleObject) {
+            BattleObjectUI battleObjectUI = battleObjects[battleObject];
+
+            battleObjectUI.OnBattleObjectRemoved();
+
+            battleObjects.Remove(battleObject);
+            if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
+        } else if (iObject is Fleet fleet) {
+            fleetUIs.Remove(fleet);
+        }
+
+        if (objectsToUpdate.Contains(objects[iObject])) objectsToUpdate.Remove(objects[iObject]);
         Destroy(objects[iObject].gameObject);
         objects.Remove(iObject);
-    }
-
-    /// <summary>
-    /// Registers a sprite for creation, doesn't actually create the object here.
-    /// </summary>
-    private void OnBattleObjectCreated(BattleObject battleObject) {
-        objectsToCreate.Add(battleObject);
-    }
-
-    private void OnOnBattleObjectRemoved(BattleObject battleObject) {
-        // If the object is destroyed before the battleObjectUI has been set up lets skip destroying it
-        // Many simulation frames might have occured since the object was registered to be created
-        if (!battleObjects.ContainsKey(battleObject)) {
-            if (!objectsToCreate.Contains(battleObject)) throw new Exception("Trying to remove an object UI that doesn't exist!");
-            objectsToCreate.Remove(battleObject);
-            return;
-        }
-
-        BattleObjectUI battleObjectUI = battleObjects[battleObject];
-        if (battleObjectUI is ProjectileUI || battleObjectUI is MissileUI) {
-            battleObjectUI.OnBattleObjectRemoved();
-            return;
-        }
-
-        battleObjectUI.OnBattleObjectRemoved();
-        Destroy(battleObjectUI.gameObject);
-
-        battleObjects.Remove(battleObject);
-        objects.Remove(battleObject);
-        if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
-        if (objectsToUpdate.Contains(battleObjectUI)) objectsToUpdate.Remove(battleObjectUI);
-    }
-
-    private void OnFleetCreated(Fleet fleet) {
-        FactionUI factionUI = factionUIs[fleet.faction];
-        FleetUI fleetUI = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"),
-            factionUI.GetFleetTransform()).GetComponent<FleetUI>();
-        fleetUI.Setup(fleet, this);
-        fleetUIs.Add(fleet, fleetUI);
-        objects.Add(fleet, fleetUI);
-    }
-
-    private void OnFleetRemove(Fleet fleet) {
-        Destroy(fleetUIs[fleet].gameObject);
-        fleetUIs.Remove(fleet);
-        objects.Remove(fleet);
     }
 }

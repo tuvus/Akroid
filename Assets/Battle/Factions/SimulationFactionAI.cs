@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public class SimulationFactionAI : FactionAI {
     public Shipyard fleetCommand { get; private set; }
@@ -16,17 +16,17 @@ public class SimulationFactionAI : FactionAI {
     public bool autoConstruction;
     public int minCombatShips = 10;
     public int maxCombatShips = 25;
+    private Random random;
 
     public SimulationFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) {
+        random = new Random(battleManager.GetRandomSeed());
         autoConstruction = true;
         autoCommandFleets = true;
-        updateTime = Random.Range(0, 0.2f);
+        updateTime = random.NextFloat(0, 0.2f);
         defenseFleets = new HashSet<Fleet>();
         attackFleets = new HashSet<Fleet>();
         threats = new HashSet<Fleet>();
     }
-
-    public override void GenerateFactionAI() { }
 
     public override void OnStationBuilt(Station station) {
         if (station.GetStationType() == Station.StationType.FleetCommand) {
@@ -141,7 +141,7 @@ public class SimulationFactionAI : FactionAI {
                         defenseFleet.fleetAI.AddFleetAICommand(Command.CreateAttackFleetCommand(((Ship)closestShip).fleet),
                             Command.CommandAction.Replace);
                     } else {
-                        defenseFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(closestShip), Command.CommandAction.Replace);
+                        defenseFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(closestShip, random), Command.CommandAction.Replace);
                     }
 
                     break;
@@ -152,13 +152,13 @@ public class SimulationFactionAI : FactionAI {
             if (defenseFleet.IsFleetIdle()) {
                 float farthestStationDistance = faction.stations.Max(s => Vector2.Distance(s.GetPosition(), faction.position));
                 Vector2 randomTargetPosition = faction.GetAveragePosition() +
-                    Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
-                        Random.Range(100, farthestStationDistance + 500));
+                    Calculator.GetPositionOutOfAngleAndDistance(random.NextFloat(0, 360),
+                        random.NextFloat(100, farthestStationDistance + 500));
                 defenseFleet.fleetAI.AddFleetAICommand(
                     Command.CreateFormationCommand(defenseFleet.GetPosition(),
                         Calculator.GetAngleOutOfTwoPositions(defenseFleet.GetPosition(), randomTargetPosition)),
                     Command.CommandAction.Replace);
-                defenseFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(randomTargetPosition),
+                defenseFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(randomTargetPosition, random),
                     Command.CommandAction.AddToEnd);
             }
         }
@@ -221,13 +221,13 @@ public class SimulationFactionAI : FactionAI {
                 if (targetStation != null) {
                     attackFleet.fleetAI.AddFormationCommand(fleetPosition,
                         Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetStation.GetPosition()), Command.CommandAction.Replace);
-                    attackFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(targetStation));
+                    attackFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(targetStation, random));
                 } else {
                     Unit targetUnit = faction.GetClosestEnemyUnit(fleetPosition);
                     if (targetUnit != null) {
                         attackFleet.fleetAI.AddFormationCommand(fleetPosition,
                             Calculator.GetAngleOutOfTwoPositions(fleetPosition, targetUnit.GetPosition()), Command.CommandAction.Replace);
-                        attackFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(targetUnit));
+                        attackFleet.fleetAI.AddFleetAICommand(Command.CreateAttackMoveCommand(targetUnit, random));
                     } else {
                         // No more units to target
                         attackFleet.fleetAI.AddFormationCommand(fleetPosition,
@@ -263,7 +263,7 @@ public class SimulationFactionAI : FactionAI {
                         Command.CommandAction.Replace);
                 } else if (idleShip.IsConstructionShip()) {
                     idleShip.shipAI.AddUnitAICommand(
-                        Command.CreateBuildStationCommand(idleShip.faction, Station.StationType.MiningStation, faction.GetPosition()),
+                        Command.CreateBuildStationCommand(idleShip.faction, Station.StationType.MiningStation, faction.GetPosition(), random),
                         Command.CommandAction.Replace);
                     return;
                 }
@@ -276,7 +276,7 @@ public class SimulationFactionAI : FactionAI {
             if (fleetCommand.enemyUnitsInRange.Count > 0) {
                 Vector2 position = fleetCommand.enemyUnitsInRange[0].GetPosition();
                 foreach (var combatShip in fleetCommand.GetAllDockedShips().Where(s => s.IsCombatShip())) {
-                    combatShip.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(position), Command.CommandAction.AddToEnd);
+                    combatShip.shipAI.AddUnitAICommand(Command.CreateAttackMoveCommand(position, random), Command.CommandAction.AddToEnd);
                     combatShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand), Command.CommandAction.AddToEnd);
                 }
             } else {
@@ -332,7 +332,7 @@ public class SimulationFactionAI : FactionAI {
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
             float randomNumber = 0;
             if (faction.HasEnemy()) {
-                randomNumber = Random.Range(0, 100);
+                randomNumber = random.NextFloat(0, 100);
             }
 
             if (randomNumber < 15) {

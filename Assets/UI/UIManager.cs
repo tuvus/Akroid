@@ -30,8 +30,12 @@ public class UIManager : MonoBehaviour {
     }
 
     public void LateUpdate() {
+        if (battleManager == null || battleManager.battleState == BattleManager.BattleState.SettingUp ||
+            battleManager.battleState == BattleManager.BattleState.Setup)
+            return;
+
         Profiler.BeginSample("Update UI Objects");
-        if (battleManager.battleState != BattleManager.BattleState.Setup) uiBattleManager.UpdateSpriteManager();
+        uiBattleManager.UpdateSpriteManager();
         Profiler.EndSample();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();

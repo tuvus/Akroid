@@ -77,7 +77,7 @@ public class Station : Unit, IPositionConfirmer {
             Spawn();
             faction.GetFactionAI().OnStationBuilt(this);
         }
-        random = new Random((uint)battleManager.objects.Count + 1);
+        random = new Random((uint)battleManager.battleObjects.Count + 1);
 
         stationScriptableObject.rotationSpeed *= random.NextFloat(.5f, 1.5f);
         if (random.NextBool()) {

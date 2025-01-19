@@ -9,7 +9,7 @@ using UnityEngine.Profiling;
 using static Faction;
 using static Ship;
 using static Station;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public class BattleManager : MonoBehaviour {
     public static BattleManager Instance { get; protected set; }
@@ -25,7 +25,7 @@ public class BattleManager : MonoBehaviour {
     public List<StarScriptableObject> starBlueprints;
 
     public HashSet<Faction> factions { get; private set; }
-    public HashSet<BattleObject> objects { get; private set; }
+    public HashSet<BattleObject> battleObjects { get; private set; }
     public HashSet<Unit> units { get; private set; }
     public HashSet<Ship> ships { get; private set; }
     public HashSet<Station> stations { get; private set; }
@@ -45,13 +45,8 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Player> players { get; private set; }
 
     public event Action<Faction> OnBattleEnd = delegate { };
-    public event Action<Faction> OnFactionCreated = delegate { };
     public event Action<IObject> OnObjectCreated = delegate { };
     public event Action<IObject> OnObjectRemoved = delegate { };
-    public event Action<BattleObject> OnBattleObjectCreated = delegate { };
-    public event Action<BattleObject> OnBattleObjectRemoved = delegate { };
-    public event Action<Fleet> OnFleetCreated = delegate { };
-    public event Action<Fleet> OnFleetRemoved = delegate { };
 
     [SerializeField] private bool threaded = true;
     public bool instantHit;
@@ -59,9 +54,11 @@ public class BattleManager : MonoBehaviour {
 
     float startOfSimulation;
     double simulationTime;
-    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.Setup;
+    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.SettingUp;
+    private Random random;
 
     public enum BattleState {
+        SettingUp,
         Setup,
         Running,
         Ended
@@ -118,6 +115,46 @@ public class BattleManager : MonoBehaviour {
     }
 
     #region Setup
+
+    public void InitializeBattle() {
+        timeScale = 1;
+        startOfSimulation = Time.unscaledTime;
+        random = new Random((uint)(startOfSimulation * 1000));
+        factions = new HashSet<Faction>(10);
+        battleObjects = new HashSet<BattleObject>(1000);
+        units = new HashSet<Unit>(200);
+        ships = new HashSet<Ship>(150);
+        stations = new HashSet<Station>(50);
+        stationsInProgress = new HashSet<Station>(10);
+        stars = new HashSet<Star>(10);
+        planets = new HashSet<Planet>(10);
+        asteroidFields = new HashSet<AsteroidField>(10);
+        gasClouds = new HashSet<GasCloud>(10);
+        projectiles = new HashSet<Projectile>(500);
+        missiles = new HashSet<Missile>(100);
+        destroyedUnits = new HashSet<Unit>(200);
+        usedProjectiles = new HashSet<Projectile>(500);
+        unusedProjectiles = new HashSet<Projectile>(500);
+        usedMissiles = new HashSet<Missile>(100);
+        unusedMissiles = new HashSet<Missile>(100);
+        players = new HashSet<Player>();
+
+        for (int i = 0; i < 100; i++) {
+            PreSpawnNewProjectile();
+        }
+
+        for (int i = 0; i < 20; i++) {
+            PrespawnNewMissile();
+        }
+
+        if (eventManager == null) eventManager = new EventManager(this);
+
+        shipBlueprints.ForEach(b => Resources.Load<GameObject>(b.shipScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
+        stationBlueprints.ForEach(b => Resources.Load<GameObject>(b.stationScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
+    }
+
     /// <summary>
     /// Sets up the battle with manual values.
     /// </summary>
@@ -130,14 +167,13 @@ public class BattleManager : MonoBehaviour {
 
         this.systemSizeModifier = battleSettings.systemSizeModifier;
         this.researchModifier = battleSettings.researchModifier;
-        InitializeBattle();
         for (int i = 0; i < battleSettings.starCount; i++) {
             CreateNewStar("Star" + (i + 1));
         }
 
         for (int i = 0; i < battleSettings.asteroidFieldCount; i++) {
             CreateNewAsteroidField(Vector2.zero,
-                (int)Random.Range(6 * battleSettings.asteroidCountModifier, 14 * battleSettings.asteroidCountModifier));
+                (int)random.NextFloat(6 * battleSettings.asteroidCountModifier, 14 * battleSettings.asteroidCountModifier));
         }
 
         for (int i = 0; i < factionDatas.Count; i++) {
@@ -165,6 +201,7 @@ public class BattleManager : MonoBehaviour {
         eventManager.AddEvent(eventManager.CreateVictoryCondition(),
             () => { EndBattle(factions.ToList().First(f => f.units.Count > 0 && !f.HasEnemy())); }
         );
+        battleState = BattleState.Setup;
     }
 
     /// <summary>
@@ -182,7 +219,6 @@ public class BattleManager : MonoBehaviour {
         this.campaignController = campaignController;
         systemSizeModifier = campaignController.systemSizeModifier;
         researchModifier = campaignController.researchModifier;
-        InitializeBattle();
         Player LocalPlayer = new Player(true);
         players.Add(LocalPlayer);
         LocalPlayer.SetFaction(null);
@@ -191,46 +227,11 @@ public class BattleManager : MonoBehaviour {
             faction.UpdateObjectGroup();
         }
 
-        battleState = BattleState.Running;
+        battleState = BattleState.Setup;
     }
 
-    private void InitializeBattle() {
-        factions = new HashSet<Faction>(10);
-        objects = new HashSet<BattleObject>(1000);
-        units = new HashSet<Unit>(200);
-        ships = new HashSet<Ship>(150);
-        stations = new HashSet<Station>(50);
-        stationsInProgress = new HashSet<Station>(10);
-        stars = new HashSet<Star>(10);
-        planets = new HashSet<Planet>(10);
-        asteroidFields = new HashSet<AsteroidField>(10);
-        gasClouds = new HashSet<GasCloud>(10);
-        projectiles = new HashSet<Projectile>(500);
-        missiles = new HashSet<Missile>(100);
-        destroyedUnits = new HashSet<Unit>(200);
-        usedProjectiles = new HashSet<Projectile>(500);
-        unusedProjectiles = new HashSet<Projectile>(500);
-        usedMissiles = new HashSet<Missile>(100);
-        unusedMissiles = new HashSet<Missile>(100);
-        players = new HashSet<Player>();
-
-        for (int i = 0; i < 100; i++) {
-            PreSpawnNewProjectile();
-        }
-
-        for (int i = 0; i < 20; i++) {
-            PrespawnNewMissile();
-        }
-
-        timeScale = 1;
-        startOfSimulation = Time.unscaledTime;
-
-        if (eventManager == null) eventManager = new EventManager(this);
-
-        shipBlueprints.ForEach(b => Resources.Load<GameObject>(b.shipScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
-            .modules.ForEach(m => m.SetupData()));
-        stationBlueprints.ForEach(b => Resources.Load<GameObject>(b.stationScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
-            .modules.ForEach(m => m.SetupData()));
+    public void StartBattle() {
+        battleState = BattleState.Running;
     }
 
     #endregion
@@ -244,8 +245,8 @@ public class BattleManager : MonoBehaviour {
     /// <returns></returns>
     public Vector2? FindFreeLocation(PositionGiver positionGiver, IPositionConfirmer positionConfirmer, float minRange, float maxRange) {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
-            float distance = Random.Range(minRange, maxRange);
-            Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0f, 360f), distance);
+            float distance = random.NextFloat(minRange, maxRange);
+            Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(random.NextFloat(0f, 360f), distance);
             if (positionConfirmer.ConfirmPosition(tryPos, positionGiver.distanceFromObject * systemSizeModifier)) {
                 return tryPos;
             }
@@ -278,9 +279,10 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
-        Faction newFaction = new Faction(this, factionData, positionGiver, startingResearchCost);
+        Faction newFaction = new Faction(this, factionData, positionGiver);
         factions.Add(newFaction);
-        OnFactionCreated.Invoke(newFaction);
+        OnObjectCreated.Invoke(newFaction);
+        newFaction.GenerateFaction(factionData, startingResearchCost);
         return newFaction;
     }
 
@@ -335,8 +337,8 @@ public class BattleManager : MonoBehaviour {
     }
 
     public Star CreateNewStar(string name) {
-        Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, Random.Range(0, 360),
-            new Vector2(10, 10) * Random.Range(0.6f, 1.8f)), this, starBlueprints[Random.Range(0, starBlueprints.Count)]);
+        Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, random.NextFloat(0, 360),
+            new Vector2(10, 10) * random.NextFloat(0.6f, 1.8f)), this, starBlueprints[random.NextInt(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddBattleObject(newStar);
@@ -367,11 +369,12 @@ public class BattleManager : MonoBehaviour {
         AsteroidField newAsteroidField = new AsteroidField(this);
         // We need to generate the asteroids first which can only collide with other asteroids in the same field
         for (int i = 0; i < count; i++) {
-            float size = Random.Range(8f, 20f);
+            float size = random.NextFloat(8f, 20f);
             Asteroid newAsteroid = new Asteroid(new BattleObject.BattleObjectData("Asteroid", Vector2.zero,
-                    Random.Range(0, 360), Vector2.one * size), this, newAsteroidField,
-                (long)(Random.Range(400, 600) * size * resourceModifier), asteroidBlueprints[Random.Range(0, asteroidBlueprints.Count)]);
-            newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, Random.Range(0, 10), 4));
+                    random.NextFloat(0, 360), Vector2.one * size), this, newAsteroidField,
+                (long)(random.NextFloat(400, 600) * size * resourceModifier),
+                asteroidBlueprints[random.NextInt(0, asteroidBlueprints.Count)]);
+            newAsteroid.SetupPosition(new PositionGiver(Vector2.zero, 0, 1000, 50, random.NextFloat(0, 10), 4));
             newAsteroidField.battleObjects.Add(newAsteroid);
             AddBattleObject(newAsteroid);
         }
@@ -383,10 +386,11 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
-        float size = Random.Range(20, 40);
+        float size = random.NextFloat(20, 40);
         GasCloud newGasCloud = new GasCloud(
-            new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, Random.Range(0, 360), Vector2.one * size), this,
-            (long)(Random.Range(1500, 3500) * size * resourceModifier), gasCloudBlueprints[Random.Range(0, gasCloudBlueprints.Count)]);
+            new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, random.NextFloat(0, 360), Vector2.one * size), this,
+            (long)(random.NextFloat(1500, 3500) * size * resourceModifier),
+            gasCloudBlueprints[random.NextInt(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);
         AddBattleObject(newGasCloud);
@@ -400,20 +404,20 @@ public class BattleManager : MonoBehaviour {
         OnObjectCreated.Invoke(iObject);
     }
 
-    private void RemoveBattleObject(IObject iObject) {
+    private void RemoveObject(IObject iObject) {
         OnObjectRemoved.Invoke(iObject);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private void AddBattleObject(BattleObject battleObject) {
-        objects.Add(battleObject);
-        OnBattleObjectCreated.Invoke(battleObject);
+        battleObjects.Add(battleObject);
+        AddObject(battleObject);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private void RemoveBattleObject(BattleObject battleObject) {
-        objects.Remove(battleObject);
-        OnBattleObjectRemoved.Invoke(battleObject);
+        battleObjects.Remove(battleObject);
+        RemoveObject(battleObject);
     }
 
     public void BuildStationBlueprint(Station station) {
@@ -506,11 +510,12 @@ public class BattleManager : MonoBehaviour {
     }
 
     public void CreateFleet(Fleet fleet) {
-        OnFleetCreated.Invoke(fleet);
+        AddObject(fleet);
+        OnObjectCreated.Invoke(fleet);
     }
 
     public void RemoveFleet(Fleet fleet) {
-        OnFleetRemoved.Invoke(fleet);
+        RemoveObject(fleet);
     }
 
     public List<IPositionConfirmer> GetPositionBlockingObjects() {
@@ -531,7 +536,7 @@ public class BattleManager : MonoBehaviour {
     /// Also has profiling for most method calls.
     /// </summary>
     public virtual void FixedUpdate() {
-        if (battleState == BattleState.Setup) return;
+        if (battleState != BattleState.Running) return;
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
 
@@ -640,6 +645,10 @@ public class BattleManager : MonoBehaviour {
         if (this.eventManager != null)
             throw new AggregateException("Trying to set the BattleManager EventManager after the EventManager has already been set!");
         this.eventManager = eventManager;
+    }
+
+    public uint GetRandomSeed() {
+        return random.NextUInt();
     }
 
     #endregion

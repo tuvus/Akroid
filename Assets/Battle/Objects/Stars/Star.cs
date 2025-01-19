@@ -10,7 +10,7 @@ public class Star : BattleObject, IPositionConfirmer {
     public Star(BattleObjectData battleObjectData, BattleManager battleManager, StarScriptableObject starScriptableObject) :
         base(battleObjectData, battleManager) {
         this.starScriptableObject = starScriptableObject;
-        color = Color.HSVToRGB(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(.8f, 1f), UnityEngine.Random.Range(.8f, 1f));
+        color = Color.HSVToRGB(random.NextFloat(0f, 1f), random.NextFloat(.8f, 1f), random.NextFloat(.8f, 1f));
         RandomiseGlareTarget();
         visible = true;
         Spawn();
@@ -59,8 +59,8 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     void RandomiseGlareTarget() {
-        targetBrightness = UnityEngine.Random.Range(.5f, 1f);
-        brightnessSpeed = UnityEngine.Random.Range(10f, 30f);
+        targetBrightness = random.NextFloat(.5f, 1f);
+        brightnessSpeed = random.NextFloat(10f, 30f);
     }
 
     public override float GetSpriteSize() {

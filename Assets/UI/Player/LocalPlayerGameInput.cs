@@ -163,7 +163,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 }
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject),
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, random),
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
@@ -211,7 +211,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject),
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, random),
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
@@ -219,7 +219,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             return;
         }
 
-        GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand(GetMouseWorldPosition()), GetCommandAction());
+        GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand(GetMouseWorldPosition(), random), GetCommandAction());
         localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
     }
 
@@ -276,7 +276,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     void GenerateStationBuilderCommand() {
         foreach (var shipUI in selectedUnits.GetAllShips().Where(shipUI => shipUI.ship.IsConstructionShip() && shipUI.ship.spawned)) {
-            shipUI.ship.shipAI.AddUnitAICommand(Command.CreateBuildStationCommand(shipUI.ship.faction ,Station.StationType.MiningStation, GetMouseWorldPosition()), GetCommandAction());
+            shipUI.ship.shipAI.AddUnitAICommand(
+                Command.CreateBuildStationCommand(shipUI.ship.faction, Station.StationType.MiningStation, GetMouseWorldPosition(), random),
+                GetCommandAction());
             localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             return;
         }

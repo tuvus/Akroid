@@ -19,8 +19,6 @@ public class FactionAI {
         autoResearch = true;
     }
 
-    public virtual void GenerateFactionAI() { }
-
     public virtual void UpdateFactionAI(float deltaTime) {
         if (autoResearch)
             faction.UpdateFactionResearch();

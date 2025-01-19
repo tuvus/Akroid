@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public class Planet : BattleObject, IPositionConfirmer {
     public PlanetScriptableObject planetScriptableObject { get; private set; }
@@ -57,10 +57,10 @@ public class Planet : BattleObject, IPositionConfirmer {
             lowQualityArea -= territory.lowQualityArea;
         }
 
-        public void AddRandomTerritory(long value) {
-            highQualityArea = (long)(Random.Range(.2f, .5f) * value / 4.0);
+        public void AddRandomTerritory(long value, Random random) {
+            highQualityArea = (long)(random.NextFloat(.2f, .5f) * value / 4.0);
             value -= highQualityArea * 4;
-            mediumQualityArea = (long)(Random.Range(.4f, .7f) * value / 2.0);
+            mediumQualityArea = (long)(random.NextFloat(.4f, .7f) * value / 2.0);
             value -= mediumQualityArea * 2;
             lowQualityArea = value;
         }
@@ -83,8 +83,8 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) : base(planetData.battleObjectData, battleManager) {
         this.planetScriptableObject = planetScriptableObject;
-        rotationSpeed *= Random.Range(.5f, 1.5f);
-        if (Random.Range(-1, 1) < 0) {
+        rotationSpeed *= random.NextFloat(.5f, 1.5f);
+        if (random.NextFloat(-1, 1) < 0) {
             rotationSpeed *= -1;
         }
 

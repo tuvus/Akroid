@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Command;
+using Random = Unity.Mathematics.Random;
 
 [System.Serializable]
 public class FleetAI {
@@ -19,12 +20,14 @@ public class FleetAI {
     public bool newCommand;
     public CommandType currentCommandState;
     public FleetFormation.FormationType formationType;
+    private Random random;
 
     public FleetAI(Fleet fleet) {
         this.fleet = fleet;
+        random = new Random(fleet.battleManager.GetRandomSeed());
         commands = new List<Command>(10);
         AddFormationCommand();
-        formationType = FleetFormation.ChooseRandomFormation();
+        formationType = FleetFormation.ChooseRandomFormation(random);
     }
 
     public void AddFleetAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
@@ -313,7 +316,7 @@ public class FleetAI {
 
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
             foreach (var ship in fleet.ships) {
-                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, fleet.minShipSpeed));
+                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, random, fleet.minShipSpeed));
             }
 
             currentCommandState = CommandType.Move;
@@ -491,7 +494,7 @@ public class FleetAI {
 
     private void AssignShipsToFormation(Vector2 targetPosition, float targetRotation) {
         (List<Ship>, List<Vector2>) shipTargetPositions =
-            FleetFormation.GetFormationShipPosition(fleet, targetPosition, targetRotation, 0f, formationType);
+            FleetFormation.GetFormationShipPosition(fleet, targetPosition, targetRotation, 0f, formationType, random);
         for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
             shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
             shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(targetRotation));
@@ -589,7 +592,8 @@ public class FleetAI {
     private void SetFleetAttackMovePosition(Vector2 movePosition) {
         foreach (var ship in fleet.ships) {
             Vector2 shipOffset = fleet.GetPosition() - ship.GetPosition();
-            ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, fleet.minShipSpeed), CommandAction.Replace);
+            ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, random, fleet.minShipSpeed),
+                CommandAction.Replace);
         }
     }
 
@@ -625,7 +629,7 @@ public class FleetAI {
         List<Vector3> positions = new() { fleet.GetPosition() };
 
         foreach (var command in commands) {
-            if (command.commandType == Command.CommandType.Research) {
+            if (command.commandType == CommandType.Research) {
                 if (currentCommandState == CommandType.Dock) {
                     if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 /// <summary>
 /// Represents an object that can exist in the scene.
@@ -17,6 +18,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     [field: SerializeField] public Faction faction { get; protected set; }
     public bool spawned { get; protected set; }
     public bool visible { get; protected set; }
+    protected Random random { get; private set; }
 
     public struct BattleObjectData {
         public string objectName;
@@ -57,6 +59,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         this.faction = battleObjectData.faction;
         spawned = false;
         visible = false;
+        random = new Random(battleManager.GetRandomSeed());
     }
 
     public void SetupPosition(BattleManager.PositionGiver positionGiver) {

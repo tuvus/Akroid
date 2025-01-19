@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Profiling;
-using Random = UnityEngine.Random;
+using Random = Unity.Mathematics.Random;
 
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
@@ -67,6 +66,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public List<float> closeEnemyGroupsDistance { get; private set; }
 
     public UnitGroup baseGroup { get; private set; }
+
+    private Random random;
 
     public struct FactionData {
         public Type factionAI;
@@ -135,9 +136,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         credits = 0;
     }
 
-    public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver,
-        int startingResearchCost) :
+    public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver) :
         base(battleManager, new HashSet<Unit>((factionData.ships + factionData.stations) * 5), false) {
+        random = new Random(battleManager.GetRandomSeed());
         units = battleObjects;
         Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
@@ -157,8 +158,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         closeEnemyGroupsDistance = new List<float>(100);
         baseGroup = CreateNewUnitGroup("BaseGroup", false, new HashSet<Unit>(100));
         factionAI = (FactionAI)Activator.CreateInstance(factionData.factionAI, battleManager, this);
-        GenerateFaction(factionData, startingResearchCost);
-        factionAI.GenerateFactionAI();
         commManager = new FactionCommManager(battleManager, this, factionData.leader);
     }
 
@@ -184,12 +183,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (factionData.stations > 0) {
             BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
             Station fleetCommand = battleManager.CreateNewStation(
-                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, Random.Range(0, 360), this),
+                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0, 360), this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
-                    new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, Random.Range(0, 360), this),
+                    new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, random.NextFloat(0, 360), this),
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
                         .stationScriptableObject, true);
                 if (shipCount > 0) {
@@ -206,7 +205,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
         for (int i = 0; i < shipCount; i++) {
             if (GetFleetCommand() != null) {
-                int randomNum = Random.Range(0, 10);
+                int randomNum = random.NextInt(0, 10);
                 if (randomNum < 3) {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aria);
                 } else if (randomNum < 8) {
@@ -216,8 +215,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 }
             } else
                 BattleManager.Instance.CreateNewShip(
-                    new BattleObject.BattleObjectData("Aria", new Vector2(Random.Range(-100, 100), Random.Range(-100, 100)),
-                        Random.Range(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
+                    new BattleObject.BattleObjectData("Aria", new Vector2(random.NextFloat(-100, 100), random.NextFloat(-100, 100)),
+                        random.NextFloat(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
         }
     }
 
@@ -432,7 +431,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         int improvementArea;
         switch (researchArea) {
             case ResearchAreas.Engineering:
-                improvementArea = Random.Range(0, 4);
+                improvementArea = random.NextInt(0, 4);
                 if (improvementArea == 0) {
                     improvementModifiers[(int)ImprovementAreas.HullStrength] += .2f;
                     improvementDiscoveryCount[(int)ImprovementAreas.HullStrength]++;
@@ -450,7 +449,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
                 break;
             case ResearchAreas.Electricity:
-                improvementArea = Random.Range(0, 5);
+                improvementArea = random.NextInt(0, 5);
                 if (improvementArea == 0) {
                     improvementModifiers[(int)ImprovementAreas.ShieldHealth] += .25f;
                     improvementDiscoveryCount[(int)ImprovementAreas.ShieldHealth]++;
@@ -471,7 +470,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
                 break;
             case ResearchAreas.Chemicals:
-                improvementArea = Random.Range(0, 4);
+                improvementArea = random.NextInt(0, 4);
                 if (improvementArea == 0) {
                     improvementModifiers[(int)ImprovementAreas.ThrustPower] += .15f;
                     improvementDiscoveryCount[(int)ImprovementAreas.ThrustPower]++;
@@ -546,7 +545,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public void UpdateFactionResearch() {
-        DiscoverResearchArea((ResearchAreas)Random.Range(0, 3));
+        DiscoverResearchArea((ResearchAreas)random.NextFloat(0, 3));
     }
 
     void UpdateUnitWeaponRanges() {
