@@ -46,7 +46,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.UpdatePlayer();
 
         if (mouseOverBattleObject != null && !selectedUnits.ContainsObject(mouseOverBattleObject) &&
-            !selectedUnits.ContainsObject(mouseOverBattleObject)) {
+            !selectedUnits.ContainsObject(mouseOverBattleObject) && !localPlayer.playerUI.IsAMenueShown()) {
             mouseOverBattleObject.SelectObject(UnitSelection.SelectionStrength.Highlighted);
         }
 
@@ -84,8 +84,12 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     protected override void SecondaryMouseUp() {
-        base.SecondaryMouseUp();
-        EndBoxSelection();
+        if (localPlayer.playerUI.IsAMenueShown() || maxRightClickDistance >= 10 + mainCamera.orthographicSize / 100) {
+            base.SecondaryMouseUp();
+        } else {
+            base.SecondaryMouseUp();
+            if (displayedBattleObject == null) EndBoxSelection();
+        }
     }
 
     void SetButtonDown() {

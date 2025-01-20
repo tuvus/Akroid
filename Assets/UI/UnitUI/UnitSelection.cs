@@ -95,7 +95,7 @@ public class UnitSelection : MonoBehaviour {
     }
 
     public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
-        if (!unitUI.active) return;
+        if (!unitUI.IsVisible()) return;
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);

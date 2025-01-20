@@ -29,7 +29,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     [SerializeField] protected ActionType actionType;
 
-    private Camera mainCamera;
+    public Camera mainCamera { get; private set; }
     private Background background;
 
     [Tooltip("Player input on how fast scroling should be.")]
@@ -41,7 +41,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected bool secondaryMousePressed;
 
     Vector2 rightClickStartPosition;
-    float maxRightClickDistance;
+    protected float maxRightClickDistance { get; private set; }
 
     public bool AltButtonPressed { get; private set; }
 
