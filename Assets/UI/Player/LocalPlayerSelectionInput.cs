@@ -38,7 +38,18 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     public override void UpdatePlayer() {
+        if (mouseOverBattleObject != null && !selectedUnits.ContainsObject(mouseOverBattleObject) &&
+            !selectedUnits.ContainsObject(mouseOverBattleObject)) {
+            mouseOverBattleObject.UnselectObject();
+        }
+
         base.UpdatePlayer();
+
+        if (mouseOverBattleObject != null && !selectedUnits.ContainsObject(mouseOverBattleObject) &&
+            !selectedUnits.ContainsObject(mouseOverBattleObject)) {
+            mouseOverBattleObject.SelectObject(UnitSelection.SelectionStrength.Highlighted);
+        }
+
         if (selectedGroup != -1) {
             selectedGroupTime -= Time.unscaledDeltaTime;
             if (selectedGroupTime < 0) {

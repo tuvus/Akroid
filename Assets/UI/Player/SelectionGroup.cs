@@ -73,8 +73,9 @@ public class SelectionGroup {
         return listOfStations;
     }
 
-    public bool ContainsObject(BattleObjectUI battleObject) {
-        return objects.Contains(battleObject);
+    public bool ContainsObject(BattleObjectUI battleObjectUI) {
+        return objects.Contains(battleObjectUI) || (fleet != null && battleObjectUI.battleObject.IsShip() &&
+            fleet.fleet.ships.Contains((Ship)battleObjectUI.battleObject));
     }
 
 

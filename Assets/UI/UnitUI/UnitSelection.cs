@@ -99,19 +99,16 @@ public class UnitSelection : MonoBehaviour {
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
-
                 selectionOutline.enabled = false;
                 break;
             case SelectionStrength.Selected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
-                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b,
-                    selectedAlpha);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 1f);
                 selectionOutline.enabled = true;
                 break;
             case SelectionStrength.Highlighted:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
-                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b,
-                    highlightedAlpha);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, .4f);
                 selectionOutline.enabled = true;
                 break;
         }
