@@ -41,6 +41,7 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 0.5, y: 0.5}
   shipClass: 6
   shipType: 8
   turnSpeed: 40
