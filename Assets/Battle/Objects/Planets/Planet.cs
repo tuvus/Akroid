@@ -152,10 +152,6 @@ public class Planet : BattleObject, IPositionConfirmer {
         return unclaimedTerritory;
     }
 
-    protected override float SetupSize() {
-        return GetSpriteSize() * scale.x;
-    }
-
     public void UpdatePlanet(float deltaTime) {
         timeSinceStart += deltaTime;
         SetRotation(rotation + rotationSpeed * deltaTime);

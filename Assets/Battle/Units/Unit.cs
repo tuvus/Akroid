@@ -40,10 +40,6 @@ public abstract class Unit : BattleObject {
         SetSize(SetupSize());
     }
 
-    protected override float SetupSize() {
-        return GetSpriteSize();
-    }
-
     public void SetupWeaponRanges() {
         foreach (var turret in moduleSystem.Get<Turret>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, turret.GetRange());

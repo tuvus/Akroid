@@ -17,10 +17,6 @@ public class Star : BattleObject, IPositionConfirmer {
         SetSize(SetupSize());
     }
 
-    protected override float SetupSize() {
-        return GetSpriteSize();
-    }
-
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;

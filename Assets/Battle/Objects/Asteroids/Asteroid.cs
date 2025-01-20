@@ -16,10 +16,6 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         SetSize(SetupSize());
     }
 
-    protected override float SetupSize() {
-        return GetSpriteSize();
-    }
-
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)

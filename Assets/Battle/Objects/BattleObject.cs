@@ -84,13 +84,12 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         }
     }
 
-    protected virtual float SetupSize() {
+    protected float SetupSize() {
         return GetSpriteSize();
     }
 
     protected void SetSize(float newSize) {
         size = newSize;
-        //sizeIndicator.localScale = new Vector3(GetSize() / transform.localScale.x * 2, GetSize() / transform.localScale.y * 2, 1);
     }
 
     protected virtual Vector2 GetSetupPosition(BattleManager.PositionGiver position) {
