@@ -14,6 +14,7 @@ public class UnitSelection : MonoBehaviour {
     private EngagedVisual engagedVisual;
     private UnitUI unitUI;
     private UIManager uIManager;
+    private SpriteRenderer selectionOutline;
 
     public void SetupSelection(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;
@@ -22,8 +23,13 @@ public class UnitSelection : MonoBehaviour {
         spriteRenderer.enabled = false;
         UpdateFactionColor();
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
+        spriteRenderer.sprite = unitUI.unit.unitScriptableObject.sprite;
         engagedVisual = GetComponentInChildren<EngagedVisual>();
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
+        selectionOutline = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        float size = unitUI.unit.GetSize();
+        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 10 / size + new Vector2(5, 5);
+        selectionOutline.transform.localScale *= size / 10;
     }
 
     public void UpdateUnitSelection() {
@@ -48,7 +54,8 @@ public class UnitSelection : MonoBehaviour {
     /// </summary>
     /// <returns>True if the indicator is visible, false otherwise</returns>
     private bool UpdateSelection() {
-        if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false || (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
+        if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false ||
+            (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
             || !unitUI.IsVisible()) {
             ShowUnitSelection(false);
             return false;
@@ -69,6 +76,7 @@ public class UnitSelection : MonoBehaviour {
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
         } else {
+            transform.localScale = new Vector2(1, 1);
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
         }
@@ -91,12 +99,20 @@ public class UnitSelection : MonoBehaviour {
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
+
+                selectionOutline.enabled = false;
                 break;
             case SelectionStrength.Selected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b,
+                    selectedAlpha);
+                selectionOutline.enabled = true;
                 break;
             case SelectionStrength.Highlighted:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b,
+                    highlightedAlpha);
+                selectionOutline.enabled = true;
                 break;
         }
     }
