@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      SpaceBattle1_0: -6949746275358650977
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

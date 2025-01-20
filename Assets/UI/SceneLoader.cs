@@ -124,7 +124,7 @@ public class SceneLoader : MonoBehaviour {
         SpriteRenderer shield = FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None)
             .First(o => o.name == "Shield");
         shield.gameObject.SetActive(true);
-        statusText.SetText("Done!");
+        statusText.SetText("Loading Completed...");
         loadingBar.value = 1;
         // We need to wait one more frame to show the shield on the ship
         yield return null;
