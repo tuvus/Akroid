@@ -227,7 +227,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
-        if (maxRightClickDistance < 1) {
+        if (maxRightClickDistance < 10 + mainCamera.orthographicSize / 100) {
             if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
                 if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
                     localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
