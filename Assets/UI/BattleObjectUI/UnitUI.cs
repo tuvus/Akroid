@@ -72,6 +72,7 @@ public abstract class UnitUI : BattleObjectUI {
                 destroyed = true;
                 destroyEffectUI.Explode(unit.GetDestroyEffect());
                 unitSelection.ShowUnitSelection(false);
+                UnselectObject();
             }
         } else {
             destroyEffectUI.UpdateExplosion();

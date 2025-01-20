@@ -57,7 +57,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             lowQualityArea -= territory.lowQualityArea;
         }
 
-        public void AddRandomTerritory(long value, Random random) {
+        public void AddRandomTerritory(long value, ref Random random) {
             highQualityArea = (long)(random.NextFloat(.2f, .5f) * value / 4.0);
             value -= highQualityArea * 4;
             mediumQualityArea = (long)(random.NextFloat(.4f, .7f) * value / 2.0);

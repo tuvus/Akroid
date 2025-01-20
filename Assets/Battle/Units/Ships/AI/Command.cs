@@ -108,7 +108,7 @@ public class Command {
         };
     }
 
-    public static Command CreateAttackMoveCommand(Vector2 targetPosition, Random random, float maxSpeed = float.MaxValue) {
+    public static Command CreateAttackMoveCommand(Vector2 targetPosition, ref Random random, float maxSpeed = float.MaxValue) {
         return new Command(CommandType.AttackMove) {
             targetPosition = targetPosition,
             maxSpeed = maxSpeed,
@@ -116,7 +116,7 @@ public class Command {
         };
     }
 
-    public static Command CreateAttackMoveCommand(Unit targetUnit, Random random, float maxSpeed = float.MaxValue,
+    public static Command CreateAttackMoveCommand(Unit targetUnit, ref Random random, float maxSpeed = float.MaxValue,
         bool useAlternateCommandOnceDone = false) {
         return new Command(CommandType.AttackMoveUnit) {
             targetUnit = targetUnit,

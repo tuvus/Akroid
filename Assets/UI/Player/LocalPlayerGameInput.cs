@@ -163,7 +163,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.blue);
                 }
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, random),
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, ref random),
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
@@ -211,7 +211,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             } else {
-                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, random),
+                GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand((Unit)mouseOverBattleObject.battleObject, ref random),
                     GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
             }
@@ -219,7 +219,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             return;
         }
 
-        GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand(GetMouseWorldPosition(), random), GetCommandAction());
+        GiveCommandToAllSelectedUnits(Command.CreateAttackMoveCommand(GetMouseWorldPosition(), ref random), GetCommandAction());
         localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.red);
     }
 

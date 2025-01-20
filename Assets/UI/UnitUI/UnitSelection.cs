@@ -27,6 +27,9 @@ public class UnitSelection : MonoBehaviour {
         engagedVisual = GetComponentInChildren<EngagedVisual>();
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
         selectionOutline = transform.GetChild(1).GetComponent<SpriteRenderer>();
+
+        // We want to make the selection outline the right size, however we also want the outline thickness to scale with the size.
+        // We can do this by reducing the outline size and increasing the scale of the object
         float size = unitUI.unit.GetSize();
         selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 10 / size + new Vector2(5, 5);
         selectionOutline.transform.localScale *= size / 10;
@@ -95,7 +98,11 @@ public class UnitSelection : MonoBehaviour {
     }
 
     public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
-        if (!unitUI.IsVisible()) return;
+        if (!unitUI.IsVisible()) {
+            if (selectionOutline != null) selectionOutline.enabled = false;
+            return;
+        }
+
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);

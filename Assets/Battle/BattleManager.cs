@@ -197,7 +197,6 @@ public class BattleManager : MonoBehaviour {
         if (factions.Count > 0) localPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
         else localPlayer.SetFaction(null);
 
-        battleState = BattleState.Running;
         eventManager.AddEvent(eventManager.CreateVictoryCondition(),
             () => { EndBattle(factions.ToList().First(f => f.units.Count > 0 && !f.HasEnemy())); }
         );

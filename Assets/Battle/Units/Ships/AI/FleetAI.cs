@@ -27,7 +27,7 @@ public class FleetAI {
         random = new Random(fleet.battleManager.GetRandomSeed());
         commands = new List<Command>(10);
         AddFormationCommand();
-        formationType = FleetFormation.ChooseRandomFormation(random);
+        formationType = FleetFormation.ChooseRandomFormation(ref random);
     }
 
     public void AddFleetAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
@@ -316,7 +316,7 @@ public class FleetAI {
 
         if (currentCommandState == CommandType.FormationLocation && fleet.AreShipsIdle()) {
             foreach (var ship in fleet.ships) {
-                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, random, fleet.minShipSpeed));
+                ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(command.targetUnit, ref random, fleet.minShipSpeed));
             }
 
             currentCommandState = CommandType.Move;
@@ -494,7 +494,7 @@ public class FleetAI {
 
     private void AssignShipsToFormation(Vector2 targetPosition, float targetRotation) {
         (List<Ship>, List<Vector2>) shipTargetPositions =
-            FleetFormation.GetFormationShipPosition(fleet, targetPosition, targetRotation, 0f, formationType, random);
+            FleetFormation.GetFormationShipPosition(fleet, targetPosition, targetRotation, 0f, formationType, ref random);
         for (int i = 0; i < shipTargetPositions.Item1.Count; i++) {
             shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateMoveCommand(shipTargetPositions.Item2[i]), CommandAction.Replace);
             shipTargetPositions.Item1[i].shipAI.AddUnitAICommand(CreateRotationCommand(targetRotation));
@@ -592,7 +592,7 @@ public class FleetAI {
     private void SetFleetAttackMovePosition(Vector2 movePosition) {
         foreach (var ship in fleet.ships) {
             Vector2 shipOffset = fleet.GetPosition() - ship.GetPosition();
-            ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, random, fleet.minShipSpeed),
+            ship.shipAI.AddUnitAICommand(CreateAttackMoveCommand(movePosition - shipOffset, ref random, fleet.minShipSpeed),
                 CommandAction.Replace);
         }
     }
