@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
     private BattleManager battleManager;
@@ -44,6 +45,7 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private GameObject starUI;
     [SerializeField] private GameObject asteroidUI;
     [SerializeField] private GameObject gasCloudUI;
+    [field: SerializeField] public Button factionOverviewButton { get; private set; }
 
     [SerializeField] private List<IPlayerUIMenu> uIMenusInput;
     public Dictionary<Type, IPlayerUIMenu> uIMenus;

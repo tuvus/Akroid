@@ -14,5 +14,9 @@ public class OpenFactionPanelCondition : UIEventCondition {
         return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == uiBattleManager.factionUIs[factionToSelect];
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) { }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
+        if (!localPlayer.playerUI.playerFactionOverviewUI.gameObject.activeSelf ||
+            localPlayer.playerUI.playerFactionOverviewUI.displayedObject != localPlayer.GetFactionUI())
+            buttonsToVisualize.Add(localPlayer.playerUI.factionOverviewButton);
+    }
 }
