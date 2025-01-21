@@ -24,10 +24,7 @@ public class LaserUI : BattleObjectUI {
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
-        audioSource.minDistance = 20;
-        audioSource.maxDistance = 120;
         audioSource.dopplerLevel = 0;
-        audioSource.volume = .2f;
         audioSource.loop = true;
     }
 
@@ -74,6 +71,11 @@ public class LaserUI : BattleObjectUI {
             transform.GetChild(2).position = Vector2.MoveTowards(transform.position,
                 Calculator.GetClosestPointToAPointOnALine(transform.position, laser.laserTurret.GetWorldRotation(), cameraPosition),
                 math.min(Vector2.Distance(transform.position, cameraPosition), laserLength / 2));
+
+            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .2f;
+            audioSource.minDistance = 5 + 5 * cameraZoom / 10;
+            audioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         } else if (!laser.fireing && fireing) {
             fireing = false;
             startHighlight.enabled = false;

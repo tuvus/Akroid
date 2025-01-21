@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -24,10 +25,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
-        audioSource.minDistance = 5;
-        audioSource.maxDistance = 50;
         audioSource.dopplerLevel = 0;
-        audioSource.volume = 1f;
         audioSource.loop = true;
         thrusting = false;
     }
@@ -57,6 +55,10 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
             }
 
             if (thrusterFlare.enabled) thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
+            float cameraZoom = localPlayerInput.mainCamera.orthographicSize;
+            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .2f;
+            audioSource.minDistance = 1 + 5 * cameraZoom / 10;
+            audioSource.maxDistance = 15 + 5 * cameraZoom / 10;
         }
     }
 

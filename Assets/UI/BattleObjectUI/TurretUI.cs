@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -28,6 +29,10 @@ public class TurretUI : ComponentUI {
         if (fire) {
             audioSource.Play();
             fire = false;
+            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
+            audioSource.minDistance = 5 + 5 * cameraZoom / 10;
+            audioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }
 
         if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unitUI.unit.faction.GetColorTint();
