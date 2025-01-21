@@ -234,7 +234,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = false;
+        bool skipTutorial = true;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -317,79 +317,79 @@ public class Chapter1 : CampaingController {
             "Lets review the controls while we are on route to the asteroid fields.", 15 * GetTimeScale());
 
         // Camera movement Tutorial
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Try clicking and holding your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreatePanCondition(40));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Try pressing V to center your camera again, this can be helful if you get lost.", 2 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Now scroll out to view more of the solar system.", 7 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateZoomCondition(2000));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Great job! As you can see our ships appear with a green icon when zoomed out, meaning that we own them but can't control them. " +
-        //     "Neutral units will appear grey and hostile units will appear red.");
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Now zoom back in to our ships so we can see them better.", 15 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateZoomCondition(300));
-        //
-        // // Selection Tutorial
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Well done! Now lets try selecting the ships.", 2 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Our ships are in a fleet, which means when you click a ship you will select the fleet by default.", 5 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Try clicking on of the ships to select our fleet.", 5 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateSelectFleetCondition(playerFaction.fleets.First(), true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Hold alt while clicking a ship to select it.", 3 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "You can see a line coming out of the selected ship, this shows where their current command is going.", 1 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "If you want to select more units you can hold shift while clicking it to add it to our current selection.",
-        //     7 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Try adding another ship to our current selection.", 9 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Exelent! Now deselect the ships by clicking on empty space or by pressing D.", 1 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateUnselectUnitsCondition(battleManager.units.ToList(), false));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "There is one more way that you can select ships. " +
-        //     "Try holding alt then click and dragging your mouse to do a box selection until it contains a few of the ships.",
-        //     1 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
-        // eventChain.AddCondition(
-        //     eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Here you can see its owner, state, cargo and weapons of the unit. ", 1 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Right click again or press the close button to close the panel.", 4 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(null, false));
-        //
-        // // Following Tutorial
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "We are currently following a ship in our fleet to keep it visible. " +
-        //     "Press B to unfollow the ship in our fleet.", 2 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateFollowUnitCondition(null));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "As you can see, our ships are moving without the camera now. " +
-        //     "You can always follow a ship again by selecting it and pressing B.", 3 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Zoom all the way out to view more of the solar system.", 12 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateZoomCondition(30000));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "You can barely see the stations, planet, the many asteroid fields and gas clouds. " +
-        //     "Our mining team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        //     "Zoom in and right click on the planet to view the political state. This is our home.", 6 * GetTimeScale());
-        // eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(planet, true));
-        // eventChain.AddCommEvent(playerComm, playerFaction,
-        // "Here you can see the various factions on the planet, their territory and forces.", 5 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try clicking and holding your right mouse button and moving your mouse to pan the camera.", 7 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreatePanCondition(40));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try pressing V to center your camera again, this can be helful if you get lost.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Now scroll out to view more of the solar system.", 7 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateZoomCondition(2000));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Great job! As you can see our ships appear with a green icon when zoomed out, meaning that we own them but can't control them. " +
+            "Neutral units will appear grey and hostile units will appear red.");
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Now zoom back in to our ships so we can see them better.", 15 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateZoomCondition(300));
+
+        // Selection Tutorial
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Well done! Now lets try selecting the ships.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Our ships are in a fleet, which means when you click a ship you will select the fleet by default.", 5 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try clicking on of the ships to select our fleet.", 5 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateSelectFleetCondition(playerFaction.fleets.First(), true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Hold alt while clicking a ship to select it.", 3 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "You can see a line coming out of the selected ship, this shows where their current command is going.", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "If you want to select more units you can hold shift while clicking it to add it to our current selection.",
+            7 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Try adding another ship to our current selection.", 9 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Exelent! Now deselect the ships by clicking on empty space or by pressing D.", 1 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateUnselectUnitsCondition(battleManager.units.ToList(), false));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "There is one more way that you can select ships. " +
+            "Try holding alt then click and dragging your mouse to do a box selection until it contains a few of the ships.",
+            1 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Great job! Now try right clicking on the biggest ship to view its stats.", 1 * GetTimeScale());
+        eventChain.AddCondition(
+            eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()), true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Here you can see its owner, state, cargo and weapons of the unit. ", 1 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Right click again or press the close button to close the panel.", 4 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(null, false));
+
+        // Following Tutorial
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "We are currently following a ship in our fleet to keep it visible. " +
+            "Press B to unfollow the ship in our fleet.", 2 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateFollowUnitCondition(null));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "As you can see, our ships are moving without the camera now. " +
+            "You can always follow a ship again by selecting it and pressing B.", 3 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Zoom all the way out to view more of the solar system.", 12 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateZoomCondition(30000));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "You can barely see the stations, planet, the many asteroid fields and gas clouds. " +
+            "Our mining team is currently heading to a particularly dense asteroid field to mine.", 2 * GetTimeScale());
+        eventChain.AddCommEvent(playerComm, playerFaction,
+            "Zoom in and right click on the planet to view the political state. This is our home.", 6 * GetTimeScale());
+        eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(planet, true));
+        eventChain.AddCommEvent(playerComm, playerFaction,
+        "Here you can see the various factions on the planet, their territory and forces.", 5 * GetTimeScale());
         eventChain.Build(eventManager, playerComm, playerFaction,
             "What difficulty would you like to play at? Harder difficulties will have a faster intro scene.",
             new CommunicationEventOption[] {
@@ -537,91 +537,91 @@ public class Chapter1 : CampaingController {
         FactionCommManager researchCommManager = researchFaction.GetFactionCommManager();
 
         EventChainBuilder researchChain = new EventChainBuilder();
-        researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
-            "Hello there, this is " + researchCommManager.GetSenderName() + ". " +
-            "I'm the lead reasearcher of the " + researchStation.objectName + ".", 5 * GetTimeScale());
-        researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
-            "I see that your mining operations are all set up. ", 7 * GetTimeScale());
-        researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
-            "We could use your help investigating some resources that might play a role in interstellar travel. " +
-            "Could you send your shuttle over to our research station station to help us out with some?", 5 * GetTimeScale());
-        researchChain.AddAction(() => {
-            eventManager.AddEvent(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, false), () => {
-                playerComm.SendCommunication(playerFaction,
-                    "Our ship is on route to the " + researchStation.objectName +
-                    "! Remember that you can always use the [<, >, ?] keys to change the speed of time.",
-                    5 * GetTimeScale());
-            });
-            playerComm.SendCommunication(playerFaction,
-                "The Research station was built far away to experiment with minimal gravity from the sun. " +
-                "You will have to scroll out and pan around to see it.", 20 * GetTimeScale());
-        });
-        researchChain.AddCondition(eventManager.CreateDockShipAtUnit(shuttle, researchStation, true));
-        researchChain.AddCommEvent(playerComm, researchFaction,
-            "Our shuttle has arrived at your research station. What would you like for us to do?", 2 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "Good to see that you got here safely! \n " +
-            "Our station was sent up as a combined reasearch initiative to investigate possibilities for interstellar travel. ",
-            2 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We were initially supported by most of the factions back on the planet. " +
-            "However, now that tensions are building it is too risky for them to invest into research that could benefit some factions more than others.",
-            16 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We have found some interesting gas clouds farther from the sun and they may contain low-density gases that could be usefull back on the planet. " +
-            "Unfortunately we don't have the funding to construct a science ship with expensive equipment.", 16 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "It would be a great help if you could send your ship to the gas field that we have marked.",
-            18 * GetTimeScale());
-        GasCloud targetGasCloud = researchFaction.GetClosestGasCloud(researchStation.GetPosition());
-        researchChain.AddCondition(eventManager.CreateMoveShipToObject(shuttle, targetGasCloud, 10, true));
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We have recieved some preliminary data about the gas. The low-density of the gas cloud is spectacular! " +
-            "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship.",
-            3 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "Could you bring the ship back to our station with a sample to farther analyze the gas?", 15 * GetTimeScale());
-        researchChain.AddCondition(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, true));
-        researchChain.AddAction(() => battleManager.SetSimulationTimeScale(1));
-        researchChain.AddCommEvent(playerComm, researchFaction,
-            "No problem! We'll bring the gas back to the station.", 1 * GetTimeScale());
-        researchChain.AddAction(() => {
-            EventChainBuilder spendResearchChain = new EventChainBuilder();
-            spendResearchChain.AddCommEvent(playerComm, playerFaction,
-                "Here's some of the data that you collected.", 3 * GetTimeScale());
-            spendResearchChain.AddAction(() => playerFaction.AddScience(100));
-            spendResearchChain.AddCommEvent(playerComm, playerFaction,
-                "We have processed the data that we recieved from " + researchFaction.name + " as science. \n" +
-                "Lets put it to use. Click the top left button to open the faction panel.", 5 * GetTimeScale());
-            spendResearchChain.AddCondition(eventManager.CreateOpenFactionPanelCondition(playerFaction, true));
-            spendResearchChain.AddCommEvent(playerComm, playerFaction,
-                "There are three research fields: Engineering, Electricity and Chemicals. " +
-                "Each time science is put into a field it improves one of the areas assosiated with that field. \n" +
-                "Try putting your science into one of the fields.", 2 * GetTimeScale());
-            spendResearchChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerFaction.Discoveries > 0));
-            spendResearchChain.AddCommEvent(playerComm, playerFaction,
-                "Great Job! You can see which area was improved by scrolling through the improvements list. \n" +
-                "The cost to research goes up each time. " +
-                "Remember to check back when we get more sciecne!", 1 * GetTimeScale());
-            spendResearchChain.Build(eventManager, () => battleManager.SetSimulationTimeScale(10))();
-        });
-        researchChain.AddCondition(eventManager.CreateDockShipsAtUnit(new List<Ship> { shuttle }, researchStation, true));
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "Thanks for the gas! We won't be needing your ship anytime soon so you are free to use it again. " +
-            "We'll need some time to analyse this gas, I'm sure it will be of use.", 3 * GetTimeScale());
-        researchChain.AddCommEvent(playerComm, researchFaction,
-            "Sounds great! Let us know if you find anything interesting about the gas.", 5 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "We have fully analysed the high density gas. " +
-            "It seems like it could be used as a very efficient energy generation tool! " +
-            "With a specialised reactor installed in our space ships we could last quite a while in deep space without much sunlight.",
-            500 * GetTimeScale());
-        researchChain.AddAction(() => playerFaction.AddScience(200));
-        researchChain.AddCommEvent(playerComm, researchFaction,
-            "Thats interesting, is there any way we could help collect it.", 5 * GetTimeScale());
-        researchChain.AddCommEvent(researchCommManager, playerFaction,
-            "You could start by collecting the gas with a specialised gas collector ship. " +
-            "We can then build generators in our stations to provide them with an abundance of energy.", 30 * GetTimeScale());
+        // researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
+        //     "Hello there, this is " + researchCommManager.GetSenderName() + ". " +
+        //     "I'm the lead reasearcher of the " + researchStation.objectName + ".", 5 * GetTimeScale());
+        // researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
+        //     "I see that your mining operations are all set up. ", 7 * GetTimeScale());
+        // researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
+        //     "We could use your help investigating some resources that might play a role in interstellar travel. " +
+        //     "Could you send your shuttle over to our research station station to help us out with some?", 5 * GetTimeScale());
+        // researchChain.AddAction(() => {
+        //     eventManager.AddEvent(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, false), () => {
+        //         playerComm.SendCommunication(playerFaction,
+        //             "Our ship is on route to the " + researchStation.objectName +
+        //             "! Remember that you can always use the [<, >, ?] keys to change the speed of time.",
+        //             5 * GetTimeScale());
+        //     });
+        //     playerComm.SendCommunication(playerFaction,
+        //         "The Research station was built far away to experiment with minimal gravity from the sun. " +
+        //         "You will have to scroll out and pan around to see it.", 20 * GetTimeScale());
+        // });
+        // researchChain.AddCondition(eventManager.CreateDockShipAtUnit(shuttle, researchStation, true));
+        // researchChain.AddCommEvent(playerComm, researchFaction,
+        //     "Our shuttle has arrived at your research station. What would you like for us to do?", 2 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "Good to see that you got here safely! \n " +
+        //     "Our station was sent up as a combined reasearch initiative to investigate possibilities for interstellar travel. ",
+        //     2 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "We were initially supported by most of the factions back on the planet. " +
+        //     "However, now that tensions are building it is too risky for them to invest into research that could benefit some factions more than others.",
+        //     16 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "We have found some interesting gas clouds farther from the sun and they may contain low-density gases that could be usefull back on the planet. " +
+        //     "Unfortunately we don't have the funding to construct a science ship with expensive equipment.", 16 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "It would be a great help if you could send your ship to the gas field that we have marked.",
+        //     18 * GetTimeScale());
+        // GasCloud targetGasCloud = researchFaction.GetClosestGasCloud(researchStation.GetPosition());
+        // researchChain.AddCondition(eventManager.CreateMoveShipToObject(shuttle, targetGasCloud, 10, true));
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "We have recieved some preliminary data about the gas. The low-density of the gas cloud is spectacular! " +
+        //     "There are some anomalies about it that we can't figure out with the small amount of equipment on your ship.",
+        //     3 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "Could you bring the ship back to our station with a sample to farther analyze the gas?", 15 * GetTimeScale());
+        // researchChain.AddCondition(eventManager.CreateCommandDockShipToUnit(shuttle, researchStation, true));
+        // researchChain.AddAction(() => battleManager.SetSimulationTimeScale(1));
+        // researchChain.AddCommEvent(playerComm, researchFaction,
+        //     "No problem! We'll bring the gas back to the station.", 1 * GetTimeScale());
+        // researchChain.AddAction(() => {
+        //     EventChainBuilder spendResearchChain = new EventChainBuilder();
+        //     spendResearchChain.AddCommEvent(playerComm, playerFaction,
+        //         "Here's some of the data that you collected.", 3 * GetTimeScale());
+        //     spendResearchChain.AddAction(() => playerFaction.AddScience(100));
+        //     spendResearchChain.AddCommEvent(playerComm, playerFaction,
+        //         "We have processed the data that we recieved from " + researchFaction.name + " as science. \n" +
+        //         "Lets put it to use. Click the top left button to open the faction panel.", 5 * GetTimeScale());
+        //     spendResearchChain.AddCondition(eventManager.CreateOpenFactionPanelCondition(playerFaction, true));
+        //     spendResearchChain.AddCommEvent(playerComm, playerFaction,
+        //         "There are three research fields: Engineering, Electricity and Chemicals. " +
+        //         "Each time science is put into a field it improves one of the areas assosiated with that field. \n" +
+        //         "Try putting your science into one of the fields.", 2 * GetTimeScale());
+        //     spendResearchChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerFaction.Discoveries > 0));
+        //     spendResearchChain.AddCommEvent(playerComm, playerFaction,
+        //         "Great Job! You can see which area was improved by scrolling through the improvements list. \n" +
+        //         "The cost to research goes up each time. " +
+        //         "Remember to check back when we get more sciecne!", 1 * GetTimeScale());
+        //     spendResearchChain.Build(eventManager, () => battleManager.SetSimulationTimeScale(10))();
+        // });
+        // researchChain.AddCondition(eventManager.CreateDockShipsAtUnit(new List<Ship> { shuttle }, researchStation, true));
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "Thanks for the gas! We won't be needing your ship anytime soon so you are free to use it again. " +
+        //     "We'll need some time to analyse this gas, I'm sure it will be of use.", 3 * GetTimeScale());
+        // researchChain.AddCommEvent(playerComm, researchFaction,
+        //     "Sounds great! Let us know if you find anything interesting about the gas.", 5 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "We have fully analysed the high density gas. " +
+        //     "It seems like it could be used as a very efficient energy generation tool! " +
+        //     "With a specialised reactor installed in our space ships we could last quite a while in deep space without much sunlight.",
+        //     500 * GetTimeScale());
+        // researchChain.AddAction(() => playerFaction.AddScience(200));
+        // researchChain.AddCommEvent(playerComm, researchFaction,
+        //     "Thats interesting, is there any way we could help collect it.", 5 * GetTimeScale());
+        // researchChain.AddCommEvent(researchCommManager, playerFaction,
+        //     "You could start by collecting the gas with a specialised gas collector ship. " +
+        //     "We can then build generators in our stations to provide them with an abundance of energy.", 30 * GetTimeScale());
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Once we have enough energy credits open the menu of the " + shipyard.objectName + " to view the ship construction options.",
             20 * GetTimeScale());
@@ -902,7 +902,7 @@ public class Chapter1 : CampaingController {
             battleManager.shipBlueprints.First(s => s.shipScriptableObject.shipType == Ship.ShipType.Colonizer), playerFaction, shipyard,
             true));
         Ship colonizer = null;
-        buildEscapeShipChain.AddAction(() => colonizer = playerFaction.ships.First(s => s.GetShipClass() == Ship.ShipClass.Aterna));
+        buildEscapeShipChain.AddAction(() => colonizer = playerFaction.ships.First(s => s.GetShipType() == Ship.ShipType.Colonizer));
         buildEscapeShipChain.AddCommEvent(shipyardCommManager, planetFaction,
             "We have finished building the colonizer ship. We'll need to bring it over to the research station to install the hyperdrive.",
             GetTimeScale() * 3);

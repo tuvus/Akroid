@@ -102,7 +102,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
                     cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = amount.ToString();
                     cargoBayButton.GetChild(2).GetComponent<TMP_Text>().text = percent.ToString() + "%";
                 }
-                cargoBayIndex+=numberOfCargoBaysUsed;
+
+                cargoBayIndex += numberOfCargoBaysUsed;
             }
 
             for (int i = cargoBayIndex; i < cargoBayList.childCount; i++) {
@@ -340,6 +341,12 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
     public Button GetButtonOfShip(Ship ship) {
         return hangarList.GetChild(shipsInHangar.IndexOf(ship)).GetComponent<Button>();
+    }
+
+    public Button GetButtonOfShipBlueprint(Ship.ShipBlueprint shipBlueprint) {
+        Ship.ShipBlueprint foundBlueprint =
+            shipBlueprints.FirstOrDefault(b => b.shipScriptableObject == shipBlueprint.shipScriptableObject);
+        return blueprintList.GetChild(shipBlueprints.IndexOf(foundBlueprint)).GetComponent<Button>();
     }
 
     public void OpenFactionMenu() {

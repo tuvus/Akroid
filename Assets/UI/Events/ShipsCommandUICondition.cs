@@ -8,17 +8,9 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
         UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
-
-        foreach (var ship in conditionLogic.shipsToCommand
-            .Where(ship => !selectedUnits.Contains(uiBattleManager.units[ship]) && !conditionLogic.DoesShipHaveCommand(ship))) {
-            if (ship.dockedStation != null) {
-                StationUI stationUI = (StationUI)uiBattleManager.units[ship.dockedStation];
-                if (!selectedUnits.Contains(stationUI)) objectsToVisualize.Add(stationUI);
-                continue;
-            }
-            objectsToVisualize.Add(uiBattleManager.units[ship]);
-        }
+        AddShipsToSelect(
+            conditionLogic.shipsToCommand.Where(ship => !conditionLogic.DoesShipHaveCommand(ship))
+                .Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize, buttonsToVisualize);
 
         Command command = conditionLogic.commandCondition;
         switch (command.commandType) {
@@ -67,7 +59,8 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
             case Command.CommandType.BuildStation:
                 break;
             default:
-                throw new NotSupportedException("The visualization of the command condition " + command.commandType + " is not supported yet");
+                throw new NotSupportedException("The visualization of the command condition " + command.commandType +
+                    " is not supported yet");
         }
     }
 }
