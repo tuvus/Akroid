@@ -399,10 +399,12 @@ public class BattleManager : MonoBehaviour {
 
     #region ObjectLists
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private void AddObject(IObject iObject) {
         OnObjectCreated.Invoke(iObject);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     private void RemoveObject(IObject iObject) {
         OnObjectRemoved.Invoke(iObject);
     }
@@ -486,6 +488,7 @@ public class BattleManager : MonoBehaviour {
         AddBattleObject(missile);
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
     public void RemoveMissile(Missile missile) {
         usedMissiles.Remove(missile);
         unusedMissiles.Add(missile);

@@ -15,6 +15,7 @@ public class UIBattleManager : MonoBehaviour {
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
     public HashSet<ObjectUI> objectsToUpdate { get; private set; }
     private HashSet<IObject> objectsToCreate;
+    private HashSet<IObject> objectsToRemove;
 
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
@@ -26,6 +27,7 @@ public class UIBattleManager : MonoBehaviour {
         factionUIs = new Dictionary<Faction, FactionUI>();
         objectsToUpdate = new HashSet<ObjectUI>();
         objectsToCreate = new HashSet<IObject>();
+        objectsToRemove = new HashSet<IObject>();
         battleManager.OnObjectCreated += OnObjectCreated;
         battleManager.OnObjectRemoved += OnObjectRemoved;
     }
@@ -35,6 +37,7 @@ public class UIBattleManager : MonoBehaviour {
     /// </summary>
     public void UpdateSpriteManager() {
         CreateNewObjects();
+        RemoveObjects();
         foreach (var objectUI in objectsToUpdate.ToList()) {
             objectUI.UpdateObject();
         }
@@ -105,11 +108,32 @@ public class UIBattleManager : MonoBehaviour {
         objectsToCreate.Clear();
     }
 
+    private void RemoveObjects() {
+        foreach (var iObject in objectsToRemove) {
+            if (iObject is BattleObject battleObject) {
+                BattleObjectUI battleObjectUI = battleObjects[battleObject];
+
+                battleObjectUI.OnBattleObjectRemoved();
+
+                battleObjects.Remove(battleObject);
+                if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
+            } else if (iObject is Fleet fleet) {
+                fleetUIs.Remove(fleet);
+            }
+
+            if (objectsToUpdate.Contains(objects[iObject])) objectsToUpdate.Remove(objects[iObject]);
+            Destroy(objects[iObject].gameObject);
+            objects.Remove(iObject);
+        }
+        objectsToRemove.Clear();
+    }
+
     /// <summary>
     /// Handles creating all other objects.
     /// </summary>
     private void OnObjectCreated(IObject iObject) {
         objectsToCreate.Add(iObject);
+        if (objectsToRemove.Contains(iObject)) objectsToRemove.Remove(iObject);
     }
 
     private void OnObjectRemoved(IObject iObject) {
@@ -121,19 +145,6 @@ public class UIBattleManager : MonoBehaviour {
             return;
         }
 
-        if (iObject is BattleObject battleObject) {
-            BattleObjectUI battleObjectUI = battleObjects[battleObject];
-
-            battleObjectUI.OnBattleObjectRemoved();
-
-            battleObjects.Remove(battleObject);
-            if (battleObject.IsUnit()) units.Remove((Unit)battleObject);
-        } else if (iObject is Fleet fleet) {
-            fleetUIs.Remove(fleet);
-        }
-
-        if (objectsToUpdate.Contains(objects[iObject])) objectsToUpdate.Remove(objects[iObject]);
-        Destroy(objects[iObject].gameObject);
-        objects.Remove(iObject);
+        objectsToRemove.Add(iObject);
     }
 }
