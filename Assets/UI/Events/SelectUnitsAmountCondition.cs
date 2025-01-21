@@ -28,13 +28,14 @@ public class SelectUnitsAmountCondition : UIEventCondition {
 
     public override bool CheckUICondition(EventManager eventManager) {
         SelectionGroup selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits();
+        if (selectedUnits.fleet != null) return false;
         return unitsToSelect.Select(u => uiBattleManager.units[u])
             .Count(unitUI => selectedUnits.ContainsObject(unitUI)) >= amountToSelect;
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         AddShipsToSelect(unitsToSelect.Where(u => u.IsShip()).Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize,
-            buttonsToVisualize);
+            buttonsToVisualize, false);
 
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         bool isFleet = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null;

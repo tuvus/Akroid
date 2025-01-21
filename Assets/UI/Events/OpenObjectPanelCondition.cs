@@ -19,7 +19,7 @@ public class OpenObjectPanelCondition : UIEventCondition {
         if (objectToSelect == null) return;
         if (objectToSelect.IsShip())
             AddShipsToSelect(new List<ShipUI>() { (ShipUI)uiBattleManager.battleObjects[objectToSelect] }, objectsToVisualize,
-                buttonsToVisualize);
+                buttonsToVisualize, false);
         else objectsToVisualize.Add(uiBattleManager.battleObjects[objectToSelect]);
     }
 }

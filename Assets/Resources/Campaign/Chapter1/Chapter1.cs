@@ -338,7 +338,7 @@ public class Chapter1 : CampaingController {
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Our ships are in a fleet, which means when you click a ship you will select the fleet by default.", 5 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Try clicking on of the ships to select our fleet.", 5 * GetTimeScale());
+            "Try clicking on of the ships to select our fleet.", 8 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectFleetCondition(playerFaction.fleets.First(), true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
