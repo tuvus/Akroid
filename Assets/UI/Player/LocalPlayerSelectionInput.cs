@@ -319,8 +319,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     public void SelectOnlyControllableUnits() {
         selectedUnits.RemoveAnyUnitsNotInHashSet(localPlayer.player.ownedUnits);
-        if (selectedUnits.fleet != null && selectedUnits.fleet.fleet.faction != localPlayer.player.faction
-            || !selectedUnits.fleet.fleet.ships.Any(s => localPlayer.player.ownedUnits.Contains(s))) {
+        if (selectedUnits.fleet != null && (selectedUnits.fleet.fleet.faction != localPlayer.player.faction
+            || !selectedUnits.fleet.fleet.ships.Any(s => localPlayer.player.ownedUnits.Contains(s)))) {
             selectedUnits.UnselectAllBattleObjects();
             selectedUnits.fleet = null;
             selectedUnits.groupType = SelectionGroup.GroupType.None;
