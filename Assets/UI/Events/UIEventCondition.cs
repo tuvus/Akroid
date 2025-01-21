@@ -32,8 +32,10 @@ public abstract class UIEventCondition : EventCondition {
     /// <summary>
     /// Helper function to help managing selecting ships
     /// </summary>
-    protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
+    protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize,
+        bool includeFleet = true) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null) selectedUnits = new HashSet<UnitUI>();
         PlayerStationUI playerStationUI = (PlayerStationUI)localPlayer.playerUI.uIMenus[typeof(StationUI)];
 
         foreach (var shipUI in shipsToSelect) {

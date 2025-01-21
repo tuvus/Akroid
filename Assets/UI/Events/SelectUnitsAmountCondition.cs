@@ -33,21 +33,12 @@ public class SelectUnitsAmountCondition : UIEventCondition {
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        if (conditionType == ConditionType.SelectUnit) {
-            // If the unit is docked at a station, we need to show the station instead
-            if (unitsToSelect.First().IsShip() && ((Ship)unitsToSelect.First()).dockedStation != null) {
-                objectsToVisualize.Add(uiBattleManager.battleObjects[((Ship)unitsToSelect.First()).dockedStation]);
-                return;
-            }
-
-            objectsToVisualize.Add(uiBattleManager.battleObjects[unitsToSelect.First()]);
-            return;
-        }
+        AddShipsToSelect(unitsToSelect.Where(u => u.IsShip()).Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize,
+            buttonsToVisualize);
 
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         bool isFleet = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null;
-
-        objectsToVisualize.AddRange(unitsToSelect.Select(u => uiBattleManager.units[u])
+        objectsToVisualize.AddRange(unitsToSelect.Where(u => !u.IsShip()).Select(u => uiBattleManager.units[u])
             .Where(u => !selectedUnits.Contains(u) || isFleet).Cast<ObjectUI>().ToList());
     }
 }

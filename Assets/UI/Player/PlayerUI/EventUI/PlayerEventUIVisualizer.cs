@@ -112,8 +112,8 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         for (int i = 0; i < buttonsToVisualize.Count; i++) {
             if (buttonTransform.childCount <= i) Instantiate(buttonHighlight, buttonTransform);
             RectTransform visualizationTransform = buttonTransform.GetChild(i).GetComponent<RectTransform>();
-            visualizationTransform.position = buttonsToVisualize.First().GetComponent<RectTransform>().position;
-            visualizationTransform.sizeDelta = buttonsToVisualize.First().GetComponent<RectTransform>().sizeDelta + new Vector2(2, 2);
+            visualizationTransform.position = buttonsToVisualize[i].GetComponent<RectTransform>().position;
+            visualizationTransform.sizeDelta = buttonsToVisualize[i].GetComponent<RectTransform>().sizeDelta + new Vector2(2, 2);
             visualizationTransform.gameObject.SetActive(true);
         }
 

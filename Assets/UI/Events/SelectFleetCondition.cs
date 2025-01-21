@@ -16,6 +16,6 @@ public class SelectFleetsCondition : UIEventCondition {
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        objectsToVisualize.AddRange(fleetToSelect.ships.Select(s => uiBattleManager.units[s]).Cast<ObjectUI>().ToList());
+        AddShipsToSelect(fleetToSelect.ships.Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize, buttonsToVisualize);
     }
 }

@@ -17,6 +17,9 @@ public class OpenObjectPanelCondition : UIEventCondition {
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         if (objectToSelect == null) return;
-        objectsToVisualize.Add(uiBattleManager.battleObjects[objectToSelect]);
+        if (objectToSelect.IsShip())
+            AddShipsToSelect(new List<ShipUI>() { (ShipUI)uiBattleManager.battleObjects[objectToSelect] }, objectsToVisualize,
+                buttonsToVisualize);
+        else objectsToVisualize.Add(uiBattleManager.battleObjects[objectToSelect]);
     }
 }
