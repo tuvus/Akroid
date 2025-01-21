@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class OpenFactionPanelCondition : UIEventCondition {
     private Faction factionToSelect;
@@ -13,5 +14,5 @@ public class OpenFactionPanelCondition : UIEventCondition {
         return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == uiBattleManager.factionUIs[factionToSelect];
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) { }
 }

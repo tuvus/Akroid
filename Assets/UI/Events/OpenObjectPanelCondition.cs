@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class OpenObjectPanelCondition : UIEventCondition {
     private BattleObject objectToSelect;
@@ -14,7 +15,7 @@ public class OpenObjectPanelCondition : UIEventCondition {
     }
 
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         if (objectToSelect == null) return;
         objectsToVisualize.Add(uiBattleManager.battleObjects[objectToSelect]);
     }

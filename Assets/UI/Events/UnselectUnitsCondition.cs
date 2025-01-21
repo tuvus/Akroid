@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class UnSelectUnitsCondition : UIEventCondition {
     private List<Unit> unitsToUnselect;
@@ -16,7 +17,7 @@ public class UnSelectUnitsCondition : UIEventCondition {
             .Any(unitUI => selectedUnits.ContainsObject(unitUI));
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         objectsToVisualize.AddRange(unitsToUnselect.Select(u => uiBattleManager.units[u])
             .Where(u => selectedUnits.Contains(u)).Cast<ObjectUI>().ToList());

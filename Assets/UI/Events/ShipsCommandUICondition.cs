@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondition> {
     public ShipsCommandUICondition(ShipsCommandCondition conditionLogic, LocalPlayer localPlayer,
         UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
 
         foreach (var ship in conditionLogic.shipsToCommand

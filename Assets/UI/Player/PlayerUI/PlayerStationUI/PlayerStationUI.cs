@@ -338,6 +338,10 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.units[shipsInHangar[index]]);
     }
 
+    public Button GetButtonOfShip(Ship ship) {
+        return hangarList.GetChild(shipsInHangar.IndexOf(ship)).GetComponent<Button>();
+    }
+
     public void OpenFactionMenu() {
         Faction faction = displayedObject.station.faction;
         playerUI.ShowFactionUI(uiBattleManager.factionUIs[faction]);

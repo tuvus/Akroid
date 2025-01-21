@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class LateUICondition : UIWrapperEventCondition<LateCondition> {
     public LateUICondition(LateCondition conditionLogic, LocalPlayer localPlayer,
@@ -10,8 +11,8 @@ public class LateUICondition : UIWrapperEventCondition<LateCondition> {
         return condition;
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualise) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualise, List<Button> buttonsToVisualize) {
         if (conditionLogic.eventCondition == null || conditionLogic.eventCondition is not UIEventCondition) return;
-        ((UIEventCondition)conditionLogic.eventCondition).GetVisualizedObjects(objectsToVisualise);
+        ((UIEventCondition)conditionLogic.eventCondition).GetVisualizedObjects(objectsToVisualise, buttonsToVisualize);
     }
 }

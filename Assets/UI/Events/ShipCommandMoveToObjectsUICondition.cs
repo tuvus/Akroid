@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipCommandMoveToObjectsCondition> {
     public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic, LocalPlayer localPlayer,
         UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        List<ShipUI> shipsToSelect = new List<ShipUI>();
+
         foreach (var ship in conditionLogic.shipsToMove) {
             ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             ShipAI shipAI = ship.shipAI;
@@ -27,12 +30,10 @@ public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipC
             if (selectedUnits.Contains(shipUI)) {
                 ObjectUI objectUI = uiBattleManager.objects[conditionLogic.objectsToMoveTo[objectIndex]];
                 if (!objectsToVisualize.Contains(objectUI)) objectsToVisualize.Add(objectUI);
-            } else if (ship.dockedStation != null) {
-                StationUI dockedStationUI = (StationUI)uiBattleManager.units[ship.dockedStation];
-                if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
             } else {
-                objectsToVisualize.Add(shipUI);
+                shipsToSelect.Add(shipUI);
             }
         }
+        AddShipsToSelect(shipsToSelect, objectsToVisualize, buttonsToVisualize);
     }
 }

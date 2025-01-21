@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class SelectFleetsCondition : UIEventCondition {
     private Fleet fleetToSelect;
@@ -14,7 +15,7 @@ public class SelectFleetsCondition : UIEventCondition {
         return selectedUnits.fleet == uiBattleManager.fleetUIs[fleetToSelect];
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         objectsToVisualize.AddRange(fleetToSelect.ships.Select(s => uiBattleManager.units[s]).Cast<ObjectUI>().ToList());
     }
 }

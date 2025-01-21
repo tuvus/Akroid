@@ -1627,7 +1627,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1939976486909118287}
   m_HandleRect: {fileID: 6364087356304033362}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7250,8 +7250,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.68027204
+  m_Value: 0.99999934
+  m_Size: 0.6802721
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7743,7 +7743,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2636435637949548087}
   m_Father: {fileID: 8714345815927367768}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -7766,6 +7767,8 @@ MonoBehaviour:
   unitHighlight: {fileID: 4872342625889717873, guid: cccf5ecf6dcaa6645afa6362837a0c37,
     type: 3}
   unitArrow: {fileID: 2309497594050383311, guid: 1bd238bd693e402aa9be06c87d5248bd,
+    type: 3}
+  buttonHighlight: {fileID: 6233422329738910632, guid: 9a01001467e4dfa6e83ee9171172982d,
     type: 3}
 --- !u!1 &1534900868339404229
 GameObject:
@@ -33550,7 +33553,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 203353127213737578}
   m_HandleRect: {fileID: 8042583210906613712}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -37108,7 +37111,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 46823025480806312}
   m_HandleRect: {fileID: 1402089287631808153}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -45175,6 +45178,41 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &8880091183553926331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2636435637949548087}
+  m_Layer: 5
+  m_Name: ButtonVisualization
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2636435637949548087
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8880091183553926331}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7036810821809093683}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8924818627949207629
 GameObject:
   m_ObjectHideFlags: 0

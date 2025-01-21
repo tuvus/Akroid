@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class FollowUnitCondition : UIEventCondition {
     private Unit unitToFollow;
@@ -13,7 +14,7 @@ public class FollowUnitCondition : UIEventCondition {
         return localPlayer.GetLocalPlayerInput().followUnit == uiBattleManager.units[unitToFollow];
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         objectsToVisualize.Add(uiBattleManager.units[unitToFollow]);
     }
 }

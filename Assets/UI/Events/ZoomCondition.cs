@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class ZoomCondtion : UIEventCondition {
     private float zoomTo;
@@ -16,5 +17,5 @@ public class ZoomCondtion : UIEventCondition {
             : localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize <= zoomTo;
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) { }
 }

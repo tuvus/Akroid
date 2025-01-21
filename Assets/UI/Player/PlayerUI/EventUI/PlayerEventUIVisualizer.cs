@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerEventUIVisualizer : MonoBehaviour {
     private LocalPlayer localPlayer;
@@ -12,19 +13,24 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     private Transform worldSpaceTransform;
     private Transform highlightTransform;
     private Transform arrowTransform;
+    private Transform buttonTransform;
     [SerializeField] GameObject unitHighlight;
     [SerializeField] GameObject unitArrow;
+    [SerializeField] GameObject buttonHighlight;
     private List<ObjectUI> objectsToVisualize;
+    private List<Button> buttonsToVisualize;
 
 
     public void SetupEventUI(UIManager uIManager, UIEventManager uIEventManager, LocalPlayer localPlayer, PlayerUI playerUI) {
         worldSpaceTransform = uIManager.GetEventVisulationTransform();
         highlightTransform = worldSpaceTransform.GetChild(0);
         arrowTransform = worldSpaceTransform.GetChild(1);
+        buttonTransform = transform.GetChild(0);
         this.localPlayer = localPlayer;
         this.playerUI = playerUI;
         this.uIEventManager = uIEventManager;
         objectsToVisualize = new List<ObjectUI>();
+        buttonsToVisualize = new List<Button>();
     }
 
     public void UpdateEventUI() {
@@ -51,14 +57,17 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
 
     void VisualizeEvent(bool newEvent) {
         objectsToVisualize.Clear();
-        visualizedEvent.GetVisualizedObjects(objectsToVisualize);
+        buttonsToVisualize.Clear();
+        visualizedEvent.GetVisualizedObjects(objectsToVisualize, buttonsToVisualize);
         VisualizeObjects(objectsToVisualize);
+        VisualizeButtons(buttonsToVisualize);
     }
 
     void RemoveVisuals() {
         for (int i = highlightTransform.childCount - 1; i >= 0; i--) {
             GameObject.Destroy(highlightTransform.GetChild(i).gameObject);
         }
+
         for (int i = arrowTransform.childCount - 1; i >= 0; i--) {
             GameObject.Destroy(arrowTransform.GetChild(i).gameObject);
         }
@@ -93,8 +102,23 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         for (int i = objectsTovisualize.Count; i < highlightTransform.childCount; i++) {
             highlightTransform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
         }
+
         for (int i = arrowCount; i < arrowTransform.childCount; i++) {
             arrowTransform.GetChild(i).GetComponent<SpriteRenderer>().enabled = false;
+        }
+    }
+
+    void VisualizeButtons(List<Button> buttonsToVisualize) {
+        for (int i = 0; i < buttonsToVisualize.Count; i++) {
+            if (buttonTransform.childCount <= i) Instantiate(buttonHighlight, buttonTransform);
+            RectTransform visualizationTransform = buttonTransform.GetChild(i).GetComponent<RectTransform>();
+            visualizationTransform.position = buttonsToVisualize.First().GetComponent<RectTransform>().position;
+            visualizationTransform.sizeDelta = buttonsToVisualize.First().GetComponent<RectTransform>().sizeDelta + new Vector2(2, 2);
+            visualizationTransform.gameObject.SetActive(true);
+        }
+
+        for (int i = buttonsToVisualize.Count; i < buttonTransform.childCount; i++) {
+            buttonTransform.GetChild(i).gameObject.SetActive(false);
         }
     }
 }

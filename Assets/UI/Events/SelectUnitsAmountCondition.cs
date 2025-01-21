@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEngine.UI;
 
 public class SelectUnitsAmountCondition : UIEventCondition {
     private List<Unit> unitsToSelect;
@@ -31,7 +32,7 @@ public class SelectUnitsAmountCondition : UIEventCondition {
             .Count(unitUI => selectedUnits.ContainsObject(unitUI)) >= amountToSelect;
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) {
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         if (conditionType == ConditionType.SelectUnit) {
             // If the unit is docked at a station, we need to show the station instead
             if (unitsToSelect.First().IsShip() && ((Ship)unitsToSelect.First()).dockedStation != null) {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanCondtion : UIEventCondition {
     private float distanceToPan;
@@ -19,5 +20,5 @@ public class PanCondtion : UIEventCondition {
         if (distanceToPan <= 0) localPlayer.GetInputManager().OnPanEvent -= OnPan;
     }
 
-    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize) { }
+    public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) { }
 }
