@@ -29,12 +29,10 @@ public class Player {
 
     public void AddOwnedUnit(Unit unit) {
         ownedUnits.Add(unit);
-        // unit.GetUnitSelection().UpdateFactionColor();
     }
 
     public void RemoveOwnedUnit(Unit unit) {
         ownedUnits.Remove(unit);
-        // unit.GetUnitSelection().UpdateFactionColor();
     }
 
     public void SetLockedUnits(bool locked) {
