@@ -953,14 +953,37 @@ public class Chapter1 : CampaingController {
         EventChainBuilder pirateChain = new EventChainBuilder();
         pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()));
         pirateChain.AddCondition(eventManager.CreateWaitCondition(600));
-        pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ =>
-            tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())));
+        // Pirates capture the two two civilian ships and one minning station transport
         pirateChain.AddAction(() => {
-            Ship newPirateShip = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
-            planetFaction.TransferShipTo(newPirateShip, pirateFaction);
-            pirateShips.Add(newPirateShip);
-            newPirateShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(20), Command.CommandAction.Replace);
-            newPirateShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(otherMiningStation), Command.CommandAction.AddToEnd);
+            eventManager.AddEvent(eventManager.CreatePredicateCondition(_ =>
+                tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())), () => {
+                Ship capturedShip = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
+                pirateShips.Add(capturedShip);
+                planetFaction.TransferShipTo(capturedShip, pirateFaction);
+                capturedShip.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
+                eventManager.AddEvent(eventManager.CreatePredicateCondition(_ =>
+                    tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())), () => {
+                    Ship capturedShip2 = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
+                    pirateShips.Add(capturedShip2);
+                    planetFaction.TransferShipTo(capturedShip2, pirateFaction);
+                    capturedShip2.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
+                });
+            });
+            eventManager.AddEvent(eventManager.CreatePredicateCondition(_ =>
+                tradeStation.GetAllDockedShips().Any(s => s.faction == otherMiningFaction && s.IsTransportShip())), () => {
+                Ship capturedShip = tradeStation.GetAllDockedShips().First(s => s.faction == otherMiningFaction && s.IsTransportShip());
+                pirateShips.Add(capturedShip);
+                capturedShip.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
+                otherMiningFaction.TransferShipTo(capturedShip, pirateFaction);
+
+            });
+        });
+        pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ => pirateShips.Count == 3));
+        pirateChain.AddCondition(eventManager.CreateWaitCondition(20));
+        pirateChain.AddAction(() => {
+            Fleet pirateFleet = pirateFaction.CreateNewFleet("Pirate Fleet", pirateShips.ToHashSet());
+            pirateFleet.fleetAI.AddFormationTowardsPositionCommand(otherMiningStation.position, tradeStation.size * 2);
+            pirateFleet.fleetAI.AddFleetAICommand(Command.CreateDockCommand(otherMiningStation));
         });
         pirateChain.AddCondition(
             eventManager.CreateLateCondition(() => eventManager.CreateDockShipsAtUnit(pirateShips, otherMiningStation)));
