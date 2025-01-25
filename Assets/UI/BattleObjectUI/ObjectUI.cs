@@ -7,6 +7,7 @@ public abstract class ObjectUI : MonoBehaviour {
     public void Setup(IObject iObject) {
         spriteRenderer = GetComponent<SpriteRenderer>();
         this.iObject = iObject;
+        transform.position = iObject.GetPosition();
     }
 
     public abstract void UpdateObject();

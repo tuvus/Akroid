@@ -6,6 +6,7 @@ public class FactionUI : ObjectUI {
     public void Setup(Faction faction) {
         base.Setup(faction);
         this.faction = faction;
+        gameObject.name = faction.name;
     }
 
     public override void UpdateObject() { }

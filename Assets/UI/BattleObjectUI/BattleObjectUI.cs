@@ -10,7 +10,6 @@ public abstract class BattleObjectUI : ObjectUI {
         base.Setup(battleObject);
         this.uIManager = uIManager;
         this.battleObject = battleObject;
-        transform.position = battleObject.GetPosition();
         SetRotation(battleObject.rotation);
         transform.localScale = battleObject.scale;
         active = true;
@@ -18,7 +17,7 @@ public abstract class BattleObjectUI : ObjectUI {
 
     public override void UpdateObject() {
         SetRotation(GetRotation());
-        transform.localPosition = GetPosition();
+        transform.position = GetPosition();
         spriteRenderer.enabled = IsVisible();
     }
 

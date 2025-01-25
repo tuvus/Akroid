@@ -337,7 +337,7 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, random.NextFloat(0, 360),
-            new Vector2(10, 10) * random.NextFloat(0.6f, 1.8f)), this, starBlueprints[random.NextInt(0, starBlueprints.Count)]);
+            new Vector2(10, 10) * random.NextFloat(1f, 2.4f)), this, starBlueprints[random.NextInt(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddBattleObject(newStar);

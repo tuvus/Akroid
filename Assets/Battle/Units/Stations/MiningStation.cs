@@ -33,9 +33,8 @@ public class MiningStation : Station {
         foreach (var asteroidField in faction.GetClosestAvailableAsteroidFields(positionGiver.position)) {
             Vector2 targetCenterPosition = Vector2.MoveTowards(asteroidField.position, positionGiver.position,
                 asteroidField.GetSize() + GetSize() + 10);
-            Vector2? targetLocationAsteroidField =
-                BattleManager.Instance.FindFreeLocationIncrement(new BattleManager.PositionGiver(targetCenterPosition, positionGiver),
-                    this);
+            Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrement(
+                new BattleManager.PositionGiver(targetCenterPosition, positionGiver), this);
             if (targetLocationAsteroidField.HasValue)
                 return targetLocationAsteroidField.Value;
         }
