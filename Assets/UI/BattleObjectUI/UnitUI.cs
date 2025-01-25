@@ -80,7 +80,7 @@ public abstract class UnitUI : BattleObjectUI {
     }
 
     public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        unitSelection.SetSelected(selectionStrength);
+        if (!destroyed) unitSelection.SetSelected(selectionStrength);
     }
 
     public override void UnselectObject() {

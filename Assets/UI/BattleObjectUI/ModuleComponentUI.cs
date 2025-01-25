@@ -12,6 +12,10 @@ public abstract class ComponentUI : BattleObjectUI {
 
     public abstract void OnUnitDestroyed();
 
+    public override void SetPosition(Vector2 position) {
+        transform.localPosition = position;
+    }
+
     public override Vector2 GetPosition() {
         return moduleComponent.GetPosition();
     }

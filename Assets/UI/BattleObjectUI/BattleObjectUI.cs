@@ -17,7 +17,7 @@ public abstract class BattleObjectUI : ObjectUI {
 
     public override void UpdateObject() {
         SetRotation(GetRotation());
-        transform.position = GetPosition();
+        SetPosition(GetPosition());
         spriteRenderer.enabled = IsVisible();
     }
 

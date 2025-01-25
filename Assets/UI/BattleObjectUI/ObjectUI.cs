@@ -7,10 +7,14 @@ public abstract class ObjectUI : MonoBehaviour {
     public void Setup(IObject iObject) {
         spriteRenderer = GetComponent<SpriteRenderer>();
         this.iObject = iObject;
-        transform.position = iObject.GetPosition();
+        SetPosition(iObject.GetPosition());
     }
 
     public abstract void UpdateObject();
+
+    public virtual void SetPosition(Vector2 position) {
+        transform.position = position;
+    }
 
     public void SetRotation(float rotation) {
         transform.localEulerAngles = new Vector3(0, 0, Calculator.SimplifyPositiveRotation360(rotation));

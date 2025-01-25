@@ -21,7 +21,6 @@ public class UnitSelection : MonoBehaviour {
         this.uIManager = uIManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.enabled = false;
-        UpdateFactionColor();
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
         spriteRenderer.sprite = unitUI.unit.unitScriptableObject.sprite;
         engagedVisual = GetComponentInChildren<EngagedVisual>();
@@ -33,6 +32,8 @@ public class UnitSelection : MonoBehaviour {
         float size = unitUI.unit.GetSize();
         selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 10 / size + new Vector2(5, 5);
         selectionOutline.transform.localScale *= size / 10;
+        UpdateFactionColor();
+        SetSelected();
     }
 
     public void UpdateUnitSelection() {
@@ -48,8 +49,6 @@ public class UnitSelection : MonoBehaviour {
         } else {
             spriteRenderer.color = uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
         }
-
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, previousAlpha);
     }
 
     /// <summary>
@@ -61,6 +60,7 @@ public class UnitSelection : MonoBehaviour {
             (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
             || !unitUI.IsVisible()) {
             ShowUnitSelection(false);
+            selectionOutline.enabled = false;
             return false;
         }
 
@@ -84,6 +84,8 @@ public class UnitSelection : MonoBehaviour {
             engagedVisual.ShowEngagedVisual(false);
         }
 
+        selectionOutline.enabled = true;
+
         return true;
     }
 
@@ -98,25 +100,18 @@ public class UnitSelection : MonoBehaviour {
     }
 
     public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
-        if (!unitUI.IsVisible()) {
-            if (selectionOutline != null) selectionOutline.enabled = false;
-            return;
-        }
-
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
-                selectionOutline.enabled = false;
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 0f);
                 break;
             case SelectionStrength.Selected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
                 selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 1f);
-                selectionOutline.enabled = true;
                 break;
             case SelectionStrength.Highlighted:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
                 selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, .4f);
-                selectionOutline.enabled = true;
                 break;
         }
     }
