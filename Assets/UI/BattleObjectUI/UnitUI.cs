@@ -68,7 +68,7 @@ public abstract class UnitUI : BattleObjectUI {
             unitSelection.UpdateUnitSelection();
         } else if (!destroyed) {
             if (unit.GetDestroyEffect() != null) {
-                if (components != null) components.ForEach(c => c.OnUnitDestroyed());
+                components.ForEach(c => c.OnUnitDestroyed());
                 destroyed = true;
                 destroyEffectUI.Explode(unit.GetDestroyEffect());
                 unitSelection.ShowUnitSelection(false);
@@ -88,7 +88,15 @@ public abstract class UnitUI : BattleObjectUI {
     }
 
     public override void OnBattleObjectRemoved() {
+        // The unit might have been removed before we registered that it was destroyed in the UI update loop
+        // So make sure we do any extra cleanup before removing
+        if (!destroyed) {
+            components.ForEach(c => c.OnUnitDestroyed());
+            destroyed = true;
+            UnselectObject();
+        }
         base.OnBattleObjectRemoved();
         destroyEffectUI.OnBattleObjectRemoved();
+        components.ForEach(c => c.OnUnitRemoved());
     }
 }

@@ -159,7 +159,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public virtual Ship BuildShip(Faction faction, ShipClass shipClass, long cost = 0, bool? undock = false) {
-        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipClass).shipScriptableObject;
+        ShipScriptableObject shipScriptableObject = battleManager.GetShipBlueprint(shipClass).shipScriptableObject;
         return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost,
             undock);
     }
@@ -173,12 +173,12 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public virtual Ship BuildShip(Faction faction, ShipType shipType, long cost = 0, bool? undock = false) {
-        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
+        ShipScriptableObject shipScriptableObject = battleManager.GetShipBlueprint(shipType).shipScriptableObject;
         return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
     public virtual Ship BuildShip(Faction faction, ShipType shipType, string shipName, long cost = 0, bool? undock = false) {
-        ShipScriptableObject shipScriptableObject = BattleManager.Instance.GetShipBlueprint(shipType).shipScriptableObject;
+        ShipScriptableObject shipScriptableObject = battleManager.GetShipBlueprint(shipType).shipScriptableObject;
         return BuildShip(faction, shipScriptableObject, shipName, cost, undock);
     }
 
@@ -217,7 +217,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public override void DestroyUnit() {
         base.DestroyUnit();
-        BattleManager.Instance.DestroyStation(this);
+        battleManager.DestroyStation(this);
     }
 
     /// <summary> Docks a ship to the staiton, should only be called from the ship. /// </summary>
@@ -242,7 +242,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public virtual bool BuildStation() {
         if (!built) {
-            BattleManager.Instance.BuildStationBlueprint(this);
+            battleManager.BuildStationBlueprint(this);
             faction.RemoveStationBlueprint(this);
             faction.AddStation(this);
             built = true;

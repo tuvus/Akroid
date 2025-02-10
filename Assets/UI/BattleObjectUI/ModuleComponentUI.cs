@@ -11,6 +11,7 @@ public abstract class ComponentUI : BattleObjectUI {
     }
 
     public abstract void OnUnitDestroyed();
+    public abstract void OnUnitRemoved();
 
     public override void SetPosition(Vector2 position) {
         transform.localPosition = position;

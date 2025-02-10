@@ -1249,6 +1249,6 @@ public class Chapter1 : CampaingController {
     }
 
     protected float GetTimeScale() {
-        return BattleManager.Instance.timeScale;
+        return battleManager.timeScale;
     }
 }

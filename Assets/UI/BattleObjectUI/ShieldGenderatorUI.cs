@@ -8,7 +8,8 @@ public class ShieldGenderatorUI : ComponentUI {
         base.Setup(battleObject, uIManager, unitUI);
         shieldGenerator = (ShieldGenerator)battleObject;
         shieldRenderer = Instantiate(shieldGenerator.shield.GetPrefab(), transform).GetComponent<SpriteRenderer>();
-        shieldRenderer.transform.localScale = new Vector2(unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 1.6f, unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 4f);
+        shieldRenderer.transform.localScale = new Vector2(unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 1.6f,
+            unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 4f);
         shieldRenderer.enabled = false;
     }
 
@@ -28,4 +29,6 @@ public class ShieldGenderatorUI : ComponentUI {
     }
 
     public override void OnUnitDestroyed() { }
+
+    public override void OnUnitRemoved() { }
 }

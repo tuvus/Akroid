@@ -33,13 +33,13 @@ public class MiningStation : Station {
         foreach (var asteroidField in faction.GetClosestAvailableAsteroidFields(positionGiver.position)) {
             Vector2 targetCenterPosition = Vector2.MoveTowards(asteroidField.position, positionGiver.position,
                 asteroidField.GetSize() + GetSize() + 10);
-            Vector2? targetLocationAsteroidField = BattleManager.Instance.FindFreeLocationIncrement(
+            Vector2? targetLocationAsteroidField = battleManager.FindFreeLocationIncrement(
                 new BattleManager.PositionGiver(targetCenterPosition, positionGiver), this);
             if (targetLocationAsteroidField.HasValue)
                 return targetLocationAsteroidField.Value;
         }
 
-        Vector2? targetLocation = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        Vector2? targetLocation = battleManager.FindFreeLocationIncrement(positionGiver, this);
         if (targetLocation.HasValue)
             return targetLocation.Value;
 
@@ -125,7 +125,7 @@ public class MiningStation : Station {
     }
 
     public int GetMiningRange() {
-        return (int)(miningStationScriptableObject.miningRange * BattleManager.Instance.systemSizeModifier);
+        return (int)(miningStationScriptableObject.miningRange * battleManager.systemSizeModifier);
     }
 
     public MiningStationAI GetMiningStationAI() {

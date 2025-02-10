@@ -150,8 +150,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     }
 
     void UpdateShipBlueprintUI() {
-        shipBlueprints = BattleManager.Instance.shipBlueprints.ToList();
-        for (int i = 0; i < BattleManager.Instance.shipBlueprints.Count; i++) {
+        shipBlueprints = uiBattleManager.battleManager.shipBlueprints.ToList();
+        for (int i = 0; i < uiBattleManager.battleManager.shipBlueprints.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
             }
@@ -177,7 +177,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = "Cost: " + NumFormatter.ConvertNumber(cost);
         }
 
-        for (int i = BattleManager.Instance.shipBlueprints.Count; i < blueprintList.childCount; i++) {
+        for (int i = uiBattleManager.battleManager.shipBlueprints.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
         }
     }

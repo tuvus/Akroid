@@ -17,9 +17,9 @@ public class FactionCommManager {
         public CommunicationEvent newCommunication;
         public double targetTime;
 
-        public DelayCommunication(CommunicationEvent newCommunication, float delay = 0) {
+        public DelayCommunication(CommunicationEvent newCommunication, BattleManager battleManager, float delay = 0) {
             this.newCommunication = newCommunication;
-            this.targetTime = BattleManager.Instance.GetSimulationTime() + delay;
+            this.targetTime = battleManager.GetSimulationTime() + delay;
         }
     }
 
@@ -54,7 +54,7 @@ public class FactionCommManager {
 
     public void SendCommunication(CommunicationEvent newCommunication, float delay = 0) {
         if (delay > 0) {
-            delayedCommunications.Add(new DelayCommunication(newCommunication, delay));
+            delayedCommunications.Add(new DelayCommunication(newCommunication, battleManager, delay));
             delayedCommunications.Sort((a, b) => a.targetTime.CompareTo(b.targetTime));
         } else {
             newCommunication.receiver.ReceiveCommunication(this, newCommunication);

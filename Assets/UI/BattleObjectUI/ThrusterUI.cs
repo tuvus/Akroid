@@ -67,6 +67,9 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public override void OnUnitDestroyed() {
         EndThrust();
+    }
+
+    public override void OnUnitRemoved() {
         uIManager.uiBattleManager.particleHolders.Remove(this);
     }
 

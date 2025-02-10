@@ -3,8 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 public class LocalPlayerGameInput : LocalPlayerSelectionInput {
-    public override void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
-        base.Setup(localPlayer, uiBattleManager);
+    public override void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+        base.Setup(battleManager, localPlayer, uiBattleManager);
         GetPlayerInput().Player.ClearCommands.started += context => ClearCommands();
 
         GetPlayerInput().Player.PrimaryCommand.performed += context => PrimaryCommandButtonPreformed();
@@ -288,7 +288,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         Vector2 mousePos = GetMouseWorldPosition();
         Star closestStar = null;
         float closestStarDistance = 0;
-        foreach (Star star in BattleManager.Instance.stars) {
+        foreach (Star star in battleManager.stars) {
             float newStarDistance = Vector2.Distance(mousePos, star.position);
             if (closestStar == null || newStarDistance < closestStarDistance) {
                 closestStar = star;
@@ -313,7 +313,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         Vector2 mousePos = GetMouseWorldPosition();
         GasCloud closestGasCloud = null;
         float closestGasCloudDistance = 0;
-        foreach (GasCloud gasCloud in BattleManager.Instance.gasClouds) {
+        foreach (GasCloud gasCloud in battleManager.gasClouds) {
             float newGasCloud = Vector2.Distance(mousePos, gasCloud.position);
             if (closestGasCloud == null || newGasCloud < closestGasCloudDistance) {
                 closestGasCloud = gasCloud;
@@ -364,7 +364,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         Vector2 mousePos = GetMouseWorldPosition();
         Planet closestPlanet = null;
         float closestPlanetDistance = 0;
-        foreach (Planet planet in BattleManager.Instance.planets) {
+        foreach (Planet planet in battleManager.planets) {
             float newPlanetDistance = Vector2.Distance(mousePos, planet.position);
             if (closestPlanet == null || newPlanetDistance < closestPlanetDistance) {
                 closestPlanet = planet;

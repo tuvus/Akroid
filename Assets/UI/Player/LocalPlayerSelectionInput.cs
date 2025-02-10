@@ -15,8 +15,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     protected int selectedGroup = -1;
     float selectedGroupTime = 0;
 
-    public override void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
-        base.Setup(localPlayer, uiBattleManager);
+    public override void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+        base.Setup(battleManager, localPlayer, uiBattleManager);
         selectedUnits = new SelectionGroup();
         objectsInSelectionBox = new SelectionGroup();
 

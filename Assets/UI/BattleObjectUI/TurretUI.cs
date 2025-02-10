@@ -42,4 +42,6 @@ public class TurretUI : ComponentUI {
     public override void OnUnitDestroyed() {
         spriteRenderer.enabled = false;
     }
+
+    public override void OnUnitRemoved() { }
 }

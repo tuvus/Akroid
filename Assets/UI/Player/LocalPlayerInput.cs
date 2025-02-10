@@ -7,8 +7,9 @@ using Random = Unity.Mathematics.Random;
 
 public class LocalPlayerInput : MonoBehaviour {
     PlayerInput playerInput;
-    protected UIBattleManager uiBattleManager;
+    protected BattleManager battleManager;
     protected LocalPlayer localPlayer;
+    protected UIBattleManager uiBattleManager;
     protected Random random;
 
     public enum ActionType {
@@ -63,7 +64,8 @@ public class LocalPlayerInput : MonoBehaviour {
     int timeStepIndex;
     protected CanvasScaler canvasScaler;
 
-    public virtual void Setup(LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+    public virtual void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
+        this.battleManager = battleManager;
         this.localPlayer = localPlayer;
         this.uiBattleManager = uiBattleManager;
         random = new Random((uint)(Time.time * 1000));

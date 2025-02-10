@@ -35,7 +35,7 @@ public class LocalPlayer : MonoBehaviour {
         player = battleManager.GetLocalPlayer();
         player.OnFactionChanged += SetupFaction;
         Instance = this;
-        localPlayerInput.Setup(this, uiBattleManager);
+        localPlayerInput.Setup(battleManager, this, uiBattleManager);
         playerUI.SetUpUI(battleManager, localPlayerInput, this, uIManager);
         SetupFaction(player.faction);
         localPlayerInput.CenterCamera();
@@ -51,7 +51,7 @@ public class LocalPlayer : MonoBehaviour {
     /// Call after the player faction or the player faction's enemies list is modified.
     /// </summary>
     public void UpdateFactionColors() {
-        foreach (var unit in BattleManager.Instance.units) {
+        foreach (var unit in battleManager.units) {
             // unit.GetUnitSelection().UpdateFactionColor();
         }
     }

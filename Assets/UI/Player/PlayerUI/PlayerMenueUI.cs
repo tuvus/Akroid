@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerMenueUI : MonoBehaviour {
+    private BattleManager battleManager;
     private LocalPlayer localPlayer;
     private PlayerUI playerUI;
     [SerializeField] private Toggle menueUIMultiThreading;
@@ -19,14 +20,15 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Slider menueUITimeScale;
     private List<Faction> factions;
 
-    public void SetupMenueUI(LocalPlayer localPlayer, PlayerUI playerUI) {
+    public void SetupMenueUI(BattleManager battleManager, LocalPlayer localPlayer, PlayerUI playerUI) {
         this.localPlayer = localPlayer;
         this.playerUI = playerUI;
+        this.battleManager = battleManager;
     }
 
     public void ShowMenueUI() {
         menueUIFactionSelect.ClearOptions();
-        factions = BattleManager.Instance.factions.ToList();
+        factions = battleManager.factions.ToList();
         List<string> factionNames = new List<string>(factions.Count);
         factionNames.Add("None");
         foreach (var faction in factions) {
@@ -52,8 +54,8 @@ public class PlayerMenueUI : MonoBehaviour {
             menueUIFactionSelect.SetValueWithoutNotify(0);
         else
             menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(localPlayer.GetFaction()) + 1);
-        timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
-        menueUITimeScale.SetValueWithoutNotify((int)(BattleManager.Instance.timeScale * 10));
+        timeScaleText.text = "Battle Time Scale: " + ((int)(battleManager.timeScale * 10) / 10f);
+        menueUITimeScale.SetValueWithoutNotify((int)(battleManager.timeScale * 10));
     }
 
     public void SetMultiThreading() {
@@ -97,8 +99,8 @@ public class PlayerMenueUI : MonoBehaviour {
     }
 
     public void UpdateBattleTimeScale() {
-        BattleManager.Instance.SetSimulationTimeScale(menueUITimeScale.value / 10f);
-        timeScaleText.text = "Battle Time Scale: " + ((int)(BattleManager.Instance.timeScale * 10) / 10f);
+        battleManager.SetSimulationTimeScale(menueUITimeScale.value / 10f);
+        timeScaleText.text = "Battle Time Scale: " + ((int)(battleManager.timeScale * 10) / 10f);
     }
 
     public void ResetBattleTimeScale() {

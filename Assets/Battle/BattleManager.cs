@@ -12,7 +12,6 @@ using static Station;
 using Random = Unity.Mathematics.Random;
 
 public class BattleManager : MonoBehaviour {
-    public static BattleManager Instance { get; protected set; }
     private CampaingController campaignController;
     public EventManager eventManager { get; private set; }
 
@@ -159,12 +158,6 @@ public class BattleManager : MonoBehaviour {
     /// Sets up the battle with manual values.
     /// </summary>
     public void SetupBattle(BattleSettings battleSettings, List<FactionData> factionDatas) {
-        if (Instance == null) {
-            Instance = this;
-        } else {
-            return;
-        }
-
         this.systemSizeModifier = battleSettings.systemSizeModifier;
         this.researchModifier = battleSettings.researchModifier;
         for (int i = 0; i < battleSettings.starCount; i++) {
@@ -209,12 +202,6 @@ public class BattleManager : MonoBehaviour {
     /// </summary>
     /// <param name="campaignController">the given CampaignController</param>
     public void SetupBattle(CampaingController campaignController) {
-        if (Instance == null) {
-            Instance = this;
-        } else {
-            return;
-        }
-
         this.campaignController = campaignController;
         systemSizeModifier = campaignController.systemSizeModifier;
         researchModifier = campaignController.researchModifier;
@@ -596,26 +583,12 @@ public class BattleManager : MonoBehaviour {
         return simulationTime;
     }
 
-    [ContextMenu("UpdateSimulationTimeScale")]
-    private void ManualUpdateTimeScale() {
-        SetSimulationTimeScale(timeScale);
-    }
-
     /// <summary>
     /// Sets the playbackSpeed of all particles in the game.
     /// </summary>
     /// <param name="time"></param>
     public void SetSimulationTimeScale(float time) {
         timeScale = time;
-        // foreach (var unit in units) {
-        //     unit.SetParticleSpeed(time);
-        // }
-        // foreach (var projectile in projectiles) {
-        //     projectile.SetParticleSpeed(time);
-        // }
-        // foreach (var missile in missiles) {
-        //     missile.SetParticleSpeed(time);
-        // }
         instantHit = time > 10;
     }
 

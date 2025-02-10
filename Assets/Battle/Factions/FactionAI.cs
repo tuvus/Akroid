@@ -58,7 +58,7 @@ public class FactionAI {
     }
 
     protected float GetTimeScale() {
-        return BattleManager.Instance.timeScale;
+        return battleManager.timeScale;
     }
 
     public virtual Station GetFleetCommand() {

@@ -24,7 +24,7 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
     private Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             return targetPosition.Value;
         return positionGiver.position;

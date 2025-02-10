@@ -75,7 +75,7 @@ public class PlayerUI : MonoBehaviour {
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
         uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uiBattleManager, .2f));
-        playerMenueUI.SetupMenueUI(localPlayer, this);
+        playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
         foreach (var menu in uIMenusInput) {
             uIMenus.Add(menu.GetMenuType(), menu);

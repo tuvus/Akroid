@@ -140,7 +140,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         base(battleManager, new HashSet<Unit>((factionData.ships + factionData.stations) * 5), false) {
         random = new Random(battleManager.GetRandomSeed());
         units = battleObjects;
-        Vector2? targetPosition = BattleManager.Instance.FindFreeLocationIncrement(positionGiver, this);
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
         if (targetPosition.HasValue)
             SetPosition(targetPosition.Value);
         else
@@ -214,7 +214,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
                 }
             } else
-                BattleManager.Instance.CreateNewShip(
+                battleManager.CreateNewShip(
                     new BattleObject.BattleObjectData("Aria", new Vector2(random.NextFloat(-100, 100), random.NextFloat(-100, 100)),
                         random.NextFloat(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
         }
@@ -419,8 +419,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (science < researchCost)
                 return;
             science -= researchCost;
-            researchCost = (int)(researchCost * BattleManager.Instance.researchModifier);
-            researchCostExtra = researchCost * BattleManager.Instance.researchModifier - researchCost + researchCostExtra;
+            researchCost = (int)(researchCost * battleManager.researchModifier);
+            researchCostExtra = researchCost * battleManager.researchModifier - researchCost + researchCostExtra;
             if (researchCostExtra > 0) {
                 researchCost += (int)researchCostExtra;
                 researchCostExtra -= (int)researchCostExtra;
