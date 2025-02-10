@@ -6,6 +6,8 @@ using UnityEngine;
 public class UIBattleManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public UIManager uIManager { get; private set; }
+    /// <summary> Saves the last state of the BattleManager's time scale so we know when it has changed. </summary>
+    private float previousSimulationTime;
 
 
     public Dictionary<IObject, ObjectUI> objects { get; private set; }
@@ -14,6 +16,7 @@ public class UIBattleManager : MonoBehaviour {
     public Dictionary<Fleet, FleetUI> fleetUIs { get; private set; }
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
     public HashSet<ObjectUI> objectsToUpdate { get; private set; }
+    public HashSet<IParticleHolder> particleHolders { get; private set; }
     private HashSet<IObject> objectsToCreate;
     private HashSet<IObject> objectsToRemove;
 
@@ -26,6 +29,7 @@ public class UIBattleManager : MonoBehaviour {
         fleetUIs = new Dictionary<Fleet, FleetUI>();
         factionUIs = new Dictionary<Faction, FactionUI>();
         objectsToUpdate = new HashSet<ObjectUI>();
+        particleHolders = new HashSet<IParticleHolder>();
         objectsToCreate = new HashSet<IObject>();
         objectsToRemove = new HashSet<IObject>();
         battleManager.OnObjectCreated += OnObjectCreated;
@@ -40,6 +44,14 @@ public class UIBattleManager : MonoBehaviour {
         RemoveObjects();
         foreach (var objectUI in objectsToUpdate.ToList()) {
             objectUI.UpdateObject();
+        }
+
+        // Check if we need to update the particle speeds
+        if (Math.Abs(battleManager.timeScale - previousSimulationTime) > 0.01f) {
+            previousSimulationTime = uIManager.GetParticleSpeed();
+            foreach (var particleHolder in particleHolders) {
+                particleHolder.SetParticleSpeed(previousSimulationTime);
+            }
         }
     }
 

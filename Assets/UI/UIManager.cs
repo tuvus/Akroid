@@ -58,6 +58,10 @@ public class UIManager : MonoBehaviour {
         return localPlayer.playerUI.factionColoring;
     }
 
+    public float GetParticleSpeed() {
+        return battleManager.timeScale;
+    }
+
     public Transform GetFactionsTransform() {
         return transform.GetChild(0);
     }

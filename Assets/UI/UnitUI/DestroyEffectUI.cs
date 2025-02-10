@@ -11,18 +11,22 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     [SerializeField] ParticleSystem fragments;
     [SerializeField] LensFlare flare;
 
-    public void SetupDestroyEffect(BattleObjectUI battleObjectUI, DestroyEffectScriptableObject destroyEffectScriptableObject, UIManager uIManager, SpriteRenderer targetRenderer) {
+    public void SetupDestroyEffect(BattleObjectUI battleObjectUI, DestroyEffectScriptableObject destroyEffectScriptableObject,
+        UIManager uIManager, SpriteRenderer targetRenderer) {
         this.battleObjectUI = battleObjectUI;
         this.uIManager = uIManager;
         this.destroyEffectScriptableObject = destroyEffectScriptableObject;
         float newScale = this.battleObjectUI.battleObject.GetSpriteSize() * battleObjectUI.transform.localScale.x;
         transform.localScale = new Vector2(newScale, newScale);
         explosion.transform.localScale = transform.localScale;
+        uIManager.uiBattleManager.particleHolders.Add(this);
 
         var explosionMain = explosion.main;
         explosionMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed + destroyEffectScriptableObject.flareFadeSpeed;
+        explosionMain.simulationSpeed = uIManager.GetParticleSpeed();
         var fragmentsMain = fragments.main;
         fragmentsMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed + destroyEffectScriptableObject.flareFadeSpeed;
+        fragmentsMain.simulationSpeed = uIManager.GetParticleSpeed();
         var explosionShape = explosion.shape;
         explosionShape.spriteRenderer = targetRenderer;
         explosionShape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
@@ -83,6 +87,10 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
     public void ShowEffects(bool shown) {
         flare.enabled = shown;
+    }
+
+    public void OnBattleObjectRemoved() {
+        uIManager.uiBattleManager.particleHolders.Remove(this);
     }
 
     public void SetParticleSpeed(float speed) {

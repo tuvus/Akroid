@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MissileUI : BattleObjectUI {
+public class MissileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private ParticleSystem thrust;
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private DestroyEffectUI destroyEffectUI;
@@ -14,8 +14,11 @@ public class MissileUI : BattleObjectUI {
         missile = (Missile)battleObject;
         spriteRenderer.enabled = true;
         if (uIManager.GetParticlesShown()) thrust.Play();
+        var main = thrust.main;
+        main.simulationSpeed = uIManager.GetParticleSpeed();
         destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager, spriteRenderer);
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
+        uIManager.uiBattleManager.particleHolders.Add(this);
     }
 
     public override void UpdateObject() {
@@ -37,4 +40,20 @@ public class MissileUI : BattleObjectUI {
             highlight.enabled = uIManager.GetEffectsShown();
         }
     }
+
+    public override void OnBattleObjectRemoved() {
+        base.OnBattleObjectRemoved();
+        uIManager.uiBattleManager.particleHolders.Remove(this);
+        destroyEffectUI.OnBattleObjectRemoved();
+    }
+
+    public void ShowEffects(bool shown) { }
+
+    public void SetParticleSpeed(float speed) {
+        var main = thrust.main;
+        main.simulationSpeed = speed;
+        destroyEffectUI.SetParticleSpeed(speed);
+    }
+
+    public void ShowParticles(bool shown) { }
 }

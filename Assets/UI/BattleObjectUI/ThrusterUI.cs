@@ -17,6 +17,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         shipUI = (ShipUI)unitUI;
         Instantiate(thruster.GetPrefab(), transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
+        var main = particle.main;
+        main.simulationSpeed = uIManager.GetParticleSpeed();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
         thrusterFlare.enabled = false;
         localPlayerInput = uIManager.localPlayer.GetInputManager();
@@ -28,6 +30,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         audioSource.dopplerLevel = 0;
         audioSource.loop = true;
         thrusting = false;
+        uIManager.uiBattleManager.particleHolders.Add(this);
     }
 
     public override void UpdateObject() {
@@ -64,6 +67,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public override void OnUnitDestroyed() {
         EndThrust();
+        uIManager.uiBattleManager.particleHolders.Remove(this);
     }
 
     public void BeginThrust() {

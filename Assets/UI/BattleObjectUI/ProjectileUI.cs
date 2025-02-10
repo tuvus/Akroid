@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class ProjectileUI : BattleObjectUI {
+public class ProjectileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
     private LocalPlayerInput localPlayerInput;
@@ -14,8 +13,11 @@ public class ProjectileUI : BattleObjectUI {
         projectile = (Projectile)battleObject;
         spriteRenderer.enabled = true;
         highlight.enabled = uIManager.GetEffectsShown();
-        uIManager.uiBattleManager.objectsToUpdate.Add(this);
         localPlayerInput = uIManager.localPlayer.GetInputManager();
+        uIManager.uiBattleManager.objectsToUpdate.Add(this);
+        uIManager.uiBattleManager.particleHolders.Add(this);
+        var main = particleSystem.main;
+        main.simulationSpeed = uIManager.GetParticleSpeed();
     }
 
     public override void UpdateObject() {
@@ -31,5 +33,21 @@ public class ProjectileUI : BattleObjectUI {
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;
         }
+    }
+
+    public override void OnBattleObjectRemoved() {
+        base.OnBattleObjectRemoved();
+        uIManager.uiBattleManager.particleHolders.Remove(this);
+    }
+
+    public void ShowEffects(bool shown) {
+    }
+
+    public void SetParticleSpeed(float speed) {
+        var main = particleSystem.main;
+        main.simulationSpeed = speed;
+    }
+
+    public void ShowParticles(bool shown) {
     }
 }

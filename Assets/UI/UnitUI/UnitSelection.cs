@@ -45,9 +45,10 @@ public class UnitSelection : MonoBehaviour {
     private void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
         if (uIManager.GetFactionColoringShown()) {
-            spriteRenderer.color = unitUI.unit.faction.GetColorTint();
+            spriteRenderer.color = unitUI.unit.faction.GetColorBackgroundTint(previousAlpha);
         } else {
-            spriteRenderer.color = uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
+            var relationColor = uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
+            spriteRenderer.color = new Color(relationColor.r, relationColor.g, relationColor.b, previousAlpha);
         }
     }
 

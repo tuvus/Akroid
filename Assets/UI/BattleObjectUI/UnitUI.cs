@@ -86,4 +86,9 @@ public abstract class UnitUI : BattleObjectUI {
     public override void UnselectObject() {
         unitSelection.SetSelected();
     }
+
+    public override void OnBattleObjectRemoved() {
+        base.OnBattleObjectRemoved();
+        destroyEffectUI.OnBattleObjectRemoved();
+    }
 }

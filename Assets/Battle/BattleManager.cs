@@ -635,14 +635,13 @@ public class BattleManager : MonoBehaviour {
         return stationBlueprints.First(station => station.stationScriptableObject.stationType == stationType);
     }
 
-    public static GameObject GetSizeIndicatorPrefab() {
-        return Resources.Load<GameObject>("Prefabs/SizeIndicator");
-    }
-
     public Player GetLocalPlayer() {
         return players.First(p => p.isLocalPlayer);
     }
 
+    /// <summary>
+    /// The eventManager needs to be injected into BattleManager in order to let the UI create and set up the UIEventManager
+    /// </summary>
     public void SetEventManager(EventManager eventManager) {
         if (this.eventManager != null)
             throw new AggregateException("Trying to set the BattleManager EventManager after the EventManager has already been set!");
