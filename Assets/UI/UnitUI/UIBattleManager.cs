@@ -142,6 +142,7 @@ public class UIBattleManager : MonoBehaviour {
 
     /// <summary>
     /// Handles creating all other objects.
+    /// We don't want to actually create the objects here since we might be on a different thread
     /// </summary>
     private void OnObjectCreated(IObject iObject) {
         objectsToCreate.Add(iObject);

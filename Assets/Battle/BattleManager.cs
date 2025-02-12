@@ -11,6 +11,14 @@ using static Ship;
 using static Station;
 using Random = Unity.Mathematics.Random;
 
+/// <summary>
+/// BattleManager is the main class that holds all factions, objects, players and other battle related settings.
+/// BattleManager is in charge of creating each object and keeping track of their lifetime.
+/// This allows every other class to not have to worry about how each class is constructed and how to properly set them up.
+/// The BattleManager can be set up with either a simulation given a few generation parameters or using a campaign.
+/// Note that the BattleManager does not interact with the UI at all or know that it exists,
+/// however the events OnBattleEnd, OnObjectCreated, OnObjectRemoved will send information to the UI if the UI subscribed to them.
+/// </summary>
 public class BattleManager : MonoBehaviour {
     private CampaingController campaignController;
     public EventManager eventManager { get; private set; }
@@ -43,6 +51,10 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
 
+    // Here are events that the UI can subscribe to
+    // However the UI should not do any computationally heavy work in them
+    // since they may be called syncronized on a different thread
+    // Instead it should wait for the next UI update
     public event Action<Faction> OnBattleEnd = delegate { };
     public event Action<IObject> OnObjectCreated = delegate { };
     public event Action<IObject> OnObjectRemoved = delegate { };
@@ -267,7 +279,7 @@ public class BattleManager : MonoBehaviour {
     public Faction CreateNewFaction(FactionData factionData, PositionGiver positionGiver, int startingResearchCost) {
         Faction newFaction = new Faction(this, factionData, positionGiver);
         factions.Add(newFaction);
-        OnObjectCreated.Invoke(newFaction);
+        AddObject(newFaction);
         newFaction.GenerateFaction(factionData, startingResearchCost);
         return newFaction;
     }
@@ -500,7 +512,6 @@ public class BattleManager : MonoBehaviour {
 
     public void CreateFleet(Fleet fleet) {
         AddObject(fleet);
-        OnObjectCreated.Invoke(fleet);
     }
 
     public void RemoveFleet(Fleet fleet) {

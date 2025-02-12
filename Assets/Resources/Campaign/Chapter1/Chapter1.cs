@@ -587,7 +587,7 @@ public class Chapter1 : CampaingController {
                 "There are three research fields: Engineering, Electricity and Chemicals. " +
                 "Each time science is put into a field it improves one of the areas assosiated with that field. \n" +
                 "Try putting your science into one of the fields.", 2 * GetTimeScale());
-            spendResearchChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerFaction.Discoveries > 0));
+            spendResearchChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerFaction.discoveries > 0));
             spendResearchChain.AddCommEvent(playerComm, playerFaction,
                 "Great Job! You can see which area was improved by scrolling through the improvements list. \n" +
                 "The cost to research goes up each time. " +

@@ -5,6 +5,11 @@ using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
+/// <summary>
+/// Faction is an object group of all objects the faction owns.
+/// It keeps track of every unit it owns, faction resources, communications and what enemies it has.
+/// The FactionAI determines any decisions the the faction makes.
+/// </summary>
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [SerializeField] FactionAI factionAI;
     [SerializeField] FactionCommManager commManager;
@@ -15,7 +20,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     [field: SerializeField] public long science { get; protected set; }
     public long researchCost { get; protected set; }
     private double researchCostExtra;
-    public int Discoveries { get; protected set; }
+    public int discoveries { get; protected set; }
 
     public enum ImprovementAreas {
         HullStrength,
@@ -161,6 +166,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         commManager = new FactionCommManager(battleManager, this, factionData.leader);
     }
 
+    /// <summary>
+    /// Creates units for the factino based on the units provided in factionData
+    /// </summary>
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
         name = factionData.name;
         abbreviatedName = factionData.abbreviatedName;
@@ -168,7 +176,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         science = factionData.science;
         researchCost = startingResearchCost;
         researchCostExtra = 0;
-        Discoveries = 0;
+        discoveries = 0;
         improvementModifiers = new float[13];
         for (int i = 0; i < improvementModifiers.Length; i++) {
             improvementModifiers[i] = 1;
@@ -427,7 +435,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             }
         }
 
-        Discoveries++;
+        discoveries++;
         int improvementArea;
         switch (researchArea) {
             case ResearchAreas.Engineering:
@@ -681,8 +689,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
-        int temp = activeMiningStations.Where(station => station.IsSpawned())
-            .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
         return activeMiningStations.Where(station => station.IsSpawned())
             .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0));
     }

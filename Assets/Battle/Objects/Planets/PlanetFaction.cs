@@ -153,7 +153,7 @@ public class PlanetFaction {
         defender.population -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
     }
 
-    /// <summary> 
+    /// <summary>
     /// Calculates how much territory this amount of force can reasonably attack.
     /// High quality territory is prefered over lower quality territory.
     /// </summary>

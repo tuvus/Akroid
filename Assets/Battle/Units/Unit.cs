@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public abstract class Unit : BattleObject {
     public UnitScriptableObject unitScriptableObject { get; private set; }
@@ -46,9 +45,9 @@ public abstract class Unit : BattleObject {
             minWeaponRange = Mathf.Min(minWeaponRange, turret.GetRange());
         }
 
-        foreach (var missileLuancher in moduleSystem.Get<MissileLauncher>()) {
-            maxWeaponRange = Mathf.Max(maxWeaponRange, missileLuancher.GetRange() / 2);
-            minWeaponRange = Mathf.Min(minWeaponRange, missileLuancher.GetRange() / 2);
+        foreach (var missileLauncher in moduleSystem.Get<MissileLauncher>()) {
+            maxWeaponRange = Mathf.Max(maxWeaponRange, missileLauncher.GetRange() / 2);
+            minWeaponRange = Mathf.Min(minWeaponRange, missileLauncher.GetRange() / 2);
         }
     }
 

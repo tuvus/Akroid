@@ -44,7 +44,7 @@ public class PlayerFactionOverviewUI : PlayerUIMenu<FactionUI> {
     protected override void RefreshLeftPanel() {
         autoResearch.SetIsOnWithoutNotify(displayedObject.faction.GetFactionAI().autoResearch);
         nextDiscoveryCost.text = "Next discovery cost: " + displayedObject.faction.researchCost;
-        totalDiscoveries.text = "Total discoveries: " + displayedObject.faction.Discoveries;
+        totalDiscoveries.text = "Total discoveries: " + displayedObject.faction.discoveries;
         for (int i = 0; i < displayedObject.faction.improvementModifiers.Length; i++) {
             improvementList.GetChild(i).GetChild(1).GetComponent<TMP_Text>().text = displayedObject.faction.improvementDiscoveryCount[i].ToString();
             improvementList.GetChild(i).GetChild(2).GetComponent<TMP_Text>().text =

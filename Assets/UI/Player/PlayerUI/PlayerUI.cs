@@ -103,7 +103,7 @@ public class PlayerUI : MonoBehaviour {
             factionName.text = localPlayer.player.faction.name;
             factionCredits.text = "Credits: " + NumFormatter.ConvertNumber(localPlayer.player.faction.credits);
             factionScience.text = "Science: " + NumFormatter.ConvertNumber(localPlayer.player.faction.science) + " (" +
-                localPlayer.player.faction.Discoveries + ")";
+                localPlayer.player.faction.discoveries + ")";
         } else {
             factionUI.SetActive(false);
         }
