@@ -7251,7 +7251,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
   m_Value: 0.99999934
-  m_Size: 0.6802721
+  m_Size: 0.68027204
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -43528,6 +43528,8 @@ MonoBehaviour:
   healthText: {fileID: 2652703798970764012}
   shieldText: {fileID: 6803169138777536654}
   nameText: {fileID: 2878701574596566055}
+  healthObject: {fileID: 8714345814498696298}
+  shieldObject: {fileID: 8714345815274551408}
 --- !u!1 &8714345816428262395
 GameObject:
   m_ObjectHideFlags: 0
