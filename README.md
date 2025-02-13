@@ -1,6 +1,5 @@
 # Akroid
 
----
 
 ![](/Assets/Resources/Images/SpaceBattle1.png)
 
@@ -23,3 +22,5 @@ For more details on the game mechanics go to this [page](https://tuvus.github.io
 3. Clone the project from git
 4. Open the project from Unity Hub
 5. Make sure that the packages are downloaded using the Unity Package manager
+
+Developer documentation is located under the `docs/` directory.
