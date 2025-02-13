@@ -84,6 +84,14 @@ public class LaserUI : BattleObjectUI {
         }
     }
 
+    public void OnUnitDestroyed() {
+        fireing = false;
+        spriteRenderer.enabled = false;
+        startHighlight.enabled = false;
+        endHighlight.enabled = false;
+        audioSource.Stop();
+    }
+
     public void ShowEffects(bool shown) {
         startHighlight.enabled = fireing && shown;
         endHighlight.enabled = fireing && shown;

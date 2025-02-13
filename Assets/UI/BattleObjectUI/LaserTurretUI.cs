@@ -13,4 +13,9 @@ public class LaserTurretUI : TurretUI {
         base.UpdateObject();
         laserUI.UpdateObject();
     }
+
+    public override void OnUnitDestroyed() {
+        base.OnUnitDestroyed();
+        laserUI.OnUnitDestroyed();
+    }
 }
