@@ -662,7 +662,7 @@ public class Chapter1 : CampaingController {
                     if (!communicationEvent.isActive)
                         return false;
                     communicationEvent.DeactivateEvent();
-                    playerFaction.TransferShipTo(researchShip, researchFaction);
+                    playerFaction.TransferUnitTo(researchShip, researchFaction);
                     playerFaction.AddScience(300);
                     AddResearchInvestigationQuestLine(researchShip)();
                     return true;
@@ -757,7 +757,7 @@ public class Chapter1 : CampaingController {
         keepChain.AddCommEvent(playerComm, researchFaction,
             "Thanks! Hopefully you can make good use of it!", GetTimeScale() * 3);
         keepChain.AddAction(() => {
-            researchFaction.TransferShipTo(researchShip, playerFaction);
+            researchFaction.TransferUnitTo(researchShip, playerFaction);
             battleManager.GetLocalPlayer().AddOwnedUnit(researchShip);
         });
         return keepChain.Build(eventManager, () => EscapeShipQuestLine(false));
@@ -948,13 +948,13 @@ public class Chapter1 : CampaingController {
                 tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())), () => {
                 Ship capturedShip = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
                 pirateShips.Add(capturedShip);
-                planetFaction.TransferShipTo(capturedShip, pirateFaction);
+                planetFaction.TransferUnitTo(capturedShip, pirateFaction);
                 capturedShip.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 eventManager.AddEvent(eventManager.CreatePredicateCondition(_ =>
                     tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())), () => {
                     Ship capturedShip2 = tradeStation.GetAllDockedShips().First(s => s.faction == planetFaction && s.IsCivilianShip());
                     pirateShips.Add(capturedShip2);
-                    planetFaction.TransferShipTo(capturedShip2, pirateFaction);
+                    planetFaction.TransferUnitTo(capturedShip2, pirateFaction);
                     capturedShip2.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
                 });
             });
@@ -963,7 +963,7 @@ public class Chapter1 : CampaingController {
                 Ship capturedShip = tradeStation.GetAllDockedShips().First(s => s.faction == otherMiningFaction && s.IsTransportShip());
                 pirateShips.Add(capturedShip);
                 capturedShip.shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
-                otherMiningFaction.TransferShipTo(capturedShip, pirateFaction);
+                otherMiningFaction.TransferUnitTo(capturedShip, pirateFaction);
             });
         });
         pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ => pirateShips.Count == 3));
@@ -977,10 +977,10 @@ public class Chapter1 : CampaingController {
             eventManager.CreateLateCondition(() => eventManager.CreateDockShipsAtUnit(pirateShips, otherMiningStation)));
         pirateChain.AddCondition(eventManager.CreateWaitCondition(15));
         pirateChain.AddAction(() => {
-            otherMiningFaction.TransferStationTo(otherMiningStation, pirateFaction);
+            otherMiningFaction.TransferUnitTo(otherMiningStation, pirateFaction);
             otherMiningStation.GetAllDockedShips().ForEach(s => {
                 if (s.faction != pirateFaction) {
-                    s.faction.TransferShipTo(s, pirateFaction);
+                    s.faction.TransferUnitTo(s, pirateFaction);
                     pirateShips.Add(s);
                 }
             });
