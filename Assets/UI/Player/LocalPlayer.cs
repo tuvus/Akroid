@@ -33,7 +33,6 @@ public class LocalPlayer : MonoBehaviour {
             return;
         }
         player = battleManager.GetLocalPlayer();
-        player.OnFactionChanged += SetupFaction;
         Instance = this;
         localPlayerInput.Setup(battleManager, this, uiBattleManager);
         playerUI.SetUpUI(battleManager, localPlayerInput, this, uIManager);
@@ -42,18 +41,7 @@ public class LocalPlayer : MonoBehaviour {
     }
 
     public void SetupFaction(Faction faction) {
-        UpdateFactionColors();
         playerUI.playerCommsManager.SetupFaction(faction);
-    }
-
-    /// <summary>
-    /// Refreshes the colors of the unit displays to thier proper color.
-    /// Call after the player faction or the player faction's enemies list is modified.
-    /// </summary>
-    public void UpdateFactionColors() {
-        foreach (var unit in battleManager.units) {
-            // unit.GetUnitSelection().UpdateFactionColor();
-        }
     }
 
     public void UpdatePlayer() {

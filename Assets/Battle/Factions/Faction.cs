@@ -74,6 +74,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     private Random random;
 
+    public event Action<Unit> OnUnitAdded = delegate { };
+    public event Action<Unit> OnUnitRemoved = delegate { };
+
+
     public struct FactionData {
         public Type factionAI;
         public string name;
@@ -279,10 +283,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void AddUnit(Unit unit) {
         units.Add(unit);
         unit.SetGroup(baseGroup);
+        OnUnitAdded(unit);
     }
 
     public void RemoveUnit(Unit unit) {
         units.Remove(unit);
+        OnUnitRemoved(unit);
     }
 
     public void AddShip(Ship ship) {
@@ -299,7 +305,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void TransferUnitTo(Unit unit, Faction to) {
         if (!units.Contains(unit))
             throw new InvalidOperationException("The unit to transfer from this faction isn't owned by this faction.");
-        // TODO: Update owned units when a ship is transfered
+
         foreach (var player in battleManager.players.Where(p => p.faction == this && p.ownedUnits.Contains(unit))) {
             player.RemoveOwnedUnit(unit);
         }
