@@ -49,15 +49,15 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         if (thrusting) {
             // Only show the thrust effects if the ship is being looked at
             // This is called every time when thrusting
-            if (localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(shipUI)) {
+            if (uIManager.GetEffectsShown() && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(shipUI)) {
                 BeginThrust();
                 thrusterFlare.enabled = true;
-            } else if (!localPlayerInput.ShouldShowCloseUpGraphics() || !localPlayerInput.IsObjectInViewingField(shipUI)) {
+                thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
+            } else {
                 EndThrust();
                 thrusterFlare.enabled = false;
             }
 
-            if (thrusterFlare.enabled) thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
             float cameraZoom = localPlayerInput.mainCamera.orthographicSize;
             audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .2f;
             audioSource.minDistance = 1 + 5 * cameraZoom / 10;
@@ -75,12 +75,12 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public void BeginThrust() {
         if (uIManager.GetParticlesShown() && !particle.isPlaying) particle.Play();
-        else if (!uIManager.GetParticlesShown() && particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        else if (!uIManager.GetParticlesShown() && particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     public void EndThrust() {
         thrusterFlare.enabled = false;
-        if (particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        if (particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     public void ShowEffects(bool shown) {
@@ -90,19 +90,6 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
     public void SetParticleSpeed(float speed) {
         var main = particle.main;
         main.simulationSpeed = speed;
-    }
-
-    /// <summary>
-    /// If shown == false, stops emitting
-    /// If shown == true, assumes the ship is thrusting and begins emitting.
-    /// </summary>
-    /// <param name="shown"></param>
-    public void ShowParticles(bool shown) {
-        if (shown) {
-            particle.Play();
-        } else {
-            particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        }
     }
 
     private float GetFlareBrightness() {

@@ -55,6 +55,13 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     }
 
     public void UpdateExplosion() {
+        if (!uIManager.GetEffectsShown()) {
+            ShowEffects(false);
+            ShowParticles(false);
+        } else if (!uIManager.GetParticlesShown()) {
+            ShowParticles(false);
+        }
+
         switch (destroyEffect.flareState) {
             case FlareState.FlaringUp:
                 flare.brightness = GetFlareUpSize() * destroyEffect.flareTime / destroyEffectScriptableObject.flareUpSpeed;
@@ -79,10 +86,6 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
                 flare.enabled = false;
                 break;
         }
-    }
-
-    public bool IsPlaying() {
-        return explosion.isPlaying || fragments.isPlaying || (flare.brightness > 0 && flare.enabled);
     }
 
     public void ShowEffects(bool shown) {

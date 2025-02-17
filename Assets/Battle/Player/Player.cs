@@ -20,7 +20,7 @@ public class Player {
         ownedUnits.Clear();
         this.faction = faction;
 
-        if (lockedOwnedUnits || faction != null) return;
+        if (lockedOwnedUnits || faction == null) return;
 
         ownedUnits.UnionWith(faction.units);
         faction.OnUnitAdded += AddOwnedUnit;

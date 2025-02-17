@@ -6,6 +6,7 @@ using UnityEngine;
 public class UIBattleManager : MonoBehaviour {
     public BattleManager battleManager { get; private set; }
     public UIManager uIManager { get; private set; }
+
     /// <summary> Saves the last state of the BattleManager's time scale so we know when it has changed. </summary>
     private float previousSimulationTime;
 
@@ -137,6 +138,7 @@ public class UIBattleManager : MonoBehaviour {
             Destroy(objects[iObject].gameObject);
             objects.Remove(iObject);
         }
+
         objectsToRemove.Clear();
     }
 
