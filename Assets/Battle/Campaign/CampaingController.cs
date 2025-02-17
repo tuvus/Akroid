@@ -10,6 +10,4 @@ public abstract class CampaingController : MonoBehaviour {
         this.battleManager = battleManager;
         eventManager = battleManager.eventManager;
     }
-
-    public abstract string GetPathToChapterFolder();
 }
