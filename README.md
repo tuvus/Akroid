@@ -1,7 +1,7 @@
 # Akroid
 
 
-![](/Assets/Resources/Images/SpaceBattle1.png)
+![](/Gimp/SpaceBattle1.png)
 
 Akroid is an open-source space real-time strategy game.
 Mine asteroids, collect gas build ships, expand and fight other factions.
