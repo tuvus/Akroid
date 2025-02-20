@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
 /**
- * UnitSelection manages the icons of units so that they can be visible even when the player is zoomed out.
- * UnitSelection also manages the selection outline around the unit when the player interacts with the unit.
+ * UnitIconUI manages the icons of units so that they can be visible even when the player is zoomed out.
+ * UnitIconUI also manages the selection outline around the unit when the player interacts with the unit.
  */
-public class UnitSelection : MonoBehaviour {
+public class UnitIconUI : MonoBehaviour {
     public enum SelectionStrength {
         Unselected = 0,
         Selected = 1,
@@ -18,10 +18,10 @@ public class UnitSelection : MonoBehaviour {
     private EngagedVisual engagedVisual;
     private UnitUI unitUI;
     private UIManager uIManager;
-    private SpriteRenderer selectionOutline;
+    private SpriteRenderer iconUI;
     private float unitsize;
 
-    public void SetupSelection(UnitUI unitUI, UIManager uIManager) {
+    public void SetupIconUI(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;
         this.uIManager = uIManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -30,20 +30,20 @@ public class UnitSelection : MonoBehaviour {
         spriteRenderer.sprite = unitUI.unit.unitScriptableObject.sprite;
         engagedVisual = GetComponentInChildren<EngagedVisual>();
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
-        selectionOutline = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        iconUI = transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         // We want to make the selection outline the right size, however we also want the outline thickness to scale with the size.
         // We can do this by reducing the outline size and increasing the scale of the object
         unitsize = unitUI.unit.GetSize();
         if (unitUI.unit.IsStation()) unitsize *= 2f / 3;
-        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize + new Vector2(5, 5);
-        selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+        iconUI.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize + new Vector2(5, 5);
+        iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         UpdateFactionColor();
         SetSelected();
     }
 
-    public void UpdateUnitSelection() {
-        if (UpdateSelection()) {
+    public void UpdateUnitIconUI() {
+        if (UpdateIcon()) {
             UpdateFactionColor();
         }
     }
@@ -62,12 +62,12 @@ public class UnitSelection : MonoBehaviour {
     /// Updates the selection strength and size of the icon, may also hide it
     /// </summary>
     /// <returns>True if the icon is visible, false otherwise</returns>
-    private bool UpdateSelection() {
+    private bool UpdateIcon() {
         if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false ||
             (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
             || !unitUI.IsVisible()) {
-            ShowUnitSelection(false);
-            selectionOutline.enabled = false;
+            ShowUnitIconUI(false);
+            iconUI.enabled = false;
             return false;
         }
 
@@ -80,7 +80,7 @@ public class UnitSelection : MonoBehaviour {
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
+            iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
         } else if (realSize > 500f) {
             // In this case the is is visible, however it is displayed underneath the unit
             // so that the player can see the real size of the unit
@@ -89,21 +89,21 @@ public class UnitSelection : MonoBehaviour {
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
+            iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
         } else {
             // In this case the camera is zoomed in so close that we don't want to display the icon at all
             transform.localScale = new Vector2(1, 1);
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+            iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         }
 
-        selectionOutline.enabled = true;
+        iconUI.enabled = true;
 
         return true;
     }
 
-    public void ShowUnitSelection(bool show) {
+    public void ShowUnitIconUI(bool show) {
         if (uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
             spriteRenderer.enabled = show;
             engagedVisual.ShowEngagedVisual(show);
@@ -117,15 +117,15 @@ public class UnitSelection : MonoBehaviour {
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
-                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 0f);
+                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 0f);
                 break;
             case SelectionStrength.Selected:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
-                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 1f);
+                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 1f);
                 break;
             case SelectionStrength.Highlighted:
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
-                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, .4f);
+                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, .4f);
                 break;
         }
     }

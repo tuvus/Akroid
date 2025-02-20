@@ -47,7 +47,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
         if (mouseOverBattleObject != null && !selectedUnits.ContainsObject(mouseOverBattleObject) &&
             !selectedUnits.ContainsObject(mouseOverBattleObject) && !localPlayer.playerUI.IsAMenueShown()) {
-            mouseOverBattleObject.SelectObject(UnitSelection.SelectionStrength.Highlighted);
+            mouseOverBattleObject.SelectObject(UnitIconUI.SelectionStrength.Highlighted);
         }
 
         if (selectedGroup != -1) {
@@ -132,7 +132,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 }
             }
 
-            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
     }
@@ -179,7 +179,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 objectsInSelectionBox.AddUnit(unitUI);
         }
 
-        objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Highlighted);
+        objectsInSelectionBox.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Highlighted);
     }
 
 
@@ -198,7 +198,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                     SelectBattleObjects(mouseOverBattleObject);
                 }
             } else if (!AdditiveButtonPressed) {
-                objectsInSelectionBox.SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
+                objectsInSelectionBox.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
                 objectsInSelectionBox.ClearGroup();
             } else {
                 if (displayedFleet != null) {
@@ -232,10 +232,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             FleetUI fleetUI = uiBattleManager.fleetUIs[selectedUnits.GetShip().ship.fleet];
             ClearSelectedBattleObjects();
             selectedUnits.SetFleet(fleetUI);
-            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Selected);
             SetDisplayedFleet(fleetUI);
         } else {
-            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Selected);
             SetDisplayedUnit();
         }
     }
@@ -261,7 +261,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         }
 
         selectedUnits.AddBattleObjects(newBattleObjects);
-        selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
+        selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Selected);
         SetDisplayedUnit();
     }
 
@@ -338,7 +338,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     /// Unselects all selected units and then clears the selectUnits group
     /// </summary>
     protected virtual void ClearSelectedBattleObjects() {
-        selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
+        selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
         selectedUnits.ClearGroup();
     }
 

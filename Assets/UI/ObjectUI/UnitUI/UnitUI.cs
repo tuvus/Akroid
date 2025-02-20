@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class UnitUI : BattleObjectUI {
     public Unit unit { get; private set; }
-    public UnitSelection unitSelection { get; private set; }
+    public UnitIconUI unitIconUI { get; private set; }
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
     public List<ComponentUI> components { get; private set; }
     private DestroyEffectUI destroyEffectUI;
@@ -15,8 +15,8 @@ public abstract class UnitUI : BattleObjectUI {
         this.unit = (Unit)battleObject;
         spriteRenderer.sprite = unit.unitScriptableObject.sprite;
         spriteRenderer.enabled = false;
-        unitSelection = transform.GetChild(0).GetComponent<UnitSelection>();
-        unitSelection.SetupSelection(this, uIManager);
+        unitIconUI = transform.GetChild(0).GetComponent<UnitIconUI>();
+        unitIconUI.SetupIconUI(this, uIManager);
         components = new List<ComponentUI>();
         prefabModuleSystem = GetComponent<PrefabModuleSystem>();
         destroyEffectUI = transform.GetChild(1).GetComponent<DestroyEffectUI>();
@@ -65,13 +65,13 @@ public abstract class UnitUI : BattleObjectUI {
             if (uIManager.GetFactionColoringShown()) spriteRenderer.color = unit.faction.GetColorTint();
             else spriteRenderer.color = Color.white;
 
-            unitSelection.UpdateUnitSelection();
+            unitIconUI.UpdateUnitIconUI();
         } else if (!destroyed) {
             if (unit.GetDestroyEffect() != null) {
                 components.ForEach(c => c.OnUnitDestroyed());
                 destroyed = true;
                 destroyEffectUI.Explode(unit.GetDestroyEffect());
-                unitSelection.ShowUnitSelection(false);
+                unitIconUI.ShowUnitIconUI(false);
                 UnselectObject();
             }
         } else {
@@ -79,12 +79,12 @@ public abstract class UnitUI : BattleObjectUI {
         }
     }
 
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
-        if (!destroyed) unitSelection.SetSelected(selectionStrength);
+    public override void SelectObject(UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) {
+        if (!destroyed) unitIconUI.SetSelected(selectionStrength);
     }
 
     public override void UnselectObject() {
-        unitSelection.SetSelected();
+        unitIconUI.SetSelected();
     }
 
     public override void OnBattleObjectRemoved() {

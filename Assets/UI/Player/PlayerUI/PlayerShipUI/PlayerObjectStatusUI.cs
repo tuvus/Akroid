@@ -37,7 +37,7 @@ public class PlayerObjectStatusUI : MonoBehaviour {
     private void RefreshUIForUnit(UnitUI unitUI) {
         healthObject.SetActive(true);
         shieldObject.SetActive(true);
-        objectImage.color = new Color(unitUI.unitSelection.GetColor().r, unitUI.unitSelection.GetColor().g, unitUI.unitSelection.GetColor().b, 1);
+        objectImage.color = new Color(unitUI.unitIconUI.GetColor().r, unitUI.unitIconUI.GetColor().g, unitUI.unitIconUI.GetColor().b, 1);
         healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(unitUI.unit.GetHealth()) + "/" +
             NumFormatter.ConvertNumber(unitUI.unit.GetMaxHealth());
         shieldText.GetComponent<TMP_Text>().text = "Shields " + NumFormatter.ConvertNumber(unitUI.unit.GetShields()) + "/" +
@@ -48,7 +48,7 @@ public class PlayerObjectStatusUI : MonoBehaviour {
         objectImage.enabled = true;
         objectImage.sprite = unitUI.GetSprite();
         objectImage.SetNativeSize();
-        // objectImage.color = new Color(unit.GetUnitSelection().GetColor().r, unit.GetUnitSelection().GetColor().g, unit.GetUnitSelection().GetColor().b, 1);
+        objectImage.color = new Color(unitUI.unitIconUI.GetColor().r, unitUI.unitIconUI.GetColor().g, unitUI.unitIconUI.GetColor().b, 1);
         float sizeRatio = objectImage.rectTransform.sizeDelta.y / objectImage.rectTransform.sizeDelta.x;
         objectImage.rectTransform.sizeDelta = new Vector2(70 / sizeRatio, 70);
         healthText.GetComponent<TMP_Text>().text = "Hull " + NumFormatter.ConvertNumber(fleetUI.fleet.GetFleetHealth()) + "/" +

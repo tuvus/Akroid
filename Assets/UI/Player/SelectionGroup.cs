@@ -291,7 +291,7 @@ public class SelectionGroup {
         // }
     }
 
-    public void SelectAllBattleObjects(UnitSelection.SelectionStrength strength = UnitSelection.SelectionStrength.Unselected) {
+    public void SelectAllBattleObjects(UnitIconUI.SelectionStrength strength = UnitIconUI.SelectionStrength.Unselected) {
         objects.ForEach(obj => obj.SelectObject(strength));
         if (fleet != null) {
             fleet.SelectObject(strength);
@@ -299,7 +299,7 @@ public class SelectionGroup {
     }
 
     public void UnselectAllBattleObjects() {
-        SelectAllBattleObjects(UnitSelection.SelectionStrength.Unselected);
+        SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
     }
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {

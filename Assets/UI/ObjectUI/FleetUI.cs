@@ -20,7 +20,7 @@ public class FleetUI : ObjectUI {
 
     public override void UpdateObject() { }
 
-    public override void SelectObject(UnitSelection.SelectionStrength selectionStrength = UnitSelection.SelectionStrength.Unselected) {
+    public override void SelectObject(UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) {
         base.SelectObject(selectionStrength);
         GetShipsUI().ToList().ForEach(s => s.SelectObject(selectionStrength));
     }

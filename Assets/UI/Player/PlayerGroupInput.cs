@@ -47,7 +47,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
             selectedUnits.UnselectAllBattleObjects();
             selectedUnits.ClearGroup();
             selectedUnits.CopyGroup(groups[buttonNumber]);
-            selectedUnits.SelectAllBattleObjects(UnitSelection.SelectionStrength.Selected);
+            selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Selected);
             if (groups[buttonNumber].groupType == SelectionGroup.GroupType.Fleet)
                 SetDisplayedFleet(groups[buttonNumber].fleet);
             else

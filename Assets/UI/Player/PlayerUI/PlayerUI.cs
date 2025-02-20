@@ -125,7 +125,7 @@ public class PlayerUI : MonoBehaviour {
         Profiler.EndSample();
     }
 
-    public void UpdateDisplayedObjectUI(FleetUI fleetUI, BattleObjectUI battleObjectUI, int unitCount) {
+    private void UpdateDisplayedObjectUI(FleetUI fleetUI, BattleObjectUI battleObjectUI, int unitCount) {
         commandRenderer.enabled = false;
         if (battleObjectUI == null || !battleObjectUI.battleObject.IsSpawned()) {
             objectStatusUI.DeselectPlayerObjectStatusUI();
