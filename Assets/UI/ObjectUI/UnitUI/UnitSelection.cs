@@ -30,8 +30,9 @@ public class UnitSelection : MonoBehaviour {
         // We want to make the selection outline the right size, however we also want the outline thickness to scale with the size.
         // We can do this by reducing the outline size and increasing the scale of the object
         float size = unitUI.unit.GetSize();
-        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 10 / size + new Vector2(5, 5);
-        selectionOutline.transform.localScale *= size / 10;
+        if (unitUI.unit.IsStation()) size *= 2f / 3;
+        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 4 / size + new Vector2(5, 5);
+        selectionOutline.transform.localScale *= size / 4;
         UpdateFactionColor();
         SetSelected();
     }
