@@ -12,6 +12,7 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         base.Setup(battleObject, uIManager);
         projectile = (Projectile)battleObject;
         spriteRenderer.enabled = true;
+        hit = false;
         highlight.enabled = uIManager.GetEffectsShown();
         localPlayerInput = uIManager.localPlayer.GetInputManager();
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
@@ -38,6 +39,9 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
     public override void OnBattleObjectRemoved() {
         base.OnBattleObjectRemoved();
         uIManager.uiBattleManager.particleHolders.Remove(this);
+        highlight.enabled = false;
+        particleSystem.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        spriteRenderer.enabled = false;
     }
 
     public void ShowEffects(bool shown) {

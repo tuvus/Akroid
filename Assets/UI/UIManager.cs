@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour {
             return;
 
         Profiler.BeginSample("Update UI Objects");
-        uiBattleManager.UpdateSpriteManager();
+        uiBattleManager.UIUpdate();
         Profiler.EndSample();
         localPlayer.GetLocalPlayerInput().UpdatePlayer();
         localPlayer.UpdatePlayer();
