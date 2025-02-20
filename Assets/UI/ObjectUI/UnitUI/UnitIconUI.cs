@@ -71,34 +71,32 @@ public class UnitIconUI : MonoBehaviour {
             return false;
         }
 
-        float realSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
-        if (realSize > 1000) {
-            // In this case we are zoomed out pretty far and the icon is displayed over the unit
-            float imageSize = unitsize * realSize * realSize * 10;
-            float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitsize;
-            spriteRenderer.sortingOrder = 10;
-            spriteRenderer.enabled = true;
-            transform.localScale = new Vector2(size, size);
-            engagedVisual.UpdateEngagedVisual();
-            iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
-        } else if (realSize > 500f) {
-            // In this case the is is visible, however it is displayed underneath the unit
-            // so that the player can see the real size of the unit
-            float size = Mathf.Max(1.2f, realSize / 10 / unitsize);
-            spriteRenderer.sortingOrder = -10;
-            spriteRenderer.enabled = true;
-            transform.localScale = new Vector2(size, size);
-            engagedVisual.UpdateEngagedVisual();
-            iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
-        } else {
+        float cameraSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
+        if (cameraSize <= 500) {
             // In this case the camera is zoomed in so close that we don't want to display the icon at all
             transform.localScale = new Vector2(1, 1);
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
             iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+            return false;
         }
 
+        float imageSize = unitsize * cameraSize * cameraSize * 2.23f;
+        float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitsize;
+        spriteRenderer.enabled = true;
+        transform.localScale = new Vector2(size, size);
+        engagedVisual.UpdateEngagedVisual();
+        iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
         iconUI.enabled = true;
+
+        if (cameraSize > 1000) {
+            // In this case we are zoomed out pretty far and the icon is displayed over the unit
+            spriteRenderer.sortingOrder = 10;
+        } else {
+            // In this case the is is visible, however it is displayed underneath the unit
+            // so that the player can see the real size of the unit
+            spriteRenderer.sortingOrder = -10;
+        }
 
         return true;
     }
