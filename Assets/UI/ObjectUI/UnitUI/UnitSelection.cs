@@ -36,8 +36,8 @@ public class UnitSelection : MonoBehaviour {
         // We can do this by reducing the outline size and increasing the scale of the object
         unitsize = unitUI.unit.GetSize();
         if (unitUI.unit.IsStation()) unitsize *= 2f / 3;
-        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 6 / unitsize + new Vector2(5, 5);
-        selectionOutline.transform.localScale *= unitsize / 6;
+        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize + new Vector2(5, 5);
+        selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         UpdateFactionColor();
         SetSelected();
     }
@@ -72,30 +72,30 @@ public class UnitSelection : MonoBehaviour {
         }
 
         float realSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
-        float imageSize = unitUI.unit.GetSize() * realSize * realSize * 10;
         if (realSize > 1000) {
             // In this case we are zoomed out pretty far and the icon is displayed over the unit
-            float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitUI.unit.GetSize();
+            float imageSize = unitsize * realSize * realSize * 10;
+            float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitsize;
             spriteRenderer.sortingOrder = 10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 8;
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
         } else if (realSize > 500f) {
             // In this case the is is visible, however it is displayed underneath the unit
             // so that the player can see the real size of the unit
-            float size = Mathf.Max(1.2f, realSize / 10 / unitUI.unit.GetSize());
+            float size = Mathf.Max(1.2f, realSize / 10 / unitsize);
             spriteRenderer.sortingOrder = -10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 8;
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
         } else {
             // In this case the camera is zoomed in so close that we don't want to display the icon at all
             transform.localScale = new Vector2(1, 1);
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
-            selectionOutline.transform.localScale = Vector2.one * unitsize / 6;
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         }
 
         selectionOutline.enabled = true;
