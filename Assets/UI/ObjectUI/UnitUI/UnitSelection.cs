@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/**
+ * UnitSelection manages the icons of units so that they can be visible even when the player is zoomed out.
+ * UnitSelection also manages the selection outline around the unit when the player interacts with the unit.
+ */
 public class UnitSelection : MonoBehaviour {
     public enum SelectionStrength {
         Unselected = 0,
@@ -15,6 +19,7 @@ public class UnitSelection : MonoBehaviour {
     private UnitUI unitUI;
     private UIManager uIManager;
     private SpriteRenderer selectionOutline;
+    private float unitsize;
 
     public void SetupSelection(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;
@@ -29,10 +34,10 @@ public class UnitSelection : MonoBehaviour {
 
         // We want to make the selection outline the right size, however we also want the outline thickness to scale with the size.
         // We can do this by reducing the outline size and increasing the scale of the object
-        float size = unitUI.unit.GetSize();
-        if (unitUI.unit.IsStation()) size *= 2f / 3;
-        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 4 / size + new Vector2(5, 5);
-        selectionOutline.transform.localScale *= size / 4;
+        unitsize = unitUI.unit.GetSize();
+        if (unitUI.unit.IsStation()) unitsize *= 2f / 3;
+        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * 6 / unitsize + new Vector2(5, 5);
+        selectionOutline.transform.localScale *= unitsize / 6;
         UpdateFactionColor();
         SetSelected();
     }
@@ -54,9 +59,9 @@ public class UnitSelection : MonoBehaviour {
     }
 
     /// <summary>
-    /// Updates the selection strength of the indicator, may also hide it
+    /// Updates the selection strength and size of the icon, may also hide it
     /// </summary>
-    /// <returns>True if the indicator is visible, false otherwise</returns>
+    /// <returns>True if the icon is visible, false otherwise</returns>
     private bool UpdateSelection() {
         if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false ||
             (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
@@ -69,21 +74,28 @@ public class UnitSelection : MonoBehaviour {
         float realSize = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
         float imageSize = unitUI.unit.GetSize() * realSize * realSize * 10;
         if (realSize > 1000) {
+            // In this case we are zoomed out pretty far and the icon is displayed over the unit
             float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitUI.unit.GetSize();
             spriteRenderer.sortingOrder = 10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 8;
         } else if (realSize > 500f) {
+            // In this case the is is visible, however it is displayed underneath the unit
+            // so that the player can see the real size of the unit
             float size = Mathf.Max(1.2f, realSize / 10 / unitUI.unit.GetSize());
             spriteRenderer.sortingOrder = -10;
             spriteRenderer.enabled = true;
             transform.localScale = new Vector2(size, size);
             engagedVisual.UpdateEngagedVisual();
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 8;
         } else {
+            // In this case the camera is zoomed in so close that we don't want to display the icon at all
             transform.localScale = new Vector2(1, 1);
             spriteRenderer.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 6;
         }
 
         selectionOutline.enabled = true;
