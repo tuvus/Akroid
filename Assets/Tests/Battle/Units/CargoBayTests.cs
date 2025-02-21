@@ -15,7 +15,9 @@ public class CargoBayTests {
         var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
-        CargoBay cargoBay = new CargoBay(null, module.Object, unit.Object, cargoBayScriptableObject);
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
         Assert.False(cargoBay.cargoBays.ContainsKey(CargoBay.CargoTypes.All));
         Assert.AreEqual(100, cargoBay.GetCargoBayCapacity());
         Assert.AreEqual(6, cargoBay.GetMaxCargoBays());
@@ -36,7 +38,9 @@ public class CargoBayTests {
         var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
-        CargoBay cargoBay = new CargoBay(null, module.Object, unit.Object, cargoBayScriptableObject);
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
         Assert.AreEqual(0, cargoBay.LoadCargo(100, CargoBay.CargoTypes.Metal));
         Assert.AreEqual(100, cargoBay.GetAllCargo(CargoBay.CargoTypes.Metal));
         Assert.AreEqual(0, cargoBay.LoadCargo(100, CargoBay.CargoTypes.Metal));
@@ -73,7 +77,9 @@ public class CargoBayTests {
         var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
-        CargoBay cargoBay = new CargoBay(null, module.Object, unit.Object, cargoBayScriptableObject);
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
         Assert.AreEqual(0, cargoBay.LoadCargo(400, CargoBay.CargoTypes.Metal));
         Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
         cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
@@ -106,8 +112,10 @@ public class CargoBayTests {
         var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
-        CargoBay cargoBay = new CargoBay(null, module.Object, unit.Object, cargoBayScriptableObject);
-        CargoBay cargoBay2 = new CargoBay(null, module.Object, unit.Object, cargoBayScriptableObject);
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
+        CargoBay cargoBay2 = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
         cargoBay.LoadCargoFromBay(cargoBay2, CargoBay.CargoTypes.Metal, 800);
         Assert.AreEqual(0, cargoBay.GetAllCargo(CargoBay.CargoTypes.All));
         Assert.AreEqual(0, cargoBay2.GetAllCargo(CargoBay.CargoTypes.All));

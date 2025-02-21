@@ -130,7 +130,7 @@ public class BattleManager : MonoBehaviour {
     public void InitializeBattle() {
         timeScale = 1;
         startOfSimulation = Time.unscaledTime;
-        random = new Random((uint)(startOfSimulation * 1000));
+        random = new Random((uint)(startOfSimulation * 1000 + 1));
         factions = new HashSet<Faction>(10);
         battleObjects = new HashSet<BattleObject>(1000);
         units = new HashSet<Unit>(200);
@@ -165,6 +165,42 @@ public class BattleManager : MonoBehaviour {
         stationBlueprints.ForEach(b => Resources.Load<GameObject>(b.stationScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
             .modules.ForEach(m => m.SetupData()));
     }
+
+    /// <summary>
+    /// Initializes the battle without all of the prespawning and extra allocation.
+    /// This is better to use for tests.
+    /// </summary>
+    public void QuickInitializeBattle() {
+        timeScale = 1;
+        startOfSimulation = Time.unscaledTime;
+        random = new Random((uint)(startOfSimulation * 1000 + 1));
+        factions = new HashSet<Faction>(0);
+        battleObjects = new HashSet<BattleObject>(0);
+        units = new HashSet<Unit>(0);
+        ships = new HashSet<Ship>(0);
+        stations = new HashSet<Station>(0);
+        stationsInProgress = new HashSet<Station>(0);
+        stars = new HashSet<Star>(0);
+        planets = new HashSet<Planet>(0);
+        asteroidFields = new HashSet<AsteroidField>(0);
+        gasClouds = new HashSet<GasCloud>(0);
+        projectiles = new HashSet<Projectile>(0);
+        missiles = new HashSet<Missile>(0);
+        destroyedUnits = new HashSet<Unit>(0);
+        usedProjectiles = new HashSet<Projectile>(0);
+        unusedProjectiles = new HashSet<Projectile>(0);
+        usedMissiles = new HashSet<Missile>(0);
+        unusedMissiles = new HashSet<Missile>(0);
+        players = new HashSet<Player>();
+
+        if (eventManager == null) eventManager = new EventManager(this);
+
+        shipBlueprints.ForEach(b => Resources.Load<GameObject>(b.shipScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
+        stationBlueprints.ForEach(b => Resources.Load<GameObject>(b.stationScriptableObject.prefabPath).GetComponent<PrefabModuleSystem>()
+            .modules.ForEach(m => m.SetupData()));
+    }
+
 
     /// <summary>
     /// Sets up the battle with manual values.
@@ -632,7 +668,7 @@ public class BattleManager : MonoBehaviour {
         this.eventManager = eventManager;
     }
 
-    public uint GetRandomSeed() {
+    public virtual uint GetRandomSeed() {
         return random.NextUInt();
     }
 

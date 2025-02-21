@@ -10,7 +10,10 @@ public class ModuleSystemTests {
     public void SetupFromScriptableObject() {
         // Setup
         var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
-        var unit = new Mock<Unit>();
+        var faction = new MockFaction();
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+
         var component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         component.name = "TestThruster";
         component.cost = 10;
@@ -25,8 +28,8 @@ public class ModuleSystemTests {
         }, new List<IModule>() { mockModule });
 
         // What is actually being tested
-        var moduleSystem = new ModuleSystem(null, unit.Object, unitScriptableObject);
-
+        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object, unitScriptableObject);
+        ModuleSystem moduleSystem = unit.Object.moduleSystem;
         Assert.AreEqual(1, moduleSystem.systems.Count);
         Assert.AreEqual("TestSystem", moduleSystem.systems.First().name);
         Assert.AreEqual(PrefabModuleSystem.SystemType.Thruster, moduleSystem.systems.First().type);
@@ -42,8 +45,8 @@ public class ModuleSystemTests {
         // Setup
         var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
         var faction = new MockFaction();
-        var unit = new Mock<Unit>();
-        unit.Object.SetFaction(faction);
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
         var component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         component.name = "TestThruster";
         component.cost = 10;
@@ -64,7 +67,8 @@ public class ModuleSystemTests {
                 component),
         }, new List<IModule>() { mockModule });
 
-        var moduleSystem = new ModuleSystem(null, unit.Object, unitScriptableObject);
+        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object, unitScriptableObject);
+        ModuleSystem moduleSystem = unit.Object.moduleSystem;
 
         Assert.AreEqual(component, moduleSystem.modules.First().componentScriptableObject);
         moduleSystem.UpgradeSystem(0, unit.Object);
@@ -116,6 +120,10 @@ public class ModuleSystemTests {
     class MockFaction : Faction {
         public MockFaction() {
             credits = 1000;
+        }
+
+        public override float GetImprovementModifier(ImprovementAreas improvementArea) {
+            return 1f;
         }
     }
 }

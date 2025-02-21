@@ -751,7 +751,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <param name="improvementArea"> The given improvement area </param>
     /// <returns> The improvement modifier of the area </returns>
-    public float GetImprovementModifier(ImprovementAreas improvementArea) {
+    public virtual float GetImprovementModifier(ImprovementAreas improvementArea) {
         return improvementModifiers[(int)improvementArea];
     }
 
