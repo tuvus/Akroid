@@ -40,8 +40,9 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: Linux
+          targetPlatform: StandaloneLinux64
           allowDirtyBuild: true
+          unityVersion: 6000.0.31f1
 
       # Output
       - uses: actions/upload-artifact@v4
