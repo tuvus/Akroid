@@ -30,7 +30,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-
+          unityVersion: 6000.0.31f1
       # Build
       - name: Build project
         uses: game-ci/unity-builder@v4
@@ -42,7 +42,7 @@ jobs:
           targetPlatform: Linux
 
       # Output
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Build
           path: build
