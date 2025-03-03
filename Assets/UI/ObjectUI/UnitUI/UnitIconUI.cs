@@ -48,7 +48,7 @@ public class UnitIconUI : MonoBehaviour {
         }
     }
 
-    private void UpdateFactionColor() {
+    public void UpdateFactionColor() {
         float previousAlpha = spriteRenderer.color.a;
         if (uIManager.GetFactionColoringShown()) {
             spriteRenderer.color = unitUI.unit.faction.GetColorBackgroundTint(previousAlpha);

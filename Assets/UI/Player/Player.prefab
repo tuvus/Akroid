@@ -1627,7 +1627,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1939976486909118287}
   m_HandleRect: {fileID: 6364087356304033362}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4275,7 +4275,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4618830592714790721}
   m_HandleRect: {fileID: 4137147038010350586}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -5963,7 +5963,9 @@ MonoBehaviour:
     type: 3}
   hangarStatus: {fileID: 7664813357918941866}
   hangarList: {fileID: 2731957324733364706}
-  shipButtonPrefab: {fileID: 6917939575041792617, guid: 24e4ee27584b2474db3f56aa4c880e1e,
+  shipConstructionButtonPrefab: {fileID: 6917939575041792617, guid: ab1bc0d1ba3f7d54a9fa577039cda6ab,
+    type: 3}
+  shipHangerButtonPrefab: {fileID: 6917939575041792617, guid: 24e4ee27584b2474db3f56aa4c880e1e,
     type: 3}
   autoBuildShips: {fileID: 84209206596427748}
   shipYardSelection: {fileID: 6895498698358203164}
@@ -7250,7 +7252,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 0.99999934
+  m_Value: 0.9999997
   m_Size: 0.68027204
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22605,7 +22607,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1674003577351984642}
   m_HandleRect: {fileID: 1105404025253671302}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -33553,7 +33555,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 203353127213737578}
   m_HandleRect: {fileID: 8042583210906613712}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -37111,7 +37113,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 46823025480806312}
   m_HandleRect: {fileID: 1402089287631808153}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -47125,7 +47127,7 @@ PrefabInstance:
     - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3920508318628320845, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}

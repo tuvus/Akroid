@@ -74,7 +74,7 @@ public class PlayerUI : MonoBehaviour {
         commandRendererShown = true;
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
-        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uiBattleManager, .2f));
+        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uIManager, .2f));
         playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
         foreach (var menu in uIMenusInput) {

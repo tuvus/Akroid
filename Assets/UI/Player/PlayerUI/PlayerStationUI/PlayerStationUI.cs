@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerStationUI : PlayerUIMenu<StationUI> {
@@ -18,7 +19,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     [SerializeField] private GameObject cargoBayButtonPrefab;
     [SerializeField] private TMP_Text hangarStatus;
     [SerializeField] private Transform hangarList;
-    [SerializeField] private GameObject shipButtonPrefab;
+    [FormerlySerializedAs("shipButtonPrefab")] [SerializeField] private GameObject shipConstructionButtonPrefab;
+    [SerializeField] private GameObject shipHangerButtonPrefab;
     [SerializeField] private List<Ship> shipsInHangar = new();
     [SerializeField] private Toggle autoBuildShips;
     [SerializeField] private Button shipYardSelection;
@@ -245,7 +247,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             constructionBay.GetConstructionBays();
         for (int i = 0; i < constructionBay.buildQueue.Count; i++) {
             if (constructionBayList.childCount <= i) {
-                Instantiate(shipButtonPrefab, constructionBayList);
+                Instantiate(shipConstructionButtonPrefab, constructionBayList);
             }
 
             Transform constructionBayButtonTransform = constructionBayList.GetChild(i);
@@ -259,8 +261,12 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             constructionBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text = blueprint.faction.abbreviatedName;
             constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
                 (100 - (blueprint.GetTotalResourcesLeftToUse() * 100) / blueprint.totalResourcesRequired).ToString() + "%";
-            constructionBayButton.GetComponent<Image>().color =
-                localPlayer.GetColorOfRelationType(localPlayer.GetRelationToFaction(blueprint.GetFaction()));
+            if (uiManager.GetFactionColoringShown()) {
+                constructionBayButton.GetComponent<Image>().color = blueprint.faction.GetColorTint();
+            } else {
+                constructionBayButton.GetComponent<Image>().color =
+                    localPlayer.GetColorOfRelationType(localPlayer.GetRelationToFaction(blueprint.GetFaction()));
+            }
         }
 
         for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
@@ -278,6 +284,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             constructionBay.buildQueue[index].GetFaction() == localPlayer.GetFaction()) {
             constructionBay.RemoveBlueprintFromQueue(index);
             UpdateConstructionUI(constructionBay);
+            UpdateShipBlueprintUI();
         }
     }
 
@@ -292,7 +299,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         hangarStatus.text = "Hangar capacity " + shipsInHangar.Count + "/" + hangar.GetMaxDockSpace();
         for (int i = 0; i < shipsInHangar.Count; i++) {
             if (hangarList.childCount <= i) {
-                Instantiate(shipButtonPrefab, hangarList);
+                Instantiate(shipHangerButtonPrefab, hangarList);
             }
 
             Transform hangarBayButtonTransform = hangarList.GetChild(i);
@@ -300,6 +307,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             hangarBayButton.onClick.RemoveAllListeners();
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.RemoveAllListeners();
             Ship ship = shipsInHangar[i];
+            ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             int f = i;
 
             hangarBayButton.onClick.AddListener(new UnityEngine.Events.UnityAction(() => HangarButtonPressed(f)));
@@ -310,7 +318,11 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
                 ((ship.GetHealth() * 100) / ship.GetMaxHealth()).ToString() + "%";
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick
                 .AddListener(new UnityEngine.Events.UnityAction(() => HangarInfoButtonPressed(f)));
-            hangarBayButton.GetComponent<Image>().color = localPlayer.GetColorOfRelationType(localPlayer.GetRelationToUnit(ship));
+            if (uiManager.GetFactionColoringShown()) {
+                hangarBayButton.GetComponent<Image>().color = ship.faction.GetColorBackgroundTint(shipUI.unitIconUI.GetColor().a);
+            } else {
+                hangarBayButton.GetComponent<Image>().color = shipUI.unitIconUI.GetColor();
+            }
         }
 
         for (int i = shipsInHangar.Count; i < hangarList.childCount; i++) {
@@ -330,8 +342,6 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
 
             RefreshRightPanel();
         }
-        //if (localPlayer.player.ownedUnits.Contains(displayedStation) || shipsInHangar[index].faction == localPlayer.GetFaction())
-        //    shipsInHangar[index].shipAI.AddUnitAICommand(Command.CreateUndockCommand(), Command.CommandAction.AddToBegining);
     }
 
     public void HangarInfoButtonPressed(int index) {
