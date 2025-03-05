@@ -1021,7 +1021,7 @@ public class Chapter1 : CampaingController {
             "The colony ship has been built and is heading to the trade station.");
         moonColonyChain.AddCondition(eventManager.CreateLateCondition(() =>
             eventManager.CreateDockShipsAtUnit(new List<Ship> { colonizer }, tradeStation)));
-        moonColonyChain.AddCondition(eventManager.CreateWaitCondition(160));
+        moonColonyChain.AddCondition(eventManager.CreateWaitCondition(260));
         moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
             "Our colony ship is loaded and is ready to head to the moon!");
         moonColonyChain.AddAction(() =>
@@ -1030,7 +1030,7 @@ public class Chapter1 : CampaingController {
         moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
             "We have started a colony on the moon! This is great progress for space travel!", 8);
         moonColonyChain.AddCommEvent(planetCommManager, playerFaction,
-            "We have started a colony on the moon! This is great progress for space travel!");
+            "Our first colony ship has landed on the moon! This is great progress for space travel!");
         moonColonyChain.Build(eventManager)();
     }
 
