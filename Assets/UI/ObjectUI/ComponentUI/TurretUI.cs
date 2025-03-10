@@ -13,7 +13,7 @@ public class TurretUI : ComponentUI {
         spriteRenderer.sprite = turret.turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
         audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.resource = Resources.Load<AudioResource>("Audio/TurretFire");
+        audioSource.resource = turret.turretScriptableObject.turretFire;
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;

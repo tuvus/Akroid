@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using static CargoBay;
 
 public class UnitScriptableObject : ScriptableObject {
@@ -11,6 +10,7 @@ public class UnitScriptableObject : ScriptableObject {
     public List<long> resourceCosts;
 
     public string prefabPath;
+    public GameObject prefab;
     public string unitName;
     public int maxHealth;
     public Sprite sprite;
@@ -26,10 +26,10 @@ public class UnitScriptableObject : ScriptableObject {
             systems = Array.Empty<ModuleSystem.System>();
         }
 
-        GameObject targetPrefab = Resources.Load<GameObject>(prefabPath);
-        if (targetPrefab != null) {
+        prefab = Resources.Load<GameObject>(prefabPath);
+        if (prefab != null) {
             ModuleSystem.System[] oldSystems = systems;
-            PrefabModuleSystem prefabModuleSystem = targetPrefab.GetComponent<PrefabModuleSystem>();
+            PrefabModuleSystem prefabModuleSystem = prefab.GetComponent<PrefabModuleSystem>();
             systems = new ModuleSystem.System[prefabModuleSystem.systems.Count];
             for (int i = 0; i < Mathf.Min(oldSystems.Length, systems.Length); i++) {
                 systems[i] = oldSystems[i];

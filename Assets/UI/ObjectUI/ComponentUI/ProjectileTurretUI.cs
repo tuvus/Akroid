@@ -10,7 +10,7 @@ public class ProjectileTurretUI : TurretUI {
         spriteRenderer.sprite = projectileTurret.turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
 
-        flash = Instantiate(Resources.Load<GameObject>("Prefabs/Highlight"), transform).GetComponent<SpriteRenderer>();
+        flash = Instantiate(projectileTurret.projectileTurretScriptableObject.flashPrefab, transform).GetComponent<SpriteRenderer>();
         flash.transform.localScale = new Vector2(.2f,.2f);
         flash.transform.localPosition = new Vector2(0, projectileTurret.projectileTurretScriptableObject.turretOffset);
         flash.enabled = false;

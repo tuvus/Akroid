@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Serialization;
 using static Turret;
 
@@ -16,6 +18,11 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public Vector2 baseScale = Vector2.one;
     public Vector2 spriteBounds { get; private set; }
     public float turretOffset { get; private set; }
+    public AudioResource turretFire;
+
+    public virtual void Awake() {
+        if (turretFire == null) turretFire = Resources.Load<AudioResource>("Prefabs/Audio/TurretFire");
+    }
 
     public virtual float GetDamagePerSecond() {
         return 0;

@@ -20,7 +20,7 @@ public class LaserUI : BattleObjectUI {
         startHighlight.transform.localScale = new Vector2(.2f, .2f);
         endHighlight.transform.localScale = new Vector2(.2f, .2f);
         audioSource = transform.GetChild(2).gameObject.GetComponent<AudioSource>();
-        audioSource.resource = Resources.Load<AudioResource>("Audio/Laser");
+        audioSource.resource = laserTurret.laserTurret.laserTurretScriptableObject.laserSound;
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;

@@ -23,7 +23,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         thrusterFlare.enabled = false;
         localPlayerInput = uIManager.localPlayer.GetInputManager();
         audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.resource = Resources.Load<AudioResource>("Audio/Engine");
+        audioSource.resource = thruster.thrusterScriptableObject.thrustSound;
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [CreateAssetMenu(fileName = "Resources/Components/Thruster", menuName = "Components/Thruster", order = 3)]
 public class ThrusterScriptableObject : ComponentScriptableObject {
@@ -8,6 +9,11 @@ public class ThrusterScriptableObject : ComponentScriptableObject {
     public Color startThrustColor;
     public Color endThrustColor;
     public GameObject thrustEffect;
+    public AudioResource thrustSound;
+
+    private void Awake() {
+        if (thrustSound == null) thrustSound = Resources.Load<AudioResource>("Prefabs/Audio/Engine");
+    }
 
     public override Type GetComponentType() {
         return typeof(Thruster);
