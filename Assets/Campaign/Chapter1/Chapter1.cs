@@ -1080,8 +1080,8 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(100000));
         planetEscalationChain.AddAction(() => {
             robotFaction = battleManager.CreateNewFaction(
-                new Faction.FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 2000, 0,
-                    0), new BattleManager.PositionGiver(planet.GetPosition()), 100);
+                new FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(), Random.Range(1, 2) * 5400, 2000, 0,
+                    0), new PositionGiver(planet.GetPosition()), 100);
             robotFactionAI = (RobotFactionAI)robotFaction.GetFactionAI();
             for (int i = 0; i < 200; i++) {
                 robotFaction.DiscoverResearchArea((ResearchAreas)Random.Range(0, 3), true);

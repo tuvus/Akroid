@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
 public class Character {
     public string characterName;
     public GameObject characterModel;
+    public static Dictionary<String, GameObject> characterPrefabs;
 
     public Character(string characterName, GameObject characterModel) {
         this.characterName = characterName;
@@ -23,6 +26,6 @@ public class Character {
     }
 
     public static Character CreateCharacter(String prefabName) {
-        return new Character(prefabName, (GameObject)Resources.Load("Prefabs/Characters/" + prefabName));
+        return new Character(prefabName, characterPrefabs[prefabName]);
     }
 }

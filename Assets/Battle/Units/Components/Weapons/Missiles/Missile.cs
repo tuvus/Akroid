@@ -168,6 +168,6 @@ public class Missile : BattleObject {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/Missile");
+        return missileScriptableObject.missilePrefab;
     }
 }

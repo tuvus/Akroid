@@ -9,6 +9,7 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     public int minDamage;
     public int maxDamage;
     public float projectileRange;
+    public GameObject turretPrefab;
     public GameObject projectilePrefab;
     public GameObject flashPrefab;
     public float flashSpeed = 0.5f;
@@ -26,6 +27,7 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     public override void Awake() {
         base.Awake();
         targeting = TargetingBehaviors.closest;
+        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/ProjectileTurret");
         if (projectilePrefab == null) projectilePrefab = Resources.Load<GameObject>("Prefabs/Projectile");
         if (flashPrefab == null) flashPrefab = Resources.Load<GameObject>("Prefabs/Highlight");
     }

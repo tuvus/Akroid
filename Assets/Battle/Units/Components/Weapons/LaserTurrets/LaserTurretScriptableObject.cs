@@ -10,6 +10,7 @@ public class LaserTurretScriptableObject : TurretScriptableObject {
     public float fadeDuration;
     public float laserRange;
     public float laserSize;
+    public GameObject turretPrefab;
     public GameObject laserPrefab;
     public AudioResource laserSound;
 
@@ -26,6 +27,7 @@ public class LaserTurretScriptableObject : TurretScriptableObject {
     public override void Awake() {
         base.Awake();
         targeting = TargetingBehaviors.closest;
+        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/LaserTurret");
         if (laserPrefab == null) laserPrefab = Resources.Load<GameObject>("Prefabs/Laser");
         if (laserSound == null) laserSound = Resources.Load<AudioResource>("Prefabs/Audio/Laser");
     }

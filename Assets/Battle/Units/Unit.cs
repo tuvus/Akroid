@@ -373,6 +373,6 @@ public abstract class Unit : BattleObject {
     #endregion
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load(unitScriptableObject.prefabPath);
+        return unitScriptableObject.prefab;
     }
 }

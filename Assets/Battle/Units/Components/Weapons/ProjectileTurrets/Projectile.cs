@@ -9,11 +9,12 @@ public class Projectile : BattleObject {
     private Vector2 shipVelocity;
     public float particleTime { get; private set; }
     public bool hit { get; private set; }
+    private GameObject prefab;
 
     public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
 
     public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage,
-        float projectileRange, float offset, float projectileScale) {
+        float projectileRange, float offset, float projectileScale, GameObject prefab) {
         this.faction = faction;
         this.position = position;
         this.rotation = rotation;
@@ -22,6 +23,7 @@ public class Projectile : BattleObject {
         this.shipVelocity = shipVelocity;
         this.damage = damage;
         this.projectileRange = projectileRange;
+        this.prefab = prefab;
         distance = 0;
         hit = false;
         scale = new Vector2(projectileScale, projectileScale) / 2;
@@ -123,6 +125,6 @@ public class Projectile : BattleObject {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/Projectile");
+        return prefab;
     }
 }

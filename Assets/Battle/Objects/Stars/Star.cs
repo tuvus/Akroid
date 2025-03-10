@@ -64,6 +64,6 @@ public class Star : BattleObject, IPositionConfirmer {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/Star");
+        return starScriptableObject.prefab;
     }
 }

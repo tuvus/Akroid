@@ -66,6 +66,6 @@ public class Asteroid : BattleObject, IPositionConfirmer {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/Asteroid");
+        return asteroidScriptableObject.prefab;
     }
 }

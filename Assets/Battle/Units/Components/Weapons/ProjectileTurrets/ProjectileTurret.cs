@@ -25,7 +25,8 @@ public class ProjectileTurret : Turret {
                 Mathf.RoundToInt(random.NextFloat(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
                     unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage)),
                 projectileTurretScriptableObject.projectileRange *
-                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y * 2);
+                unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(), scale.y * 2,
+                projectileTurretScriptableObject.projectilePrefab);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 random.NextFloat(projectileTurretScriptableObject.minDamage, projectileTurretScriptableObject.maxDamage) *
@@ -68,6 +69,6 @@ public class ProjectileTurret : Turret {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/ProjectileTurret");
+        return projectileTurretScriptableObject.turretPrefab;
     }
 }

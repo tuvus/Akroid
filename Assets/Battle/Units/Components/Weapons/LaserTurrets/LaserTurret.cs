@@ -79,6 +79,6 @@ public class LaserTurret : Turret {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/LaserTurret");
+        return laserTurretScriptableObject.turretPrefab;
     }
 }

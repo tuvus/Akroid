@@ -1976,6 +1976,10 @@ MonoBehaviour:
   <buttonSound>k__BackingField: {fileID: 291649937}
   simulationSetup: {fileID: 1906086742}
   campaignSetup: {fileID: 372612573}
+  tmpCharacters:
+  - {fileID: 3354241546600715744, guid: a4f43c9446e404d4eb2b92ae8353c5d6, type: 3}
+  - {fileID: 3354241546600715744, guid: 4039b031fb1854945b9b4d0730413366, type: 3}
+  - {fileID: 3354241546600715744, guid: 4cafaa6c8fd60de4295e1f2b5f3589f9, type: 3}
 --- !u!82 &291649937
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1986,7 +1990,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1

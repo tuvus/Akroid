@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,6 +14,11 @@ public class MissileScriptableObject : ScriptableObject {
     public DestroyEffectScriptableObject destroyEffect;
     public float timeAfterExpire;
     public Vector2 spriteBounds { get; private set; }
+    public GameObject missilePrefab;
+
+    private void Awake() {
+        if (missilePrefab == null) missilePrefab = Resources.Load<GameObject>("Prefabs/Missile");
+    }
 
     public void OnValidate() {
         if (sprite != null) {

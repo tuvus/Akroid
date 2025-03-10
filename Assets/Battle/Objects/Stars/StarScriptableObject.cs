@@ -4,6 +4,11 @@ using UnityEngine;
 public class StarScriptableObject : ScriptableObject {
     public Sprite sprite;
     public Vector2 spriteBounds { get; private set; }
+    public GameObject prefab;
+
+    public void Awake() {
+        if (prefab == null) prefab = Resources.Load<GameObject>("Prefabs/Star");
+    }
 
     public void OnValidate() {
         if (sprite != null) {

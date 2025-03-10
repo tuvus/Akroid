@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -19,11 +20,19 @@ public class StartMenu : MonoBehaviour {
     [field:SerializeField] public AudioSource buttonSound { get; private set; }
     [SerializeField] private SimulationSetup simulationSetup;
     [SerializeField] private CampaignSetup campaignSetup;
+
+    public List<GameObject> tmpCharacters;
+
     public void Awake() {
         if (Instance == null) {
             Instance = this;
         } else {
             Destroy(gameObject);
+        }
+        // Very hacky, had to get this done quickly, please fix
+        if (Character.characterPrefabs == null) {
+            Character.characterPrefabs = new();
+            tmpCharacters.ForEach(c => Character.characterPrefabs.Add(c.name, c));
         }
         HideAllMenues();
         SetStartMenu();

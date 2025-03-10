@@ -57,6 +57,6 @@ public class GasCloud : BattleObject, IPositionConfirmer {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/GasCloud");
+        return gasCloudScriptableObject.prefab;
     }
 }

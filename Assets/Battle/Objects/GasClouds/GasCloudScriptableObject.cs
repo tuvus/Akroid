@@ -5,6 +5,11 @@ public class GasCloudScriptableObject : ScriptableObject {
     public Sprite sprite;
     public CargoBay.CargoTypes type;
     public Vector2 spriteBounds { get; private set; }
+    public GameObject prefab;
+
+    public void Awake() {
+        if (prefab == null) prefab = Resources.Load<GameObject>("Prefabs/GasCloud");
+    }
 
     public void OnValidate() {
         if (sprite != null) {

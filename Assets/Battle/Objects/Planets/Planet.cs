@@ -206,6 +206,6 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     public override GameObject GetPrefab() {
-        return (GameObject)Resources.Load("Prefabs/Planet");
+        return planetScriptableObject.prefab;
     }
 }
