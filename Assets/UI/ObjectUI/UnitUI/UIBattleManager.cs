@@ -28,6 +28,9 @@ public class UIBattleManager : MonoBehaviour {
     /// <summary> Saves the last state of the BattleManager's time scale so we know when it has changed. </summary>
     private float previousSimulationTime;
 
+    public GameObject factionPrefab;
+    public GameObject fleetPrefab;
+    public GameObject asteroidFieldPrefab;
 
     public Dictionary<IObject, ObjectUI> objects { get; private set; }
     public Dictionary<BattleObject, BattleObjectUI> battleObjects { get; private set; }
@@ -78,13 +81,13 @@ public class UIBattleManager : MonoBehaviour {
         foreach (var iObject in objectsToCreate) {
             if (iObject is AsteroidField asteroidField) {
                 AsteroidFieldUI asteroidFieldUI =
-                    Instantiate((GameObject)Resources.Load("Prefabs/AsteroidField"), uIManager.GetAsteroidFieldTransform())
+                    Instantiate(asteroidFieldPrefab, uIManager.GetAsteroidFieldTransform())
                         .GetComponent<AsteroidFieldUI>();
                 asteroidFieldUI.Setup(asteroidField);
                 objects.Add(asteroidField, asteroidFieldUI);
                 continue;
             } else if (iObject is Faction faction) {
-                FactionUI factionUI = Instantiate((GameObject)Resources.Load("Prefabs/Faction"),
+                FactionUI factionUI = Instantiate(factionPrefab,
                     uIManager.GetFactionsTransform()).GetComponent<FactionUI>();
                 factionUI.Setup(faction);
                 factionUIs.Add(faction, factionUI);
@@ -92,7 +95,7 @@ public class UIBattleManager : MonoBehaviour {
                 continue;
             } else if (iObject is Fleet fleet) {
                 FactionUI factionUI = factionUIs[fleet.faction];
-                FleetUI fleetUI = Instantiate((GameObject)Resources.Load("Prefabs/Fleet"),
+                FleetUI fleetUI = Instantiate(fleetPrefab,
                     factionUI.GetFleetTransform()).GetComponent<FleetUI>();
                 fleetUI.Setup(fleet, this);
                 fleetUIs.Add(fleet, fleetUI);

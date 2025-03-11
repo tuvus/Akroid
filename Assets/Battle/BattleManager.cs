@@ -538,7 +538,9 @@ public class BattleManager : MonoBehaviour {
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
 
-        if (PlayerPrefs.HasKey("Threading")) {
+        if (Application.platform == RuntimePlatform.WebGLPlayer) {
+            threaded = false;
+        } else if (PlayerPrefs.HasKey("Threading")) {
             threaded = PlayerPrefs.GetInt("Threading") == 1;
         }
 

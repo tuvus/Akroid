@@ -7252,8 +7252,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 0.9999997
-  m_Size: 0.68027204
+  m_Value: 1.0000004
+  m_Size: 0.6802721
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -37113,7 +37113,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 46823025480806312}
   m_HandleRect: {fileID: 1402089287631808153}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -42296,7 +42296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b23632f1b154594aa2785344f9241bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionType: 0
+  actionType: 1
   scrollModifyer: 0.5
   scrollFactor: -0.780872
   selectionBox: {fileID: 8714345815540280993}
@@ -42315,7 +42315,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -47387,6 +47387,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3920508318628320845, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}

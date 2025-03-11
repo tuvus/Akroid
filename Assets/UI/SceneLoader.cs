@@ -11,6 +11,7 @@ public class SceneLoader : MonoBehaviour {
     private BattleManager.BattleSettings battleSettings;
     private List<Faction.FactionData> factions;
     private string campaignControllerPath;
+    public GameObject chapter;
 
     public static void LoadBattle(BattleManager.BattleSettings battleSettings, List<Faction.FactionData> factions) {
         SceneLoader sceneLoader = new GameObject("Loader").AddComponent<SceneLoader>();
@@ -19,9 +20,9 @@ public class SceneLoader : MonoBehaviour {
         sceneLoader.StartCoroutine(sceneLoader.LoadBattleScene(false));
     }
 
-    public static void LoadBattle(string campaignControllerPath) {
+    public static void LoadBattle(GameObject chapter) {
         SceneLoader sceneLoader = new GameObject("Loader").AddComponent<SceneLoader>();
-        sceneLoader.campaignControllerPath = campaignControllerPath;
+        sceneLoader.chapter = chapter;
         sceneLoader.StartCoroutine(sceneLoader.LoadBattleScene(true));
     }
 
@@ -88,14 +89,16 @@ public class SceneLoader : MonoBehaviour {
         uIManager.PreBattleManagerSetup(battleManager);
         battleManager.InitializeBattle();
         if (campaign) {
-            CampaingController campaingController = Instantiate(Resources.Load<GameObject>(campaignControllerPath), gameTransform)
-                .GetComponent<CampaingController>();
+            CampaingController campaingController = Instantiate(chapter, gameTransform).GetComponent<CampaingController>();
             loadingBar.value = 25 / totalProgress;
             statusText.SetText("Loading Campaing...");
             yield return null;
             // Campaing loading must be done syncronously
             // This can change in the future if we force it to load resources first
             battleManager.SetupBattle(campaingController);
+        } else if (Application.platform == RuntimePlatform.WebGLPlayer) {
+            // Unity does not support async very well on threads, so do this syncronously
+            battleManager.SetupBattle(battleSettings, factions);
         } else {
             Task.Run(() => battleManager.SetupBattle(battleSettings, factions));
         }
