@@ -122,7 +122,9 @@ public class LocalPlayerInput : MonoBehaviour {
     void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
-        float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * 50));
+        float platformModifier = 50;
+        if (Application.platform == RuntimePlatform.WebGLPlayer) platformModifier = .4f;
+        float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * platformModifier));
 
         // Zoom to the mouse position
         if (!AltButtonPressed) {
