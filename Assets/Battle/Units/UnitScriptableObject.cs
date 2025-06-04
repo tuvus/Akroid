@@ -19,7 +19,9 @@ public class UnitScriptableObject : ScriptableObject {
     [SerializeField] protected IModule[] modules;
     public DestroyEffectScriptableObject destroyEffect;
     public Vector2 baseScale = Vector2.one;
-    public Vector2 spriteBounds { get; private set; }
+    // Note: field:SerializeField is required in order for Unity to copy over a private variable when building the game.
+    // Removing it will result in the build behaving differently than the editor and object having a size of 0.
+    [field:SerializeField] public Vector2 spriteBounds { get; private set; }
 
     public void OnValidate() {
         if (systems == null) {
@@ -45,7 +47,8 @@ public class UnitScriptableObject : ScriptableObject {
         }
 
         if (sprite != null) {
-            spriteBounds = Calculator.GetSpriteBounds(sprite);
+            if (Calculator.GetSpriteBounds(sprite) != Vector2.zero)
+                spriteBounds = Calculator.GetSpriteBounds(sprite);
         }
 
         UpdateCosts();

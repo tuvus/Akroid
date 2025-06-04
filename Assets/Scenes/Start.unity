@@ -1990,7 +1990,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
   m_Resource: {fileID: 8300000, guid: 3c6be7511f0a0079c8a74cb1d945adfc, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -2663,8 +2663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2ebdb81032f0bf4b9a0ac1e797cb8a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chapter1: {fileID: 1743171317236793251, guid: 152d186c76fb41e45b3fa434b0df4062,
-    type: 3}
+  chapter1: {fileID: 0}
 --- !u!1001 &391312969
 PrefabInstance:
   m_ObjectHideFlags: 0

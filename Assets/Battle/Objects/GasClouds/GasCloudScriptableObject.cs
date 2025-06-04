@@ -4,7 +4,7 @@ using UnityEngine;
 public class GasCloudScriptableObject : ScriptableObject {
     public Sprite sprite;
     public CargoBay.CargoTypes type;
-    public Vector2 spriteBounds { get; private set; }
+    [field:SerializeField] public Vector2 spriteBounds { get; private set; }
     public GameObject prefab;
 
     public void Awake() {

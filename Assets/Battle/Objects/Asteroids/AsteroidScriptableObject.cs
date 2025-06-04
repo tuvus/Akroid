@@ -5,7 +5,7 @@ using UnityEngine;
 public class AsteroidScriptableObject : ScriptableObject {
     public Sprite sprite;
     public CargoBay.CargoTypes type;
-    public Vector2 spriteBounds { get; private set; }
+    [field:SerializeField] public Vector2 spriteBounds { get; private set; }
     public GameObject prefab;
 
     public void Awake() {
