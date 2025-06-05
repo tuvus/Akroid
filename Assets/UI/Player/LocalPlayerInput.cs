@@ -33,7 +33,7 @@ public class LocalPlayerInput : MonoBehaviour {
     public Camera mainCamera { get; private set; }
     private Background background;
 
-    [Tooltip("Player input on how fast scroling should be.")]
+    [Tooltip("Player input on how fast scrolling should be.")]
     public float scrollModifyer;
 
     public float scrollFactor = 1;
@@ -98,6 +98,7 @@ public class LocalPlayerInput : MonoBehaviour {
         timeStepIndex = 1;
         doingUnitClickAction = false;
         canvasScaler = localPlayer.playerUI.GetComponentInParent<CanvasScaler>();
+        actionType = ActionType.None;
     }
 
     public virtual void ChangeFaction() {
