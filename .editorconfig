@@ -3,12 +3,77 @@
 [*]
 charset = utf-8
 end_of_line = lf
-max_line_length = 140
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Microsoft .NET properties
+csharp_indent_braces = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_else = false
+csharp_new_line_before_members_in_object_initializers = false
+csharp_new_line_before_open_brace = accessors, control_blocks, events, indexers, properties
+csharp_preferred_modifier_order = public, private, protected, internal, file, override, abstract, static, virtual, sealed, new, readonly, extern, unsafe, volatile, async, required:suggestion
+csharp_preserve_single_line_blocks = true
+csharp_style_var_for_built_in_types = false:suggestion
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:none
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:none
+dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:none
+
+# ReSharper properties
+resharper_align_multiline_binary_expressions_chain = false
+resharper_align_multiline_expression_braces = true
+resharper_align_multiline_statement_conditions = false
+resharper_blank_lines_after_block_statements = 0
+resharper_blank_lines_around_auto_property = 0
+resharper_braces_for_for = required
+resharper_braces_for_foreach = required
+resharper_braces_for_ifelse = not_required
+resharper_braces_for_while = required
+resharper_braces_redundant = false
+resharper_continuous_line_indent = none
+resharper_csharp_blank_lines_around_field = 0
+resharper_csharp_blank_lines_around_invocable = 0
+resharper_csharp_empty_block_style = together
+resharper_csharp_insert_final_newline = true
+resharper_csharp_keep_blank_lines_in_declarations = 100
+resharper_csharp_keep_existing_enum_arrangement = false
+resharper_csharp_max_line_length = 120
+resharper_csharp_other_braces = end_of_line
+resharper_disable_space_changes_before_trailing_comment = true
+resharper_for_other_types = use_var_when_evident
+resharper_for_simple_types = use_explicit_type
+resharper_fsharp_insert_final_newline = false
+resharper_html_insert_final_newline = false
+resharper_indent_preprocessor_directives = do_not_change
+resharper_instance_members_qualify_declared_in =
+resharper_int_align_declaration_names = true
+resharper_keep_existing_attribute_arrangement = true
+resharper_keep_existing_declaration_block_arrangement = false
+resharper_max_attribute_length_for_same_line = 70
+resharper_object_creation_when_type_evident = explicitly_typed
+resharper_parentheses_redundancy_style = remove
+resharper_parentheses_same_type_operations = true
+resharper_place_accessorholder_attribute_on_same_line = true
+resharper_place_expr_method_on_single_line = true
+resharper_place_simple_embedded_statement_on_same_line = true
+resharper_place_simple_initializer_on_single_line = false
+resharper_place_single_method_argument_lambda_on_same_line = false
+resharper_remove_blank_lines_near_braces_in_code = false
+resharper_resx_insert_final_newline = false
+resharper_shaderlab_insert_final_newline = false
+resharper_simple_block_style = line_break
+resharper_simple_embedded_statement_style = on_single_line
+resharper_T4_insert_final_newline = false
+resharper_toplevel_function_definition_return_type_style = on_single_line
+resharper_vb_insert_final_newline = false
+resharper_wrap_after_expression_lbrace = false
+resharper_wrap_before_expression_rbrace = false
+resharper_wrap_object_and_collection_initializer_style = chop_always
+resharper_xmldoc_insert_final_newline = false
+resharper_xml_insert_final_newline = false
+
 [*.json]
-indent_size = 2
+indent_size = 4
 
 [*.cs]
 indent_size = 4

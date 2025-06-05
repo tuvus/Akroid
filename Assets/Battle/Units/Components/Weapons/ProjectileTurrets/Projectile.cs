@@ -1,19 +1,19 @@
 ﻿using UnityEngine;
-using UnityEngine.Profiling;
 
 public class Projectile : BattleObject {
-    private float speed;
     private int damage;
-    private float projectileRange;
     private float distance;
-    private Vector2 shipVelocity;
-    public float particleTime { get; private set; }
-    public bool hit { get; private set; }
     private GameObject prefab;
+    private float projectileRange;
+    private Vector2 shipVelocity;
+    private float speed;
 
     public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
+    public float particleTime { get; private set; }
+    public bool hit { get; private set; }
 
-    public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed, int damage,
+    public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed,
+        int damage,
         float projectileRange, float offset, float projectileScale, GameObject prefab) {
         this.faction = faction;
         this.position = position;
@@ -28,7 +28,7 @@ public class Projectile : BattleObject {
         hit = false;
         scale = new Vector2(projectileScale, projectileScale) / 2;
 
-        Activate(true);
+        Activate();
         SetSize(SetupSize());
     }
 
@@ -60,7 +60,7 @@ public class Projectile : BattleObject {
             // Then there is no chance that we can collide with anything in the group
             // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
-            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+            foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
                 float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
                 if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
@@ -68,11 +68,11 @@ public class Projectile : BattleObject {
                 // Start checking positions that the projectile traveled across
                 int collisionChecks = 10;
                 for (int j = 0; j < collisionChecks; j++) {
-                    Vector2 tempPosition = position + (shipVelocity * j / collisionChecks) +
+                    Vector2 tempPosition = position + shipVelocity * j / collisionChecks +
                         Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed * j / collisionChecks);
                     if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
 
-                    foreach (var shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
+                    foreach (ShieldGenerator shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
                         if (shieldGenerator.shield.IsSpawned()) {
                             shieldGenerator.shield.TakeDamage(damage);
                             position = tempPosition;
@@ -103,7 +103,7 @@ public class Projectile : BattleObject {
         visible = false;
     }
 
-    void Activate(bool activate = true) {
+    private void Activate(bool activate = true) {
         if (activate) {
             battleManager.AddProjectile(this);
         } else {

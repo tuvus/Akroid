@@ -5,14 +5,14 @@ using NUnit.Framework;
 using UnityEngine;
 
 public class CargoBayTests {
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestCargoBaySetup() {
         var module = new Mock<IModule>();
         module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
         module.Setup(e => e.GetRotation()).Returns(0);
         var unit = new Mock<Unit>();
-        var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
+        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
         var battleManager = new Mock<BattleManager>();
@@ -22,20 +22,21 @@ public class CargoBayTests {
         Assert.AreEqual(100, cargoBay.GetCargoBayCapacity());
         Assert.AreEqual(6, cargoBay.GetMaxCargoBays());
 
-        foreach (var cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes)).Cast<CargoBay.CargoTypes>()) {
+        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes))
+            .Cast<CargoBay.CargoTypes>()) {
             Assert.AreEqual(0, cargoBay.GetAllCargo(cargoType));
             Assert.AreEqual(600, cargoBay.GetOpenCargoCapacityOfType(cargoType));
         }
     }
 
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestAddingAndRemovingCargo() {
         var module = new Mock<IModule>();
         module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
         module.Setup(e => e.GetRotation()).Returns(0);
         var unit = new Mock<Unit>();
-        var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
+        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
         var battleManager = new Mock<BattleManager>();
@@ -67,14 +68,14 @@ public class CargoBayTests {
         Assert.AreEqual(500, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
     }
 
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestReservedBays() {
         var module = new Mock<IModule>();
         module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
         module.Setup(e => e.GetRotation()).Returns(0);
         var unit = new Mock<Unit>();
-        var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
+        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
         var battleManager = new Mock<BattleManager>();
@@ -102,14 +103,14 @@ public class CargoBayTests {
         Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
     }
 
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestCargoBayLoadingFromAnotherCargoBay() {
         var module = new Mock<IModule>();
         module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
         module.Setup(e => e.GetRotation()).Returns(0);
         var unit = new Mock<Unit>();
-        var cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
+        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
         cargoBayScriptableObject.cargoBaySize = 100;
         cargoBayScriptableObject.maxCargoBays = 6;
         var battleManager = new Mock<BattleManager>();
@@ -139,5 +140,4 @@ public class CargoBayTests {
         Assert.AreEqual(300, cargoBay2.GetAllCargo(CargoBay.CargoTypes.Metal));
         Assert.AreEqual(100, cargoBay2.GetAllCargo(CargoBay.CargoTypes.Gas));
     }
-
 }

@@ -1,10 +1,10 @@
 using UnityEngine;
 
 public class CommandClick : MonoBehaviour {
-    SpriteRenderer spriteRenderer;
-    Camera mainCamera;
     public float maxClickTime;
-    float clickTime;
+    private float clickTime;
+    private Camera mainCamera;
+    private SpriteRenderer spriteRenderer;
 
     public void SetupCommandClick(Camera mainCamera) {
         this.mainCamera = mainCamera;
@@ -25,7 +25,8 @@ public class CommandClick : MonoBehaviour {
             if (clickTime == 0) {
                 spriteRenderer.enabled = false;
             } else {
-                transform.localScale = new Vector2(mainCamera.orthographicSize / 100, mainCamera.orthographicSize / 100);
+                transform.localScale =
+                    new Vector2(mainCamera.orthographicSize / 100, mainCamera.orthographicSize / 100);
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
                     clickTime / maxClickTime);
             }

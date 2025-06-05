@@ -8,12 +8,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
-    private BattleManager battleManager;
-    public static PlayerUI Instance { get; protected set; }
-    private LocalPlayer localPlayer;
-    private LocalPlayerInput localPlayerInput;
-    private UIBattleManager uiBattleManager;
-
     [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [field: SerializeField] public PlayerCommsManager playerCommsManager { get; private set; }
@@ -48,7 +42,6 @@ public class PlayerUI : MonoBehaviour {
     [field: SerializeField] public Button factionOverviewButton { get; private set; }
 
     [SerializeField] private List<IPlayerUIMenu> uIMenusInput;
-    public Dictionary<Type, IPlayerUIMenu> uIMenus;
 
     public bool showUnitZoomIndicators;
     public bool showUnitCombatIndicators;
@@ -57,13 +50,20 @@ public class PlayerUI : MonoBehaviour {
     public bool particles;
     public bool commandRendererShown;
     public bool factionColoring;
+    private BattleManager battleManager;
+    private LocalPlayer localPlayer;
+    private LocalPlayerInput localPlayerInput;
+    private UIBattleManager uiBattleManager;
+    public Dictionary<Type, IPlayerUIMenu> uIMenus;
+    public static PlayerUI Instance { get; protected set; }
 
-    public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer, UIManager uIManager) {
+    public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer,
+        UIManager uIManager) {
         this.battleManager = battleManager;
         this.localPlayer = localPlayer;
         Instance = this;
         this.localPlayerInput = localPlayerInput;
-        this.uiBattleManager = uIManager.uiBattleManager;
+        uiBattleManager = uIManager.uiBattleManager;
         CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
@@ -77,7 +77,7 @@ public class PlayerUI : MonoBehaviour {
         uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uIManager, .2f));
         playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();
-        foreach (var menu in uIMenusInput) {
+        foreach (IPlayerUIMenu menu in uIMenusInput) {
             uIMenus.Add(menu.GetMenuType(), menu);
         }
 
@@ -110,10 +110,12 @@ public class PlayerUI : MonoBehaviour {
 
         int unitCount = 0;
         if (localPlayer.GetLocalPlayerInput() is LocalPlayerSelectionInput) {
-            unitCount = ((LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput()).GetSelectedUnits().GetUnitCount();
+            unitCount = ((LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput()).GetSelectedUnits()
+                .GetUnitCount();
         }
 
-        UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(), GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
+        UpdateDisplayedObjectUI(GetLocalPlayerInput().GetDisplayedFleet(),
+            GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
 
         uIMenusInput.ForEach(m => {
@@ -268,7 +270,7 @@ public class PlayerUI : MonoBehaviour {
         }
     }
 
-    bool UpdateUnitZoomIndicators() {
+    private bool UpdateUnitZoomIndicators() {
         if (updateUnitZoomIndicators && !showUnitZoomIndicators) {
             updateUnitZoomIndicators = false;
             return true;

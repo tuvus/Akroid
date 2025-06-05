@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerGroupInput : LocalPlayerGameInput {
     public List<SelectionGroup> groups = new List<SelectionGroup>();
 
-    int fleetNumber = 10;
+    private readonly int fleetNumber = 10;
 
     public override void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
         base.Setup(battleManager, localPlayer, uiBattleManager);
@@ -34,7 +34,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         }
     }
 
-    void GroupButtonPressed(InputAction.CallbackContext context, int buttonNumber) {
+    private void GroupButtonPressed(InputAction.CallbackContext context, int buttonNumber) {
         if (localPlayer.player.ownedUnits == null)
             return;
         if (AdditiveButtonPressed) {
@@ -79,7 +79,7 @@ public class PlayerGroupInput : LocalPlayerGameInput {
         }
     }
 
-    bool CheckGroupInt(int groupNumber) {
+    private bool CheckGroupInt(int groupNumber) {
         if (groupNumber <= fleetNumber - 1 && groupNumber >= 0) {
             return true;
         }

@@ -9,11 +9,11 @@ public abstract class ComponentScriptableObject : ScriptableObject {
     public List<long> resourceCosts;
     public ComponentScriptableObject upgrade;
 
-    public abstract Type GetComponentType();
-
     public virtual void OnValidate() {
         UpdateCosts();
     }
+
+    public abstract Type GetComponentType();
 
     protected virtual void UpdateCosts() {
         cost = 0;

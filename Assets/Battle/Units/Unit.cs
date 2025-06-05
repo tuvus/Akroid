@@ -5,24 +5,19 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public abstract class Unit : BattleObject {
-    public UnitScriptableObject unitScriptableObject { get; private set; }
-    [field: SerializeField] public ComponentModuleSystem moduleSystem { get; private set; }
+    private DestroyEffect destroyEffect;
     private UnitGroup group;
 
     protected int health;
     private float maxWeaponRange;
     private float minWeaponRange;
-    protected Vector2 velocity;
-    private DestroyEffect destroyEffect;
-    public bool hasWeapons { get; private set; }
-
-    [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
-    [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
     private bool turretsHibernating;
+    protected Vector2 velocity;
 
     public Unit() { }
 
-    public Unit(BattleObjectData battleObjectData, BattleManager battleManager, UnitScriptableObject unitScriptableObject) :
+    public Unit(BattleObjectData battleObjectData, BattleManager battleManager,
+        UnitScriptableObject unitScriptableObject) :
         base(battleObjectData, battleManager) {
         this.unitScriptableObject = unitScriptableObject;
         moduleSystem = new ComponentModuleSystem(battleManager, this, unitScriptableObject);
@@ -38,17 +33,27 @@ public abstract class Unit : BattleObject {
         Spawn();
         SetSize(SetupSize());
     }
+    public UnitScriptableObject unitScriptableObject { get; }
+    [field: SerializeField] public ComponentModuleSystem moduleSystem { get; }
+    public bool hasWeapons { get; }
+
+    [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
+    [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
     public void SetupWeaponRanges() {
-        foreach (var turret in moduleSystem.Get<Turret>()) {
+        foreach (Turret turret in moduleSystem.Get<Turret>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, turret.GetRange());
             minWeaponRange = Mathf.Min(minWeaponRange, turret.GetRange());
         }
 
-        foreach (var missileLauncher in moduleSystem.Get<MissileLauncher>()) {
+        foreach (MissileLauncher missileLauncher in moduleSystem.Get<MissileLauncher>()) {
             maxWeaponRange = Mathf.Max(maxWeaponRange, missileLauncher.GetRange() / 2);
             minWeaponRange = Mathf.Min(minWeaponRange, missileLauncher.GetRange() / 2);
         }
+    }
+
+    public override GameObject GetPrefab() {
+        return unitScriptableObject.prefab;
     }
 
     #region Update
@@ -80,13 +85,13 @@ public abstract class Unit : BattleObject {
         // Profiler.EndSample();
     }
 
-    void FindEnemyGroup(UnitGroup targetGroup) {
-        foreach (var battleObject in targetGroup.battleObjects) {
+    private void FindEnemyGroup(UnitGroup targetGroup) {
+        foreach (Unit battleObject in targetGroup.battleObjects) {
             FindEnemyUnit(battleObject);
         }
     }
 
-    void FindEnemyUnit(Unit targetUnit) {
+    private void FindEnemyUnit(Unit targetUnit) {
         if (targetUnit == null || !targetUnit.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
@@ -110,7 +115,8 @@ public abstract class Unit : BattleObject {
         if (turretsHibernating && GetEnemyUnitsInRange().Count == 0 &&
             GetEnemyUnitsInRangeDistance().First() > maxWeaponRange + size) return;
         moduleSystem.Get<Turret>().ForEach(t => turretsHibernating = t.UpdateTurret(deltaTime) && turretsHibernating);
-        moduleSystem.Get<MissileLauncher>().ForEach(m => turretsHibernating = m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
+        moduleSystem.Get<MissileLauncher>()
+            .ForEach(m => turretsHibernating = m.UpdateMissileLauncher(deltaTime) && turretsHibernating);
     }
 
     public void UpdateDestroyedUnit(float deltaTime) {
@@ -125,7 +131,8 @@ public abstract class Unit : BattleObject {
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     public virtual void TakeDamage(int damage) {
-        if (!IsSpawned()) Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
+        if (!IsSpawned())
+            Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
         health -= damage;
     }
 
@@ -188,12 +195,12 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    /// Tries and uses up to the amount cargo from all of the cargo bays
+    ///     Tries and uses up to the amount cargo from all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be used, or 0 if all of it was used</returns>
     public long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToUse = amount;
-        foreach (var cargoBay in moduleSystem.Get<CargoBay>()) {
+        foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
             if (totalCargoToUse <= 0) return 0;
         }
@@ -202,12 +209,12 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    /// Tries to load up to the amount in cargo to all of the cargo bays
+    ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
     public long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToLoad = amount;
-        foreach (var cargoBay in moduleSystem.Get<CargoBay>()) {
+        foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
             if (totalCargoToLoad <= 0) return 0;
         }
@@ -216,12 +223,12 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    /// Tries to load up to the amount in cargo from the unit given to this unit
+    ///     Tries to load up to the amount in cargo from the unit given to this unit
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
     public long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit) {
         if (cargoType == CargoBay.CargoTypes.All) {
-            foreach (var type in CargoBay.allCargoTypes) {
+            foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);
                 if (amount == 0) break;
             }
@@ -229,7 +236,8 @@ public abstract class Unit : BattleObject {
             return amount;
         }
 
-        long cargoToLoad = Math.Min(amount, Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
+        long cargoToLoad = Math.Min(amount,
+            Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
         unit.UseCargo(cargoToLoad, cargoType);
         LoadCargo(cargoToLoad, cargoType);
         return amount - cargoToLoad;
@@ -239,7 +247,7 @@ public abstract class Unit : BattleObject {
         long reserved = 0;
         if (includeReserved) {
             if (cargoType == CargoBay.CargoTypes.All) {
-                reserved = CargoBay.allCargoTypes.Sum((t) => GetReservedCargoSpace().GetValueOrDefault(t, 0));
+                reserved = CargoBay.allCargoTypes.Sum(t => GetReservedCargoSpace().GetValueOrDefault(t, 0));
             } else {
                 reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
             }
@@ -270,7 +278,8 @@ public abstract class Unit : BattleObject {
     }
 
     public int GetMaxHealth() {
-        return Mathf.RoundToInt(unitScriptableObject.maxHealth * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return Mathf.RoundToInt(unitScriptableObject.maxHealth *
+            faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public int GetTotalHealth() {
@@ -282,7 +291,7 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    /// Repairs the unit and returns the extra amount that was not used
+    ///     Repairs the unit and returns the extra amount that was not used
     /// </summary>
     /// <param name="ammount">the amount to repair</param>
     /// <returns>the extra amount not used</returns>
@@ -325,7 +334,7 @@ public abstract class Unit : BattleObject {
     }
 
     public List<Ship> GetAllDockedShips() {
-        List<Ship> dockedShips = new();
+        List<Ship> dockedShips = new List<Ship>();
         moduleSystem.Get<Hangar>().ForEach(h => dockedShips.AddRange(h.ships));
         return dockedShips;
     }
@@ -371,8 +380,4 @@ public abstract class Unit : BattleObject {
     }
 
     #endregion
-
-    public override GameObject GetPrefab() {
-        return unitScriptableObject.prefab;
-    }
 }

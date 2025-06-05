@@ -4,18 +4,50 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Manages a list of systems for a unit during runtime.
-/// Each system is holds a component and a list of modules which will use that component.
+///     Manages a list of systems for a unit during runtime.
+///     Each system is holds a component and a list of modules which will use that component.
 /// </summary>
 [Serializable]
 public class ModuleSystem {
+    [field: SerializeField] public List<System> systems { get; private set; }
+
+    private Unit unit;
+
+    public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
+        this.unit = unit;
+        List<System> systemComponents = unitScriptableObject.GetSystems();
+        List<IModule> prefabModules = unitScriptableObject.GetModules();
+        systems = new List<System>(systemComponents.Count);
+        modules = new List<ModuleComponent>();
+        moduleToSystem = new Dictionary<ModuleComponent, System>();
+        foreach (System system in systemComponents) {
+            if (system == null) {
+                Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
+                continue;
+            }
+
+            System newSystem = new System(system);
+            systems.Add(newSystem);
+        }
+
+        foreach (IModule prefabModule in prefabModules) {
+            System system = systems[prefabModule.GetSystemIndex()];
+            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(
+                system.component.GetComponentType(),
+                battleManager, prefabModule, unit, system.component);
+            modules.Add(newComponent);
+            moduleToSystem.Add(newComponent, system);
+        }
+    }
+    [field: SerializeField] public List<ModuleComponent> modules { get; private set; }
+    public Dictionary<ModuleComponent, System> moduleToSystem { get; private set; }
+
     [Serializable]
     public class System {
         public string name;
         public PrefabModuleSystem.SystemType type;
         public ComponentScriptableObject component;
         public int moduleSize;
-        public int moduleCount { get; private set; }
 
         public System(string name, PrefabModuleSystem.SystemType type) {
             this.name = name;
@@ -30,7 +62,7 @@ public class ModuleSystem {
             type = system.type;
             moduleCount = system.moduleCount;
             moduleSize = system.moduleSize;
-            this.component = system.component;
+            component = system.component;
         }
 
         public System(System system, ComponentScriptableObject component) {
@@ -48,42 +80,14 @@ public class ModuleSystem {
             moduleSize = prefabSystem.moduleSize;
             this.component = component;
         }
-    }
-
-    private Unit unit;
-    [field: SerializeField] public List<System> systems { get; private set; }
-    [field: SerializeField] public List<ModuleComponent> modules { get; private set; }
-    public Dictionary<ModuleComponent, System> moduleToSystem { get; private set; }
-
-    public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
-        this.unit = unit;
-        var systemComponents = unitScriptableObject.GetSystems();
-        var prefabModules = unitScriptableObject.GetModules();
-        systems = new List<System>(systemComponents.Count);
-        modules = new List<ModuleComponent>();
-        moduleToSystem = new Dictionary<ModuleComponent, System>();
-        foreach (var system in systemComponents) {
-            if (system == null) {
-                Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
-                continue;
-            }
-
-            System newSystem = new System(system);
-            systems.Add(newSystem);
-        }
-
-        foreach (var prefabModule in prefabModules) {
-            System system = systems[prefabModule.GetSystemIndex()];
-            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(system.component.GetComponentType(),
-                battleManager, prefabModule, unit, system.component);
-            modules.Add(newComponent);
-            moduleToSystem.Add(newComponent, system);
-        }
+        public int moduleCount { get; private set; }
     }
 
     #region SystemUpgrades
 
-    public ComponentScriptableObject GetSystemUpgrade(int system) => systems[system].component.upgrade;
+    public ComponentScriptableObject GetSystemUpgrade(int system) {
+        return systems[system].component.upgrade;
+    }
 
     public bool CanUpgradeSystem(int systemIndex, Unit upgrader) {
         System system = systems[systemIndex];
@@ -123,7 +127,7 @@ public class ModuleSystem {
         for (int i = 0; i < modules.Count(); i++) {
             ModuleComponent oldModule = modules[i];
             if (moduleToSystem[oldModule] == system) {
-                var args = new object[] { unit.battleManager, oldModule.module, unit, upgrade };
+                object[] args = { unit.battleManager, oldModule.module, unit, upgrade };
                 modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
                 moduleToSystem.Remove(oldModule);
                 moduleToSystem.Add(modules[i], system);

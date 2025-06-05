@@ -5,11 +5,10 @@ using UnityEngine;
 using static Ship;
 
 public class ConstructionBay : ModuleComponent {
-    ConstructionBayScriptableObject constructionBayScriptableObject;
+    [SerializeField] public List<ShipConstructionBlueprint> buildQueue;
+    private readonly ConstructionBayScriptableObject constructionBayScriptableObject;
 
     private float constructionTime;
-
-    [SerializeField] public List<ShipConstructionBlueprint> buildQueue;
 
     public ConstructionBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -43,25 +42,26 @@ public class ConstructionBay : ModuleComponent {
     public void UpdateConstructionBay(float deltaTime) {
         constructionTime -= deltaTime;
         if (constructionTime <= 0) {
-            int amountMultiplier = (int)(Mathf.Abs(constructionTime) / constructionBayScriptableObject.constructionSpeed) + 1;
+            int amountMultiplier =
+                (int)(Mathf.Abs(constructionTime) / constructionBayScriptableObject.constructionSpeed) + 1;
             constructionTime += constructionBayScriptableObject.constructionSpeed * amountMultiplier;
             UpdateConstruction(amountMultiplier);
         }
     }
 
-    void UpdateConstruction(int amountMultiplier) {
+    private void UpdateConstruction(int amountMultiplier) {
         int availableConstructionBays = constructionBayScriptableObject.constructionBays;
         long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
         if (buildAmount <= 0) return;
-        Dictionary<CargoBay.CargoTypes, long> cargoReserved = new();
+        Dictionary<CargoBay.CargoTypes, long> cargoReserved = new Dictionary<CargoBay.CargoTypes, long>();
 
-        foreach (var shipBlueprint in buildQueue.ToList()) {
+        foreach (ShipConstructionBlueprint shipBlueprint in buildQueue.ToList()) {
             if (availableConstructionBays == 0) return;
             if (shipBlueprint.IsFinished()) continue;
             availableConstructionBays--;
 
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
-            foreach (var resourceCost in shipBlueprint.resourceCosts.ToList()) {
+            foreach (KeyValuePair<CargoBay.CargoTypes, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
                 long availableCargo = math.max(0,
                     unit.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
@@ -81,9 +81,10 @@ public class ConstructionBay : ModuleComponent {
         }
     }
 
-    bool BuildBlueprint(ShipConstructionBlueprint shipBlueprint) {
+    private bool BuildBlueprint(ShipConstructionBlueprint shipBlueprint) {
         if (!unit.IsStation()) return false;
-        Ship ship = ((Station)unit).BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject, shipBlueprint.cost);
+        Ship ship = ((Station)unit).BuildShip(shipBlueprint.faction, shipBlueprint.shipScriptableObject,
+            shipBlueprint.cost);
         if (ship == null) return false;
         if (unit.IsStation()) ((Station)unit).stationAI.OnShipBuilt(ship);
         return true;
@@ -92,25 +93,25 @@ public class ConstructionBay : ModuleComponent {
     public long GetCreditCostOfShip(Faction faction, ShipScriptableObject ship) {
         if (faction == this.faction) {
             return ship.cost;
-        } else if (faction != null) {
+        }
+        if (faction != null) {
             // Other factions need to pay us for the metal
             return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] *
-                                      faction.GetFactionAI().GetSellCostOfMetal());
-        } else {
-            return ship.cost;
+                faction.GetFactionAI().GetSellCostOfMetal());
         }
+        return ship.cost;
     }
 
     public Dictionary<CargoBay.CargoTypes, long> GetReservedResources() {
-        Dictionary<CargoBay.CargoTypes, long> reservedResources = new();
-        buildQueue.ForEach((blueprint) => AddReservedResources(blueprint, reservedResources));
+        Dictionary<CargoBay.CargoTypes, long> reservedResources = new Dictionary<CargoBay.CargoTypes, long>();
+        buildQueue.ForEach(blueprint => AddReservedResources(blueprint, reservedResources));
         return reservedResources;
     }
 
     /// <summary> Adds the resources to reserve from constructionBlueprint to the reservedResources Dictionary passed in. </summary>
     private void AddReservedResources(ShipConstructionBlueprint constructionBlueprint,
         Dictionary<CargoBay.CargoTypes, long> reservedResources) {
-        foreach (var cost in constructionBlueprint.resourceCosts) {
+        foreach (KeyValuePair<CargoBay.CargoTypes, long> cost in constructionBlueprint.resourceCosts) {
             if (reservedResources.ContainsKey(cost.Key)) {
                 reservedResources[cost.Key] = reservedResources[cost.Key] + cost.Value;
             } else {

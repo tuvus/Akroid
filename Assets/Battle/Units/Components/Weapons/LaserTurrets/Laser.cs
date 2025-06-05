@@ -4,16 +4,9 @@ using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
-/// The laser's position is the midpoint of both ends of the laser, it's size will reflect how far the laser shoots.
+///     The laser's position is the midpoint of both ends of the laser, it's size will reflect how far the laser shoots.
 /// </summary>
 public class Laser : BattleObject {
-    public LaserTurret laserTurret { get; private set; }
-    public bool fireing { get; private set; }
-
-    public float fireTime { get; private set; }
-    public float fadeTime { get; private set; }
-    public Vector2? hitPoint { get; private set; }
-    public float laserLength { get; private set; }
     private float extraDamage;
 
     public Laser(BattleObjectData battleObjectData, BattleManager battleManager, LaserTurret laserTurret) :
@@ -27,6 +20,13 @@ public class Laser : BattleObject {
         hitPoint = null;
         laserLength = 0;
     }
+    public LaserTurret laserTurret { get; }
+    public bool fireing { get; private set; }
+
+    public float fireTime { get; private set; }
+    public float fadeTime { get; private set; }
+    public Vector2? hitPoint { get; private set; }
+    public float laserLength { get; private set; }
 
     public void FireLaser() {
         fireing = true;
@@ -38,7 +38,7 @@ public class Laser : BattleObject {
     public void UpdateLaser(float deltaTime) {
         if (fireing) {
             visible = true;
-            var hit = FindCollision();
+            Tuple<Unit, float, Vector2> hit = FindCollision();
             if (hit != null) {
                 DoDamage(hit.Item1, deltaTime);
                 SetDistance(hit.Item2);
@@ -56,11 +56,11 @@ public class Laser : BattleObject {
         }
     }
 
-    void UpdateFireTime(float deltaTime) {
+    private void UpdateFireTime(float deltaTime) {
         fireTime = Mathf.Max(0, fireTime - deltaTime);
     }
 
-    void UpdateFadeTime(float deltaTime) {
+    private void UpdateFadeTime(float deltaTime) {
         fadeTime = Mathf.Max(0, fadeTime - deltaTime);
         if (fadeTime <= 0) {
             fireing = false;
@@ -82,14 +82,15 @@ public class Laser : BattleObject {
             // Then there is no chance that we can collide with anything in the group
             // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction + laserLength) break;
-            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+            foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
                 float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
                 if (distanceToUnit > targetUnit.size + size + laserLength) continue;
 
                 // Check if the laser could possibly hit the unit given the max laserLength
                 Vector2 closestPoint =
-                    Calculator.GetClosestPointToAPointOnALine(firePosition, laserTurret.GetWorldRotation(), targetUnit.position);
+                    Calculator.GetClosestPointToAPointOnALine(firePosition, laserTurret.GetWorldRotation(),
+                        targetUnit.position);
                 float closestPointDistanceToTargetUnit = Vector2.Distance(closestPoint, targetUnit.position);
                 if (closestPointDistanceToTargetUnit > targetUnit.size) continue;
 
@@ -136,7 +137,7 @@ public class Laser : BattleObject {
     private void DoDamage(Unit hitUnit, float deltaTime) {
         int damage = GetDamage(deltaTime, true);
         if (hitUnit.GetShields() > 0) {
-            foreach (var shieldGenerator in hitUnit.moduleSystem.Get<ShieldGenerator>()) {
+            foreach (ShieldGenerator shieldGenerator in hitUnit.moduleSystem.Get<ShieldGenerator>()) {
                 shieldGenerator.shield.TakeDamage(damage);
                 return;
             }
@@ -145,11 +146,12 @@ public class Laser : BattleObject {
     }
 
     /// <summary>
-    /// Calculates the damage for this frame.
-    /// Since the damage is calculated based off of the duration between the last frame the damage is calculated as a float and then truncated to an int.
-    /// Any extra damage will be added to the damage on the next frame.
+    ///     Calculates the damage for this frame.
+    ///     Since the damage is calculated based off of the duration between the last frame the damage is calculated as a float
+    ///     and then truncated to an int.
+    ///     Any extra damage will be added to the damage on the next frame.
     /// </summary>
-    int GetDamage(float deltaTime, bool hitShield) {
+    private int GetDamage(float deltaTime, bool hitShield) {
         float damage = laserTurret.GetLaserDamagePerSecond() * deltaTime *
             laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage);
         float damageToShield = 0.5f;
@@ -174,7 +176,8 @@ public class Laser : BattleObject {
     }
 
     public float GetLaserRange() {
-        return laserTurret.GetLaserRange() * laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
+        return laserTurret.GetLaserRange() *
+            laserTurret.GetUnit().faction.GetImprovementModifier(Faction.ImprovementAreas.LaserRange);
     }
 
     public override GameObject GetPrefab() {

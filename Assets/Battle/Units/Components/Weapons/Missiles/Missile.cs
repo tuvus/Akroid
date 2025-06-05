@@ -2,23 +2,25 @@ using UnityEngine;
 
 public class Missile : BattleObject {
     public enum MissileType {
-        Hermes,
+        Hermes
     }
 
-    public MissileScriptableObject missileScriptableObject { get; private set; }
-    private MissileLauncher missileLauncher;
     private DestroyEffect destroyEffect;
-    private Unit target;
-    private Vector2 velocity;
     private float distance;
-    public bool hit { get; private set; }
-    public bool expired { get; private set; }
     private bool failedToFindRetarget;
+    private MissileLauncher missileLauncher;
+    private Unit target;
     private float timeAfterExpire;
+    private Vector2 velocity;
 
     public Missile(BattleManager battleManager) : base(new BattleObjectData("Missile"), battleManager) { }
 
-    public void SetMissile(Faction faction, MissileLauncher missileLauncher, MissileScriptableObject missileScriptableObject,
+    public MissileScriptableObject missileScriptableObject { get; private set; }
+    public bool hit { get; private set; }
+    public bool expired { get; private set; }
+
+    public void SetMissile(Faction faction, MissileLauncher missileLauncher,
+        MissileScriptableObject missileScriptableObject,
         Vector2 position, float rotation, Unit target, Vector2 shipVelocity) {
         this.missileScriptableObject = missileScriptableObject;
         this.position = position;
@@ -26,14 +28,14 @@ public class Missile : BattleObject {
         this.faction = faction;
         this.missileLauncher = missileLauncher;
         this.target = target;
-        this.velocity = shipVelocity;
+        velocity = shipVelocity;
         destroyEffect = null;
         failedToFindRetarget = false;
         hit = false;
         expired = false;
         distance = 0;
         timeAfterExpire = 0;
-        Activate(true);
+        Activate();
         SetSize(SetupSize());
     }
 
@@ -66,11 +68,13 @@ public class Missile : BattleObject {
         }
     }
 
-    void RotateMissile(float deltaTime) {
+    private void RotateMissile(float deltaTime) {
         Vector2 targetPosition =
-            Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity, target.GetVelocity(),
+            Calculator.GetTargetPositionAfterTimeAndVelocity(position, target.GetPosition(), velocity,
+                target.GetVelocity(),
                 missileScriptableObject.thrust, 0);
-        float targetAngle = Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(position, targetPosition));
+        float targetAngle =
+            Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(position, targetPosition));
         float angle = Calculator.ConvertTo180DegRotation(targetAngle - rotation);
         float turnAmmont = missileScriptableObject.turnSpeed * deltaTime;
         if (Mathf.Abs(angle) < turnAmmont) {
@@ -82,7 +86,7 @@ public class Missile : BattleObject {
         }
     }
 
-    void MoveMissile(float deltaTime) {
+    private void MoveMissile(float deltaTime) {
         position += velocity * deltaTime +
             Calculator.GetPositionOutOfAngleAndDistance(rotation, missileScriptableObject.thrust * deltaTime);
         distance += missileScriptableObject.thrust * deltaTime;
@@ -100,7 +104,7 @@ public class Missile : BattleObject {
             // Then there is no chance that we can collide with anything in the group
             // Or any other group farther away from the faction since closeEnemyGroupsDistance is sorted from closest to farthest
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
-            foreach (var targetUnit in faction.closeEnemyGroups[g].battleObjects) {
+            foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
                 float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
                 if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
@@ -108,12 +112,12 @@ public class Missile : BattleObject {
                 // Start checking positions that the missile traveled across
                 int collisionChecks = 10;
                 for (int j = 0; j < collisionChecks; j++) {
-                    Vector2 tempPosition = position + (velocity * j / collisionChecks) +
+                    Vector2 tempPosition = position + velocity * j / collisionChecks +
                         Calculator.GetPositionOutOfAngleAndDistance(rotation,
                             deltaTime * missileScriptableObject.thrust * j / collisionChecks);
                     if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
 
-                    foreach (var shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
+                    foreach (ShieldGenerator shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
                         shieldGenerator.shield.TakeDamage(missileScriptableObject.damage / 2);
                         position = tempPosition;
                         Explode(targetUnit);
@@ -149,7 +153,7 @@ public class Missile : BattleObject {
         expired = true;
     }
 
-    void Activate(bool activate = true) {
+    private void Activate(bool activate = true) {
         if (activate) {
             battleManager.AddMissile(this);
         } else {

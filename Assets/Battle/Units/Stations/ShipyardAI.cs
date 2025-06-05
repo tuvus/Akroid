@@ -15,10 +15,11 @@ public class ShipyardAI : StationAI {
     }
 
     protected override void ManageStationRepair() {
-        int repairAmmount = (int)(GetShipyard().GetRepairAmount() * station.faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        int repairAmmount = (int)(GetShipyard().GetRepairAmount() *
+            station.faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
         if (repairAmmount > 0 && station.GetHealth() < station.GetMaxHealth() / 2)
             repairAmmount = station.Repair(repairAmmount);
-        foreach (var ship in station.GetAllDockedShips()) {
+        foreach (Ship ship in station.GetAllDockedShips()) {
             if (ship.IsDamaged()) {
                 repairAmmount = station.RepairUnit(ship, repairAmmount);
             }

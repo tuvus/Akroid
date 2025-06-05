@@ -1,9 +1,9 @@
 using System.Linq;
 
 public class VictoryCondition : EventCondition {
-    private BattleManager battleManager;
+    private readonly BattleManager battleManager;
 
-    public VictoryCondition(BattleManager battleManager) : base(ConditionType.Victory, false) {
+    public VictoryCondition(BattleManager battleManager) : base(ConditionType.Victory) {
         this.battleManager = battleManager;
     }
 

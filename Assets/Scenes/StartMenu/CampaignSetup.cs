@@ -1,9 +1,8 @@
 using UnityEngine;
 
 public class CampaignSetup : MonoBehaviour {
-    private StartMenu startMenu;
-
     public GameObject chapter1;
+    private StartMenu startMenu;
 
     public void SetStartMenu(StartMenu startMenu) {
         this.startMenu = startMenu;

@@ -1,12 +1,12 @@
 using UnityEngine;
 
 public class ReloadController {
-    public float fireSpeed;
-    public float reloadSpeed;
-    public int maxAmmo;
-    private float firetime;
-    private float reloadTime;
     private int ammo;
+    public float fireSpeed;
+    private float firetime;
+    public int maxAmmo;
+    public float reloadSpeed;
+    private float reloadTime;
 
     public ReloadController(float fireSpeed, float reloadSpeed, int maxAmmo) {
         this.fireSpeed = fireSpeed;

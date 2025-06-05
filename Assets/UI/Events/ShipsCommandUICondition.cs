@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondition> {
     public ShipsCommandUICondition(ShipsCommandCondition conditionLogic, LocalPlayer localPlayer,
-        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
+        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager,
+        visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
         AddShipsToSelect(
@@ -50,7 +51,8 @@ public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondi
                 else objectsToVisualize.AddRange(uiBattleManager.objects.Values.Where(o => o is StarUI));
                 break;
             case Command.CommandType.CollectGas:
-                if (command.targetGasCloud != null) objectsToVisualize.Add(uiBattleManager.objects[command.targetGasCloud]);
+                if (command.targetGasCloud != null)
+                    objectsToVisualize.Add(uiBattleManager.objects[command.targetGasCloud]);
                 else objectsToVisualize.AddRange(uiBattleManager.objects.Values.Where(o => o is GasCloudUI));
                 break;
             case Command.CommandType.Colonize:

@@ -1,22 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class StartMenu : MonoBehaviour {
-    public static StartMenu Instance { get; private set; }
-
-    private enum StartMenuState {
-        None,
-        StartMenue,
-        SimulationMenue,
-        CampaingMenue,
-        SimulationSetupMenu,
-        CampaingSetup,
-    }
-
     [SerializeField] private StartMenuState state;
-    [SerializeField] TMP_Text versionText;
+    [SerializeField] private TMP_Text versionText;
     [SerializeField] private AudioSource buttonClickSound;
     [SerializeField] private AudioSource buttonHoverSound;
     [SerializeField] private SimulationSetup simulationSetup;
@@ -24,6 +12,7 @@ public class StartMenu : MonoBehaviour {
 
     public List<GameObject> tmpCharacters;
     private float lastButtonSoundTime;
+    public static StartMenu Instance { get; private set; }
 
     public void Awake() {
         if (Instance == null) {
@@ -33,7 +22,7 @@ public class StartMenu : MonoBehaviour {
         }
         // Very hacky, had to get this done quickly, please fix
         if (Character.characterPrefabs == null) {
-            Character.characterPrefabs = new();
+            Character.characterPrefabs = new Dictionary<string, GameObject>();
             tmpCharacters.ForEach(c => Character.characterPrefabs.Add(c.name, c));
         }
         HideAllMenues();
@@ -53,6 +42,39 @@ public class StartMenu : MonoBehaviour {
         campaignSetup.SetStartMenu(this);
     }
 
+    public void PlayButtonClickSound() {
+        buttonClickSound.Play();
+        lastButtonSoundTime = Time.time;
+    }
+
+    public void PlayButtonHoverSound() {
+        if (lastButtonSoundTime <= Time.time - .2f) {
+            buttonHoverSound.Play();
+            lastButtonSoundTime = Time.time;
+        }
+    }
+
+    public void SetSimulationSetup() {
+        HideAllMenues();
+        buttonClickSound.Play();
+        state = StartMenuState.SimulationSetupMenu;
+        simulationSetup.ShowSimulationSetup();
+    }
+
+    public void ExitGame() {
+        buttonClickSound.Play();
+        Application.Quit();
+    }
+
+    private enum StartMenuState {
+        None,
+        StartMenue,
+        SimulationMenue,
+        CampaingMenue,
+        SimulationSetupMenu,
+        CampaingSetup
+    }
+
     #region StartMenue
 
     public void SetStartMenu() {
@@ -62,7 +84,7 @@ public class StartMenu : MonoBehaviour {
         state = StartMenuState.StartMenue;
     }
 
-    void ShowStartMenue(bool trueOrFalse) {
+    private void ShowStartMenue(bool trueOrFalse) {
         transform.GetChild(0).gameObject.SetActive(trueOrFalse);
     }
 
@@ -92,33 +114,9 @@ public class StartMenu : MonoBehaviour {
         state = StartMenuState.CampaingMenue;
     }
 
-    void ShowCampaignMenue(bool trueOrFalse) {
+    private void ShowCampaignMenue(bool trueOrFalse) {
         transform.GetChild(3).gameObject.SetActive(trueOrFalse);
     }
 
     #endregion
-
-    public void PlayButtonClickSound() {
-        buttonClickSound.Play();
-        lastButtonSoundTime = Time.time;
-    }
-
-    public void PlayButtonHoverSound() {
-        if (lastButtonSoundTime <= Time.time - .2f) {
-            buttonHoverSound.Play();
-            lastButtonSoundTime = Time.time;
-        }
-    }
-
-    public void SetSimulationSetup() {
-        HideAllMenues();
-        buttonClickSound.Play();
-        state = StartMenuState.SimulationSetupMenu;
-        simulationSetup.ShowSimulationSetup();
-    }
-
-    public void ExitGame() {
-        buttonClickSound.Play();
-        Application.Quit();
-    }
 }

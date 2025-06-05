@@ -1,12 +1,11 @@
-using System.Collections;
 using System.Linq;
 using Unity.Mathematics;
 
 public class ShipyardFactionAI : FactionAI {
-    Chapter1 chapter1;
-    PlanetFactionAI planetFactionAI;
-    Shipyard shipyard;
-    float transportTime;
+    private Chapter1 chapter1;
+    private PlanetFactionAI planetFactionAI;
+    private Shipyard shipyard;
+    private float transportTime;
 
     public ShipyardFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) { }
 
@@ -16,7 +15,7 @@ public class ShipyardFactionAI : FactionAI {
         this.shipyard = shipyard;
         transportTime = 0;
         // We need to re-add the Idle ships since we are seting up after creating them
-        faction.ships.ToList().ForEach((s) => idleShips.Add(s));
+        faction.ships.ToList().ForEach(s => idleShips.Add(s));
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -26,7 +25,7 @@ public class ShipyardFactionAI : FactionAI {
         ManageTransportShips(deltaTime);
     }
 
-    void UpdateFactionCommunication(float deltaTime) {
+    private void UpdateFactionCommunication(float deltaTime) {
         for (int i = 0; i < faction.GetFactionCommManager().communicationLog.Count; i++) {
             if (faction.GetFactionCommManager().communicationLog[i].isActive &&
                 faction.GetFactionCommManager().communicationLog[i].options.Length > 0)
@@ -34,10 +33,10 @@ public class ShipyardFactionAI : FactionAI {
         }
     }
 
-    void ManageTransportShips(float deltaTime) {
+    private void ManageTransportShips(float deltaTime) {
         transportTime -= deltaTime;
         if (transportTime > 0) return;
-        foreach (var ship in faction.ships.Where(s => s.IsTransportShip())) {
+        foreach (Ship ship in faction.ships.Where(s => s.IsTransportShip())) {
             if (ship.dockedStation == shipyard) {
                 shipyard.LoadCargoFromUnit(100, CargoBay.CargoTypes.Metal, ship);
             } else if (ship.dockedStation == chapter1.tradeStation) {
@@ -46,7 +45,8 @@ public class ShipyardFactionAI : FactionAI {
                     ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
                 } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                     ship.UndockShip(shipyard.GetPosition());
-                    ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                    ship.shipAI.AddUnitAICommand(
+                        Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
                         Command.CommandAction.Replace);
                 }
             }
@@ -55,10 +55,11 @@ public class ShipyardFactionAI : FactionAI {
         transportTime += 8;
     }
 
-    void ManageIdleShips() {
-        foreach (var ship in idleShips) {
+    private void ManageIdleShips() {
+        foreach (Ship ship in idleShips) {
             if (ship.IsTransportShip()) {
-                ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                ship.shipAI.AddUnitAICommand(
+                    Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
                     Command.CommandAction.Replace);
             }
         }

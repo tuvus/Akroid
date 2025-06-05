@@ -5,7 +5,8 @@ using UnityEngine.UI;
 public class PanCondtion : UIEventCondition {
     private float distanceToPan;
 
-    public PanCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float distanceToPan) : base(localPlayer,
+    public PanCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float distanceToPan) : base(
+        localPlayer,
         uiBattleManager, ConditionType.Pan) {
         this.distanceToPan = distanceToPan;
         localPlayer.GetInputManager().OnPanEvent += OnPan;

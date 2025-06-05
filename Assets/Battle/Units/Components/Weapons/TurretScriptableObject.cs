@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Serialization;
 using static Turret;
 
 public abstract class TurretScriptableObject : ComponentScriptableObject {
@@ -11,21 +9,17 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float range;
     public float rotateSpeed;
     public TargetingBehaviors targeting;
-    private float findNewTargetUpdateSpeed;
     public float fireSpeed;
     public float reloadSpeed;
     public int maxAmmo;
     public Vector2 baseScale = Vector2.one;
+    public AudioResource turretFire;
+    private float findNewTargetUpdateSpeed;
     public Vector2 spriteBounds { get; private set; }
     public float turretOffset { get; private set; }
-    public AudioResource turretFire;
 
     public virtual void Awake() {
         if (turretFire == null) turretFire = Resources.Load<AudioResource>("Prefabs/Audio/TurretFire");
-    }
-
-    public virtual float GetDamagePerSecond() {
-        return 0;
     }
 
     public override void OnValidate() {
@@ -37,5 +31,9 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
                 turretSprite.pixelsPerUnit;
 
         }
+    }
+
+    public virtual float GetDamagePerSecond() {
+        return 0;
     }
 }

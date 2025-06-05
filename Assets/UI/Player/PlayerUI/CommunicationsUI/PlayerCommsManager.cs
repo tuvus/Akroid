@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PlayerCommsManager : MonoBehaviour {
-    private PlayerUI playerUI;
     [SerializeField] private GameObject communicationEventPrefab;
     [SerializeField] private GameObject optionPrefab;
     [SerializeField] private GameObject characterPortraitPanel;
@@ -14,15 +13,16 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private Image factionNameBackground;
     [SerializeField] private TMP_Text characterName;
     [SerializeField] private TMP_Text factionName;
-    private GameObject characterPortrait;
     [SerializeField] private GameObject communicationPanel;
     [SerializeField] private Transform communicationLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private RectTransform contentTransform;
-    private bool shown;
+    private GameObject characterPortrait;
+    private bool lockToBottom;
+    private PlayerUI playerUI;
     private float portraitTime;
-    private bool lockToBottom = false;
+    private bool shown;
 
     public void SetupPlayerCommsManager(PlayerUI playerUI) {
         this.playerUI = playerUI;
@@ -81,22 +81,26 @@ public class PlayerCommsManager : MonoBehaviour {
         }
     }
 
-    void CreateCommEvent(CommunicationEvent communicationEvent) {
+    private void CreateCommEvent(CommunicationEvent communicationEvent) {
         GameObject newCommEvent = Instantiate(communicationEventPrefab, communicationLogTransform);
         newCommEvent.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.text;
         newCommEvent.GetComponent<Image>().color = communicationEvent.sender.faction.GetColorBackgroundTint();
         if (communicationEvent.isActive) {
             for (int i = 0; i < communicationEvent.options.Length; i++) {
                 GameObject newOption = Instantiate(optionPrefab, newCommEvent.transform.GetChild(1));
-                newOption.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.options[i].optionName;
-                newOption.GetComponent<Button>().interactable = communicationEvent.options[i].checkStatus(communicationEvent);
+                newOption.transform.GetChild(0).GetComponent<TMP_Text>().text =
+                    communicationEvent.options[i].optionName;
+                newOption.GetComponent<Button>().interactable =
+                    communicationEvent.options[i].checkStatus(communicationEvent);
                 newOption.GetComponent<Button>().onClick.AddListener(() =>
-                    ChooseCommuncationEventOption(communicationEvent, newCommEvent, newOption.transform.GetSiblingIndex()));
+                    ChooseCommuncationEventOption(communicationEvent, newCommEvent,
+                        newOption.transform.GetSiblingIndex()));
             }
         }
     }
 
-    void ChooseCommuncationEventOption(CommunicationEvent communicationEvent, GameObject commEvent, int optionIndex) {
+    private void ChooseCommuncationEventOption(CommunicationEvent communicationEvent, GameObject commEvent,
+        int optionIndex) {
         communicationEvent.ChooseOption(optionIndex);
         if (!communicationEvent.isActive) {
             lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1;
@@ -108,12 +112,15 @@ public class PlayerCommsManager : MonoBehaviour {
 
     public void OnCommunicationEventDeactivate(int communicationEventIndex) {
         lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1;
-        for (int i = communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1; i >= 0; i--) {
-            DestroyImmediate(communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i).gameObject);
+        for (int i = communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1;
+            i >= 0;
+            i--) {
+            DestroyImmediate(communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i)
+                .gameObject);
         }
     }
 
-    void SetPortrait(FactionCommManager factionCommManager) {
+    private void SetPortrait(FactionCommManager factionCommManager) {
         if (characterPortrait != null) {
             DestroyImmediate(characterPortrait);
             characterPortraitPanel.SetActive(false);
@@ -125,7 +132,8 @@ public class PlayerCommsManager : MonoBehaviour {
             characterNameBackground.color = factionCommManager.faction.GetColorBackgroundTint(.4f);
             characterName.text = factionCommManager.GetSenderName();
             Color factionColor = factionCommManager.faction.color;
-            factionNameBackground.color = new Color(factionColor.r * .4f, factionColor.g * .4f, factionColor.b * .4f, .8f);
+            factionNameBackground.color =
+                new Color(factionColor.r * .4f, factionColor.g * .4f, factionColor.b * .4f, .8f);
             factionName.text = factionCommManager.faction.name;
             portraitTime = 10;
         }
@@ -134,11 +142,11 @@ public class PlayerCommsManager : MonoBehaviour {
     public bool FreezeScrolling() {
         if (!shown)
             return false;
-        List<RaycastResult> raycastResults = new List<RaycastResult>();
+        var raycastResults = new List<RaycastResult>();
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
         pointerEventData.position = playerUI.GetLocalPlayerInput().GetMousePosition();
         EventSystem.current.RaycastAll(pointerEventData, raycastResults);
-        foreach (var result in raycastResults) {
+        foreach (RaycastResult result in raycastResults) {
             if (result.gameObject.tag.Equals("FreezeScroll"))
                 return true;
         }

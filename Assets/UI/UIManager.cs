@@ -7,28 +7,6 @@ public class UIManager : MonoBehaviour {
     public UIBattleManager uiBattleManager { get; private set; }
     public UIEventManager uIEventManager { get; private set; }
 
-    /// <summary>
-    /// Subscription to BattleManager events needs to occur before the system is created.
-    /// Also inject the UIEventManager into BattleManager so that BattleManager doesn't create the non UI one.
-    /// This method should be called before the BattleManager is set up.
-    /// </summary>
-    public void PreBattleManagerSetup(BattleManager battleManager) {
-        this.battleManager = battleManager;
-        uiBattleManager = GetComponent<UIBattleManager>();
-        uiBattleManager.SetupUnitSpriteManager(battleManager, this);
-        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
-        localPlayer.PreBattleManagerSetup(battleManager, this);
-        uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(), uiBattleManager);
-        battleManager.SetEventManager(uIEventManager);
-    }
-
-    /// <summary>
-    /// Setup that should be done after the BattleManager is set up
-    /// </summary>
-    public void SetupUIManager() {
-        localPlayer.SetUpPlayer();
-    }
-
     public void LateUpdate() {
         if (battleManager == null || battleManager.battleState == BattleManager.BattleState.SettingUp ||
             battleManager.battleState == BattleManager.BattleState.Setup)
@@ -42,12 +20,35 @@ public class UIManager : MonoBehaviour {
         uIEventManager.UpdateUIEvents();
     }
 
+    /// <summary>
+    ///     Subscription to BattleManager events needs to occur before the system is created.
+    ///     Also inject the UIEventManager into BattleManager so that BattleManager doesn't create the non UI one.
+    ///     This method should be called before the BattleManager is set up.
+    /// </summary>
+    public void PreBattleManagerSetup(BattleManager battleManager) {
+        this.battleManager = battleManager;
+        uiBattleManager = GetComponent<UIBattleManager>();
+        uiBattleManager.SetupUnitSpriteManager(battleManager, this);
+        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
+        localPlayer.PreBattleManagerSetup(battleManager, this);
+        uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(),
+            uiBattleManager);
+        battleManager.SetEventManager(uIEventManager);
+    }
+
+    /// <summary>
+    ///     Setup that should be done after the BattleManager is set up
+    /// </summary>
+    public void SetupUIManager() {
+        localPlayer.SetUpPlayer();
+    }
+
     public bool GetEffectsShown() {
         return localPlayer.playerUI.effects;
     }
 
     /// <summary>
-    /// For particle emitters to figure out if they should emit when begging their emissions.
+    ///     For particle emitters to figure out if they should emit when begging their emissions.
     /// </summary>
     /// <returns>whether or not the particles should be shown</returns>
     public bool GetParticlesShown() {

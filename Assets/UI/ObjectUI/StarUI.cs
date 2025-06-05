@@ -1,13 +1,12 @@
-
 using UnityEngine;
 
 public class StarUI : BattleObjectUI {
-    public Star star { get; private set; }
     private SpriteRenderer glare;
+    public Star star { get; private set; }
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
-        this.star = (Star)battleObject;
+        star = (Star)battleObject;
         glare = transform.GetChild(0).GetComponent<SpriteRenderer>();
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
     }

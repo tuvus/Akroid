@@ -6,12 +6,6 @@ using UnityEngine.UI;
 using Random = Unity.Mathematics.Random;
 
 public class LocalPlayerInput : MonoBehaviour {
-    PlayerInput playerInput;
-    protected BattleManager battleManager;
-    protected LocalPlayer localPlayer;
-    protected UIBattleManager uiBattleManager;
-    protected Random random;
-
     public enum ActionType {
         None,
         Selecting,
@@ -25,28 +19,40 @@ public class LocalPlayerInput : MonoBehaviour {
         ResearchCommand,
         CollectGasCommand,
         TransportCommand,
-        ColonizeCommand,
+        ColonizeCommand
     }
 
     [SerializeField] protected ActionType actionType;
-
-    public Camera mainCamera { get; private set; }
-    private Background background;
 
     [Tooltip("Player input on how fast scrolling should be.")]
     public float scrollModifyer;
 
     public float scrollFactor = 1;
+    private Background background;
+    protected BattleManager battleManager;
+    protected CanvasScaler canvasScaler;
+
+    /// <summary>Determines if the unit should be deselected on mouse up</summary>
+    protected bool doingUnitClickAction;
+    protected LocalPlayer localPlayer;
+
+    protected Vector2 pastMousePosition;
+    private PlayerInput playerInput;
 
     protected bool primaryMousePressed;
-    protected bool secondaryMousePressed;
+    protected Random random;
 
-    Vector2 rightClickStartPosition;
+    private Vector2 rightClickStartPosition;
+    protected bool secondaryMousePressed;
+    private int timeStepIndex;
+
+    private readonly int[] timeSteps = { 0, 1, 2, 5, 10, 15, 20, 25 };
+    protected UIBattleManager uiBattleManager;
+
+    public Camera mainCamera { get; private set; }
     protected float maxRightClickDistance { get; private set; }
 
     public bool AltButtonPressed { get; private set; }
-
-    protected Vector2 pastMousePosition;
 
     public BattleObjectUI mouseOverBattleObject { get; protected set; }
     public BattleObjectUI leftClickedBattleObject { get; protected set; }
@@ -55,14 +61,12 @@ public class LocalPlayerInput : MonoBehaviour {
     public BattleObjectUI rightClickedBattleObject { get; protected set; }
     public UnitUI followUnit { get; protected set; }
 
+    private void OnDisable() {
+        if (playerInput != null)
+            playerInput.Disable();
+    }
+
     public event Action<Vector2, Vector2> OnPanEvent = delegate { };
-
-    /// <summary>Determines if the unit should be deselected on mouse up</summary>
-    protected bool doingUnitClickAction;
-
-    private int[] timeSteps = new int[] { 0, 1, 2, 5, 10, 15, 20, 25 };
-    int timeStepIndex;
-    protected CanvasScaler canvasScaler;
 
     public virtual void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
         this.battleManager = battleManager;
@@ -120,17 +124,19 @@ public class LocalPlayerInput : MonoBehaviour {
             transform.position = followUnit.unit.position;
     }
 
-    void UpdateZoom(float scroll) {
+    private void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
         float platformModifier = 50;
         if (Application.platform == RuntimePlatform.WebGLPlayer) platformModifier = .4f;
-        float targetSize = Mathf.Min(50000, Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * platformModifier));
+        float targetSize = Mathf.Min(50000,
+            Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * platformModifier));
 
         // Zoom to the mouse position
         if (!AltButtonPressed) {
             float difference = mainCamera.orthographicSize - targetSize;
-            MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * difference / mainCamera.orthographicSize);
+            MoveCamera((GetMouseWorldPosition() - (Vector2)mainCamera.transform.position) * difference /
+                mainCamera.orthographicSize);
         }
 
         mainCamera.orthographicSize = targetSize;
@@ -153,7 +159,8 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected void MoveCamera(Vector2 movement) {
-        SetCameraPosition(new Vector2(mainCamera.transform.position.x + movement.x, mainCamera.transform.position.y + movement.y));
+        SetCameraPosition(new Vector2(mainCamera.transform.position.x + movement.x,
+            mainCamera.transform.position.y + movement.y));
     }
 
     public void SetCameraPosition(Vector2 position) {
@@ -195,7 +202,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void PrimaryMouseDown() {
-        if (primaryMousePressed == true || localPlayer.GetPlayerUI().IsAMenueShown())
+        if (primaryMousePressed || localPlayer.GetPlayerUI().IsAMenueShown())
             return;
         primaryMousePressed = true;
         leftClickedBattleObject = mouseOverBattleObject;
@@ -222,10 +229,12 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void SecondaryMouseHeld() {
-        maxRightClickDistance = Mathf.Max(maxRightClickDistance, Vector2.Distance(rightClickStartPosition, GetMousePosition()));
+        maxRightClickDistance = Mathf.Max(maxRightClickDistance,
+            Vector2.Distance(rightClickStartPosition, GetMousePosition()));
         if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
-            MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() / 1200);
+            MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() /
+                1200);
             OnPanEvent(oldPosition, GetCamera().transform.position);
         }
     }
@@ -271,15 +280,15 @@ public class LocalPlayerInput : MonoBehaviour {
         Time.timeScale = timeSteps[timeStepIndex];
     }
 
-    void AltButtonDown() {
+    private void AltButtonDown() {
         AltButtonPressed = true;
     }
 
-    void AltButtonUp() {
+    private void AltButtonUp() {
         AltButtonPressed = false;
     }
 
-    void EscapeButtonPressed() {
+    private void EscapeButtonPressed() {
         if (localPlayer.GetPlayerUI().IsAMenueShown()) {
             localPlayer.GetPlayerUI().CloseAllMenus();
             return;
@@ -288,7 +297,7 @@ public class LocalPlayerInput : MonoBehaviour {
         PlayerUI.Instance.ToggleMenueUI();
     }
 
-    void FollowUnitButtonPressed() {
+    private void FollowUnitButtonPressed() {
         if (followUnit != null) {
             StopFollowingUnit();
             return;
@@ -299,15 +308,15 @@ public class LocalPlayerInput : MonoBehaviour {
         }
     }
 
-    void ToggleUnitZoomIndicators() {
+    private void ToggleUnitZoomIndicators() {
         PlayerUI.Instance.ToggleUnitZoomIndicators();
     }
 
-    void ToggleFactionColor() {
+    private void ToggleFactionColor() {
         PlayerUI.Instance.SetFactionColor(!PlayerUI.Instance.factionColoring);
     }
 
-    BattleObjectUI GetBattleObjectOverMouse() {
+    private BattleObjectUI GetBattleObjectOverMouse() {
         BattleObjectUI objectUI = null;
         float distance = float.MaxValue;
         Profiler.BeginSample("BattleObjectOverMouse");
@@ -346,11 +355,6 @@ public class LocalPlayerInput : MonoBehaviour {
         return displayedFleet;
     }
 
-    private void OnDisable() {
-        if (playerInput != null)
-            playerInput.Disable();
-    }
-
     public ActionType GetActionType() {
         return actionType;
     }
@@ -360,7 +364,8 @@ public class LocalPlayerInput : MonoBehaviour {
         Vector2 position = mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition());
         // We can find the object screen size of the object by taking a point [size] distance away and getting its screen position
         float objectScreenSize = position.x -
-            mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0)).x;
+            mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0))
+                .x;
         // Check if the position is within all four bounds of the screen
         return position.y >= -objectScreenSize && position.y - objectScreenSize <= Screen.height &&
             position.x >= -objectScreenSize && position.x - objectScreenSize <= Screen.width;

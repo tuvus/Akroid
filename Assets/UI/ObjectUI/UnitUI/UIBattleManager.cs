@@ -4,33 +4,32 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// The UIBattleManager to UIBattleObjects as the BattleManager is to BattleObjects.
-/// It manages any world space UI objects (So everything but the player GUI).
-/// Only some objects need to update their state every frame,
-/// those objects will subscribe to the objectstoupdate HashSet.
-///
-/// The UIBattleManager subscribes to the BattleManager's OnObjectCreated and OnObjectRemoved events
-/// in order to figure out what UI objects need to be created and removed.
-/// Note that the UIBattleManager does not do any major work during these calls.
-/// These calls might be made on a different thread, preventing us from accessing the Unity API.
-/// Instead it stores the creation and removal events in objectsToCreate and objectsToRemove.
-/// An object can be in only one of these sets at a time.
-/// The UIBattleManager then goes through these sets during the UIUpdate and creates or removes them.
-///
-/// Most objects are destroyed when they are removed,
-/// however projectiles and missiles are simpily hidden
-/// since they will likely be needed again soon.
+///     The UIBattleManager to UIBattleObjects as the BattleManager is to BattleObjects.
+///     It manages any world space UI objects (So everything but the player GUI).
+///     Only some objects need to update their state every frame,
+///     those objects will subscribe to the objectstoupdate HashSet.
+///     The UIBattleManager subscribes to the BattleManager's OnObjectCreated and OnObjectRemoved events
+///     in order to figure out what UI objects need to be created and removed.
+///     Note that the UIBattleManager does not do any major work during these calls.
+///     These calls might be made on a different thread, preventing us from accessing the Unity API.
+///     Instead it stores the creation and removal events in objectsToCreate and objectsToRemove.
+///     An object can be in only one of these sets at a time.
+///     The UIBattleManager then goes through these sets during the UIUpdate and creates or removes them.
+///     Most objects are destroyed when they are removed,
+///     however projectiles and missiles are simpily hidden
+///     since they will likely be needed again soon.
 /// </summary>
 public class UIBattleManager : MonoBehaviour {
-    public BattleManager battleManager { get; private set; }
-    public UIManager uIManager { get; private set; }
-
-    /// <summary> Saves the last state of the BattleManager's time scale so we know when it has changed. </summary>
-    private float previousSimulationTime;
-
     public GameObject factionPrefab;
     public GameObject fleetPrefab;
     public GameObject asteroidFieldPrefab;
+    private HashSet<IObject> objectsToCreate;
+    private HashSet<IObject> objectsToRemove;
+
+    /// <summary> Saves the last state of the BattleManager's time scale so we know when it has changed. </summary>
+    private float previousSimulationTime;
+    public BattleManager battleManager { get; private set; }
+    public UIManager uIManager { get; private set; }
 
     public Dictionary<IObject, ObjectUI> objects { get; private set; }
     public Dictionary<BattleObject, BattleObjectUI> battleObjects { get; private set; }
@@ -39,8 +38,6 @@ public class UIBattleManager : MonoBehaviour {
     public Dictionary<Faction, FactionUI> factionUIs { get; private set; }
     public HashSet<ObjectUI> objectsToUpdate { get; private set; }
     public HashSet<IParticleHolder> particleHolders { get; private set; }
-    private HashSet<IObject> objectsToCreate;
-    private HashSet<IObject> objectsToRemove;
 
     public void SetupUnitSpriteManager(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
@@ -59,26 +56,26 @@ public class UIBattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Updates the state of the sprites
+    ///     Updates the state of the sprites
     /// </summary>
     public void UIUpdate() {
         CreateNewObjects();
         RemoveObjects();
-        foreach (var objectUI in objectsToUpdate.ToList()) {
+        foreach (ObjectUI objectUI in objectsToUpdate.ToList()) {
             objectUI.UpdateObject();
         }
 
         // Check if we need to update the particle speeds
         if (Math.Abs(battleManager.timeScale - previousSimulationTime) > 0.01f) {
             previousSimulationTime = uIManager.GetParticleSpeed();
-            foreach (var particleHolder in particleHolders) {
+            foreach (IParticleHolder particleHolder in particleHolders) {
                 particleHolder.SetParticleSpeed(previousSimulationTime);
             }
         }
     }
 
     private void CreateNewObjects() {
-        foreach (var iObject in objectsToCreate) {
+        foreach (IObject iObject in objectsToCreate) {
             if (iObject is AsteroidField asteroidField) {
                 AsteroidFieldUI asteroidFieldUI =
                     Instantiate(asteroidFieldPrefab, uIManager.GetAsteroidFieldTransform())
@@ -86,14 +83,16 @@ public class UIBattleManager : MonoBehaviour {
                 asteroidFieldUI.Setup(asteroidField);
                 objects.Add(asteroidField, asteroidFieldUI);
                 continue;
-            } else if (iObject is Faction faction) {
+            }
+            if (iObject is Faction faction) {
                 FactionUI factionUI = Instantiate(factionPrefab,
                     uIManager.GetFactionsTransform()).GetComponent<FactionUI>();
                 factionUI.Setup(faction);
                 factionUIs.Add(faction, factionUI);
                 objects.Add(faction, factionUI);
                 continue;
-            } else if (iObject is Fleet fleet) {
+            }
+            if (iObject is Fleet fleet) {
                 FactionUI factionUI = factionUIs[fleet.faction];
                 FleetUI fleetUI = Instantiate(fleetPrefab,
                     factionUI.GetFleetTransform()).GetComponent<FleetUI>();
@@ -131,14 +130,18 @@ public class UIBattleManager : MonoBehaviour {
             battleObjectUI.Setup(battleObject, uIManager);
             if (battleObjectUI is StarUI) battleObjectUI.transform.SetParent(uIManager.GetStarTransform());
             else if (battleObjectUI is PlanetUI) battleObjectUI.transform.SetParent(uIManager.GetPlanetsTransform());
-            else if (battleObjectUI is GasCloudUI) battleObjectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
-            else if (battleObjectUI is AsteroidUI) battleObjectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
-            else if (battleObjectUI is ProjectileUI) battleObjectUI.transform.SetParent(uIManager.GetProjectileTransform());
+            else if (battleObjectUI is GasCloudUI)
+                battleObjectUI.transform.SetParent(uIManager.GetGasCloudsTransform());
+            else if (battleObjectUI is AsteroidUI)
+                battleObjectUI.transform.SetParent(uIManager.GetAsteroidFieldTransform());
+            else if (battleObjectUI is ProjectileUI)
+                battleObjectUI.transform.SetParent(uIManager.GetProjectileTransform());
             else if (battleObjectUI is MissileUI) battleObjectUI.transform.SetParent(uIManager.GetMissileTransform());
             else if (battleObjectUI.battleObject.faction != null) {
                 FactionUI factionUI = factionUIs[battleObjectUI.battleObject.faction];
                 if (battleObjectUI is ShipUI) battleObjectUI.transform.SetParent(factionUI.GetShipTransform());
-                else if (battleObjectUI is StationUI) battleObjectUI.transform.SetParent(factionUI.GetStationsTransform());
+                else if (battleObjectUI is StationUI)
+                    battleObjectUI.transform.SetParent(factionUI.GetStationsTransform());
             }
 
             battleObjects.Add(battleObject, battleObjectUI);
@@ -150,7 +153,7 @@ public class UIBattleManager : MonoBehaviour {
     }
 
     private void RemoveObjects() {
-        foreach (var iObject in objectsToRemove) {
+        foreach (IObject iObject in objectsToRemove) {
             ObjectUI objectUI = objects[iObject];
             if (objectsToUpdate.Contains(objectUI)) objectsToUpdate.Remove(objectUI);
 
@@ -177,9 +180,9 @@ public class UIBattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Handles creating all other objects.
-    /// We don't want to actually create the objects here since we might be on a different thread.
-    /// In general it is best to do UI work after all of the simulation updates together.
+    ///     Handles creating all other objects.
+    ///     We don't want to actually create the objects here since we might be on a different thread.
+    ///     In general it is best to do UI work after all of the simulation updates together.
     /// </summary>
     private void OnObjectCreated(IObject iObject) {
         objectsToCreate.Add(iObject);
@@ -190,7 +193,8 @@ public class UIBattleManager : MonoBehaviour {
         // If the object is destroyed before the objectUI has been set up lets skip destroying it
         // Many simulation frames might have occured since the object was registered to be created
         if (!objects.ContainsKey(iObject)) {
-            if (!objectsToCreate.Contains(iObject)) throw new Exception("Trying to remove an object UI that doesn't exist!");
+            if (!objectsToCreate.Contains(iObject))
+                throw new Exception("Trying to remove an object UI that doesn't exist!");
             objectsToCreate.Remove(iObject);
             return;
         }

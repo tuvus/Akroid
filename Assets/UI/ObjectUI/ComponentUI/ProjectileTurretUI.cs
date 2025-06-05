@@ -1,8 +1,8 @@
 using UnityEngine;
 
 public class ProjectileTurretUI : TurretUI {
-    private ProjectileTurret projectileTurret;
     private SpriteRenderer flash;
+    private ProjectileTurret projectileTurret;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);
@@ -10,15 +10,17 @@ public class ProjectileTurretUI : TurretUI {
         spriteRenderer.sprite = projectileTurret.turretScriptableObject.turretSprite;
         spriteRenderer.enabled = true;
 
-        flash = Instantiate(projectileTurret.projectileTurretScriptableObject.flashPrefab, transform).GetComponent<SpriteRenderer>();
-        flash.transform.localScale = new Vector2(.2f,.2f);
+        flash = Instantiate(projectileTurret.projectileTurretScriptableObject.flashPrefab, transform)
+            .GetComponent<SpriteRenderer>();
+        flash.transform.localScale = new Vector2(.2f, .2f);
         flash.transform.localPosition = new Vector2(0, projectileTurret.projectileTurretScriptableObject.turretOffset);
         flash.enabled = false;
     }
 
     public override void UpdateObject() {
         base.UpdateObject();
-        if (uIManager.GetEffectsShown() && uIManager.battleManager.GetSimulationTime() - projectileTurret.lastFlashTime <
+        if (uIManager.GetEffectsShown() &&
+            uIManager.battleManager.GetSimulationTime() - projectileTurret.lastFlashTime <
             projectileTurret.projectileTurretScriptableObject.flashSpeed) {
             flash.enabled = true;
             flash.color = new Color(1, 1, 1,

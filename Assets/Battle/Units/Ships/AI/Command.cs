@@ -1,8 +1,15 @@
+using System;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-[System.Serializable]
+[Serializable]
 public class Command {
+    public enum CommandAction {
+        AddToBegining = -1,
+        Replace = 0,
+        AddToEnd = 1
+    }
+
     public enum CommandType {
         Idle,
         Wait,
@@ -24,13 +31,7 @@ public class Command {
         CollectGas,
         DisbandFleet,
         Colonize,
-        BuildStation,
-    }
-
-    public enum CommandAction {
-        AddToBegining = -1,
-        Replace = 0,
-        AddToEnd = 1,
+        BuildStation
     }
 
     public CommandType commandType;
@@ -38,19 +39,19 @@ public class Command {
     public float waitTime;
     public float targetRotation;
     public Vector2 targetPosition;
-    public Fleet targetFleet;
-    public Unit targetUnit;
-    public Unit protectUnit;
-    public Star targetStar;
-    public GasCloud targetGasCloud;
-    public Planet targetPlanet;
     public bool useAlternateCommandOnceDone;
     public CargoBay.CargoTypes cargoType;
 
-    public Station productionStation;
+    public float maxSpeed;
     public Station destinationStation;
 
-    public float maxSpeed;
+    public Station productionStation;
+    public Unit protectUnit;
+    public Fleet targetFleet;
+    public GasCloud targetGasCloud;
+    public Planet targetPlanet;
+    public Star targetStar;
+    public Unit targetUnit;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -103,12 +104,14 @@ public class Command {
         float maxSpeed = float.MaxValue) {
         return new Command(CommandType.Move) {
             targetPosition =
-                Vector2.MoveTowards(currentPosition, targetPosition, Vector2.Distance(currentPosition, targetPosition) - offset),
+                Vector2.MoveTowards(currentPosition, targetPosition,
+                    Vector2.Distance(currentPosition, targetPosition) - offset),
             maxSpeed = maxSpeed
         };
     }
 
-    public static Command CreateAttackMoveCommand(Vector2 targetPosition, ref Random random, float maxSpeed = float.MaxValue) {
+    public static Command CreateAttackMoveCommand(Vector2 targetPosition, ref Random random,
+        float maxSpeed = float.MaxValue) {
         return new Command(CommandType.AttackMove) {
             targetPosition = targetPosition,
             maxSpeed = maxSpeed,
@@ -173,7 +176,8 @@ public class Command {
         };
     }
 
-    public static Command CreateTransportCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
+    public static Command CreateTransportCommand(Station productionStation, Station destinationStation,
+        CargoBay.CargoTypes cargoType,
         bool oneTrip = false) {
         return new Command(CommandType.Transport) {
             destinationStation = destinationStation,
@@ -183,7 +187,8 @@ public class Command {
         };
     }
 
-    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation, CargoBay.CargoTypes cargoType,
+    public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation,
+        CargoBay.CargoTypes cargoType,
         float delay) {
         return new Command(CommandType.TransportDelay) {
             destinationStation = destinationStation,
@@ -218,9 +223,11 @@ public class Command {
         };
     }
 
-    public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position, Random random) {
+    public static Command CreateBuildStationCommand(Faction faction, Station.StationType stationType, Vector2 position,
+        Random random) {
         return CreateBuildStationCommand(faction.battleManager.CreateNewStation(
-            new BattleObject.BattleObjectData(stationType.ToString(), new BattleManager.PositionGiver(position, 0, 1000, 100, 0, 2),
+            new BattleObject.BattleObjectData(stationType.ToString(),
+                new BattleManager.PositionGiver(position, 0, 1000, 100, 0, 2),
                 random.NextFloat(0, 360), faction),
             faction.battleManager.GetStationBlueprint(stationType).stationScriptableObject, false));
     }
@@ -232,7 +239,7 @@ public class Command {
     }
 
     /// <summary>
-    /// Called when the command is no longer the first command in the list.
+    ///     Called when the command is no longer the first command in the list.
     /// </summary>
     public void OnCommandNoLongerActive(Ship ship) {
         if (commandType == CommandType.Transport || commandType == CommandType.TransportDelay) {
@@ -252,7 +259,8 @@ public class Command {
     }
 
     public bool IsAttackCommand() {
-        return commandType == CommandType.AttackMove || commandType == CommandType.AttackMoveUnit || commandType == CommandType.AttackFleet;
+        return commandType == CommandType.AttackMove || commandType == CommandType.AttackMoveUnit ||
+            commandType == CommandType.AttackFleet;
     }
 
     public IObject GetTargetObject() {

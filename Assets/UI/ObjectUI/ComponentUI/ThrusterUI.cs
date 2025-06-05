@@ -1,15 +1,23 @@
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class ThrusterUI : ComponentUI, IParticleHolder {
-    private Thruster thruster;
-    private ShipUI shipUI;
-    private ParticleSystem particle;
-    private LensFlare thrusterFlare;
-    private LocalPlayerInput localPlayerInput;
     private AudioSource audioSource;
+    private LocalPlayerInput localPlayerInput;
+    private ParticleSystem particle;
+    private ShipUI shipUI;
+    private Thruster thruster;
+    private LensFlare thrusterFlare;
     private bool thrusting;
+
+    public void ShowEffects(bool shown) {
+        thrusterFlare.enabled = shown;
+    }
+
+    public void SetParticleSpeed(float speed) {
+        ParticleSystem.MainModule main = particle.main;
+        main.simulationSpeed = speed;
+    }
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);
@@ -17,7 +25,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         shipUI = (ShipUI)unitUI;
         Instantiate(thruster.GetPrefab(), transform);
         particle = transform.GetChild(0).GetChild(0).GetComponent<ParticleSystem>();
-        var main = particle.main;
+        ParticleSystem.MainModule main = particle.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
         thrusterFlare = transform.GetChild(0).GetChild(1).GetComponent<LensFlare>();
         thrusterFlare.enabled = false;
@@ -49,7 +57,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         if (thrusting) {
             // Only show the thrust effects if the ship is being looked at
             // This is called every time when thrusting
-            if (uIManager.GetEffectsShown() && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(shipUI)) {
+            if (uIManager.GetEffectsShown() && localPlayerInput.ShouldShowCloseUpGraphics() &&
+                localPlayerInput.IsObjectInViewingField(shipUI)) {
                 BeginThrust();
                 thrusterFlare.enabled = true;
                 thrusterFlare.brightness = GetFlareBrightness() * shipUI.ship.thrustSize;
@@ -75,21 +84,13 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
 
     public void BeginThrust() {
         if (uIManager.GetParticlesShown() && !particle.isPlaying) particle.Play();
-        else if (!uIManager.GetParticlesShown() && particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        else if (!uIManager.GetParticlesShown() && particle.isPlaying)
+            particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     public void EndThrust() {
         thrusterFlare.enabled = false;
         if (particle.isPlaying) particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-    }
-
-    public void ShowEffects(bool shown) {
-        thrusterFlare.enabled = shown;
-    }
-
-    public void SetParticleSpeed(float speed) {
-        var main = particle.main;
-        main.simulationSpeed = speed;
     }
 
     private float GetFlareBrightness() {

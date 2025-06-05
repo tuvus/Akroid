@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 
 public class MiningStation : Station {
-    public MiningStationScriptableObject miningStationScriptableObject { get; private set; }
-
     public bool activelyMining;
-    public List<Asteroid> nearbyAsteroids;
     private float miningTime;
+    public List<Asteroid> nearbyAsteroids;
 
     public MiningStation(BattleObjectData battleObjectData, BattleManager battleManager,
         MiningStationScriptableObject miningStationScriptableObject,
@@ -24,13 +20,14 @@ public class MiningStation : Station {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
     }
+    public MiningStationScriptableObject miningStationScriptableObject { get; }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
             return positionGiver.position;
 
 
-        foreach (var asteroidField in faction.GetClosestAvailableAsteroidFields(positionGiver.position)) {
+        foreach (AsteroidField asteroidField in faction.GetClosestAvailableAsteroidFields(positionGiver.position)) {
             Vector2 targetCenterPosition = Vector2.MoveTowards(asteroidField.position, positionGiver.position,
                 asteroidField.GetSize() + GetSize() + 10);
             Vector2? targetLocationAsteroidField = battleManager.FindFreeLocationIncrement(
@@ -79,7 +76,9 @@ public class MiningStation : Station {
         }
 
         if (nearbyAsteroids.Count > 0) {
-            LoadCargo(nearbyAsteroids[0].MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())),
+            LoadCargo(
+                nearbyAsteroids[0]
+                    .MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())),
                 CargoBay.CargoTypes.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
@@ -88,13 +87,13 @@ public class MiningStation : Station {
     }
 
     public void UpdateMiningStationAsteroids() {
-        List<Asteroid> tempAsteroids = new List<Asteroid>(10);
-        foreach (var asteroidField in battleManager.asteroidFields) {
+        var tempAsteroids = new List<Asteroid>(10);
+        foreach (AsteroidField asteroidField in battleManager.asteroidFields) {
             if (asteroidField.totalResources <= 0)
                 continue;
             float tempDistance = Vector2.Distance(position, asteroidField.GetPosition());
             if (tempDistance <= GetMiningRange() + asteroidField.GetSize()) {
-                foreach (var asteroid in asteroidField.battleObjects) {
+                foreach (Asteroid asteroid in asteroidField.battleObjects) {
                     tempAsteroids.Add(asteroid);
                 }
             }

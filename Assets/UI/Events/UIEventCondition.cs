@@ -18,27 +18,30 @@ public abstract class UIEventCondition : EventCondition {
     }
 
     /// <summary>
-    /// Checks the UICondition during the UI frame.
+    ///     Checks the UICondition during the UI frame.
     /// </summary>
     /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckUICondition(EventManager eventManager);
 
     /// <summary>
-    /// Decideds wich objects should be visualised by this event.
-    /// Returns the objects in the list given to avoid garbage collection
+    ///     Decideds wich objects should be visualised by this event.
+    ///     Returns the objects in the list given to avoid garbage collection
     /// </summary>
     public abstract void GetVisualizedObjects(List<ObjectUI> objectsToVisualise, List<Button> buttonsToVisualize);
 
     /// <summary>
-    /// Helper function to help managing selecting ships
+    ///     Helper function to help managing selecting ships
     /// </summary>
-    protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize,
+    protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize,
+        List<Button> buttonsToVisualize,
         bool includeFleet = true) {
-        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
-        if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null) selectedUnits = new HashSet<UnitUI>();
+        HashSet<UnitUI> selectedUnits =
+            localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null)
+            selectedUnits = new HashSet<UnitUI>();
         PlayerStationUI playerStationUI = (PlayerStationUI)localPlayer.playerUI.uIMenus[typeof(StationUI)];
 
-        foreach (var shipUI in shipsToSelect) {
+        foreach (ShipUI shipUI in shipsToSelect) {
             if (selectedUnits.Contains(shipUI)) continue;
             Ship ship = shipUI.ship;
 
@@ -47,7 +50,8 @@ public abstract class UIEventCondition : EventCondition {
                 if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
 
                 // If the station panel has been opened highlight the ship button
-                if (playerStationUI.gameObject.activeSelf && playerStationUI.displayedObject.station == ship.dockedStation)
+                if (playerStationUI.gameObject.activeSelf &&
+                    playerStationUI.displayedObject.station == ship.dockedStation)
                     buttonsToVisualize.Add(playerStationUI.GetButtonOfShip(ship));
             } else {
                 objectsToVisualize.Add(shipUI);

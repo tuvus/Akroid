@@ -1,11 +1,10 @@
 using UnityEngine;
 
 public class Asteroid : BattleObject, IPositionConfirmer {
-    public AsteroidScriptableObject asteroidScriptableObject { get; private set; }
-    public AsteroidField asteroidField { get; private set; }
     public long resources;
 
-    public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField, long resources,
+    public Asteroid(BattleObjectData battleObjectData, BattleManager battleManager, AsteroidField asteroidField,
+        long resources,
         AsteroidScriptableObject asteroidScriptableObject) : base(battleObjectData, battleManager) {
         this.asteroidScriptableObject = asteroidScriptableObject;
         this.asteroidField = asteroidField;
@@ -15,17 +14,11 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         Spawn();
         SetSize(SetupSize());
     }
-
-    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
-        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
-        if (targetPosition.HasValue)
-            return targetPosition.Value;
-        else
-            return positionGiver.position;
-    }
+    public AsteroidScriptableObject asteroidScriptableObject { get; }
+    public AsteroidField asteroidField { get; }
 
     public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var asteroid in asteroidField.battleObjects) {
+        foreach (Asteroid asteroid in asteroidField.battleObjects) {
             float dist = Vector2.Distance(position, asteroid.position);
             if (dist <= minDistanceFromObject + GetSize() + asteroid.GetSize()) {
                 return false;
@@ -35,8 +28,15 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         return true;
     }
 
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
+        if (targetPosition.HasValue)
+            return targetPosition.Value;
+        return positionGiver.position;
+    }
+
     /// <summary>
-    /// Returns the amount mined.
+    ///     Returns the amount mined.
     /// </summary>
     /// <param name="amount"></param>
     /// <returns></returns>

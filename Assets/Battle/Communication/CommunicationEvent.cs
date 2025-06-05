@@ -1,20 +1,76 @@
 using System;
+using Random = UnityEngine.Random;
 
 [Serializable]
 public class CommunicationEvent {
-    public FactionCommManager sender;
-    public FactionCommManager receiver;
-    public string text;
-    public ReceivedEventLogic receivedEventLogic;
+    public delegate int OptionChoiceLogic(CommunicationEvent communicationEvent);
 
     public delegate void ReceivedEventLogic(CommunicationEvent communicationEvent);
 
-    public CommunicationEventOption[] options;
-    public OptionChoiceLogic optionChoiceLogic;
+    public string text;
 
-    public delegate int OptionChoiceLogic(CommunicationEvent communicationEvent);
+    public CommunicationEventOption[] options;
 
     public bool isActive;
+    public OptionChoiceLogic optionChoiceLogic;
+    public ReceivedEventLogic receivedEventLogic;
+    public FactionCommManager receiver;
+    public FactionCommManager sender;
+
+    /// <summary>
+    ///     Sends a quick message
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, null, eventLogic => { },
+        null, false) { }
+
+    /// <summary>
+    ///     Sends a message and calls ReceivedEventLogic
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, ReceivedEventLogic eventLogic) : this(receiver,
+        text, null,
+        eventLogic, null, false) { }
+
+    /// <summary>
+    ///     Sends a message with options, the AI chooses a random option
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options,
+        bool isActive) : this(receiver,
+        text, options, eventLogic => { }, choiceLogic => Random.Range(0, options.Length), isActive) { }
+
+    /// <summary>
+    ///     Sends a message with options and calls a ReceivedEventLogic, the AI chooses a random option
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options,
+        ReceivedEventLogic eventLogic,
+        bool isActive) : this(receiver, text, options, eventLogic, choiceLogic => Random.Range(0, options.Length),
+        isActive) { }
+
+    /// <summary>
+    ///     Sends a message with options and calls a ReceivedEventLogic, the AI chooses the option returned by
+    ///     OptionChoiceLogic
+    /// </summary>
+    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options,
+        ReceivedEventLogic eventLogic,
+        OptionChoiceLogic choiceLogic, bool isActive) {
+        this.receiver = receiver;
+        this.text = text;
+        this.options = options;
+        this.isActive = isActive;
+        receivedEventLogic = eventLogic;
+        optionChoiceLogic = choiceLogic;
+    }
+
+    public bool ChooseOption(int option) {
+        if (!options[option].checkStatus(this))
+            return false;
+        return options[option].chooseOption(this);
+    }
+
+    public void DeactivateEvent() {
+        if (!isActive) return;
+        isActive = false;
+        if (receiver.IsLocalPlayer()) receiver.DeactivateCommunicationEvent(this);
+    }
 
     [Serializable]
     public struct CommunicationEventOption {
@@ -31,54 +87,5 @@ public class CommunicationEvent {
             this.checkStatus = checkStatus;
             this.chooseOption = chooseOption;
         }
-    }
-
-    /// <summary>
-    /// Sends a quick message
-    /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text) : this(receiver, text, null, (eventLogic) => { }, null, false) { }
-
-    /// <summary>
-    /// Sends a message and calls ReceivedEventLogic
-    /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text, ReceivedEventLogic eventLogic) : this(receiver, text, null,
-        eventLogic, null, false) { }
-
-    /// <summary>
-    /// Sends a message with options, the AI chooses a random option
-    /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, bool isActive) : this(receiver,
-        text, options, (eventLogic) => { }, (choiceLogic) => UnityEngine.Random.Range(0, options.Length), isActive) { }
-
-    /// <summary>
-    /// Sends a message with options and calls a ReceivedEventLogic, the AI chooses a random option
-    /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, ReceivedEventLogic eventLogic,
-        bool isActive) : this(receiver, text, options, eventLogic, (choiceLogic) => UnityEngine.Random.Range(0, options.Length),
-        isActive) { }
-
-    /// <summary>
-    /// Sends a message with options and calls a ReceivedEventLogic, the AI chooses the option returned by OptionChoiceLogic
-    /// </summary>
-    public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options, ReceivedEventLogic eventLogic,
-        OptionChoiceLogic choiceLogic, bool isActive) {
-        this.receiver = receiver;
-        this.text = text;
-        this.options = options;
-        this.isActive = isActive;
-        this.receivedEventLogic = eventLogic;
-        this.optionChoiceLogic = choiceLogic;
-    }
-
-    public bool ChooseOption(int option) {
-        if (!options[option].checkStatus(this))
-            return false;
-        return options[option].chooseOption(this);
-    }
-
-    public void DeactivateEvent() {
-        if (!isActive) return;
-        isActive = false;
-        if (receiver.IsLocalPlayer()) receiver.DeactivateCommunicationEvent(this);
     }
 }

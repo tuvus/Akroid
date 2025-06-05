@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/HabitationAreaScriptableObject", menuName = "Components/HabitationArea", order = 28)]
+[CreateAssetMenu(fileName = "Resources/Components/HabitationAreaScriptableObject",
+    menuName = "Components/HabitationArea", order = 28)]
 public class HabitationAreaScriptableObject : ComponentScriptableObject {
     public long populationSpace;
 

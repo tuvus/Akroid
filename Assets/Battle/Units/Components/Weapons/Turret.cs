@@ -9,27 +9,25 @@ public abstract class Turret : ModuleComponent {
         weakest = 3,
         slowest = 4,
         smallest = 5,
-        biggest = 6,
+        biggest = 6
     }
 
-    public TurretScriptableObject turretScriptableObject { get; private set; }
+    private bool aimed;
+    private readonly float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateTime;
+    private Random random;
 
     protected ReloadController reloadController;
 
     public float targetRotation;
-    public Vector2 targetVector;
     public Unit targetUnit;
-    private bool aimed;
-    private float findNewTargetUpdateSpeed = .2f;
-    private float findNewTargetUpdateTime;
-    private Random random;
-    private float turretOffset;
+    public Vector2 targetVector;
+    private readonly float turretOffset;
 
-    public event Action OnFire = delegate { };
-
-    public Turret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
+    public Turret(BattleManager battleManager, IModule module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
-        turretScriptableObject = (TurretScriptableObject)base.componentScriptableObject;
+        turretScriptableObject = (TurretScriptableObject)this.componentScriptableObject;
         scale *= turretScriptableObject.baseScale;
         SetSize(GetSpriteSize());
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
@@ -40,6 +38,10 @@ public abstract class Turret : ModuleComponent {
         turretOffset = turretScriptableObject.turretOffset * scale.y;
         SetSize(SetupSize());
     }
+
+    public TurretScriptableObject turretScriptableObject { get; }
+
+    public event Action OnFire = delegate { };
 
     /// <returns>True if the turret is hibernating, false otherwise </returns>
     public virtual bool UpdateTurret(float deltaTime) {
@@ -52,7 +54,8 @@ public abstract class Turret : ModuleComponent {
     }
 
     protected virtual bool TurretHibernationStatus() {
-        return targetUnit == null && aimed && unit.GetEnemyUnitsInRange().Count == 0 && reloadController.ReadyToHibernate();
+        return targetUnit == null && aimed && unit.GetEnemyUnitsInRange().Count == 0 &&
+            reloadController.ReadyToHibernate();
     }
 
     protected virtual void UpdateTurretReload(float deltaTime) {
@@ -63,7 +66,8 @@ public abstract class Turret : ModuleComponent {
         float range = GetRange();
         if (findNewTargetUpdateTime > 0)
             findNewTargetUpdateTime -= deltaTime;
-        if (IsTargetViable(targetUnit, range) && IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
+        if (IsTargetViable(targetUnit, range) &&
+            IsTargetRotationViable(targetUnit, out Vector2 targetLocation, out float localShipAngle)) {
             SetTargetRotation(localShipAngle);
         } else {
             ChangeTargetUnit(null);
@@ -87,7 +91,8 @@ public abstract class Turret : ModuleComponent {
     }
 
     public bool IsTargetViable(Unit targetUnit, float range) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() ||
+            Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
@@ -144,7 +149,8 @@ public abstract class Turret : ModuleComponent {
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (turretScriptableObject.targeting == TargetingBehaviors.closest) {
-                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <= Vector2.Distance(oldTarget.position, GetWorldPosition())) {
+                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <=
+                    Vector2.Distance(oldTarget.position, GetWorldPosition())) {
                     return true;
                 }
             } else if (turretScriptableObject.targeting == TargetingBehaviors.strongest) {
@@ -173,7 +179,7 @@ public abstract class Turret : ModuleComponent {
         return false;
     }
 
-    void SetTargetRotation(float newTargetRotation) {
+    private void SetTargetRotation(float newTargetRotation) {
         if (targetRotation == newTargetRotation && aimed)
             return;
         targetRotation = newTargetRotation;
@@ -184,7 +190,7 @@ public abstract class Turret : ModuleComponent {
         }
     }
 
-    void RotateTowards(float deltaTime) {
+    private void RotateTowards(float deltaTime) {
         float localRotateSpeed = turretScriptableObject.rotateSpeed * deltaTime;
 
         float tempRotation = rotation;
@@ -249,8 +255,8 @@ public abstract class Turret : ModuleComponent {
     }
 
     /// <summary>
-    /// Fire the turret, returns true if a new unit should be targeted.
-    /// Returns false if a new unit should not be target.
+    ///     Fire the turret, returns true if a new unit should be targeted.
+    ///     Returns false if a new unit should not be target.
     /// </summary>
     /// <returns>Should a new unit be targeted or not?</returns>
     public virtual bool Fire() {

@@ -9,26 +9,29 @@ public class MissileLauncher : ModuleComponent {
         weakest = 3,
         slowest = 4,
         smallest = 5,
-        biggest = 6,
+        biggest = 6
     }
 
-    MissileLauncherScriptableObject missileLauncherScriptableObject;
+    private static readonly float findNewTargetUpdateSpeed = .2f;
+    private float findNewTargetUpdateTime;
+
+    private readonly MissileLauncherScriptableObject missileLauncherScriptableObject;
+    public float range;
 
     private ReloadController reloadController;
-    public float range;
     public TargetingBehaviors targeting;
 
     public Unit targetUnit;
-    private static float findNewTargetUpdateSpeed = .2f;
-    private float findNewTargetUpdateTime;
 
-    public MissileLauncher(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
+    public MissileLauncher(BattleManager battleManager, IModule module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
 
-        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
+        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed,
+            missileLauncherScriptableObject.reloadSpeed,
             missileLauncherScriptableObject.maxAmmo);
-        var random = new Random((uint)battleManager.battleObjects.Count + 1);
+        Random random = new Random((uint)battleManager.battleObjects.Count + 1);
         findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
     }
 
@@ -36,7 +39,8 @@ public class MissileLauncher : ModuleComponent {
     public bool UpdateMissileLauncher(float deltaTime) {
         if (MissileLauncherHibernationStatus()) return true;
 
-        reloadController.UpdateReloadController(deltaTime, faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
+        reloadController.UpdateReloadController(deltaTime,
+            faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload));
         if (!reloadController.ReadyToFire()) {
             return false;
         }
@@ -61,7 +65,8 @@ public class MissileLauncher : ModuleComponent {
     }
 
     private bool IsTargetViable(Unit targetUnit, float range) {
-        if (targetUnit == null || !targetUnit.IsTargetable() || Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
+        if (targetUnit == null || !targetUnit.IsTargetable() ||
+            Vector2.Distance(GetWorldPosition(), targetUnit.GetPosition()) > range)
             return false;
         return true;
     }
@@ -86,7 +91,8 @@ public class MissileLauncher : ModuleComponent {
         //Targeting: close, strongest, weakest, slowest, biggest, smallest
         if (newTarget != null) {
             if (missileLauncherScriptableObject.targeting == TargetingBehaviors.closest) {
-                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <= Vector2.Distance(oldTarget.position, GetWorldPosition())) {
+                if (Vector2.Distance(newTarget.position, GetWorldPosition()) <=
+                    Vector2.Distance(oldTarget.position, GetWorldPosition())) {
                     return true;
                 }
             } else if (missileLauncherScriptableObject.targeting == TargetingBehaviors.strongest) {
@@ -119,7 +125,8 @@ public class MissileLauncher : ModuleComponent {
         reloadController.Fire();
         if (!battleManager.instantHit) {
             Missile missile = battleManager.GetNewMissile();
-            missile.SetMissile(faction, this, missileLauncherScriptableObject.missile, GetWorldPosition(), GetWorldRotation(),
+            missile.SetMissile(faction, this, missileLauncherScriptableObject.missile, GetWorldPosition(),
+                GetWorldRotation(),
                 targetUnit, unit.GetVelocity());
         } else {
             targetUnit.TakeDamage(GetDamage());
@@ -132,15 +139,18 @@ public class MissileLauncher : ModuleComponent {
     }
 
     public float GetRange() {
-        return missileLauncherScriptableObject.range * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.range *
+            faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetFuelRange() {
-        return missileLauncherScriptableObject.missile.fuelRange * faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
+        return missileLauncherScriptableObject.missile.fuelRange *
+            faction.GetImprovementModifier(Faction.ImprovementAreas.MissileRange);
     }
 
     public float GetDamagePerSecond() {
-        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed, missileLauncherScriptableObject.reloadSpeed,
+        reloadController = new ReloadController(missileLauncherScriptableObject.fireSpeed,
+            missileLauncherScriptableObject.reloadSpeed,
             missileLauncherScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {

@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/ResearchEquipmentScriptableObject", menuName = "Components/ResearchEquipment",
+[CreateAssetMenu(fileName = "Resources/Components/ResearchEquipmentScriptableObject",
+    menuName = "Components/ResearchEquipment",
     order = 29)]
 public class ResearchEquipmentScriptableObject : ComponentScriptableObject {
     public int maxData;

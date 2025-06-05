@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class MiningStationAI : StationAI {
     public List<Ship> transportShips;
@@ -15,9 +14,12 @@ public class MiningStationAI : StationAI {
     public void SetupMiningStation() {
         if (station.faction.GetFleetCommand() != null) {
             SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
-        } else if (station.faction.stations.Any(s => s.GetStationType() == Station.StationType.Shipyard || s.GetStationType() == Station.StationType.FleetCommand)) {
+        } else if (station.faction.stations.Any(s =>
+            s.GetStationType() == Station.StationType.Shipyard ||
+            s.GetStationType() == Station.StationType.FleetCommand)) {
             SetupWantedTrasports(station.faction.stations
-                .First(s => s.GetStationType() == Station.StationType.Shipyard || s.GetStationType() == Station.StationType.FleetCommand)
+                .First(s => s.GetStationType() == Station.StationType.Shipyard ||
+                    s.GetStationType() == Station.StationType.FleetCommand)
                 .GetPosition());
         } else {
             SetupWantedTrasports(station.faction.GetPosition());
@@ -60,7 +62,8 @@ public class MiningStationAI : StationAI {
             transportShips.Add(ship);
         }
 
-        ship.shipAI.AddUnitAICommand(Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal),
+        ship.shipAI.AddUnitAICommand(
+            Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal),
             Command.CommandAction.Replace);
     }
 

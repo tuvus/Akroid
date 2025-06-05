@@ -4,23 +4,27 @@ using Unity.Mathematics;
 using UnityEngine.UI;
 
 public class SelectUnitsAmountCondition : UIEventCondition {
-    private List<Unit> unitsToSelect;
-    private int amountToSelect;
+    private readonly int amountToSelect;
+    private readonly List<Unit> unitsToSelect;
 
-    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType, Unit unit,
+    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager,
+        ConditionType conditionType, Unit unit,
         bool visualize = false) : base(localPlayer, uiBattleManager, conditionType, visualize) {
-        unitsToSelect = new List<Unit>() { unit };
+        unitsToSelect = new List<Unit> { unit };
         amountToSelect = 1;
     }
 
-    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType,
+    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager,
+        ConditionType conditionType,
         List<Unit> units, bool visualize = false) : base(localPlayer, uiBattleManager, conditionType, visualize) {
         unitsToSelect = units;
         amountToSelect = units.Count;
     }
 
-    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType,
-        List<Unit> units, int count, bool visualize = false) : base(localPlayer, uiBattleManager, conditionType, visualize) {
+    public SelectUnitsAmountCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager,
+        ConditionType conditionType,
+        List<Unit> units, int count, bool visualize = false) : base(localPlayer, uiBattleManager, conditionType,
+        visualize) {
         unitsToSelect = units;
         amountToSelect = math.max(0, math.min(units.Count, count));
     }
@@ -34,10 +38,12 @@ public class SelectUnitsAmountCondition : UIEventCondition {
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        AddShipsToSelect(unitsToSelect.Where(u => u.IsShip()).Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize,
+        AddShipsToSelect(unitsToSelect.Where(u => u.IsShip()).Select(s => (ShipUI)uiBattleManager.units[s]).ToList(),
+            objectsToVisualize,
             buttonsToVisualize, false);
 
-        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        HashSet<UnitUI> selectedUnits =
+            localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         bool isFleet = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null;
         objectsToVisualize.AddRange(unitsToSelect.Where(u => !u.IsShip()).Select(u => uiBattleManager.units[u])
             .Where(u => !selectedUnits.Contains(u) || isFleet).Cast<ObjectUI>().ToList());

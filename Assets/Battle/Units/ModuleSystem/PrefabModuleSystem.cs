@@ -4,10 +4,10 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Manages a list of systems for a unit.
-/// Each system is holds a component and a list of modules which will use that component.
-/// The ModuleSystem is set up in the prefab before compiling.
-/// The system components are set in the Unit scriptable objects.
+///     Manages a list of systems for a unit.
+///     Each system is holds a component and a list of modules which will use that component.
+///     The ModuleSystem is set up in the prefab before compiling.
+///     The system components are set in the Unit scriptable objects.
 /// </summary>
 [Serializable]
 public class PrefabModuleSystem : MonoBehaviour {
@@ -16,8 +16,11 @@ public class PrefabModuleSystem : MonoBehaviour {
         Utility,
         Weapon,
         Turret,
-        Thruster,
+        Thruster
     }
+
+    [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
+    [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
     [Serializable]
     public struct PrefabSystem {
@@ -34,8 +37,8 @@ public class PrefabModuleSystem : MonoBehaviour {
         }
 
         public PrefabSystem(PrefabSystem prefabSystem, int moduleCount) {
-            this.name = prefabSystem.name;
-            this.type = prefabSystem.type;
+            name = prefabSystem.name;
+            type = prefabSystem.type;
             moduleSize = prefabSystem.moduleSize;
             this.moduleCount = moduleCount;
         }
@@ -47,9 +50,6 @@ public class PrefabModuleSystem : MonoBehaviour {
             this.moduleCount = moduleCount;
         }
     }
-
-    [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
-    [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
     #region SystemsAndModules
 
@@ -86,7 +86,9 @@ public class PrefabModuleSystem : MonoBehaviour {
         }
     }
 
-    public Module AddModule(int system) => AddModule(system, 0, 0, 0);
+    public Module AddModule(int system) {
+        return AddModule(system, 0, 0, 0);
+    }
 
     public Module AddModule(int system, float rotation, float minRotate, float maxRotate) {
         if (system >= systems.Count)
@@ -101,7 +103,8 @@ public class PrefabModuleSystem : MonoBehaviour {
     }
 
     public void RemoveModule(Module removeModule) {
-        systems[removeModule.system] = new PrefabSystem(systems[removeModule.system], systems[removeModule.system].moduleCount - 1);
+        systems[removeModule.system] =
+            new PrefabSystem(systems[removeModule.system], systems[removeModule.system].moduleCount - 1);
         DestroyImmediate(removeModule.gameObject);
         modules.Remove(removeModule);
         RefreshSystemCounts();

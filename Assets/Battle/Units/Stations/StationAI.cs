@@ -2,15 +2,15 @@ using System;
 using UnityEngine;
 
 public class StationAI {
+    [SerializeField] protected float cargoSpeed;
     protected Station station;
     [SerializeField] protected float waitSpeed;
-    [SerializeField] protected float cargoSpeed;
     protected float waitTime;
-    public event Action<Ship> OnBuildShip = delegate { };
 
     public StationAI(Station station) {
         this.station = station;
     }
+    public event Action<Ship> OnBuildShip = delegate { };
 
     public virtual void UpdateAI(float deltaTime) {
         waitTime = Mathf.Max(waitTime - deltaTime, 0);

@@ -1,8 +1,8 @@
 using Unity.Mathematics;
 
 public class Generator : ModuleComponent {
-    GeneratorScriptableObject generatorScriptableObject;
     private float consumptionTime;
+    private readonly GeneratorScriptableObject generatorScriptableObject;
 
     public Generator(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -21,7 +21,8 @@ public class Generator : ModuleComponent {
             }
 
             unit.UseCargo(resourcesToUse, generatorScriptableObject.consumptionType);
-            unit.faction.AddCredits(generatorScriptableObject.energyGain * (resourcesToUse / generatorScriptableObject.consumptionAmount));
+            unit.faction.AddCredits(generatorScriptableObject.energyGain *
+                (resourcesToUse / generatorScriptableObject.consumptionAmount));
             consumptionTime += generatorScriptableObject.consumptionSpeed;
         }
     }

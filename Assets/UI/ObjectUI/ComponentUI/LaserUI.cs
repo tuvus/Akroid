@@ -1,14 +1,13 @@
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class LaserUI : BattleObjectUI {
     [SerializeField] private SpriteRenderer startHighlight;
     [SerializeField] private SpriteRenderer endHighlight;
+    private AudioSource audioSource;
+    private bool fireing;
 
     private Laser laser;
-    private bool fireing;
-    private AudioSource audioSource;
 
     public void Setup(BattleObject battleObject, UIManager uIManager, LaserTurretUI laserTurret) {
         base.Setup(battleObject, uIManager);
@@ -16,7 +15,8 @@ public class LaserUI : BattleObjectUI {
         spriteRenderer.enabled = false;
         startHighlight.enabled = false;
         endHighlight.enabled = false;
-        transform.localScale = new Vector2(laser.laserTurret.laserTurretScriptableObject.laserSize, 1) / laserTurret.laserTurret.scale;
+        transform.localScale = new Vector2(laser.laserTurret.laserTurretScriptableObject.laserSize, 1) /
+            laserTurret.laserTurret.scale;
         startHighlight.transform.localScale = new Vector2(.2f, .2f);
         endHighlight.transform.localScale = new Vector2(.2f, .2f);
         audioSource = transform.GetChild(2).gameObject.GetComponent<AudioSource>();
@@ -54,8 +54,10 @@ public class LaserUI : BattleObjectUI {
             startHighlight.transform.localPosition = new Vector2(0, -laserLength / 2);
 
             if (laser.fireTime > 0) {
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g, .8f);
-                startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g, .8f);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
+                    .8f);
+                startHighlight.color = new Color(startHighlight.color.r, startHighlight.color.b, startHighlight.color.g,
+                    .8f);
                 endHighlight.color = new Color(endHighlight.color.r, endHighlight.color.b, endHighlight.color.g, 1);
             } else {
                 spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.b, spriteRenderer.color.g,
@@ -69,7 +71,8 @@ public class LaserUI : BattleObjectUI {
             Vector2 cameraPosition = uIManager.localPlayer.GetLocalPlayerInput().GetCamera().transform.position;
             // Move the audio source to the closest point on the laser to the camera.
             transform.GetChild(2).position = Vector2.MoveTowards(transform.position,
-                Calculator.GetClosestPointToAPointOnALine(transform.position, laser.laserTurret.GetWorldRotation(), cameraPosition),
+                Calculator.GetClosestPointToAPointOnALine(transform.position, laser.laserTurret.GetWorldRotation(),
+                    cameraPosition),
                 math.min(Vector2.Distance(transform.position, cameraPosition), laserLength / 2));
 
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;

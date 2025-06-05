@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class UIEventManager : EventManager {
-    private LocalPlayer localPlayer;
+    private readonly LocalPlayer localPlayer;
+    private readonly LocalPlayerGameInput playerGameInput;
     private PlayerUI playerUI;
-    private LocalPlayerGameInput playerGameInput;
-    private UIBattleManager uiBattleManager;
-    private List<Action> uIEventList;
+    private readonly UIBattleManager uiBattleManager;
+    private readonly List<Action> uIEventList;
 
     public UIEventManager(BattleManager battleManager, LocalPlayer localPlayer, LocalPlayerGameInput playerGameInput,
         UIBattleManager uiBattleManager) : base(battleManager) {
@@ -20,12 +20,12 @@ public class UIEventManager : EventManager {
 
 
     /// <summary>
-    /// Applies UI actions during the UI update.
+    ///     Applies UI actions during the UI update.
     /// </summary>
     public void UpdateUIEvents() {
         uIEventList.ForEach(a => a.Invoke());
         uIEventList.Clear();
-        foreach (var activeEvent in ActiveEvents.ToList()) {
+        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
             if (activeEvent.Item1 is UIEventCondition uIActiveEvent) {
                 if (uIActiveEvent.CheckUICondition(this)) {
                     ActiveEvents.Remove(activeEvent);
@@ -35,92 +35,118 @@ public class UIEventManager : EventManager {
         }
     }
 
-    public override EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, float distance = 0,
+    public override EventCondition CreateMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo,
+        float distance = 0,
         bool visualize = false) {
         return new MoveShipsToObjectUICondition(
-            (MoveShipsToObject)base.CreateMoveShipToObject(shipToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            (MoveShipsToObject)base.CreateMoveShipToObject(shipToMove, objectToCommandMoveTo, distance, visualize),
+            localPlayer,
             uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo, float distance = 0,
+    public override EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo,
+        float distance = 0,
         bool visualize = false) {
         return new MoveShipsToObjectUICondition(
-            (MoveShipsToObject)base.CreateMoveShipsToObject(shipsToMove, objectToCommandMoveTo, distance, visualize), localPlayer,
+            (MoveShipsToObject)base.CreateMoveShipsToObject(shipsToMove, objectToCommandMoveTo, distance, visualize),
+            localPlayer,
             uiBattleManager, visualize);
     }
 
     public override EventCondition CreateDockShipAtUnit(Ship shipToDock, Station unitToDockAt, bool visualize = false) {
-        return new DockShipsAtUnitUICondition((DockShipsAtUnitCondition)base.CreateDockShipAtUnit(shipToDock, unitToDockAt, visualize),
+        return new DockShipsAtUnitUICondition(
+            (DockShipsAtUnitCondition)base.CreateDockShipAtUnit(shipToDock, unitToDockAt, visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateDockShipsAtUnit(List<Ship> shipsToDock, Station unitToDockAt, bool visualize = false) {
-        return new DockShipsAtUnitUICondition((DockShipsAtUnitCondition)base.CreateDockShipsAtUnit(shipsToDock, unitToDockAt, visualize),
+    public override EventCondition CreateDockShipsAtUnit(List<Ship> shipsToDock, Station unitToDockAt,
+        bool visualize = false) {
+        return new DockShipsAtUnitUICondition(
+            (DockShipsAtUnitCondition)base.CreateDockShipsAtUnit(shipsToDock, unitToDockAt, visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateCommandMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, bool visualize = false) {
+    public override EventCondition CreateCommandMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo,
+        bool visualize = false) {
         return new ShipCommandMoveToObjectsUICondition(
-            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObject(shipToMove, objectToCommandMoveTo, visualize),
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObject(shipToMove, objectToCommandMoveTo,
+                visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
     public override EventCondition CreateCommandMoveShipsToObject(List<Ship> shipsToMove, IObject objectToCommandMoveTo,
         bool visualize = false) {
         return new ShipCommandMoveToObjectsUICondition(
-            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObject(shipsToMove, objectToCommandMoveTo, visualize),
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObject(shipsToMove, objectToCommandMoveTo,
+                visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateCommandMoveShipToObjects(Ship shipToMove, List<IObject> objectsToCommandToMoveTo,
+    public override EventCondition CreateCommandMoveShipToObjects(Ship shipToMove,
+        List<IObject> objectsToCommandToMoveTo,
         bool visualize = false) {
         return new ShipCommandMoveToObjectsUICondition(
-            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObjects(shipToMove, objectsToCommandToMoveTo, visualize),
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipToObjects(shipToMove, objectsToCommandToMoveTo,
+                visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateCommandMoveShipsToObjects(List<Ship> shipsToMove, List<IObject> objectsToCommandToMoveTo,
+    public override EventCondition CreateCommandMoveShipsToObjects(List<Ship> shipsToMove,
+        List<IObject> objectsToCommandToMoveTo,
         bool visualize = false) {
         return new ShipCommandMoveToObjectsUICondition(
-            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObjects(shipsToMove, objectsToCommandToMoveTo, visualize),
+            (ShipCommandMoveToObjectsCondition)base.CreateCommandMoveShipsToObjects(shipsToMove,
+                objectsToCommandToMoveTo, visualize),
             localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateCommandDockShipToUnit(Ship shipToMove, Station unitToDockAt, bool visualize = false) {
-        return new ShipsCommandUICondition((ShipsCommandCondition)base.CreateCommandDockShipToUnit(shipToMove, unitToDockAt, visualize),
-            localPlayer, uiBattleManager, visualize);
-    }
-
-    public override EventCondition CreateCommandShipToCollectGas(Ship shipToMove, GasCloud gasCloud = null, Station returnStation = null,
+    public override EventCondition CreateCommandDockShipToUnit(Ship shipToMove, Station unitToDockAt,
         bool visualize = false) {
-        return new ShipsCommandUICondition((ShipsCommandCondition)base.CreateCommandShipToCollectGas(shipToMove, gasCloud, returnStation,
+        return new ShipsCommandUICondition(
+            (ShipsCommandCondition)base.CreateCommandDockShipToUnit(shipToMove, unitToDockAt, visualize),
+            localPlayer, uiBattleManager, visualize);
+    }
+
+    public override EventCondition CreateCommandShipToCollectGas(Ship shipToMove, GasCloud gasCloud = null,
+        Station returnStation = null,
+        bool visualize = false) {
+        return new ShipsCommandUICondition((ShipsCommandCondition)base.CreateCommandShipToCollectGas(shipToMove,
+            gasCloud, returnStation,
             visualize), localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null,
+    public override EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction,
+        Station station = null,
         bool visualize = false) {
-        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipAtStation(shipBlueprint, faction, station,
+        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipAtStation(shipBlueprint,
+            faction, station,
             visualize), localPlayer, uiBattleManager, visualize);
     }
 
-    public override EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station,
+    public override EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction,
+        Station station,
         bool visualize = false) {
-        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipsAtStation(shipBlueprints, faction, station,
+        return new BuildShipsAtStationUICondition((BuildShipsAtStation)base.CreateBuildShipsAtStation(shipBlueprints,
+            faction, station,
             visualize), localPlayer, uiBattleManager, visualize);
     }
 
     public override EventCondition CreateSelectUnitCondition(Unit unitToSelect, bool visualize = false) {
-        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager, EventCondition.ConditionType.SelectUnit, unitToSelect,
+        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager, EventCondition.ConditionType.SelectUnit,
+            unitToSelect,
             visualize);
     }
 
     public override EventCondition CreateSelectUnitsCondition(List<Unit> unitsToSelect, bool visualize = false) {
-        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager, EventCondition.ConditionType.SelectUnits, unitsToSelect,
+        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager, EventCondition.ConditionType.SelectUnits,
+            unitsToSelect,
             visualize);
     }
 
-    public override EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount, bool visualize = false) {
-        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager, EventCondition.ConditionType.SelectUnitsAmount, unitsToSelect,
+    public override EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount,
+        bool visualize = false) {
+        return new SelectUnitsAmountCondition(localPlayer, uiBattleManager,
+            EventCondition.ConditionType.SelectUnitsAmount, unitsToSelect,
             amount, visualize);
     }
 
@@ -155,7 +181,8 @@ public class UIEventManager : EventManager {
     }
 
     public override EventCondition CreateLateCondition(Func<EventCondition> eventConditionFunction) {
-        return new LateUICondition((LateCondition)base.CreateLateCondition(eventConditionFunction), localPlayer, uiBattleManager);
+        return new LateUICondition((LateCondition)base.CreateLateCondition(eventConditionFunction), localPlayer,
+            uiBattleManager);
     }
 
     public override void SetPlayerZoom(float zoom) {

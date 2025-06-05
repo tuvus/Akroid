@@ -23,10 +23,9 @@ public abstract class EventCondition {
         Predicate,
         LateCondition,
         Placeholder,
-        Victory,
+        Victory
     }
 
-    public ConditionType conditionType { get; protected set; }
     public bool visualize;
 
     /// <summary> No extenal instantiation allowed </summary>
@@ -35,8 +34,10 @@ public abstract class EventCondition {
         this.visualize = visualize;
     }
 
+    public ConditionType conditionType { get; protected set; }
+
     /// <summary>
-    /// Checks the condition during the simulation frame.
+    ///     Checks the condition during the simulation frame.
     /// </summary>
     /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckCondition(EventManager eventManager, float deltaTime);

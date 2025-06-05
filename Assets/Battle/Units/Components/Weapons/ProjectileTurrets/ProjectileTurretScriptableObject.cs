@@ -2,7 +2,8 @@
 using UnityEngine;
 using static Turret;
 
-[CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject", menuName = "Components/ProjectileTurret", order = 1)]
+[CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject",
+    menuName = "Components/ProjectileTurret", order = 1)]
 public class ProjectileTurretScriptableObject : TurretScriptableObject {
     [Tooltip("Max at around 150")] public float fireVelocity;
     public float fireAccuracy;
@@ -14,6 +15,14 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     public GameObject flashPrefab;
     public float flashSpeed = 0.5f;
 
+    public override void Awake() {
+        base.Awake();
+        targeting = TargetingBehaviors.closest;
+        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/ProjectileTurret");
+        if (projectilePrefab == null) projectilePrefab = Resources.Load<GameObject>("Prefabs/Projectile");
+        if (flashPrefab == null) flashPrefab = Resources.Load<GameObject>("Prefabs/Highlight");
+    }
+
     public override float GetDamagePerSecond() {
         float time = reloadSpeed;
         if (maxAmmo > 1) {
@@ -22,14 +31,6 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
 
         float damage = (minDamage + maxDamage) / 2f * maxAmmo;
         return damage / time;
-    }
-
-    public override void Awake() {
-        base.Awake();
-        targeting = TargetingBehaviors.closest;
-        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/ProjectileTurret");
-        if (projectilePrefab == null) projectilePrefab = Resources.Load<GameObject>("Prefabs/Projectile");
-        if (flashPrefab == null) flashPrefab = Resources.Load<GameObject>("Prefabs/Highlight");
     }
 
     public override Type GetComponentType() {

@@ -3,9 +3,10 @@ using System.Linq;
 using UnityEngine.UI;
 
 public class SelectFleetsCondition : UIEventCondition {
-    private Fleet fleetToSelect;
+    private readonly Fleet fleetToSelect;
 
-    public SelectFleetsCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Fleet fleet, bool visualize = false) :
+    public SelectFleetsCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Fleet fleet,
+        bool visualize = false) :
         base(localPlayer, uiBattleManager, ConditionType.SelectFleet, visualize) {
         fleetToSelect = fleet;
     }
@@ -16,6 +17,7 @@ public class SelectFleetsCondition : UIEventCondition {
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        AddShipsToSelect(fleetToSelect.ships.Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize, buttonsToVisualize);
+        AddShipsToSelect(fleetToSelect.ships.Select(s => (ShipUI)uiBattleManager.units[s]).ToList(), objectsToVisualize,
+            buttonsToVisualize);
     }
 }

@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 
 public class ShieldGenerator : ModuleComponent {
-    public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; private set; }
-
     private float timeTillShieldCount;
-    public Shield shield { get; private set; }
 
-    public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
+    public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
         shield = new Shield(this, unit, GetMaxShieldStrength());
     }
+    public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; }
+    public Shield shield { get; }
 
     public void UpdateShieldGenerator(float deltaTime) {
         if (shield.spawned && shield.health <= 0) DestroyShield();

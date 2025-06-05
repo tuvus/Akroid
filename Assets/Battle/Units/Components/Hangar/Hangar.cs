@@ -3,9 +3,8 @@ using System.Linq;
 using UnityEngine;
 
 public class Hangar : ModuleComponent {
-    HangarScriptableObject hangarScriptableObject;
-    public List<Ship> ships { get; private set; }
-    [SerializeField] int dockSpace;
+    [SerializeField] private int dockSpace;
+    private readonly HangarScriptableObject hangarScriptableObject;
 
     public Hangar(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -14,6 +13,7 @@ public class Hangar : ModuleComponent {
 
         ships = new List<Ship>(hangarScriptableObject.maxDockSpace);
     }
+    public List<Ship> ships { get; }
 
     public bool DockShip(Ship ship) {
         if (dockSpace < hangarScriptableObject.maxDockSpace) {

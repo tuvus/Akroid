@@ -3,15 +3,17 @@ using System.Linq;
 using UnityEngine;
 
 public class ShipGroup : UnitGroup {
-    [field: SerializeField] public HashSet<Ship> ships { get; private set; }
     public List<Fleet> sentFleets;
 
-    public ShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty, bool setupGroupPositionAndSize = true,
+    public ShipGroup(BattleManager battleManager, HashSet<Ship> objects, bool deleteWhenEmpty,
+        bool setupGroupPositionAndSize = true,
         bool changeSizeIndicatorPosition = false) :
-        base(battleManager, objects.Cast<Unit>().ToHashSet(), deleteWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition) {
+        base(battleManager, objects.Cast<Unit>().ToHashSet(), deleteWhenEmpty, setupGroupPositionAndSize,
+            changeSizeIndicatorPosition) {
         ships = objects;
         sentFleets = new List<Fleet>();
     }
+    [field: SerializeField] public HashSet<Ship> ships { get; }
 
     public void SetupTargetGroup(HashSet<Ship> ships, bool deleteWhenEmpty) {
         //SetupObjectGroup(ships, deleteWhenEmpty);
@@ -19,12 +21,12 @@ public class ShipGroup : UnitGroup {
     }
 
     public virtual void AddShip(Ship ship) {
-        base.AddUnit(ship);
+        AddUnit(ship);
         UpdateObjectGroup();
     }
 
     public virtual void RemoveShip(Ship ship) {
-        base.RemoveUnit(ship);
+        RemoveUnit(ship);
         ships.Remove(ship);
     }
 
@@ -39,8 +41,8 @@ public class ShipGroup : UnitGroup {
     }
 
     /// <summary>
-    /// Finds if the fleets sent by sentFaction is stronger than this fleet.
-    /// If sentFaction is null add up all fleets regardless of their faction.
+    ///     Finds if the fleets sent by sentFaction is stronger than this fleet.
+    ///     If sentFaction is null add up all fleets regardless of their faction.
     /// </summary>
     /// <param name="sentFaction">the fleets with faction ownership that should be counted</param>
     /// <returns>true if the sent fleets has a strength greater than this fleet</returns>

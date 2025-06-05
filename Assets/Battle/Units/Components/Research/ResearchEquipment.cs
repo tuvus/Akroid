@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class ResearchEquipment : ModuleComponent {
-    ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
-    [SerializeField] int data;
-    float researchTime;
+    [SerializeField] private int data;
+    private readonly ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
+    private float researchTime;
 
     public ResearchEquipment(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -18,7 +18,8 @@ public class ResearchEquipment : ModuleComponent {
     public bool GatherData(Star star, float time) {
         researchTime -= time;
         if (researchTime <= 0) {
-            data = Mathf.Min(researchEquipmentScriptableObject.maxData, data + researchEquipmentScriptableObject.researchAmount);
+            data = Mathf.Min(researchEquipmentScriptableObject.maxData,
+                data + researchEquipmentScriptableObject.researchAmount);
             if (data == researchEquipmentScriptableObject.maxData) {
                 researchTime = researchEquipmentScriptableObject.researchSpeed;
                 return true;

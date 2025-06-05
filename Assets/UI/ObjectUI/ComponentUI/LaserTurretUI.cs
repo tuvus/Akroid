@@ -1,6 +1,6 @@
 public class LaserTurretUI : TurretUI {
-    public LaserTurret laserTurret { get; private set; }
     private LaserUI laserUI;
+    public LaserTurret laserTurret { get; private set; }
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);

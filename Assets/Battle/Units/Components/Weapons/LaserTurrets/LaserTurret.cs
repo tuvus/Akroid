@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
 public class LaserTurret : Turret {
-    public LaserTurretScriptableObject laserTurretScriptableObject { get; private set; }
-    public Laser laser { get; private set; }
-
-    public LaserTurret(BattleManager battleManager, IModule module, Unit unit, ComponentScriptableObject componentScriptableObject) :
+    public LaserTurret(BattleManager battleManager, IModule module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
 
         laser = new Laser(new BattleObjectData("Laser", unit.faction), battleManager, this);
     }
+    public LaserTurretScriptableObject laserTurretScriptableObject { get; }
+    public Laser laser { get; }
 
     protected override void UpdateTurretReload(float deltaTime) {
         if (!laser.IsFireing())
@@ -61,7 +61,8 @@ public class LaserTurret : Turret {
 
 
     public override float GetDamagePerSecond() {
-        reloadController = new ReloadController(laserTurretScriptableObject.fireSpeed, laserTurretScriptableObject.reloadSpeed,
+        reloadController = new ReloadController(laserTurretScriptableObject.fireSpeed,
+            laserTurretScriptableObject.reloadSpeed,
             laserTurretScriptableObject.maxAmmo);
         float time = reloadController.reloadSpeed;
         if (reloadController.maxAmmo > 1) {
@@ -69,7 +70,8 @@ public class LaserTurret : Turret {
         }
 
         float damage = laserTurretScriptableObject.laserDamagePerSecond *
-                       (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) * reloadController.maxAmmo;
+            (laserTurretScriptableObject.fireDuration + laserTurretScriptableObject.fadeDuration / 2) *
+            reloadController.maxAmmo;
         return damage / time;
     }
 

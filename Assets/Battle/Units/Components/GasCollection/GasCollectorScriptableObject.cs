@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/GasCollectorScriptableObject", menuName = "Components/GasCollector", order = 30)]
+[CreateAssetMenu(fileName = "Resources/Components/GasCollectorScriptableObject", menuName = "Components/GasCollector",
+    order = 30)]
 public class GasCollectorScriptableObject : ComponentScriptableObject {
     public int collectionAmount;
     public float collectionSpeed;

@@ -5,30 +5,32 @@ using NUnit.Framework;
 using UnityEngine;
 
 public class ModuleSystemTests {
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void SetupFromScriptableObject() {
         // Setup
-        var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
-        var faction = new MockFaction();
+        MockUnitScriptableObject unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
+        MockFaction faction = new MockFaction();
         var battleManager = new Mock<BattleManager>();
         battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
 
-        var component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
+        ThrusterScriptableObject component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         component.name = "TestThruster";
         component.cost = 10;
         component.thrustSpeed = 1000;
         component.color = Color.blue;
-        component.resourceTypes = new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Gas };
-        component.resourceCosts = new List<long>() { 55 };
-        var mockModule = new MockModule();
-        unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System>() {
-            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
-                component),
-        }, new List<IModule>() { mockModule });
+        component.resourceTypes = new List<CargoBay.CargoTypes> { CargoBay.CargoTypes.Gas };
+        component.resourceCosts = new List<long> { 55 };
+        MockModule mockModule = new MockModule();
+        unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System> {
+            new ModuleSystem.System(
+                new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                component)
+        }, new List<IModule> { mockModule });
 
         // What is actually being tested
-        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object, unitScriptableObject);
+        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object,
+            unitScriptableObject);
         ModuleSystem moduleSystem = unit.Object.moduleSystem;
         Assert.AreEqual(1, moduleSystem.systems.Count);
         Assert.AreEqual("TestSystem", moduleSystem.systems.First().name);
@@ -39,35 +41,37 @@ public class ModuleSystemTests {
         Assert.AreEqual(Vector2.zero, moduleSystem.modules.First().GetPosition());
     }
 
-    [Explicit, Category("Unit Tests")]
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void UpgradeModuleComponent() {
         // Setup
-        var unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
-        var faction = new MockFaction();
+        MockUnitScriptableObject unitScriptableObject = ScriptableObject.CreateInstance<MockUnitScriptableObject>();
+        MockFaction faction = new MockFaction();
         var battleManager = new Mock<BattleManager>();
         battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
-        var component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
+        ThrusterScriptableObject component = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         component.name = "TestThruster";
         component.cost = 10;
         component.thrustSpeed = 1000;
         component.color = Color.blue;
-        component.resourceTypes = new List<CargoBay.CargoTypes>() { CargoBay.CargoTypes.Gas };
-        component.resourceCosts = new List<long>() { 55 };
+        component.resourceTypes = new List<CargoBay.CargoTypes> { CargoBay.CargoTypes.Gas };
+        component.resourceCosts = new List<long> { 55 };
         component.name = "TestThruster";
-        var upgradeComponent = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
+        ThrusterScriptableObject upgradeComponent = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         upgradeComponent.cost = 20;
         upgradeComponent.resourceTypes = new List<CargoBay.CargoTypes>();
         upgradeComponent.resourceCosts = new List<long>();
         upgradeComponent.name = "UpgradedTestThruster";
         component.upgrade = upgradeComponent;
-        var mockModule = new MockModule();
-        unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System>() {
-            new ModuleSystem.System(new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
-                component),
-        }, new List<IModule>() { mockModule });
+        MockModule mockModule = new MockModule();
+        unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System> {
+            new ModuleSystem.System(
+                new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                component)
+        }, new List<IModule> { mockModule });
 
-        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object, unitScriptableObject);
+        var unit = new Mock<Unit>(new BattleObject.BattleObjectData("TestUnit", faction), battleManager.Object,
+            unitScriptableObject);
         ModuleSystem moduleSystem = unit.Object.moduleSystem;
 
         Assert.AreEqual(component, moduleSystem.modules.First().componentScriptableObject);
@@ -77,16 +81,19 @@ public class ModuleSystemTests {
         Assert.False(moduleSystem.moduleToSystem.Keys.Any(m => m.componentScriptableObject == component));
         Assert.True(moduleSystem.modules.Any(m => m.componentScriptableObject == upgradeComponent));
         Assert.True(moduleSystem.moduleToSystem.Keys.Any(m => m.componentScriptableObject == upgradeComponent));
-        Assert.True(moduleSystem.moduleToSystem[moduleSystem.modules.First(m => m.componentScriptableObject == upgradeComponent)] ==
+        Assert.True(
+            moduleSystem.moduleToSystem[
+                moduleSystem.modules.First(m => m.componentScriptableObject == upgradeComponent)] ==
             moduleSystem.systems.First());
     }
 
-    class MockUnitScriptableObject : UnitScriptableObject {
-        public void SetupMock(string name, int maxHealth, long cost, List<ModuleSystem.System> systems, List<IModule> modules) {
+    private class MockUnitScriptableObject : UnitScriptableObject {
+        public void SetupMock(string name, int maxHealth, long cost, List<ModuleSystem.System> systems,
+            List<IModule> modules) {
             resourceCosts = new List<long>();
             resourceTypes = new List<CargoBay.CargoTypes>();
-            base.systems = systems.ToArray();
-            base.modules = modules.ToArray();
+            this.systems = systems.ToArray();
+            this.modules = modules.ToArray();
             this.name = name;
             this.maxHealth = maxHealth;
             this.cost = cost;
@@ -95,7 +102,7 @@ public class ModuleSystemTests {
         }
     }
 
-    class MockModule : IModule {
+    private class MockModule : IModule {
         public Vector2 GetPosition() {
             return Vector2.zero;
         }
@@ -117,7 +124,7 @@ public class ModuleSystemTests {
         }
     }
 
-    class MockFaction : Faction {
+    private class MockFaction : Faction {
         public MockFaction() {
             credits = 1000;
         }

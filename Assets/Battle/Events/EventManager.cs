@@ -4,18 +4,18 @@ using System.Linq;
 
 public class EventManager {
     protected BattleManager battleManager;
-    public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; private set; }
 
     public EventManager(BattleManager battleManager) {
         this.battleManager = battleManager;
         ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
     }
+    public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; }
 
     /// <summary>
-    /// Checks the conditions of every event during the regular game update.
+    ///     Checks the conditions of every event during the regular game update.
     /// </summary>
     public virtual void UpdateEvents(float deltaTime) {
-        foreach (var activeEvent in ActiveEvents.ToList()) {
+        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
             if (activeEvent.Item1.CheckCondition(this, deltaTime)) {
                 ActiveEvents.Remove(activeEvent);
                 activeEvent.Item2();
@@ -45,7 +45,8 @@ public class EventManager {
         return new MoveShipsToObject(shipToMove, objectToMoveTo, distance, visualize);
     }
 
-    public virtual EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo, float distance = 0f,
+    public virtual EventCondition CreateMoveShipsToObject(List<Ship> shipsToMove, IObject objectToMoveTo,
+        float distance = 0f,
         bool visualize = false) {
         return new MoveShipsToObject(shipsToMove, objectToMoveTo, distance, visualize);
     }
@@ -54,15 +55,18 @@ public class EventManager {
         return new DockShipsAtUnitCondition(shipToDock, unitToDockAt, visualize);
     }
 
-    public virtual EventCondition CreateDockShipsAtUnit(List<Ship> shipsToDock, Station unitToDockAt, bool visualize = false) {
+    public virtual EventCondition CreateDockShipsAtUnit(List<Ship> shipsToDock, Station unitToDockAt,
+        bool visualize = false) {
         return new DockShipsAtUnitCondition(shipsToDock, unitToDockAt, visualize);
     }
 
-    public virtual EventCondition CreateCommandMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo, bool visualize = false) {
+    public virtual EventCondition CreateCommandMoveShipToObject(Ship shipToMove, IObject objectToCommandMoveTo,
+        bool visualize = false) {
         return new ShipCommandMoveToObjectsCondition(shipToMove, objectToCommandMoveTo, visualize);
     }
 
-    public virtual EventCondition CreateCommandMoveShipToObjects(Ship shipToMove, List<IObject> objectsToCommandToMoveTo,
+    public virtual EventCondition CreateCommandMoveShipToObjects(Ship shipToMove,
+        List<IObject> objectsToCommandToMoveTo,
         bool visualize = false) {
         return new ShipCommandMoveToObjectsCondition(shipToMove, objectsToCommandToMoveTo, visualize);
     }
@@ -72,28 +76,35 @@ public class EventManager {
         return new ShipCommandMoveToObjectsCondition(shipsToMove, objectToCommandMoveTo, visualize);
     }
 
-    public virtual EventCondition CreateCommandMoveShipsToObjects(List<Ship> shipsToMove, List<IObject> objectsToCommandToMoveTo,
+    public virtual EventCondition CreateCommandMoveShipsToObjects(List<Ship> shipsToMove,
+        List<IObject> objectsToCommandToMoveTo,
         bool visualize = false) {
         return new ShipCommandMoveToObjectsCondition(shipsToMove, objectsToCommandToMoveTo, visualize);
     }
 
-    public virtual EventCondition CreateCommandDockShipToUnit(Ship shipToMove, Station unitToDockAt, bool visualize = false) {
+    public virtual EventCondition CreateCommandDockShipToUnit(Ship shipToMove, Station unitToDockAt,
+        bool visualize = false) {
         return new ShipsCommandCondition(shipToMove, Command.CreateDockCommand(unitToDockAt), visualize);
     }
 
-    public virtual EventCondition CreateCommandShipToCollectGas(Ship shipToMove, GasCloud gasCloud = null, Station returnStation = null,
+    public virtual EventCondition CreateCommandShipToCollectGas(Ship shipToMove, GasCloud gasCloud = null,
+        Station returnStation = null,
         bool visualize = false) {
-        return new ShipsCommandCondition(shipToMove, Command.CreateCollectGasCommand(gasCloud, returnStation), visualize);
+        return new ShipsCommandCondition(shipToMove, Command.CreateCollectGasCommand(gasCloud, returnStation),
+            visualize);
     }
 
-    public virtual EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction, Station station = null,
+    public virtual EventCondition CreateBuildShipAtStation(Ship.ShipBlueprint shipBlueprint, Faction faction,
+        Station station = null,
         bool visualize = false) {
         return new BuildShipsAtStation(new Ship.ShipBlueprint(shipBlueprint, faction), faction, station, visualize);
     }
 
-    public virtual EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction, Station station,
+    public virtual EventCondition CreateBuildShipsAtStation(List<Ship.ShipBlueprint> shipBlueprints, Faction faction,
+        Station station,
         bool visualize = false) {
-        return new BuildShipsAtStation(shipBlueprints.Select(b => new Ship.ShipBlueprint(b, faction)).ToList(), faction, station,
+        return new BuildShipsAtStation(shipBlueprints.Select(b => new Ship.ShipBlueprint(b, faction)).ToList(), faction,
+            station,
             visualize);
     }
 
@@ -105,7 +116,8 @@ public class EventManager {
         return new PlaceholderCondition(new object[] { unitsToSelect, visualize });
     }
 
-    public virtual EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount, bool visualize = false) {
+    public virtual EventCondition CreateSelectUnitsAmountCondition(List<Unit> unitsToSelect, int amount,
+        bool visualize = false) {
         return new PlaceholderCondition(new object[] { unitsToSelect, amount, visualize });
     }
 

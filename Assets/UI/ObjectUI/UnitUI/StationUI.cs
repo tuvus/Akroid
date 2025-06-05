@@ -1,12 +1,12 @@
 using UnityEngine;
 
 public class StationUI : UnitUI {
+    private bool built;
     public Station station { get; private set; }
-    private bool built = false;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
-        this.station = (Station)battleObject;
+        station = (Station)battleObject;
         built = station.IsBuilt();
         if (!built) {
             transform.localScale = new Vector3(station.scale.x / 3, station.scale.y / 3, 1);

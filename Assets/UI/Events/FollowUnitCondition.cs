@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class FollowUnitCondition : UIEventCondition {
-    private Unit unitToFollow;
+    private readonly Unit unitToFollow;
 
-    public FollowUnitCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Unit unitToFollow, bool visualize = false) :
+    public FollowUnitCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Unit unitToFollow,
+        bool visualize = false) :
         base(localPlayer, uiBattleManager, ConditionType.FollowUnit, visualize) {
         this.unitToFollow = unitToFollow;
     }

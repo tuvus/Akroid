@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.Audio;
 using static Turret;
 
-[CreateAssetMenu(fileName = "Resources/Components/LaserTurretScriptableObject", menuName = "Components/LaserTurret", order = 1)]
+[CreateAssetMenu(fileName = "Resources/Components/LaserTurretScriptableObject", menuName = "Components/LaserTurret",
+    order = 1)]
 public class LaserTurretScriptableObject : TurretScriptableObject {
     public float laserDamagePerSecond;
     public float fireDuration;
@@ -14,6 +15,14 @@ public class LaserTurretScriptableObject : TurretScriptableObject {
     public GameObject laserPrefab;
     public AudioResource laserSound;
 
+    public override void Awake() {
+        base.Awake();
+        targeting = TargetingBehaviors.closest;
+        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/LaserTurret");
+        if (laserPrefab == null) laserPrefab = Resources.Load<GameObject>("Prefabs/Laser");
+        if (laserSound == null) laserSound = Resources.Load<AudioResource>("Prefabs/Audio/Laser");
+    }
+
     public override float GetDamagePerSecond() {
         float time = reloadSpeed;
         if (maxAmmo > 1) {
@@ -22,14 +31,6 @@ public class LaserTurretScriptableObject : TurretScriptableObject {
 
         float damage = laserDamagePerSecond * (fireDuration + fadeDuration / 2) * maxAmmo;
         return damage / time;
-    }
-
-    public override void Awake() {
-        base.Awake();
-        targeting = TargetingBehaviors.closest;
-        if (turretPrefab == null) turretPrefab = Resources.Load<GameObject>("Prefabs/LaserTurret");
-        if (laserPrefab == null) laserPrefab = Resources.Load<GameObject>("Prefabs/Laser");
-        if (laserSound == null) laserSound = Resources.Load<AudioResource>("Prefabs/Audio/Laser");
     }
 
     public override Type GetComponentType() {

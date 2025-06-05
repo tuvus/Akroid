@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Missile", menuName = "Components/Missile", order = 4)]
 public class MissileScriptableObject : ScriptableObject {
@@ -13,8 +11,8 @@ public class MissileScriptableObject : ScriptableObject {
     public Sprite sprite;
     public DestroyEffectScriptableObject destroyEffect;
     public float timeAfterExpire;
-    public Vector2 spriteBounds { get; private set; }
     public GameObject missilePrefab;
+    public Vector2 spriteBounds { get; private set; }
 
     private void Awake() {
         if (missilePrefab == null) missilePrefab = Resources.Load<GameObject>("Prefabs/Missile");

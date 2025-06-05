@@ -5,23 +5,10 @@ using UnityEngine;
 using static CommunicationEvent;
 
 public class FactionCommManager {
-    private BattleManager battleManager;
-    public Faction faction { get; private set; }
+    private readonly BattleManager battleManager;
+    private readonly Character character;
     public List<CommunicationEvent> communicationLog;
     public List<DelayCommunication> delayedCommunications;
-    private Character character;
-    public event Action<CommunicationEvent> OnCommunicationRecieved = delegate { };
-    public event Action<int> OnCommunicationEventDeativated = delegate { };
-
-    public class DelayCommunication {
-        public CommunicationEvent newCommunication;
-        public double targetTime;
-
-        public DelayCommunication(CommunicationEvent newCommunication, BattleManager battleManager, float delay = 0) {
-            this.newCommunication = newCommunication;
-            this.targetTime = battleManager.GetSimulationTime() + delay;
-        }
-    }
 
     public FactionCommManager(BattleManager battleManager, Faction faction, Character character) {
         this.battleManager = battleManager;
@@ -30,11 +17,25 @@ public class FactionCommManager {
         communicationLog = new List<CommunicationEvent>();
         delayedCommunications = new List<DelayCommunication>();
     }
+    public Faction faction { get; }
+    public event Action<CommunicationEvent> OnCommunicationRecieved = delegate { };
+    public event Action<int> OnCommunicationEventDeativated = delegate { };
 
     public void UpdateCommunications() {
-        while (delayedCommunications.Count > 0 && battleManager.GetSimulationTime() >= delayedCommunications[0].targetTime) {
+        while (delayedCommunications.Count > 0 &&
+            battleManager.GetSimulationTime() >= delayedCommunications[0].targetTime) {
             SendCommunication(delayedCommunications[0]);
             delayedCommunications.RemoveAt(0);
+        }
+    }
+
+    public class DelayCommunication {
+        public CommunicationEvent newCommunication;
+        public double targetTime;
+
+        public DelayCommunication(CommunicationEvent newCommunication, BattleManager battleManager, float delay = 0) {
+            this.newCommunication = newCommunication;
+            targetTime = battleManager.GetSimulationTime() + delay;
         }
     }
 
@@ -77,6 +78,7 @@ public class FactionCommManager {
     #endregion
 
     #region HelperMethods
+
     public void DeactivateCommunicationEvent(CommunicationEvent communicationEvent) {
         OnCommunicationEventDeativated(communicationLog.IndexOf(communicationEvent));
     }

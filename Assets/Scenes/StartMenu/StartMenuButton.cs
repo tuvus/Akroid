@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public class StartMenuButton : MonoBehaviour {
-
     public void OnClick() {
         StartMenu.Instance.PlayButtonClickSound();
     }

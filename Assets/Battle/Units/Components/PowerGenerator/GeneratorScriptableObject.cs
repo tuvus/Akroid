@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/GeneratorScriptableObject", menuName = "Components/Generator", order = 28)]
+[CreateAssetMenu(fileName = "Resources/Components/GeneratorScriptableObject", menuName = "Components/Generator",
+    order = 28)]
 public class GeneratorScriptableObject : ComponentScriptableObject {
     public float consumptionSpeed;
     public long consumptionAmount;

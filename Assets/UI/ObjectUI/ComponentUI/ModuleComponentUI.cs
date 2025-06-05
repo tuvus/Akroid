@@ -29,7 +29,8 @@ public abstract class ComponentUI : BattleObjectUI {
         return base.IsVisible() && unitUI.IsVisible();
     }
 
-    public override void SelectObject(UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) { }
+    public override void SelectObject(
+        UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) { }
 
     public override void UnselectObject() { }
 }

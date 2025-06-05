@@ -30,7 +30,8 @@ public abstract class ObjectUI : MonoBehaviour {
         return spriteRenderer.color;
     }
 
-    public virtual void SelectObject(UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) { }
+    public virtual void SelectObject(
+        UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) { }
 
     public virtual void UnselectObject() { }
 }

@@ -5,9 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerMenueUI : MonoBehaviour {
-    private BattleManager battleManager;
-    private LocalPlayer localPlayer;
-    private PlayerUI playerUI;
     [SerializeField] private Toggle menueUIMultiThreading;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
@@ -18,7 +15,10 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private TMP_Dropdown menueUIFactionSelect;
     [SerializeField] private TMP_Text timeScaleText;
     [SerializeField] private Slider menueUITimeScale;
+    private BattleManager battleManager;
     private List<Faction> factions;
+    private LocalPlayer localPlayer;
+    private PlayerUI playerUI;
 
     public void SetupMenueUI(BattleManager battleManager, LocalPlayer localPlayer, PlayerUI playerUI) {
         this.localPlayer = localPlayer;
@@ -29,9 +29,9 @@ public class PlayerMenueUI : MonoBehaviour {
     public void ShowMenueUI() {
         menueUIFactionSelect.ClearOptions();
         factions = battleManager.factions.ToList();
-        List<string> factionNames = new List<string>(factions.Count);
+        var factionNames = new List<string>(factions.Count);
         factionNames.Add("None");
-        foreach (var faction in factions) {
+        foreach (Faction faction in factions) {
             factionNames.Add(faction.name);
         }
 
@@ -54,7 +54,7 @@ public class PlayerMenueUI : MonoBehaviour {
             menueUIFactionSelect.SetValueWithoutNotify(0);
         else
             menueUIFactionSelect.SetValueWithoutNotify(factions.IndexOf(localPlayer.GetFaction()) + 1);
-        timeScaleText.text = "Battle Time Scale: " + ((int)(battleManager.timeScale * 10) / 10f);
+        timeScaleText.text = "Battle Time Scale: " + (int)(battleManager.timeScale * 10) / 10f;
         menueUITimeScale.SetValueWithoutNotify((int)(battleManager.timeScale * 10));
     }
 
@@ -93,14 +93,15 @@ public class PlayerMenueUI : MonoBehaviour {
         if (menueUIFactionSelect.value == 0) {
             localPlayer.player.SetFaction(null);
             localPlayer.SetupFaction(null);
-        } else if (localPlayer.GetFaction() == null || menueUIFactionSelect.value - 1 != factions.IndexOf(localPlayer.GetFaction())) {
+        } else if (localPlayer.GetFaction() == null ||
+            menueUIFactionSelect.value - 1 != factions.IndexOf(localPlayer.GetFaction())) {
             localPlayer.player.SetFaction(factions[menueUIFactionSelect.value - 1]);
         }
     }
 
     public void UpdateBattleTimeScale() {
         battleManager.SetSimulationTimeScale(menueUITimeScale.value / 10f);
-        timeScaleText.text = "Battle Time Scale: " + ((int)(battleManager.timeScale * 10) / 10f);
+        timeScaleText.text = "Battle Time Scale: " + (int)(battleManager.timeScale * 10) / 10f;
     }
 
     public void ResetBattleTimeScale() {

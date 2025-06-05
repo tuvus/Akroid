@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class UnitGroup : ObjectGroup<Unit> {
-    public UnitGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty, bool setupGroupPositionAndSize = true,
+    public UnitGroup(BattleManager battleManager, HashSet<Unit> objects, bool deleteGroupWhenEmpty,
+        bool setupGroupPositionAndSize = true,
         bool changeSizeIndicatorPosition = false) :
         base(battleManager, objects, deleteGroupWhenEmpty, setupGroupPositionAndSize, changeSizeIndicatorPosition) { }
 

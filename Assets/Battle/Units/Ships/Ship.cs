@@ -4,10 +4,19 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class Ship : Unit {
-    public ShipScriptableObject shipScriptableObject { get; private set; }
+    public enum ShipAction {
+        Idle,
+        Rotate,
+        Move,
+        MoveRotate,
+        MoveLateral,
+        Dock,
+        DockMove,
+        DockRotate,
+        MoveAndRotate
+    }
 
     public enum ShipClass {
         Transport,
@@ -17,7 +26,7 @@ public class Ship : Unit {
         Aterna,
         StationBuilder,
         Zarrack,
-        Eletera,
+        Eletera
     }
 
     public enum ShipType {
@@ -30,96 +39,24 @@ public class Ship : Unit {
         Cruiser,
         Dreadnaught,
         GasCollector,
-        Colonizer,
+        Colonizer
     }
 
-    public enum ShipAction {
-        Idle,
-        Rotate,
-        Move,
-        MoveRotate,
-        MoveLateral,
-        Dock,
-        DockMove,
-        DockRotate,
-        MoveAndRotate,
-    }
-
-    public ShipAI shipAI { get; private set; }
-    public Fleet fleet;
+    private const float checkRotationSpeed = 0.2f;
     public Station dockedStation;
+    public Fleet fleet;
     private float mass;
-    private float thrust;
-    public bool thrusting { get; private set; }
-    /// <summary> A modifier to the thrust size between 0 and 1 based on the ships speed. </summary>
-    public float thrustSize { get; private set; }
     private float maxSetSpeed;
+    [SerializeField] private Vector2 movePosition;
 
     public ShipAction shipAction;
     [SerializeField] private float targetRotation;
-    [SerializeField] private Vector2 movePosition;
     [SerializeField] private Station targetStation;
+    private float thrust;
     private float timeUntilCheckRotation;
-    private const float checkRotationSpeed = 0.2f;
 
-    [System.Serializable]
-    public class ShipBlueprint {
-        public string name;
-        public Faction faction;
-        public ShipScriptableObject shipScriptableObject;
-
-        protected ShipBlueprint(Faction faction, ShipScriptableObject shipScriptableObject, string name = null) {
-            if (name == null) this.name = shipScriptableObject.unitName;
-            else this.name = name;
-
-            this.faction = faction;
-            this.shipScriptableObject = shipScriptableObject;
-        }
-        public ShipBlueprint(ShipBlueprint shipBlueprint, Faction faction) {
-            this.name = shipBlueprint.name;
-            this.faction = faction;
-            this.shipScriptableObject = shipBlueprint.shipScriptableObject;
-        }
-    }
-
-    [System.Serializable]
-    public class ShipConstructionBlueprint : ShipBlueprint {
-        /// <summary> The credit cost of constructing the blueprint. </summary>
-        public long cost;
-
-        /// <summary>
-        /// The amount of resources to be put into the blueprint before it can be constructed.
-        /// This value may be reduced throughout construction.
-        /// </summary>
-        public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
-
-        public long totalResourcesRequired { get; private set; }
-
-        public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(faction,
-            shipBlueprint.shipScriptableObject, name) {
-            cost = shipScriptableObject.cost;
-            resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
-            totalResourcesRequired = 0;
-            for (int i = 0; i < shipScriptableObject.resourceTypes.Count; i++) {
-                resourceCosts.Add(shipScriptableObject.resourceTypes[i], shipScriptableObject.resourceCosts[i]);
-                totalResourcesRequired += shipScriptableObject.resourceCosts[i];
-            }
-        }
-
-        public long GetTotalResourcesLeftToUse() {
-            return resourceCosts.Sum(c => c.Value);
-        }
-
-        public bool IsFinished() {
-            return resourceCosts.Count == 0;
-        }
-
-        public Faction GetFaction() {
-            return faction;
-        }
-    }
-
-    public Ship(BattleObjectData battleObjectData, BattleManager battleManager, ShipScriptableObject shipScriptableObject) :
+    public Ship(BattleObjectData battleObjectData, BattleManager battleManager,
+        ShipScriptableObject shipScriptableObject) :
         base(battleObjectData, battleManager, shipScriptableObject) {
         this.shipScriptableObject = shipScriptableObject;
         faction.AddShip(this);
@@ -134,11 +71,75 @@ public class Ship : Unit {
         SetIdle();
         visible = true;
     }
+    public ShipScriptableObject shipScriptableObject { get; }
+
+    public ShipAI shipAI { get; }
+    public bool thrusting { get; private set; }
+    /// <summary> A modifier to the thrust size between 0 and 1 based on the ships speed. </summary>
+    public float thrustSize { get; private set; }
 
     public void SetupThrusters() {
         thrusting = false;
         thrust = moduleSystem.Get<Thruster>()
             .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
+    }
+
+    [Serializable]
+    public class ShipBlueprint {
+        public string name;
+        public ShipScriptableObject shipScriptableObject;
+        public Faction faction;
+
+        protected ShipBlueprint(Faction faction, ShipScriptableObject shipScriptableObject, string name = null) {
+            if (name == null) this.name = shipScriptableObject.unitName;
+            else this.name = name;
+
+            this.faction = faction;
+            this.shipScriptableObject = shipScriptableObject;
+        }
+        public ShipBlueprint(ShipBlueprint shipBlueprint, Faction faction) {
+            name = shipBlueprint.name;
+            this.faction = faction;
+            shipScriptableObject = shipBlueprint.shipScriptableObject;
+        }
+    }
+
+    [Serializable]
+    public class ShipConstructionBlueprint : ShipBlueprint {
+        /// <summary> The credit cost of constructing the blueprint. </summary>
+        public long cost;
+
+        /// <summary>
+        ///     The amount of resources to be put into the blueprint before it can be constructed.
+        ///     This value may be reduced throughout construction.
+        /// </summary>
+        public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
+
+        public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(
+            faction,
+            shipBlueprint.shipScriptableObject, name) {
+            cost = shipScriptableObject.cost;
+            resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
+            totalResourcesRequired = 0;
+            for (int i = 0; i < shipScriptableObject.resourceTypes.Count; i++) {
+                resourceCosts.Add(shipScriptableObject.resourceTypes[i], shipScriptableObject.resourceCosts[i]);
+                totalResourcesRequired += shipScriptableObject.resourceCosts[i];
+            }
+        }
+
+        public long totalResourcesRequired { get; private set; }
+
+        public long GetTotalResourcesLeftToUse() {
+            return resourceCosts.Sum(c => c.Value);
+        }
+
+        public bool IsFinished() {
+            return resourceCosts.Count == 0;
+        }
+
+        public Faction GetFaction() {
+            return faction;
+        }
     }
 
     #region Update
@@ -157,13 +158,14 @@ public class Ship : Unit {
         if (fleet == null) base.FindEnemies();
     }
 
-    void UpdateMovement(float deltaTime) {
+    private void UpdateMovement(float deltaTime) {
         if (shipAction == ShipAction.Idle) {
             return;
         }
 
         velocity = Vector2.zero;
-        if ((shipAction == ShipAction.Dock || shipAction == ShipAction.DockMove || shipAction == ShipAction.DockRotate) &&
+        if ((shipAction == ShipAction.Dock || shipAction == ShipAction.DockMove ||
+                shipAction == ShipAction.DockRotate) &&
             (targetStation == null || !targetStation.IsSpawned())) {
             SetIdle();
         }
@@ -185,7 +187,8 @@ public class Ship : Unit {
             }
         }
 
-        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate || shipAction == ShipAction.DockRotate ||
+        if (shipAction == ShipAction.Rotate || shipAction == ShipAction.MoveRotate ||
+            shipAction == ShipAction.DockRotate ||
             shipAction == ShipAction.MoveAndRotate) {
             float localRotation = Calculator.GetLocalTargetRotation(rotation, targetRotation);
             float turnSpeed = GetTurnSpeed() * deltaTime;
@@ -220,7 +223,8 @@ public class Ship : Unit {
             }
         }
 
-        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove || shipAction == ShipAction.MoveAndRotate) {
+        if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove ||
+            shipAction == ShipAction.MoveAndRotate) {
             float distance = Calculator.GetDistanceToPosition(position - movePosition);
             float speed = math.min(maxSetSpeed, GetSpeed());
             if (GetEnemyUnitsInRangeDistance().Count != 0)
@@ -257,11 +261,9 @@ public class Ship : Unit {
             if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
                 position = movePosition;
                 SetIdle();
-                return;
             } else {
                 Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, speed * deltaTime) - GetPosition();
                 position += (Vector2)temp;
-                return;
             }
         }
     }
@@ -288,7 +290,7 @@ public class Ship : Unit {
         }
 
         shipAction = ShipAction.Rotate;
-        this.targetRotation = rotation;
+        targetRotation = rotation;
     }
 
     public void SetTargetRotate(Vector2 position) {
@@ -296,7 +298,9 @@ public class Ship : Unit {
     }
 
     public void SetTargetRotate(Vector2 position, float extraAngle) {
-        SetTargetRotate(Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) + extraAngle));
+        SetTargetRotate(
+            Calculator.ConvertTo360DegRotation(Calculator.GetAngleOutOfTwoPositions(GetPosition(), position) +
+                extraAngle));
     }
 
     public void SetLateralMovePosition(Vector2 position) {
@@ -306,7 +310,7 @@ public class Ship : Unit {
 
         if (dockedStation != null) UndockShip(position);
         shipAction = ShipAction.MoveLateral;
-        this.movePosition = position;
+        movePosition = position;
     }
 
     public void SetMovePosition(Vector2 position) {
@@ -321,13 +325,14 @@ public class Ship : Unit {
 
         if (dockedStation != null)
             UndockShip(position);
-        this.movePosition = position;
+        movePosition = position;
         SetTargetRotate(position);
         shipAction = ShipAction.MoveRotate;
     }
 
     public void SetMovePosition(Vector2 position, float distanceFromPosition) {
-        SetMovePosition(Vector2.MoveTowards(GetPosition(), position, Vector2.Distance(GetPosition(), position) - distanceFromPosition));
+        SetMovePosition(Vector2.MoveTowards(GetPosition(), position,
+            Vector2.Distance(GetPosition(), position) - distanceFromPosition));
     }
 
     public void SetDockTarget(Station targetStation) {
@@ -371,7 +376,8 @@ public class Ship : Unit {
     public float GetBattleSpeed(float distanceToClosestEnemy) {
         if (distanceToClosestEnemy > GetMaxWeaponRange()) return 1f;
         if (distanceToClosestEnemy <= GetMinWeaponRange()) return 0.5f;
-        return 0.5f + 0.5f * ((distanceToClosestEnemy - GetMinWeaponRange()) / (GetMaxWeaponRange() - GetMinWeaponRange()));
+        return 0.5f + 0.5f * ((distanceToClosestEnemy - GetMinWeaponRange()) /
+            (GetMaxWeaponRange() - GetMinWeaponRange()));
     }
 
     public override void DestroyUnit() {
@@ -382,7 +388,6 @@ public class Ship : Unit {
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-
     public void DockShip(Station station) {
         if (station.DockShip(this)) {
             visible = false;
@@ -451,7 +456,7 @@ public class Ship : Unit {
 
     public bool IsCombatShip() {
         return shipScriptableObject.shipType == ShipType.Fighter || shipScriptableObject.shipType == ShipType.Cruiser ||
-               shipScriptableObject.shipType == ShipType.Frigate || shipScriptableObject.shipType == ShipType.Dreadnaught;
+            shipScriptableObject.shipType == ShipType.Frigate || shipScriptableObject.shipType == ShipType.Dreadnaught;
     }
 
     public bool IsTransportShip() {
@@ -500,7 +505,8 @@ public class Ship : Unit {
 
 
     public bool IsIdle() {
-        return shipAction == ShipAction.Idle && (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
+        return shipAction == ShipAction.Idle &&
+            (shipAI.commands.Count == 0 || shipAI.commands[0].commandType == Command.CommandType.Idle);
     }
 
     [ContextMenu("GetShipThrust")]

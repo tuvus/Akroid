@@ -3,14 +3,10 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class FactionAI {
-    public BattleManager battleManager { get; private set; }
-    public Faction faction { get; protected set; }
-    public bool autoResearch;
     public float attackSpeed = 3f;
-    public float attackTime;
     public float attackStrength = 0.1f;
-
-    [field: SerializeField] public HashSet<Ship> idleShips { get; protected set; }
+    public float attackTime;
+    public bool autoResearch;
 
     public FactionAI(BattleManager battleManager, Faction faction) {
         this.battleManager = battleManager;
@@ -18,6 +14,10 @@ public class FactionAI {
         idleShips = new HashSet<Ship>(40);
         autoResearch = true;
     }
+    public BattleManager battleManager { get; }
+    public Faction faction { get; protected set; }
+
+    [field: SerializeField] public HashSet<Ship> idleShips { get; protected set; }
 
     public virtual void UpdateFactionAI(float deltaTime) {
         if (autoResearch)

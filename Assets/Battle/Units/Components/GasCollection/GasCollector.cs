@@ -1,6 +1,6 @@
 public class GasCollector : ModuleComponent {
-    GasCollectorScriptableObject gasCollectorScriptableObject;
-    float collectionTime;
+    private float collectionTime;
+    private readonly GasCollectorScriptableObject gasCollectorScriptableObject;
 
     public GasCollector(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -14,7 +14,8 @@ public class GasCollector : ModuleComponent {
     public bool CollectGas(GasCloud gasCloud, float deltaTime) {
         collectionTime -= deltaTime;
         if (collectionTime <= 0) {
-            if (unit.LoadCargo(gasCloud.CollectGas(gasCollectorScriptableObject.collectionAmount), CargoBay.CargoTypes.Gas) > 0) {
+            if (unit.LoadCargo(gasCloud.CollectGas(gasCollectorScriptableObject.collectionAmount),
+                CargoBay.CargoTypes.Gas) > 0) {
                 collectionTime = gasCollectorScriptableObject.collectionSpeed;
                 return false;
             }

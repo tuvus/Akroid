@@ -1,19 +1,17 @@
-using System;
 using System.Collections.Generic;
 
 public class Player {
-    public Faction faction { get; private set; }
-    public HashSet<Unit> ownedUnits { get; private set; }
-    public bool lockedOwnedUnits { get; private set; }
-
-    public bool isLocalPlayer { get; private set; }
-
     public Player(bool isLocalPlayer) {
         faction = null;
         ownedUnits = new HashSet<Unit>();
         lockedOwnedUnits = false;
         this.isLocalPlayer = isLocalPlayer;
     }
+    public Faction faction { get; private set; }
+    public HashSet<Unit> ownedUnits { get; }
+    public bool lockedOwnedUnits { get; private set; }
+
+    public bool isLocalPlayer { get; private set; }
 
     public void SetFaction(Faction faction) {
         if (faction == this.faction) return;

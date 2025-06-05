@@ -3,67 +3,54 @@ using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 /// <summary>
-/// Represents an object that can exist in the scene.
-/// Holds functionality that is common to most objects.
+///     Represents an object that can exist in the scene.
+///     Holds functionality that is common to most objects.
 /// </summary>
 public abstract class BattleObject : IObject, IPositionConfirmer {
+    private readonly List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
+
+    public BattleObject() { }
+
+    public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
+        this.battleManager = battleManager;
+        objectName = battleObjectData.objectName;
+        position = battleObjectData.positionGiver.position;
+        rotation = battleObjectData.rotation;
+        scale = battleObjectData.scale;
+        faction = battleObjectData.faction;
+        spawned = false;
+        visible = false;
+        random = new Random(battleManager.GetRandomSeed());
+    }
     public BattleManager battleManager { get; private set; }
     [field: SerializeField] public string objectName { get; protected set; }
     [field: SerializeField] public float size { get; protected set; }
     [field: SerializeField] public Vector2 position { get; protected set; }
     [field: SerializeField] public float rotation { get; protected set; }
     [field: SerializeField] public Vector2 scale { get; protected set; }
-
-    private List<IObjectGroupLink> battleObjectInGroups = new List<IObjectGroupLink>(5);
     [field: SerializeField] public Faction faction { get; protected set; }
     public bool spawned { get; protected set; }
     public bool visible { get; protected set; }
     protected Random random { get; private set; }
 
-    public struct BattleObjectData {
-        public string objectName;
-        public BattleManager.PositionGiver positionGiver;
-        public float rotation;
-        public Vector2 scale;
-        public Faction faction;
-
-        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Vector2 scale,
-            Faction faction = null) {
-            this.objectName = objectName;
-            this.positionGiver = positionGiver;
-            this.rotation = rotation;
-            this.scale = scale;
-            this.faction = faction;
-        }
-
-        public BattleObjectData(string objectName, Vector2 position, float rotation, Vector2 scale, Faction faction = null) :
-            this(objectName, new BattleManager.PositionGiver(position), rotation, scale, faction) { }
-
-        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation, Faction faction = null) :
-            this(objectName, positionGiver, rotation, Vector2.one, faction) { }
-
-        public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null) :
-            this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
-
-        public BattleObjectData(string objectName, Faction faction = null) : this(objectName, new BattleManager.PositionGiver(Vector2.zero), 0, Vector2.one, faction) { }
+    public virtual Vector2 GetPosition() {
+        return position;
     }
 
-    public BattleObject() { }
+    /// <summary>
+    ///     Returns the game size of the object used for collisions, targeting, etc.
+    /// </summary>
+    /// <returns>the physical size of the object</returns>
+    public float GetSize() {
+        return size;
+    }
 
-    public BattleObject(BattleObjectData battleObjectData, BattleManager battleManager) {
-        this.battleManager = battleManager;
-        this.objectName = battleObjectData.objectName;
-        this.position = battleObjectData.positionGiver.position;
-        this.rotation = battleObjectData.rotation;
-        this.scale = battleObjectData.scale;
-        this.faction = battleObjectData.faction;
-        spawned = false;
-        visible = false;
-        random = new Random(battleManager.GetRandomSeed());
+    bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        return true;
     }
 
     public void SetupPosition(BattleManager.PositionGiver positionGiver) {
-        this.position = GetSetupPosition(positionGiver);
+        position = GetSetupPosition(positionGiver);
     }
 
     public bool IsInGroup(IObjectGroupLink newGroup) {
@@ -96,24 +83,8 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         return position.position;
     }
 
-    bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        return true;
-    }
-
-    public virtual Vector2 GetPosition() {
-        return position;
-    }
-
     public void SetRotation(float rotation) {
         this.rotation = rotation;
-    }
-
-    /// <summary>
-    /// Returns the game size of the object used for collisions, targeting, etc.
-    /// </summary>
-    /// <returns>the physical size of the object</returns>
-    public float GetSize() {
-        return size;
     }
 
     protected virtual void Spawn() {
@@ -134,7 +105,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Returns the size of the sprite not including any scale modifications specific to the BattleObject.
+    ///     Returns the size of the sprite not including any scale modifications specific to the BattleObject.
     /// </summary>
     /// <returns>the size of the sprite</returns>
     public virtual float GetSpriteSize() {
@@ -171,4 +142,36 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
 
     /// <returns>A GameObject representing the prefab, or null if the object is not rendered</returns>
     public abstract GameObject GetPrefab();
+
+    public struct BattleObjectData {
+        public string objectName;
+        public BattleManager.PositionGiver positionGiver;
+        public float rotation;
+        public Vector2 scale;
+        public Faction faction;
+
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation,
+            Vector2 scale,
+            Faction faction = null) {
+            this.objectName = objectName;
+            this.positionGiver = positionGiver;
+            this.rotation = rotation;
+            this.scale = scale;
+            this.faction = faction;
+        }
+
+        public BattleObjectData(string objectName, Vector2 position, float rotation, Vector2 scale,
+            Faction faction = null) :
+            this(objectName, new BattleManager.PositionGiver(position), rotation, scale, faction) { }
+
+        public BattleObjectData(string objectName, BattleManager.PositionGiver positionGiver, float rotation,
+            Faction faction = null) :
+            this(objectName, positionGiver, rotation, Vector2.one, faction) { }
+
+        public BattleObjectData(string objectName, Vector2 position, float rotation, Faction faction = null) :
+            this(objectName, new BattleManager.PositionGiver(position), rotation, Vector2.one, faction) { }
+
+        public BattleObjectData(string objectName, Faction faction = null) : this(objectName,
+            new BattleManager.PositionGiver(Vector2.zero), 0, Vector2.one, faction) { }
+    }
 }

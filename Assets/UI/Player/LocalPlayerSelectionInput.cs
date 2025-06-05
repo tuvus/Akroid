@@ -3,17 +3,16 @@ using System.Linq;
 using UnityEngine;
 
 public class LocalPlayerSelectionInput : LocalPlayerInput {
-    public bool AdditiveButtonPressed { get; private set; }
-    public bool SetButtonPressed { get; private set; }
-
-    [SerializeField] RectTransform selectionBox;
-    Vector2 boxStartPosition;
+    [SerializeField] private RectTransform selectionBox;
 
     [SerializeField] protected SelectionGroup selectedUnits;
+    private Vector2 boxStartPosition;
     private SelectionGroup objectsInSelectionBox;
 
     protected int selectedGroup = -1;
-    float selectedGroupTime = 0;
+    private float selectedGroupTime;
+    public bool AdditiveButtonPressed { get; private set; }
+    public bool SetButtonPressed { get; private set; }
 
     public override void Setup(BattleManager battleManager, LocalPlayer localPlayer, UIBattleManager uiBattleManager) {
         base.Setup(battleManager, localPlayer, uiBattleManager);
@@ -92,11 +91,11 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         }
     }
 
-    void SetButtonDown() {
+    private void SetButtonDown() {
         SetButtonPressed = true;
     }
 
-    void SetButtonUp() {
+    private void SetButtonUp() {
         SetButtonPressed = false;
     }
 
@@ -115,10 +114,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     /// <summary>
-    /// Handles operations related to fleets and combat ships.
-    /// If no combat ship is selected it selects all combat ships.
-    /// If there is a combat ship selected then it creates a fleet.
-    /// If there is a fleet selected it tells them to go into a formation.
+    ///     Handles operations related to fleets and combat ships.
+    ///     If no combat ship is selected it selects all combat ships.
+    ///     If there is a combat ship selected then it creates a fleet.
+    ///     If there is a fleet selected it tells them to go into a formation.
     /// </summary>
     protected virtual void CombatUnitButtonPerformed() {
         if (!SelectGroup(10)) {
@@ -126,7 +125,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
             selectedUnits.ClearGroup();
             if (localPlayer.player.ownedUnits == null)
                 return;
-            foreach (var unit in localPlayer.player.ownedUnits) {
+            foreach (Unit unit in localPlayer.player.ownedUnits) {
                 if (unit.IsShip() && ((Ship)unit).IsCombatShip()) {
                     selectedUnits.AddShip((ShipUI)uiBattleManager.units[unit]);
                 }
@@ -137,7 +136,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         }
     }
 
-    void StartBoxSelection(Vector2 mousePosition) {
+    private void StartBoxSelection(Vector2 mousePosition) {
         actionType = ActionType.Selecting;
         boxStartPosition = mousePosition;
         if (!AdditiveButtonPressed) {
@@ -145,7 +144,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         }
     }
 
-    void UpdateBoxSelection(Vector2 mousePosition) {
+    private void UpdateBoxSelection(Vector2 mousePosition) {
         if (!AdditiveButtonPressed) {
             objectsInSelectionBox.UnselectAllBattleObjects();
             selectedUnits.SelectAllBattleObjects();
@@ -162,8 +161,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         float boxHeight = mousePosition.y - boxStartPosition.y;
         selectionBox.sizeDelta = new Vector2(Mathf.Abs(boxWidth), Mathf.Abs(boxHeight)) / GetScreenScale();
         selectionBox.position = boxStartPosition + new Vector2(boxWidth / 2, boxHeight / 2);
-        Vector2 bottomLeft = new Vector2(Mathf.Min(boxStartPosition.x, mousePosition.x), Mathf.Min(boxStartPosition.y, mousePosition.y));
-        Vector2 topRight = new Vector2(Mathf.Max(boxStartPosition.x, mousePosition.x), Mathf.Max(boxStartPosition.y, mousePosition.y));
+        Vector2 bottomLeft = new Vector2(Mathf.Min(boxStartPosition.x, mousePosition.x),
+            Mathf.Min(boxStartPosition.y, mousePosition.y));
+        Vector2 topRight = new Vector2(Mathf.Max(boxStartPosition.x, mousePosition.x),
+            Mathf.Max(boxStartPosition.y, mousePosition.y));
 
         if (rightClickedBattleObject != null)
             objectsInSelectionBox.AddBattleObject(rightClickedBattleObject);
@@ -183,7 +184,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
 
-    void EndBoxSelection() {
+    private void EndBoxSelection() {
         actionType = ActionType.None;
         selectionBox.gameObject.SetActive(false);
         rightClickedBattleObject = null;
@@ -198,7 +199,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                     SelectBattleObjects(mouseOverBattleObject);
                 }
             } else if (!AdditiveButtonPressed) {
-                objectsInSelectionBox.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
+                objectsInSelectionBox.SelectAllBattleObjects();
                 objectsInSelectionBox.ClearGroup();
             } else {
                 if (displayedFleet != null) {
@@ -222,7 +223,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     public void SelectBattleObjects(BattleObjectUI battleObject) {
-        SelectBattleObjects(new List<BattleObjectUI>() { battleObject });
+        SelectBattleObjects(new List<BattleObjectUI> { battleObject });
     }
 
     public void SelectBattleObjects(List<BattleObjectUI> newBattleObjects) {
@@ -251,7 +252,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     public void AddSelectedBattleObjects(BattleObjectUI newBattleObject) {
-        AddSelectedBattleObjects(new List<BattleObjectUI>() { newBattleObject });
+        AddSelectedBattleObjects(new List<BattleObjectUI> { newBattleObject });
     }
 
     public void AddSelectedBattleObjects(List<BattleObjectUI> newBattleObjects) {
@@ -266,10 +267,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     /// <summary>
-    /// Check the unitGroup to see if it composed of only ships and if all ships belong to the same fleet
+    ///     Check the unitGroup to see if it composed of only ships and if all ships belong to the same fleet
     /// </summary>
     /// <returns>true if all ships belong to the same fleet, otherswise returns false </returns>
-    bool AreUnitsInUnitGroupInOneFleet(SelectionGroup unitGroup) {
+    private bool AreUnitsInUnitGroupInOneFleet(SelectionGroup unitGroup) {
         List<ShipUI> allShips = unitGroup.GetAllShips();
         if (allShips.Count == 0 || allShips.Count < unitGroup.objects.Count || allShips[0].ship.fleet == null)
             return false;
@@ -284,13 +285,14 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     public void SetDisplayedUnit() {
         displayedFleet = null;
         UnitUI strongestUnit = null;
-        foreach (var unitUI in selectedUnits.GetAllUnits()) {
+        foreach (UnitUI unitUI in selectedUnits.GetAllUnits()) {
             if (strongestUnit == null || unitUI.unit.GetMaxHealth() > strongestUnit.unit.GetMaxHealth())
                 strongestUnit = unitUI;
         }
 
         displayedBattleObject = strongestUnit;
-        if (displayedBattleObject == null && selectedUnits.objects.Count > 0) displayedBattleObject = selectedUnits.objects.First();
+        if (displayedBattleObject == null && selectedUnits.objects.Count > 0)
+            displayedBattleObject = selectedUnits.objects.First();
     }
 
     public void SetDisplayedFleet(FleetUI fleet) {
@@ -299,8 +301,8 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     /// <summary>
-    /// Sets the selected group to the given integer.
-    /// If the group was already selected focuses on the displayed unit and returns true.
+    ///     Sets the selected group to the given integer.
+    ///     If the group was already selected focuses on the displayed unit and returns true.
     /// </summary>
     /// <param name="selectedGroup"></param>
     /// <returns>True if the group was alreay selected</returns>
@@ -310,11 +312,10 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
                 SetCameraPosition(displayedBattleObject.battleObject.GetPosition());
             this.selectedGroup = -1;
             return true;
-        } else {
-            this.selectedGroup = selectedGroup;
-            selectedGroupTime = 1f;
-            return false;
         }
+        this.selectedGroup = selectedGroup;
+        selectedGroupTime = 1f;
+        return false;
     }
 
     public void SelectOnlyControllableUnits() {
@@ -335,15 +336,16 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
     }
 
     /// <summary>
-    /// Unselects all selected units and then clears the selectUnits group
+    ///     Unselects all selected units and then clears the selectUnits group
     /// </summary>
     protected virtual void ClearSelectedBattleObjects() {
-        selectedUnits.SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
+        selectedUnits.SelectAllBattleObjects();
         selectedUnits.ClearGroup();
     }
 
     public override BattleObjectUI GetDisplayedBattleObject() {
-        if ((displayedBattleObject == null || !displayedBattleObject.battleObject.IsSpawned()) && displayedFleet != null) {
+        if ((displayedBattleObject == null || !displayedBattleObject.battleObject.IsSpawned()) &&
+            displayedFleet != null) {
             SetDisplayedFleet(displayedFleet);
         }
 

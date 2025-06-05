@@ -3,7 +3,7 @@ public class ShipUI : UnitUI {
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
-        this.ship = (Ship)battleObject;
+        ship = (Ship)battleObject;
     }
 
     public override void UpdateObject() {

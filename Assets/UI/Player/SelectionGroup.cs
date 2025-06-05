@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
-[System.Serializable]
+[Serializable]
 public class SelectionGroup {
     public enum GroupType {
         Station = -4,
@@ -12,7 +13,7 @@ public class SelectionGroup {
         Objects = 1,
         Ships = 2,
         Units = 3,
-        Fleet = 4,
+        Fleet = 4
     }
 
     public GroupType groupType;
@@ -28,8 +29,8 @@ public class SelectionGroup {
 
     public List<UnitUI> GetAllUnits() {
         if (groupType == GroupType.Fleet) {
-            List<UnitUI> fleetUnits = new List<UnitUI>();
-            foreach (var ship in fleet.GetShipsUI()) {
+            var fleetUnits = new List<UnitUI>();
+            foreach (ShipUI ship in fleet.GetShipsUI()) {
                 fleetUnits.Add(ship);
             }
 
@@ -40,7 +41,7 @@ public class SelectionGroup {
     }
 
     public List<ShipUI> GetAllShips(Faction faction = null) {
-        List<ShipUI> listOfShips = new List<ShipUI>();
+        var listOfShips = new List<ShipUI>();
         foreach (BattleObjectUI battleObject in objects) {
             if (battleObject.battleObject.IsShip()) {
                 ShipUI ship = (ShipUI)battleObject;
@@ -57,7 +58,7 @@ public class SelectionGroup {
     }
 
     public List<StationUI> GetAllStations(Faction faction = null) {
-        List<StationUI> listOfStations = new List<StationUI>();
+        var listOfStations = new List<StationUI>();
         foreach (BattleObjectUI battleObject in objects) {
             if (battleObject.battleObject.IsStation()) {
                 StationUI station = (StationUI)battleObject;
@@ -74,8 +75,8 @@ public class SelectionGroup {
     }
 
     public bool ContainsObject(BattleObjectUI battleObjectUI) {
-        return objects.Contains(battleObjectUI) || (fleet != null && battleObjectUI.battleObject.IsShip() &&
-            fleet.fleet.ships.Contains((Ship)battleObjectUI.battleObject));
+        return objects.Contains(battleObjectUI) || fleet != null && battleObjectUI.battleObject.IsShip() &&
+            fleet.fleet.ships.Contains((Ship)battleObjectUI.battleObject);
     }
 
 
@@ -106,7 +107,7 @@ public class SelectionGroup {
     }
 
     public void AddShips(List<ShipUI> shipList) {
-        shipList.ForEach((s) => AddShip(s));
+        shipList.ForEach(s => AddShip(s));
     }
 
     public void AddShip(ShipUI ship) {
@@ -127,8 +128,8 @@ public class SelectionGroup {
     }
 
     public List<ShipUI> GetShipsOfClass(Ship.ShipClass shipClass) {
-        List<ShipUI> shipList = new List<ShipUI>();
-        foreach (var ship in GetAllShips()) {
+        var shipList = new List<ShipUI>();
+        foreach (ShipUI ship in GetAllShips()) {
             if (ship.ship.GetShipClass() == shipClass) {
                 shipList.Add(ship);
             }
@@ -144,16 +145,16 @@ public class SelectionGroup {
     }
 
     public void CopyGroup(SelectionGroup group) {
-        this.groupType = group.groupType;
-        foreach (var unit in group.objects) {
+        groupType = group.groupType;
+        foreach (BattleObjectUI unit in group.objects) {
             objects.Add(unit);
         }
 
-        this.fleet = group.fleet;
+        fleet = group.fleet;
     }
 
     public void AddUnits(List<UnitUI> unitList) {
-        unitList.ForEach((u) => AddUnit(u));
+        unitList.ForEach(u => AddUnit(u));
     }
 
     public void AddUnits(SelectionGroup unitGroup) {
@@ -200,7 +201,7 @@ public class SelectionGroup {
     }
 
     public void AddBattleObjects(List<BattleObjectUI> battleObject) {
-        battleObject.ForEach((b) => AddBattleObject(b));
+        battleObject.ForEach(b => AddBattleObject(b));
     }
 
     public void RemoveBattleObject(BattleObjectUI battleObject) {
@@ -212,8 +213,8 @@ public class SelectionGroup {
     }
 
     /// <summary>
-    /// Gets the first ship in the group.
-    /// If the group is a fleet returns the first ship in the fleet
+    ///     Gets the first ship in the group.
+    ///     If the group is a fleet returns the first ship in the fleet
     /// </summary>
     /// <returns>the first ship in the group</returns>
     public ShipUI GetShip() {
@@ -228,7 +229,7 @@ public class SelectionGroup {
     }
 
     /// <summary>
-    /// Gets the first station in the group.
+    ///     Gets the first station in the group.
     /// </summary>
     /// <returns>the first station in the group</returns>
     public StationUI GetStation() {
@@ -291,7 +292,8 @@ public class SelectionGroup {
         // }
     }
 
-    public void SelectAllBattleObjects(UnitIconUI.SelectionStrength strength = UnitIconUI.SelectionStrength.Unselected) {
+    public void SelectAllBattleObjects(
+        UnitIconUI.SelectionStrength strength = UnitIconUI.SelectionStrength.Unselected) {
         objects.ForEach(obj => obj.SelectObject(strength));
         if (fleet != null) {
             fleet.SelectObject(strength);
@@ -299,7 +301,7 @@ public class SelectionGroup {
     }
 
     public void UnselectAllBattleObjects() {
-        SelectAllBattleObjects(UnitIconUI.SelectionStrength.Unselected);
+        SelectAllBattleObjects();
     }
 
     public void GiveCommand(Command command, Command.CommandAction commandAction) {

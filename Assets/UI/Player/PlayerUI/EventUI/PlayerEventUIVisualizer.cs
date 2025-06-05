@@ -5,23 +5,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerEventUIVisualizer : MonoBehaviour {
+    [SerializeField] private GameObject unitHighlight;
+    [SerializeField] private GameObject unitArrow;
+    [SerializeField] private GameObject buttonHighlight;
+    private Transform arrowTransform;
+    private List<Button> buttonsToVisualize;
+    private Transform buttonTransform;
+    private Tuple<EventCondition, Action> eventConditionTuple;
+    private Transform highlightTransform;
     private LocalPlayer localPlayer;
+    private List<ObjectUI> objectsToVisualize;
     private PlayerUI playerUI;
     private UIEventManager uIEventManager;
-    private Tuple<EventCondition, Action> eventConditionTuple;
     private UIEventCondition visualizedEvent;
     private Transform worldSpaceTransform;
-    private Transform highlightTransform;
-    private Transform arrowTransform;
-    private Transform buttonTransform;
-    [SerializeField] GameObject unitHighlight;
-    [SerializeField] GameObject unitArrow;
-    [SerializeField] GameObject buttonHighlight;
-    private List<ObjectUI> objectsToVisualize;
-    private List<Button> buttonsToVisualize;
 
 
-    public void SetupEventUI(UIManager uIManager, UIEventManager uIEventManager, LocalPlayer localPlayer, PlayerUI playerUI) {
+    public void SetupEventUI(UIManager uIManager, UIEventManager uIEventManager, LocalPlayer localPlayer,
+        PlayerUI playerUI) {
         worldSpaceTransform = uIManager.GetEventVisulationTransform();
         highlightTransform = worldSpaceTransform.GetChild(0);
         arrowTransform = worldSpaceTransform.GetChild(1);
@@ -45,7 +46,8 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         }
 
         if (visualizedEvent == null || !visualizedEvent.visualize) {
-            eventConditionTuple = uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UIEventCondition);
+            eventConditionTuple =
+                uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UIEventCondition);
             if (eventConditionTuple != null) visualizedEvent = (UIEventCondition)eventConditionTuple.Item1;
             newEvent = true;
         }
@@ -55,7 +57,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         }
     }
 
-    void VisualizeEvent(bool newEvent) {
+    private void VisualizeEvent(bool newEvent) {
         objectsToVisualize.Clear();
         buttonsToVisualize.Clear();
         visualizedEvent.GetVisualizedObjects(objectsToVisualize, buttonsToVisualize);
@@ -63,17 +65,17 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         VisualizeButtons(buttonsToVisualize);
     }
 
-    void RemoveVisuals() {
+    private void RemoveVisuals() {
         for (int i = highlightTransform.childCount - 1; i >= 0; i--) {
-            GameObject.Destroy(highlightTransform.GetChild(i).gameObject);
+            Destroy(highlightTransform.GetChild(i).gameObject);
         }
 
         for (int i = arrowTransform.childCount - 1; i >= 0; i--) {
-            GameObject.Destroy(arrowTransform.GetChild(i).gameObject);
+            Destroy(arrowTransform.GetChild(i).gameObject);
         }
     }
 
-    void VisualizeObjects(List<ObjectUI> objectsTovisualize) {
+    private void VisualizeObjects(List<ObjectUI> objectsTovisualize) {
         int arrowCount = 0;
         Camera camera = localPlayer.GetLocalPlayerInput().mainCamera;
         for (int i = 0; i < objectsTovisualize.Count; i++) {
@@ -92,8 +94,10 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
                 if (arrowTransform.childCount <= arrowCount) Instantiate(unitArrow, arrowTransform);
                 Transform arrow = arrowTransform.GetChild(arrowCount);
                 arrow.GetComponent<SpriteRenderer>().enabled = true;
-                arrow.position = Vector2.MoveTowards(camera.transform.position, obj.iObject.GetPosition(), camera.orthographicSize / 1);
-                arrow.eulerAngles = new Vector3(0, 0, Calculator.GetAngleOutOfTwoPositions(arrow.position, obj.iObject.GetPosition()));
+                arrow.position = Vector2.MoveTowards(camera.transform.position, obj.iObject.GetPosition(),
+                    camera.orthographicSize / 1);
+                arrow.eulerAngles = new Vector3(0, 0,
+                    Calculator.GetAngleOutOfTwoPositions(arrow.position, obj.iObject.GetPosition()));
                 arrow.localScale = Vector2.one * camera.orthographicSize / 50;
                 arrowCount++;
             }
@@ -108,12 +112,13 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         }
     }
 
-    void VisualizeButtons(List<Button> buttonsToVisualize) {
+    private void VisualizeButtons(List<Button> buttonsToVisualize) {
         for (int i = 0; i < buttonsToVisualize.Count; i++) {
             if (buttonTransform.childCount <= i) Instantiate(buttonHighlight, buttonTransform);
             RectTransform visualizationTransform = buttonTransform.GetChild(i).GetComponent<RectTransform>();
             visualizationTransform.position = buttonsToVisualize[i].GetComponent<RectTransform>().position;
-            visualizationTransform.sizeDelta = buttonsToVisualize[i].GetComponent<RectTransform>().sizeDelta + new Vector2(2, 2);
+            visualizationTransform.sizeDelta =
+                buttonsToVisualize[i].GetComponent<RectTransform>().sizeDelta + new Vector2(2, 2);
             visualizationTransform.gameObject.SetActive(true);
         }
 

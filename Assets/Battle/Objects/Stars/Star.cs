@@ -2,12 +2,11 @@ using System;
 using UnityEngine;
 
 public class Star : BattleObject, IPositionConfirmer {
-    public StarScriptableObject starScriptableObject { get; private set; }
-    public Color color { get; private set; }
-    float targetBrightness;
-    float brightnessSpeed;
+    private float brightnessSpeed;
+    private float targetBrightness;
 
-    public Star(BattleObjectData battleObjectData, BattleManager battleManager, StarScriptableObject starScriptableObject) :
+    public Star(BattleObjectData battleObjectData, BattleManager battleManager,
+        StarScriptableObject starScriptableObject) :
         base(battleObjectData, battleManager) {
         this.starScriptableObject = starScriptableObject;
         color = Color.HSVToRGB(random.NextFloat(0f, 1f), random.NextFloat(.8f, 1f), random.NextFloat(.8f, 1f));
@@ -15,6 +14,19 @@ public class Star : BattleObject, IPositionConfirmer {
         visible = true;
         Spawn();
         SetSize(SetupSize());
+    }
+    public StarScriptableObject starScriptableObject { get; }
+    public Color color { get; private set; }
+
+    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        foreach (IPositionConfirmer blockingObject in battleManager.GetPositionBlockingObjects()) {
+            if (Vector2.Distance(position, blockingObject.GetPosition()) <=
+                minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
@@ -24,16 +36,6 @@ public class Star : BattleObject, IPositionConfirmer {
         if (targetPosition.HasValue)
             return targetPosition.Value;
         return positionGiver.position;
-    }
-
-    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var blockingObject in battleManager.GetPositionBlockingObjects()) {
-            if (Vector2.Distance(position, blockingObject.GetPosition()) <= minDistanceFromObject + GetSize() + blockingObject.GetSize()) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public void UpdateStar(float deltaTime) {
@@ -54,7 +56,7 @@ public class Star : BattleObject, IPositionConfirmer {
         }
     }
 
-    void RandomiseGlareTarget() {
+    private void RandomiseGlareTarget() {
         targetBrightness = random.NextFloat(.5f, 1f);
         brightnessSpeed = random.NextFloat(10f, 30f);
     }

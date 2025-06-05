@@ -3,9 +3,8 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class Shield : BattleObject {
+    private readonly ShieldGenerator shieldGenerator;
     private Unit unit;
-    private ShieldGenerator shieldGenerator;
-    public int health { get; private set; }
 
     public Shield(ShieldGenerator shieldGenerator, Unit unit, int health) {
         this.health = health;
@@ -13,6 +12,7 @@ public class Shield : BattleObject {
         this.unit = unit;
         ReactivateShield();
     }
+    public int health { get; private set; }
 
     public void SetStrength(int strength) {
         health = strength;

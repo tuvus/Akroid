@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 
 public static class NumFormatter {
-    static string[] postfixes = new string[] { "", "K", "M", "B", "T", "Q" };
+    private static readonly string[] postfixes = { "", "K", "M", "B", "T", "Q" };
 
     public static string ConvertNumber(long number) {
         return ConvertNumber((double)number);

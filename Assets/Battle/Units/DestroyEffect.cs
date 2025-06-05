@@ -1,15 +1,13 @@
 public class DestroyEffect {
-    private DestroyEffectScriptableObject destroyEffectScriptableObject;
-    public FlareState flareState { get; private set; }
-    public float flareTime { get; private set; }
-
     public enum FlareState {
         FlaringUp,
         FadeToNormal,
         KeepNormal,
         Fade,
-        End,
+        End
     }
+
+    private readonly DestroyEffectScriptableObject destroyEffectScriptableObject;
 
 
     public DestroyEffect(DestroyEffectScriptableObject destroyEffectScriptableObject) {
@@ -18,9 +16,11 @@ public class DestroyEffect {
         flareState = FlareState.FlaringUp;
         if (this.destroyEffectScriptableObject.flareUpSpeed == 0) flareState = FlareState.FadeToNormal;
     }
+    public FlareState flareState { get; private set; }
+    public float flareTime { get; private set; }
 
     /// <summary>
-    /// Updates the state and time on the destroyed effect.
+    ///     Updates the state and time on the destroyed effect.
     /// </summary>
     /// <returns>True if the effect is active, false otherwise.</returns>
     public bool UpdateDestroyEffect(float deltaTime) {

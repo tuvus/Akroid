@@ -4,20 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipCommandMoveToObjectsCondition> {
-    public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic, LocalPlayer localPlayer,
-        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
+    public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic,
+        LocalPlayer localPlayer,
+        UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager,
+        visualize) { }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
-        HashSet<UnitUI> selectedUnits = localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
-        List<ShipUI> shipsToSelect = new List<ShipUI>();
+        HashSet<UnitUI> selectedUnits =
+            localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
+        var shipsToSelect = new List<ShipUI>();
 
-        foreach (var ship in conditionLogic.shipsToMove) {
+        foreach (Ship ship in conditionLogic.shipsToMove) {
             ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             ShipAI shipAI = ship.shipAI;
             int objectIndex = 0;
-            foreach (var command in shipAI.commands) {
+            foreach (Command command in shipAI.commands) {
                 if (command.commandType == Command.CommandType.Move
-                    && Vector2.Distance(command.targetPosition, conditionLogic.objectsToMoveTo[objectIndex].GetPosition()) <=
+                    && Vector2.Distance(command.targetPosition,
+                        conditionLogic.objectsToMoveTo[objectIndex].GetPosition()) <=
                     ship.GetSize() + conditionLogic.objectsToMoveTo[objectIndex].GetSize()) {
                     objectIndex++;
                     if (objectIndex == conditionLogic.objectsToMoveTo.Count) break;

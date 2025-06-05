@@ -16,12 +16,12 @@ public class UnitScriptableObject : ScriptableObject {
     public Sprite sprite;
 
     [SerializeField] protected ModuleSystem.System[] systems;
-    [SerializeField] protected IModule[] modules;
     public DestroyEffectScriptableObject destroyEffect;
     public Vector2 baseScale = Vector2.one;
     // Note: field:SerializeField is required in order for Unity to copy over a private variable when building the game.
     // Removing it will result in the build behaving differently than the editor and object having a size of 0.
-    [field:SerializeField] public Vector2 spriteBounds { get; private set; }
+    [field: SerializeField] public Vector2 spriteBounds { get; private set; }
+    [SerializeField] protected IModule[] modules;
 
     public void OnValidate() {
         if (systems == null) {
@@ -59,7 +59,7 @@ public class UnitScriptableObject : ScriptableObject {
         resourceTypes.Clear();
         resourceCosts.Clear();
         AddResourceCost(CargoTypes.Metal, maxHealth);
-        foreach (var system in systems.ToList()) {
+        foreach (ModuleSystem.System system in systems.ToList()) {
             if (system == null || system.component == null) {
                 Debug.Log("Null Component " + unitName);
                 continue;
@@ -68,7 +68,8 @@ public class UnitScriptableObject : ScriptableObject {
             if (system.moduleCount == 0) Debug.Log($"{unitName} system {system.name} has a moduleCount of 0!");
             cost += system.component.cost * system.moduleCount;
             for (int f = 0; f < system.component.resourceTypes.Count; f++) {
-                AddResourceCost(system.component.resourceTypes[f], system.component.resourceCosts[f] * system.moduleCount + 10);
+                AddResourceCost(system.component.resourceTypes[f],
+                    system.component.resourceCosts[f] * system.moduleCount + 10);
             }
         }
     }

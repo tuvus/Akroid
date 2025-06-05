@@ -1,13 +1,13 @@
 using UnityEngine;
 
 public class EngagedVisual : MonoBehaviour {
-    UnitUI unitUI;
-    SpriteRenderer spriteRenderer;
-    static float visualTimeMax = .3f;
-    static float visualCooldownMax = 3;
-    float visualTime;
-    float visualCooldownTime;
+    private static readonly float visualTimeMax = .3f;
+    private static readonly float visualCooldownMax = 3;
+    private SpriteRenderer spriteRenderer;
     private UIManager uIManager;
+    private UnitUI unitUI;
+    private float visualCooldownTime;
+    private float visualTime;
 
     public void SetupEngagedVisual(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;

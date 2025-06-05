@@ -3,7 +3,7 @@ public class GasCloudUI : BattleObjectUI {
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
-        this.gasCloud = (GasCloud)battleObject;
+        gasCloud = (GasCloud)battleObject;
         spriteRenderer.sprite = gasCloud.gasCloudScriptableObject.sprite;
         spriteRenderer.color = gasCloud.color;
     }

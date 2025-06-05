@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlanetScriptableObject : ScriptableObject {
     public Sprite sprite;
     public bool hasAtmosphere;
-    [field:SerializeField] public Vector2 spriteBounds { get; private set; }
+    [field: SerializeField] public Vector2 spriteBounds { get; private set; }
     public GameObject prefab;
 
     public void Awake() {

@@ -1,11 +1,10 @@
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class TurretUI : ComponentUI {
-    private Turret turret;
     private AudioSource audioSource;
     private bool fire;
+    private Turret turret;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);

@@ -2,7 +2,8 @@ using System;
 using UnityEngine;
 using static MissileLauncher;
 
-[CreateAssetMenu(fileName = "Resources/Components/MissileLauncherScriptableObject", menuName = "Components/MissileLauncher", order = 3)]
+[CreateAssetMenu(fileName = "Resources/Components/MissileLauncherScriptableObject",
+    menuName = "Components/MissileLauncher", order = 3)]
 public class MissileLauncherScriptableObject : ComponentScriptableObject {
     public float DPS;
     public float range;
@@ -14,6 +15,15 @@ public class MissileLauncherScriptableObject : ComponentScriptableObject {
 
     public MissileScriptableObject missile;
 
+    public void Awake() {
+        targeting = TargetingBehaviors.closest;
+    }
+
+    public override void OnValidate() {
+        DPS = GetDamagePerSecond();
+        base.OnValidate();
+    }
+
     public virtual float GetDamagePerSecond() {
         float time = reloadSpeed;
         if (maxAmmo > 1) {
@@ -22,15 +32,6 @@ public class MissileLauncherScriptableObject : ComponentScriptableObject {
 
         float damage = missile.damage / 2f * maxAmmo;
         return damage / time;
-    }
-
-    public override void OnValidate() {
-        DPS = GetDamagePerSecond();
-        base.OnValidate();
-    }
-
-    public void Awake() {
-        targeting = TargetingBehaviors.closest;
     }
 
     public override Type GetComponentType() {

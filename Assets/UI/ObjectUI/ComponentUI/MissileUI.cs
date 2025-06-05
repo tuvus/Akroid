@@ -4,19 +4,28 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private ParticleSystem thrust;
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private DestroyEffectUI destroyEffectUI;
+    private bool expired;
+    private bool hit;
 
     private Missile missile;
-    private bool hit;
-    private bool expired;
+
+    public void ShowEffects(bool shown) { }
+
+    public void SetParticleSpeed(float speed) {
+        ParticleSystem.MainModule main = thrust.main;
+        main.simulationSpeed = speed;
+        destroyEffectUI.SetParticleSpeed(speed);
+    }
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
         missile = (Missile)battleObject;
         spriteRenderer.enabled = true;
         if (uIManager.GetParticlesShown()) thrust.Play();
-        var main = thrust.main;
+        ParticleSystem.MainModule main = thrust.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
-        destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager, spriteRenderer);
+        destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager,
+            spriteRenderer);
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
         uIManager.uiBattleManager.particleHolders.Add(this);
     }
@@ -26,7 +35,7 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         if (missile.hit && !hit) {
             hit = true;
             destroyEffectUI.Explode(missile.GetDestroyEffect());
-            var emmission = thrust.emission;
+            ParticleSystem.EmissionModule emmission = thrust.emission;
             emmission.enabled = false;
             highlight.enabled = false;
         } else if (missile.hit) {
@@ -34,7 +43,7 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
             highlight.enabled = false;
         } else if (missile.expired && !expired) {
             expired = true;
-            var emmission = thrust.emission;
+            ParticleSystem.EmissionModule emmission = thrust.emission;
             emmission.enabled = false;
         } else {
             highlight.enabled = uIManager.GetEffectsShown();
@@ -45,14 +54,6 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         base.OnBattleObjectRemoved();
         uIManager.uiBattleManager.particleHolders.Remove(this);
         destroyEffectUI.OnBattleObjectRemoved();
-    }
-
-    public void ShowEffects(bool shown) { }
-
-    public void SetParticleSpeed(float speed) {
-        var main = thrust.main;
-        main.simulationSpeed = speed;
-        destroyEffectUI.SetParticleSpeed(speed);
     }
 
     public void ShowParticles(bool shown) { }

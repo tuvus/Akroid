@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Defines the basic properties of an object in the game.
-/// This is required in order to have ObjectGroups and Objects in the same list.
+///     Defines the basic properties of an object in the game.
+///     This is required in order to have ObjectGroups and Objects in the same list.
 /// </summary>
 public interface IObject {
     public float GetSize();

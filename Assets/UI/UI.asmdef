@@ -1,19 +1,19 @@
 {
-    "name": "UI",
-    "rootNamespace": "UI",
-    "references": [
-        "Unity.Mathematics",
-        "Unity.InputSystem",
-        "Unity.TextMeshPro",
-        "Game"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "UI",
+  "rootNamespace": "UI",
+  "references": [
+    "Unity.Mathematics",
+    "Unity.InputSystem",
+    "Unity.TextMeshPro",
+    "Game"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

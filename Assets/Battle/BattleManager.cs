@@ -12,16 +12,22 @@ using static Station;
 using Random = Unity.Mathematics.Random;
 
 /// <summary>
-/// BattleManager is the main class that holds all factions, objects, players and other battle related settings.
-/// BattleManager is in charge of creating each object and keeping track of their lifetime.
-/// This allows every other class to not have to worry about how each class is constructed and how to properly set them up.
-/// The BattleManager can be set up with either a simulation given a few generation parameters or using a campaign.
-/// Note that the BattleManager does not interact with the UI at all or know that it exists,
-/// however the events OnBattleEnd, OnObjectCreated, OnObjectRemoved will send information to the UI if the UI subscribed to them.
+///     BattleManager is the main class that holds all factions, objects, players and other battle related settings.
+///     BattleManager is in charge of creating each object and keeping track of their lifetime.
+///     This allows every other class to not have to worry about how each class is constructed and how to properly set them
+///     up.
+///     The BattleManager can be set up with either a simulation given a few generation parameters or using a campaign.
+///     Note that the BattleManager does not interact with the UI at all or know that it exists,
+///     however the events OnBattleEnd, OnObjectCreated, OnObjectRemoved will send information to the UI if the UI
+///     subscribed to them.
 /// </summary>
 public class BattleManager : MonoBehaviour {
-    private CampaingController campaignController;
-    public EventManager eventManager { get; private set; }
+    public enum BattleState {
+        SettingUp,
+        Setup,
+        Running,
+        Ended
+    }
 
     [field: SerializeField] public float researchModifier { get; private set; }
     [field: SerializeField] public float systemSizeModifier { get; private set; }
@@ -30,6 +36,17 @@ public class BattleManager : MonoBehaviour {
     public List<AsteroidScriptableObject> asteroidBlueprints;
     public List<GasCloudScriptableObject> gasCloudBlueprints;
     public List<StarScriptableObject> starBlueprints;
+
+    [SerializeField] private bool threaded = true;
+    public bool instantHit;
+    public float timeScale;
+    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.SettingUp;
+    private CampaingController campaignController;
+    private Random random;
+    private double simulationTime;
+
+    private float startOfSimulation;
+    public EventManager eventManager { get; private set; }
 
     public HashSet<Faction> factions { get; private set; }
     public HashSet<BattleObject> battleObjects { get; private set; }
@@ -51,6 +68,43 @@ public class BattleManager : MonoBehaviour {
     public HashSet<Missile> unusedMissiles { get; private set; }
     public HashSet<Player> players { get; private set; }
 
+    /// <summary>
+    ///     Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
+    ///     Also has profiling for most method calls.
+    /// </summary>
+    public virtual void FixedUpdate() {
+        if (battleState == BattleState.SettingUp || battleState == BattleState.Setup) return;
+        float deltaTime = Time.fixedDeltaTime * timeScale;
+        simulationTime += deltaTime;
+
+        if (Application.platform == RuntimePlatform.WebGLPlayer) {
+            threaded = false;
+        } else if (PlayerPrefs.HasKey("Threading")) {
+            threaded = PlayerPrefs.GetInt("Threading") == 1;
+        }
+
+        UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
+        UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
+        UpdateCollection(factions.SelectMany(f => f.fleets), f => f.FindEnemies(), "FleetsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
+        UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(),
+            "UnitsFindingEnemies");
+        UpdateCollection(units.ToList(), u => {
+            Profiler.BeginSample(u.GetUnitName());
+            u.UpdateUnit(deltaTime);
+            Profiler.EndSample();
+        }, "UnitsUpdate", false);
+        UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
+        UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
+        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate");
+        UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
+        UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
+        UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
+
+        eventManager.UpdateEvents(deltaTime);
+    }
+
     // Here are events that the UI can subscribe to
     // However the UI should not do any computationally heavy work in them
     // since they may be called syncronized on a different thread
@@ -59,20 +113,22 @@ public class BattleManager : MonoBehaviour {
     public event Action<IObject> OnObjectCreated = delegate { };
     public event Action<IObject> OnObjectRemoved = delegate { };
 
-    [SerializeField] private bool threaded = true;
-    public bool instantHit;
-    public float timeScale;
+    /// <summary>
+    ///     Handles apply an action to a collection of objects in parallel or serial depending on the input
+    ///     and if the player want to use multithreading.
+    /// </summary>
+    public void UpdateCollection<T>(IEnumerable<T> collection, Action<T> action, string profileName,
+        bool parallel = true) {
+        Profiler.BeginSample(profileName);
+        if (threaded && parallel) {
+            Parallel.ForEach(collection, c => action.Invoke(c));
+        } else {
+            foreach (T c in collection) {
+                action.Invoke(c);
+            }
+        }
 
-    float startOfSimulation;
-    double simulationTime;
-    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.SettingUp;
-    private Random random;
-
-    public enum BattleState {
-        SettingUp,
-        Setup,
-        Running,
-        Ended
+        Profiler.EndSample();
     }
 
     public struct PositionGiver {
@@ -86,7 +142,7 @@ public class BattleManager : MonoBehaviour {
 
         public PositionGiver(Vector2 position) {
             this.position = position;
-            this.isExactPosition = true;
+            isExactPosition = true;
             minDistance = 0;
             maxDistance = 0;
             incrementDistance = 0;
@@ -96,18 +152,19 @@ public class BattleManager : MonoBehaviour {
 
         public PositionGiver(Vector2 position, PositionGiver oldPositionGiver) {
             this.position = position;
-            this.isExactPosition = false;
-            this.minDistance = oldPositionGiver.minDistance;
-            this.maxDistance = oldPositionGiver.maxDistance;
-            this.incrementDistance = oldPositionGiver.incrementDistance;
-            this.distanceFromObject = oldPositionGiver.distanceFromObject;
-            this.numberOfTries = oldPositionGiver.numberOfTries;
+            isExactPosition = false;
+            minDistance = oldPositionGiver.minDistance;
+            maxDistance = oldPositionGiver.maxDistance;
+            incrementDistance = oldPositionGiver.incrementDistance;
+            distanceFromObject = oldPositionGiver.distanceFromObject;
+            numberOfTries = oldPositionGiver.numberOfTries;
         }
 
-        public PositionGiver(Vector2 position, float minDistance, float maxDistance, float incrementDistance, float distanceFromObject,
+        public PositionGiver(Vector2 position, float minDistance, float maxDistance, float incrementDistance,
+            float distanceFromObject,
             int numberOfTries) {
             this.position = position;
-            this.isExactPosition = false;
+            isExactPosition = false;
             this.minDistance = minDistance;
             this.maxDistance = maxDistance;
             this.incrementDistance = incrementDistance;
@@ -160,23 +217,26 @@ public class BattleManager : MonoBehaviour {
 
         if (eventManager == null) eventManager = new EventManager(this);
 
-        shipBlueprints.ForEach(b => b.shipScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData()));
-        stationBlueprints.ForEach(b => b.stationScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData()));
+        shipBlueprints.ForEach(b =>
+            b.shipScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData()));
+        stationBlueprints.ForEach(b =>
+            b.stationScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData()));
     }
 
     /// <summary>
-    /// Sets up the battle with manual values.
+    ///     Sets up the battle with manual values.
     /// </summary>
     public void SetupBattle(BattleSettings battleSettings, List<FactionData> factionDatas) {
-        this.systemSizeModifier = battleSettings.systemSizeModifier;
-        this.researchModifier = battleSettings.researchModifier;
+        systemSizeModifier = battleSettings.systemSizeModifier;
+        researchModifier = battleSettings.researchModifier;
         for (int i = 0; i < battleSettings.starCount; i++) {
             CreateNewStar("Star" + (i + 1));
         }
 
         for (int i = 0; i < battleSettings.asteroidFieldCount; i++) {
             CreateNewAsteroidField(Vector2.zero,
-                (int)random.NextFloat(6 * battleSettings.asteroidCountModifier, 14 * battleSettings.asteroidCountModifier));
+                (int)random.NextFloat(6 * battleSettings.asteroidCountModifier,
+                    14 * battleSettings.asteroidCountModifier));
         }
 
         for (int i = 0; i < factionDatas.Count; i++) {
@@ -187,9 +247,9 @@ public class BattleManager : MonoBehaviour {
             CreateNewGasCloud(new PositionGiver(Vector2.zero, 1000, 100000, 500, 2000, 3));
         }
 
-        foreach (var faction in factions) {
+        foreach (Faction faction in factions) {
             faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
-            foreach (var faction2 in factions) {
+            foreach (Faction faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);
             }
@@ -197,7 +257,7 @@ public class BattleManager : MonoBehaviour {
 
         Player localPlayer = new Player(true);
         players.Add(localPlayer);
-        if (factions.Count > 0) localPlayer.SetFaction(factions.First((f) => factionDatas.Any((d) => d.name == f.name)));
+        if (factions.Count > 0) localPlayer.SetFaction(factions.First(f => factionDatas.Any(d => d.name == f.name)));
         else localPlayer.SetFaction(null);
 
         eventManager.AddEvent(eventManager.CreateVictoryCondition(),
@@ -207,8 +267,8 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets up the battle with a CampaignController, doesn't spawn any asteroids or stars.
-    /// Gets the BattleSettings from the CampaignController.
+    ///     Sets up the battle with a CampaignController, doesn't spawn any asteroids or stars.
+    ///     Gets the BattleSettings from the CampaignController.
     /// </summary>
     /// <param name="campaignController">the given CampaignController</param>
     public void SetupBattle(CampaingController campaignController) {
@@ -219,7 +279,7 @@ public class BattleManager : MonoBehaviour {
         players.Add(LocalPlayer);
         LocalPlayer.SetFaction(null);
         campaignController.SetupBattle(this);
-        foreach (var faction in factions) {
+        foreach (Faction faction in factions) {
             faction.UpdateObjectGroup();
         }
 
@@ -235,14 +295,17 @@ public class BattleManager : MonoBehaviour {
     #region Spawning
 
     /// <summary>
-    /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
-    /// If the center location is an asteroid or station isCenterObject should be true.
+    ///     Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from
+    ///     the center point.
+    ///     If the center location is an asteroid or station isCenterObject should be true.
     /// </summary>
     /// <returns></returns>
-    public Vector2? FindFreeLocation(PositionGiver positionGiver, IPositionConfirmer positionConfirmer, float minRange, float maxRange) {
+    public Vector2? FindFreeLocation(PositionGiver positionGiver, IPositionConfirmer positionConfirmer, float minRange,
+        float maxRange) {
         for (int i = 0; i < positionGiver.numberOfTries; i++) {
             float distance = random.NextFloat(minRange, maxRange);
-            Vector2 tryPos = positionGiver.position + Calculator.GetPositionOutOfAngleAndDistance(random.NextFloat(0f, 360f), distance);
+            Vector2 tryPos = positionGiver.position +
+                Calculator.GetPositionOutOfAngleAndDistance(random.NextFloat(0f, 360f), distance);
             if (positionConfirmer.ConfirmPosition(tryPos, positionGiver.distanceFromObject * systemSizeModifier)) {
                 return tryPos;
             }
@@ -252,9 +315,10 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from the center point.
-    /// If the center location is an asteroid or station isCenterObject should be true.
-    /// If the point cannot be found then it increases the search distance.
+    ///     Finds a position around a center location that is minDistanceFromStationOrAsteroid and less than maxDistance from
+    ///     the center point.
+    ///     If the center location is an asteroid or station isCenterObject should be true.
+    ///     If the point cannot be found then it increases the search distance.
     /// </summary>
     /// <returns></returns>
     public Vector2? FindFreeLocationIncrement(PositionGiver positionGiver, IPositionConfirmer positionConfirmer) {
@@ -282,7 +346,8 @@ public class BattleManager : MonoBehaviour {
         return newFaction;
     }
 
-    public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject) {
+    public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData,
+        ShipScriptableObject shipScriptableObject) {
         Ship newShip = new Ship(battleObjectData, this, shipScriptableObject);
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
@@ -291,7 +356,8 @@ public class BattleManager : MonoBehaviour {
         return newShip;
     }
 
-    public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData, StationScriptableObject stationScriptableObject,
+    public Station CreateNewStation(BattleObject.BattleObjectData battleObjectData,
+        StationScriptableObject stationScriptableObject,
         bool built) {
         Station newStation;
         if (stationScriptableObject.stationType == StationType.Shipyard ||
@@ -299,7 +365,8 @@ public class BattleManager : MonoBehaviour {
             stationScriptableObject.stationType == StationType.TradeStation) {
             newStation = new Shipyard(battleObjectData, this, stationScriptableObject, built);
         } else if (stationScriptableObject.stationType == StationType.MiningStation) {
-            newStation = new MiningStation(battleObjectData, this, (MiningStationScriptableObject)stationScriptableObject, built);
+            newStation = new MiningStation(battleObjectData, this,
+                (MiningStationScriptableObject)stationScriptableObject, built);
             ((MiningStation)newStation).GetMiningStationAI().SetupMiningStation();
         } else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
 
@@ -334,7 +401,8 @@ public class BattleManager : MonoBehaviour {
 
     public Star CreateNewStar(string name) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, random.NextFloat(0, 360),
-            new Vector2(10, 10) * random.NextFloat(1f, 2.4f)), this, starBlueprints[random.NextInt(0, starBlueprints.Count)]);
+                new Vector2(10, 10) * random.NextFloat(1f, 2.4f)), this,
+            starBlueprints[random.NextInt(0, starBlueprints.Count)]);
         newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
         stars.Add(newStar);
         AddBattleObject(newStar);
@@ -384,7 +452,8 @@ public class BattleManager : MonoBehaviour {
     public void CreateNewGasCloud(PositionGiver positionGiver, float resourceModifier = 1) {
         float size = random.NextFloat(20, 40);
         GasCloud newGasCloud = new GasCloud(
-            new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, random.NextFloat(0, 360), Vector2.one * size), this,
+            new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, random.NextFloat(0, 360), Vector2.one * size),
+            this,
             (long)(random.NextFloat(1500, 3500) * size * resourceModifier),
             gasCloudBlueprints[random.NextInt(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
@@ -429,7 +498,8 @@ public class BattleManager : MonoBehaviour {
         ships.Remove(ship);
         if (ship.faction != null)
             ship.faction.RemoveShip(ship);
-        if (destroyedUnits.Contains(ship)) throw new System.Exception("The ship that was trying to be destroyed was already destroyed");
+        if (destroyedUnits.Contains(ship))
+            throw new Exception("The ship that was trying to be destroyed was already destroyed");
         destroyedUnits.Add(ship);
     }
 
@@ -528,60 +598,6 @@ public class BattleManager : MonoBehaviour {
 
     #endregion
 
-    /// <summary>
-    /// Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
-    ///
-    /// Also has profiling for most method calls.
-    /// </summary>
-    public virtual void FixedUpdate() {
-        if (battleState == BattleState.SettingUp || battleState == BattleState.Setup) return;
-        float deltaTime = Time.fixedDeltaTime * timeScale;
-        simulationTime += deltaTime;
-
-        if (Application.platform == RuntimePlatform.WebGLPlayer) {
-            threaded = false;
-        } else if (PlayerPrefs.HasKey("Threading")) {
-            threaded = PlayerPrefs.GetInt("Threading") == 1;
-        }
-
-        UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
-        UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
-        UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
-        UpdateCollection(factions.SelectMany(f => f.fleets), f => f.FindEnemies(), "FleetsFindingEnemies");
-        UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
-        UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(), "UnitsFindingEnemies");
-        UpdateCollection(units.ToList(), u => {
-            Profiler.BeginSample(u.GetUnitName());
-            u.UpdateUnit(deltaTime);
-            Profiler.EndSample();
-        }, "UnitsUpdate", false);
-        UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
-        UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
-        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate");
-        UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
-        UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
-        UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
-
-        eventManager.UpdateEvents(deltaTime);
-    }
-
-    /// <summary>
-    /// Handles apply an action to a collection of objects in parallel or serial depending on the input
-    /// and if the player want to use multithreading.
-    /// </summary>
-    public void UpdateCollection<T>(IEnumerable<T> collection, Action<T> action, String profileName, bool parallel = true) {
-        Profiler.BeginSample(profileName);
-        if (threaded && parallel) {
-            Parallel.ForEach(collection, c => action.Invoke(c));
-        } else {
-            foreach (var c in collection) {
-                action.Invoke(c);
-            }
-        }
-
-        Profiler.EndSample();
-    }
-
     #region HelperMethods
 
     public void EndBattle(Faction faction) {
@@ -595,7 +611,7 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Sets the playbackSpeed of all particles in the game.
+    ///     Sets the playbackSpeed of all particles in the game.
     /// </summary>
     /// <param name="time"></param>
     public void SetSimulationTimeScale(float time) {
@@ -624,11 +640,13 @@ public class BattleManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// The eventManager needs to be injected into BattleManager in order to let the UI create and set up the UIEventManager
+    ///     The eventManager needs to be injected into BattleManager in order to let the UI create and set up the
+    ///     UIEventManager
     /// </summary>
     public void SetEventManager(EventManager eventManager) {
         if (this.eventManager != null)
-            throw new AggregateException("Trying to set the BattleManager EventManager after the EventManager has already been set!");
+            throw new AggregateException(
+                "Trying to set the BattleManager EventManager after the EventManager has already been set!");
         this.eventManager = eventManager;
     }
 

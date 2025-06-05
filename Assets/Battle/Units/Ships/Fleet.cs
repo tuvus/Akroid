@@ -4,17 +4,10 @@ using UnityEngine;
 using UnityEngine.Profiling;
 
 public class Fleet : ShipGroup {
-    public Faction faction { get; private set; }
-    public FleetAI fleetAI { get; private set; }
-    string fleetName;
-    public float minShipSpeed { get; private set; }
-    public float maxWeaponRange { get; private set; }
-
-    public List<Unit> enemyUnitsInRange { get; protected set; }
-    public List<float> enemyUnitsInRangeDistance { get; protected set; }
+    private readonly string fleetName;
 
     public Fleet(BattleManager battleManger, Faction faction, string fleetName, Ship ship) :
-        this(battleManger, faction, fleetName, new HashSet<Ship>() { ship }) { }
+        this(battleManger, faction, fleetName, new HashSet<Ship> { ship }) { }
 
     public Fleet(BattleManager battleManager, Faction faction, string fleetName, HashSet<Ship> ships) :
         base(battleManager, new HashSet<Ship>(), true) {
@@ -30,10 +23,17 @@ public class Fleet : ShipGroup {
         maxWeaponRange = GetMaxTurretRange();
         fleetAI = new FleetAI(this);
     }
+    public Faction faction { get; }
+    public FleetAI fleetAI { get; }
+    public float minShipSpeed { get; private set; }
+    public float maxWeaponRange { get; private set; }
+
+    public List<Unit> enemyUnitsInRange { get; protected set; }
+    public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
     public void DisbandFleet() {
         faction.RemoveFleet(this);
-        foreach (var ship in ships.ToList()) {
+        foreach (Ship ship in ships.ToList()) {
             ship.SetIdle();
             ship.shipAI.ClearCommands();
             ship.fleet = null;
@@ -42,7 +42,7 @@ public class Fleet : ShipGroup {
     }
 
     public override void AddShip(Ship ship) {
-        AddShip(ship, true);
+        AddShip(ship);
     }
 
     public void AddShip(Ship ship, bool setMinSpeed = true) {
@@ -70,7 +70,7 @@ public class Fleet : ShipGroup {
             Debug.LogError("Merging a fleet into itself");
         List<Ship> shipsToMerge = ships.ToList();
         DisbandFleet();
-        foreach (var ship in shipsToMerge) {
+        foreach (Ship ship in shipsToMerge) {
             fleet.AddShip(ship);
         }
 
@@ -90,7 +90,8 @@ public class Fleet : ShipGroup {
         Profiler.BeginSample("FindingEnemies");
         enemyUnitsInRange.Clear();
         enemyUnitsInRangeDistance.Clear();
-        float distanceFromFactionCenter = Vector2.Distance(faction.GetPosition(), GetPosition()) + maxWeaponRange * 2 + GetSize();
+        float distanceFromFactionCenter =
+            Vector2.Distance(faction.GetPosition(), GetPosition()) + maxWeaponRange * 2 + GetSize();
         for (int i = 0; i < faction.closeEnemyGroups.Count; i++) {
             if (faction.closeEnemyGroupsDistance[i] > distanceFromFactionCenter)
                 break;
@@ -100,13 +101,13 @@ public class Fleet : ShipGroup {
         Profiler.EndSample();
     }
 
-    void FindEnemyGroup(UnitGroup targetGroup) {
-        foreach (var battleObject in targetGroup.battleObjects) {
+    private void FindEnemyGroup(UnitGroup targetGroup) {
+        foreach (Unit battleObject in targetGroup.battleObjects) {
             FindEnemyUnit(battleObject);
         }
     }
 
-    void FindEnemyUnit(Unit targetUnit) {
+    private void FindEnemyUnit(Unit targetUnit) {
         if (targetUnit == null || !targetUnit.IsTargetable())
             return;
         float distance = Vector2.Distance(GetPosition(), targetUnit.GetPosition());
@@ -126,7 +127,7 @@ public class Fleet : ShipGroup {
     }
 
     public void NextShipsCommand() {
-        foreach (var ship in ships) {
+        foreach (Ship ship in ships) {
             ship.shipAI.NextCommand();
         }
     }
@@ -163,11 +164,11 @@ public class Fleet : ShipGroup {
     }
 
     /// <summary>
-    /// Returns the fleet of the closest enemy ship with a fleet.
+    ///     Returns the fleet of the closest enemy ship with a fleet.
     /// </summary>
     /// <returns>the closest Enemy fleet</returns>
     public Fleet GetNearbyEnemyFleet() {
-        foreach (var enemyUnit in enemyUnitsInRange) {
+        foreach (Unit enemyUnit in enemyUnitsInRange) {
             if (enemyUnit.IsShip() && ((Ship)enemyUnit).fleet != null) {
                 return ((Ship)enemyUnit).fleet;
             }
@@ -177,7 +178,7 @@ public class Fleet : ShipGroup {
     }
 
     public bool HasNearbyEnemyCombatShip() {
-        foreach (var enemyUnit in enemyUnitsInRange) {
+        foreach (Unit enemyUnit in enemyUnitsInRange) {
             if (enemyUnit.IsShip() && ((Ship)enemyUnit).IsCombatShip()) {
                 return true;
             }

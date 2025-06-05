@@ -8,10 +8,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SceneLoader : MonoBehaviour {
-    private BattleManager.BattleSettings battleSettings;
-    private List<Faction.FactionData> factions;
-    private string campaignControllerPath;
     public GameObject chapter;
+    private BattleManager.BattleSettings battleSettings;
+    private string campaignControllerPath;
+    private List<Faction.FactionData> factions;
 
     public static void LoadBattle(BattleManager.BattleSettings battleSettings, List<Faction.FactionData> factions) {
         SceneLoader sceneLoader = new GameObject("Loader").AddComponent<SceneLoader>();
@@ -27,11 +27,13 @@ public class SceneLoader : MonoBehaviour {
     }
 
     /// <summary>
-    /// Loads the battle scene asyncronusly with either the campaing or the randomized setup.
-    /// Since setting up the battle can take a while we load the loading scene first and display a progress bar.
-    /// We do most of the expensive setup on a seperate thread so that it doesn't block the UI and make the program unresponsive.
-    /// Calls to unity's api, for example Resources.Load can only be done on the main thread so we can't put the campaing loading
-    /// on a different thread without restructuring it.
+    ///     Loads the battle scene asyncronusly with either the campaing or the randomized setup.
+    ///     Since setting up the battle can take a while we load the loading scene first and display a progress bar.
+    ///     We do most of the expensive setup on a seperate thread so that it doesn't block the UI and make the program
+    ///     unresponsive.
+    ///     Calls to unity's api, for example Resources.Load can only be done on the main thread so we can't put the campaing
+    ///     loading
+    ///     on a different thread without restructuring it.
     /// </summary>
     private IEnumerator LoadBattleScene(bool campaign) {
         yield return null;
@@ -89,7 +91,8 @@ public class SceneLoader : MonoBehaviour {
         uIManager.PreBattleManagerSetup(battleManager);
         battleManager.InitializeBattle();
         if (campaign) {
-            CampaingController campaingController = Instantiate(chapter, gameTransform).GetComponent<CampaingController>();
+            CampaingController campaingController =
+                Instantiate(chapter, gameTransform).GetComponent<CampaingController>();
             loadingBar.value = 25 / totalProgress;
             statusText.SetText("Loading Campaing...");
             yield return null;
@@ -107,7 +110,8 @@ public class SceneLoader : MonoBehaviour {
 
         while (battleManager.battleState != BattleManager.BattleState.Setup) {
             // We must not be loading the campaign here
-            loadingBar.value = (25 + battleManager.ships.Count + battleManager.stations.Count + battleManager.asteroidFields.Count
+            loadingBar.value = (25 + battleManager.ships.Count + battleManager.stations.Count +
+                battleManager.asteroidFields.Count
                 + battleManager.gasClouds.Count + battleManager.stars.Count) / totalProgress;
             if (battleManager.stars.Count != battleSettings.starCount) {
                 statusText.SetText("Creating Stars...");

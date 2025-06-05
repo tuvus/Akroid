@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Profiling;
 using static Ship;
 using Random = Unity.Mathematics.Random;
 
@@ -13,45 +13,15 @@ public class Station : Unit, IPositionConfirmer {
         MiningStation = 3,
         Shipyard = 4,
         TradeStation = 5,
-        ReserchStation = 6,
+        ReserchStation = 6
     }
 
-    public StationScriptableObject stationScriptableObject { get; private set; }
-
-    [System.Serializable]
-    public class StationBlueprint {
-        public string name;
-        public StationScriptableObject stationScriptableObject;
-        public long stationCost;
-        public List<CargoBay.CargoTypes> resourcesTypes;
-        public List<long> resources;
-        public long totalResourcesRequired;
-
-        private StationBlueprint(StationScriptableObject stationScriptableObject, string name) {
-            this.stationScriptableObject = stationScriptableObject;
-            this.name = name;
-            this.stationCost = stationScriptableObject.cost;
-            this.resourcesTypes = new List<CargoBay.CargoTypes>(stationScriptableObject.resourceTypes);
-            this.resources = new List<long>(stationScriptableObject.resourceCosts);
-            for (int i = 0; i < resources.Count; i++) {
-                totalResourcesRequired += resources[i];
-            }
-        }
-
-        public StationBlueprint CreateStationBlueprint(string name = null) {
-            if (name == null)
-                name = this.name;
-            return new StationBlueprint(stationScriptableObject, name);
-        }
-    }
-
-    public StationAI stationAI { get; protected set; }
-    public float repairTime { get; protected set; }
     protected bool built;
     private Random random;
-    private float rotationSpeed;
+    private readonly float rotationSpeed;
 
-    public Station(BattleObjectData battleObjectData, BattleManager battleManager, StationScriptableObject stationScriptableObject,
+    public Station(BattleObjectData battleObjectData, BattleManager battleManager,
+        StationScriptableObject stationScriptableObject,
         bool built) : base(battleObjectData, battleManager, stationScriptableObject) {
         this.stationScriptableObject = stationScriptableObject;
         switch (stationScriptableObject.stationType) {
@@ -88,21 +58,13 @@ public class Station : Unit, IPositionConfirmer {
         visible = true;
     }
 
-    // protected override float SetupSize() {
-    //     return base.SetupSize() * 7 / 10;
-    // }
+    public StationScriptableObject stationScriptableObject { get; }
 
-    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
-        if (positionGiver.isExactPosition)
-            return positionGiver.position;
-        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
-        if (targetPosition.HasValue)
-            return targetPosition.Value;
-        return positionGiver.position;
-    }
+    public StationAI stationAI { get; protected set; }
+    public float repairTime { get; protected set; }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        foreach (var blockingObject in battleManager.GetPositionBlockingObjects()) {
+        foreach (IPositionConfirmer blockingObject in battleManager.GetPositionBlockingObjects()) {
             if (blockingObject is Station) {
                 Station station = (Station)blockingObject;
                 float enemyBonus = 0;
@@ -118,7 +80,7 @@ public class Station : Unit, IPositionConfirmer {
             }
         }
 
-        foreach (var stationBlueprint in battleManager.stationsInProgress) {
+        foreach (Station stationBlueprint in battleManager.stationsInProgress) {
             float enemyBonus = 0;
             if (faction.IsAtWarWithFaction(stationBlueprint.faction))
                 enemyBonus = GetMaxWeaponRange() * 2;
@@ -129,6 +91,19 @@ public class Station : Unit, IPositionConfirmer {
         }
 
         return true;
+    }
+
+    // protected override float SetupSize() {
+    //     return base.SetupSize() * 7 / 10;
+    // }
+
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+        if (positionGiver.isExactPosition)
+            return positionGiver.position;
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
+        if (targetPosition.HasValue)
+            return targetPosition.Value;
+        return positionGiver.position;
     }
 
     public override void UpdateUnit(float deltaTime) {
@@ -144,9 +119,36 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
+    [Serializable]
+    public class StationBlueprint {
+        public string name;
+        public StationScriptableObject stationScriptableObject;
+        public long stationCost;
+        public List<CargoBay.CargoTypes> resourcesTypes;
+        public List<long> resources;
+        public long totalResourcesRequired;
+
+        private StationBlueprint(StationScriptableObject stationScriptableObject, string name) {
+            this.stationScriptableObject = stationScriptableObject;
+            this.name = name;
+            stationCost = stationScriptableObject.cost;
+            resourcesTypes = new List<CargoBay.CargoTypes>(stationScriptableObject.resourceTypes);
+            resources = new List<long>(stationScriptableObject.resourceCosts);
+            for (int i = 0; i < resources.Count; i++) {
+                totalResourcesRequired += resources[i];
+            }
+        }
+
+        public StationBlueprint CreateStationBlueprint(string name = null) {
+            if (name == null)
+                name = this.name;
+            return new StationBlueprint(stationScriptableObject, name);
+        }
+    }
+
     #region StationControls
 
-    public virtual Ship BuildShip(Ship.ShipClass shipClass, long cost = 0, bool? undock = false) {
+    public virtual Ship BuildShip(ShipClass shipClass, long cost = 0, bool? undock = false) {
         return BuildShip(faction, shipClass, cost, undock);
     }
 
@@ -160,15 +162,19 @@ public class Station : Unit, IPositionConfirmer {
 
     public virtual Ship BuildShip(Faction faction, ShipClass shipClass, long cost = 0, bool? undock = false) {
         ShipScriptableObject shipScriptableObject = battleManager.GetShipBlueprint(shipClass).shipScriptableObject;
-        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipScriptableObject.unitName, cost,
+        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject,
+            shipScriptableObject.unitName, cost,
             undock);
     }
 
-    public virtual Ship BuildShip(Faction faction, ShipClass shipClass, string shipName, long cost = 0, bool? undock = false) {
-        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipName, cost, undock);
+    public virtual Ship BuildShip(Faction faction, ShipClass shipClass, string shipName, long cost = 0,
+        bool? undock = false) {
+        return BuildShip(faction, battleManager.GetShipBlueprint(shipClass).shipScriptableObject, shipName, cost,
+            undock);
     }
 
-    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, long cost = 0, bool? undock = false) {
+    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, long cost = 0,
+        bool? undock = false) {
         return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
@@ -177,24 +183,28 @@ public class Station : Unit, IPositionConfirmer {
         return BuildShip(faction, shipScriptableObject, shipScriptableObject.unitName, cost, undock);
     }
 
-    public virtual Ship BuildShip(Faction faction, ShipType shipType, string shipName, long cost = 0, bool? undock = false) {
+    public virtual Ship BuildShip(Faction faction, ShipType shipType, string shipName, long cost = 0,
+        bool? undock = false) {
         ShipScriptableObject shipScriptableObject = battleManager.GetShipBlueprint(shipType).shipScriptableObject;
         return BuildShip(faction, shipScriptableObject, shipName, cost, undock);
     }
 
-    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName, long cost = 0,
+    public virtual Ship BuildShip(Faction faction, ShipScriptableObject shipScriptableObject, string shipName,
+        long cost = 0,
         bool? undock = false) {
-        return BuildShip(new BattleObjectData(shipName, position, random.NextFloat(0, 360), faction), shipScriptableObject, cost, undock);
+        return BuildShip(new BattleObjectData(shipName, position, random.NextFloat(0, 360), faction),
+            shipScriptableObject, cost, undock);
     }
 
     /// <summary>
-    /// Builds a ship from this station and adds it to the faction at factionIndex.
-    /// If Undock is true, docks then undocks the ship
-    /// If undock is false, docks the ship
-    /// If undock is null, it doesn't dock the ship at all.
+    ///     Builds a ship from this station and adds it to the faction at factionIndex.
+    ///     If Undock is true, docks then undocks the ship
+    ///     If undock is false, docks the ship
+    ///     If undock is null, it doesn't dock the ship at all.
     /// </summary>
     /// <returns>The newly built ship</returns>
-    public virtual Ship BuildShip(BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject, long cost = 0,
+    public virtual Ship BuildShip(BattleObjectData battleObjectData, ShipScriptableObject shipScriptableObject,
+        long cost = 0,
         bool? undock = false) {
         Ship newShip = battleManager.CreateNewShip(battleObjectData, shipScriptableObject);
         if (undock == null) {
@@ -259,12 +269,14 @@ public class Station : Unit, IPositionConfirmer {
     #endregion
 
     #region GetMethods
+
     public bool IsBuilt() {
         return built;
     }
 
     public int GetRepairAmount() {
-        return (int)(stationScriptableObject.repairAmount * faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
+        return (int)(stationScriptableObject.repairAmount *
+            faction.GetImprovementModifier(Faction.ImprovementAreas.HullStrength));
     }
 
     public StationType GetStationType() {

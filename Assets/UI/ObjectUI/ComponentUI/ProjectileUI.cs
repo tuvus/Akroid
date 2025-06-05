@@ -3,10 +3,17 @@ using UnityEngine;
 public class ProjectileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
+    private bool hit;
     private LocalPlayerInput localPlayerInput;
 
     private Projectile projectile;
-    private bool hit;
+
+    public void ShowEffects(bool shown) { }
+
+    public void SetParticleSpeed(float speed) {
+        ParticleSystem.MainModule main = particleSystem.main;
+        main.simulationSpeed = speed;
+    }
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
@@ -17,7 +24,7 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         localPlayerInput = uIManager.localPlayer.GetInputManager();
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
         uIManager.uiBattleManager.particleHolders.Add(this);
-        var main = particleSystem.main;
+        ParticleSystem.MainModule main = particleSystem.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
     }
 
@@ -29,7 +36,8 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
             uIManager.uiBattleManager.objectsToUpdate.Remove(this);
         }
         base.UpdateObject();
-        if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() && localPlayerInput.IsObjectInViewingField(this)) {
+        if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() &&
+            localPlayerInput.IsObjectInViewingField(this)) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;
@@ -44,14 +52,5 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         spriteRenderer.enabled = false;
     }
 
-    public void ShowEffects(bool shown) {
-    }
-
-    public void SetParticleSpeed(float speed) {
-        var main = particleSystem.main;
-        main.simulationSpeed = speed;
-    }
-
-    public void ShowParticles(bool shown) {
-    }
+    public void ShowParticles(bool shown) { }
 }

@@ -6,22 +6,11 @@ using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 /// <summary>
-/// Faction is an object group of all objects the faction owns.
-/// It keeps track of every unit it owns, faction resources, communications and what enemies it has.
-/// The FactionAI determines any decisions the the faction makes.
+///     Faction is an object group of all objects the faction owns.
+///     It keeps track of every unit it owns, faction resources, communications and what enemies it has.
+///     The FactionAI determines any decisions the the faction makes.
 /// </summary>
 public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
-    [SerializeField] FactionAI factionAI;
-    [SerializeField] FactionCommManager commManager;
-    [field: SerializeField] public Color color { get; protected set; }
-    [field: SerializeField] public string name { get; protected set; }
-    [field: SerializeField] public string abbreviatedName { get; protected set; }
-    [field: SerializeField] public long credits { get; protected set; }
-    [field: SerializeField] public long science { get; protected set; }
-    public long researchCost { get; protected set; }
-    private double researchCostExtra;
-    public int discoveries { get; protected set; }
-
     public enum ImprovementAreas {
         HullStrength,
         ShieldHealth,
@@ -35,111 +24,20 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         LaserRange,
         MissileDamage,
         MissileReload,
-        MissileRange,
+        MissileRange
     }
 
     public enum ResearchAreas {
         Engineering,
         Electricity,
-        Chemicals,
+        Chemicals
     }
 
-    public float[] improvementModifiers { get; private set; }
-    public int[] improvementDiscoveryCount { get; private set; }
-
-    public HashSet<Unit> units { get; private set; }
-    public HashSet<Ship> ships { get; private set; }
-    public HashSet<Fleet> fleets { get; private set; }
-    public HashSet<Station> stations { get; private set; }
-    public HashSet<Planet> planets { get; private set; }
-    public HashSet<Station> stationBlueprints { get; private set; }
-
-    public HashSet<MiningStation> activeMiningStations { get; private set; }
-
-    public HashSet<Faction> enemyFactions { get; private set; }
-    public HashSet<UnitGroup> unitGroups { get; private set; }
-
-    /// <summary>
-    /// Stores close enemy groups stored in ascending order of distance to the faction.
-    /// </summary>
-    public List<UnitGroup> closeEnemyGroups { get; private set; }
-
-    /// <summary>
-    /// The distance to each of the target groups sorted in ascending order of distance to the faction.
-    /// The size of the target group is taken into account
-    /// </summary>
-    public List<float> closeEnemyGroupsDistance { get; private set; }
-
-    public UnitGroup baseGroup { get; private set; }
+    [SerializeField] private readonly FactionCommManager commManager;
+    [SerializeField] private readonly FactionAI factionAI;
 
     private Random random;
-
-    public event Action<Unit> OnUnitAdded = delegate { };
-    public event Action<Unit> OnUnitRemoved = delegate { };
-
-
-    public struct FactionData {
-        public Type factionAI;
-        public string name;
-        public string abbreviatedName;
-        public Color color;
-        public Character leader;
-        public long credits;
-        public long science;
-        public int ships;
-        public int stations;
-
-        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, Character leader, long credits, long science,
-            int ships, int stations) {
-            this.factionAI = factionAI;
-            this.name = name;
-            this.abbreviatedName = abbreviatedName;
-            this.color = color;
-            this.leader = leader;
-            this.credits = credits;
-            this.science = science;
-            this.ships = ships;
-            this.stations = stations;
-        }
-
-        public FactionData(string name, string abbreviatedName, Color color, Character leader, long credits, long science, int ships,
-            int stations) {
-            this.factionAI = typeof(SimulationFactionAI);
-            this.name = name;
-            this.abbreviatedName = abbreviatedName;
-            this.color = color;
-            this.leader = leader;
-            this.credits = credits;
-            this.science = science;
-            this.ships = ships;
-            this.stations = stations;
-        }
-
-        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, long credits, long science, int ships,
-            int stations) {
-            this.factionAI = factionAI;
-            this.name = name;
-            this.abbreviatedName = abbreviatedName;
-            this.color = color;
-            this.leader = Character.GenerateCharacter();
-            this.credits = credits;
-            this.science = science;
-            this.ships = ships;
-            this.stations = stations;
-        }
-
-        public FactionData(string name, string abbreviatedName, Color color, long credits, long science, int ships, int stations) {
-            this.factionAI = typeof(SimulationFactionAI);
-            this.name = name;
-            this.abbreviatedName = abbreviatedName;
-            this.color = color;
-            this.leader = Character.GenerateCharacter();
-            this.credits = credits;
-            this.science = science;
-            this.ships = ships;
-            this.stations = stations;
-        }
-    }
+    private double researchCostExtra;
 
     public Faction() {
         credits = 0;
@@ -154,7 +52,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             SetPosition(targetPosition.Value);
         else
             SetPosition(Vector2.zero);
-        this.color = factionData.color;
+        color = factionData.color;
         ships = new HashSet<Ship>(factionData.ships * 5);
         fleets = new HashSet<Fleet>(10);
         stations = new HashSet<Station>(factionData.stations * 5);
@@ -169,9 +67,76 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         factionAI = (FactionAI)Activator.CreateInstance(factionData.factionAI, battleManager, this);
         commManager = new FactionCommManager(battleManager, this, factionData.leader);
     }
+    [field: SerializeField] public Color color { get; protected set; }
+    [field: SerializeField] public string name { get; protected set; }
+    [field: SerializeField] public string abbreviatedName { get; protected set; }
+    [field: SerializeField] public long credits { get; protected set; }
+    [field: SerializeField] public long science { get; protected set; }
+    public long researchCost { get; protected set; }
+    public int discoveries { get; protected set; }
+
+    public float[] improvementModifiers { get; private set; }
+    public int[] improvementDiscoveryCount { get; private set; }
+
+    public HashSet<Unit> units { get; }
+    public HashSet<Ship> ships { get; }
+    public HashSet<Fleet> fleets { get; }
+    public HashSet<Station> stations { get; }
+    public HashSet<Planet> planets { get; }
+    public HashSet<Station> stationBlueprints { get; }
+
+    public HashSet<MiningStation> activeMiningStations { get; }
+
+    public HashSet<Faction> enemyFactions { get; }
+    public HashSet<UnitGroup> unitGroups { get; }
 
     /// <summary>
-    /// Creates units for the factino based on the units provided in factionData
+    ///     Stores close enemy groups stored in ascending order of distance to the faction.
+    /// </summary>
+    public List<UnitGroup> closeEnemyGroups { get; }
+
+    /// <summary>
+    ///     The distance to each of the target groups sorted in ascending order of distance to the faction.
+    ///     The size of the target group is taken into account
+    /// </summary>
+    public List<float> closeEnemyGroupsDistance { get; }
+
+    public UnitGroup baseGroup { get; }
+
+    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
+        if (Vector2.Distance(Vector2.zero, position) <= minDistanceFromObject * 5)
+            return false;
+        foreach (Star star in battleManager.stars) {
+            if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000)
+                return false;
+        }
+
+        foreach (Planet planet in battleManager.planets) {
+            if (Vector2.Distance(position, planet.position) <= minDistanceFromObject + planet.GetSize() + 200)
+                return false;
+        }
+
+        foreach (AsteroidField asteroidField in battleManager.asteroidFields) {
+            if (Vector2.Distance(position, asteroidField.GetPosition()) <=
+                minDistanceFromObject + asteroidField.GetSize())
+                return false;
+        }
+
+        foreach (Faction faction in battleManager.factions) {
+            if (faction == this)
+                continue;
+            if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000)
+                return false;
+        }
+
+        return true;
+    }
+
+    public event Action<Unit> OnUnitAdded = delegate { };
+    public event Action<Unit> OnUnitRemoved = delegate { };
+
+    /// <summary>
+    ///     Creates units for the factino based on the units provided in factionData
     /// </summary>
     public void GenerateFaction(FactionData factionData, int startingResearchCost) {
         name = factionData.name;
@@ -193,14 +158,17 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
         int shipCount = factionData.ships;
         if (factionData.stations > 0) {
-            BattleManager.PositionGiver stationPositionGiver = new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
+            BattleManager.PositionGiver stationPositionGiver =
+                new BattleManager.PositionGiver(GetPosition(), 0, 2000, 50, 10, 2);
             Station fleetCommand = battleManager.CreateNewStation(
-                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0f, 360f), this),
+                new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0f, 360f),
+                    this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
-                    new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, random.NextFloat(0, 360), this),
+                    new BattleObject.BattleObjectData("MiningStation", stationPositionGiver, random.NextFloat(0, 360),
+                        this),
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
                         .stationScriptableObject, true);
                 if (shipCount > 0) {
@@ -227,37 +195,79 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 }
             } else
                 battleManager.CreateNewShip(
-                    new BattleObject.BattleObjectData("Aria", new Vector2(random.NextFloat(-100, 100), random.NextFloat(-100, 100)),
-                        random.NextFloat(0, 360), this), battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
+                    new BattleObject.BattleObjectData("Aria",
+                        new Vector2(random.NextFloat(-100, 100), random.NextFloat(-100, 100)),
+                        random.NextFloat(0, 360), this),
+                    battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
         }
     }
 
-    public bool ConfirmPosition(Vector2 position, float minDistanceFromObject) {
-        if (Vector2.Distance(Vector2.zero, position) <= minDistanceFromObject * 5)
-            return false;
-        foreach (var star in battleManager.stars) {
-            if (Vector2.Distance(position, star.position) <= minDistanceFromObject * 2 + star.GetSize() + 1000)
-                return false;
+
+    public struct FactionData {
+        public Type factionAI;
+        public string name;
+        public string abbreviatedName;
+        public Color color;
+        public Character leader;
+        public long credits;
+        public long science;
+        public int ships;
+        public int stations;
+
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, Character leader,
+            long credits, long science,
+            int ships, int stations) {
+            this.factionAI = factionAI;
+            this.name = name;
+            this.abbreviatedName = abbreviatedName;
+            this.color = color;
+            this.leader = leader;
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
         }
 
-        foreach (var planet in battleManager.planets) {
-            if (Vector2.Distance(position, planet.position) <= minDistanceFromObject + planet.GetSize() + 200)
-                return false;
+        public FactionData(string name, string abbreviatedName, Color color, Character leader, long credits,
+            long science, int ships,
+            int stations) {
+            factionAI = typeof(SimulationFactionAI);
+            this.name = name;
+            this.abbreviatedName = abbreviatedName;
+            this.color = color;
+            this.leader = leader;
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
         }
 
-        foreach (var asteroidField in battleManager.asteroidFields) {
-            if (Vector2.Distance(position, asteroidField.GetPosition()) <= minDistanceFromObject + asteroidField.GetSize())
-                return false;
+        public FactionData(Type factionAI, string name, string abbreviatedName, Color color, long credits, long science,
+            int ships,
+            int stations) {
+            this.factionAI = factionAI;
+            this.name = name;
+            this.abbreviatedName = abbreviatedName;
+            this.color = color;
+            leader = Character.GenerateCharacter();
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
         }
 
-        foreach (var faction in battleManager.factions) {
-            if (faction == this)
-                continue;
-            if (Vector2.Distance(position, faction.position) <= minDistanceFromObject * 5 + 1000)
-                return false;
+        public FactionData(string name, string abbreviatedName, Color color, long credits, long science, int ships,
+            int stations) {
+            factionAI = typeof(SimulationFactionAI);
+            this.name = name;
+            this.abbreviatedName = abbreviatedName;
+            this.color = color;
+            leader = Character.GenerateCharacter();
+            this.credits = credits;
+            this.science = science;
+            this.ships = ships;
+            this.stations = stations;
         }
-
-        return true;
     }
 
     #region ObjectListControlls
@@ -306,7 +316,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         if (!units.Contains(unit))
             throw new InvalidOperationException("The unit to transfer from this faction isn't owned by this faction.");
 
-        foreach (var player in battleManager.players.Where(p => p.faction == this && p.ownedUnits.Contains(unit))) {
+        foreach (Player player in battleManager.players.Where(p => p.faction == this && p.ownedUnits.Contains(unit))) {
             player.RemoveOwnedUnit(unit);
         }
 
@@ -322,7 +332,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
 
         unit.SetFaction(to);
-        foreach (var player in battleManager.players.Where(p => p.faction == to && !p.lockedOwnedUnits)) {
+        foreach (Player player in battleManager.players.Where(p => p.faction == to && !p.lockedOwnedUnits)) {
             player.AddOwnedUnit(unit);
         }
     }
@@ -377,7 +387,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     public UnitGroup CreateNewUnitGroup(string groupName, bool deleteWhenEmpty, HashSet<Unit> units) {
-        UnitGroup newUnitGroup = new UnitGroup(battleManager, units, deleteWhenEmpty, true);
+        UnitGroup newUnitGroup = new UnitGroup(battleManager, units, deleteWhenEmpty);
         unitGroups.Add(newUnitGroup);
         return newUnitGroup;
     }
@@ -400,7 +410,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Transferes credits from this faction to the other faction.
+    ///     Transferes credits from this faction to the other faction.
     /// </summary>
     /// <param name="faction">The other faction to transfer credits to.</param>
     public bool TransferCredits(long credits, Faction faction) {
@@ -417,7 +427,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Adds a discovery in the improvement area in the given research area.
+    ///     Adds a discovery in the improvement area in the given research area.
     /// </summary>
     /// <param name="researchArea">the given research area to improve</param>
     /// <param name="free">should the discovery cost science or not?</param>
@@ -504,7 +514,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public void EarlyUpdateFaction() {
         UpdateObjectGroup(true);
-        foreach (var unitGroup in unitGroups.ToList()) {
+        foreach (UnitGroup unitGroup in unitGroups.ToList()) {
             unitGroup.UpdateObjectGroup();
         }
     }
@@ -512,10 +522,11 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public void UpdateNearbyEnemyUnits() {
         closeEnemyGroups.Clear();
         closeEnemyGroupsDistance.Clear();
-        foreach (var enemyFaction in enemyFactions) {
-            if (Vector2.Distance(GetPosition(), enemyFaction.position) > GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
+        foreach (Faction enemyFaction in enemyFactions) {
+            if (Vector2.Distance(GetPosition(), enemyFaction.position) >
+                GetSize() * 1.2 + enemyFaction.GetSize() + 3000)
                 continue;
-            foreach (var enemyGroup in enemyFaction.unitGroups) {
+            foreach (UnitGroup enemyGroup in enemyFaction.unitGroups) {
                 AddEnemyGroup(enemyGroup);
             }
         }
@@ -527,11 +538,12 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Inserts the target group if it is close enough based to closestEnemyGroups.
+    ///     Inserts the target group if it is close enough based to closestEnemyGroups.
     /// </summary>
-    void AddEnemyGroup(UnitGroup targetGroup) {
+    private void AddEnemyGroup(UnitGroup targetGroup) {
         if (targetGroup == null || !targetGroup.IsTargetable()) return;
-        float distance = math.max(0, Vector2.Distance(GetPosition(), targetGroup.GetPosition()) - targetGroup.GetSize());
+        float distance = math.max(0,
+            Vector2.Distance(GetPosition(), targetGroup.GetPosition()) - targetGroup.GetSize());
         if (distance > GetSize() * 1.2f + 3000) return;
 
         for (int f = 0; f < closeEnemyGroupsDistance.Count; f++) {
@@ -555,14 +567,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         DiscoverResearchArea((ResearchAreas)random.NextFloat(0, 3));
     }
 
-    void UpdateUnitWeaponRanges() {
-        foreach (var unit in units) {
+    private void UpdateUnitWeaponRanges() {
+        foreach (Unit unit in units) {
             unit.SetupWeaponRanges();
         }
     }
 
-    void UpdateShipThrustPower() {
-        foreach (var ship in ships) {
+    private void UpdateShipThrustPower() {
+        foreach (Ship ship in ships) {
             ship.SetupThrusters();
         }
     }
@@ -576,7 +588,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the amount of asteroid fields that are not empty and do not have a friendly station nearby.
+    ///     Gets the amount of asteroid fields that are not empty and do not have a friendly station nearby.
     /// </summary>
     /// <returns>the available asteroid field count</returns>
     public int GetAvailableAsteroidFieldsCount() {
@@ -588,7 +600,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             .OrderBy(a => Vector2.Distance(a.position, position));
     }
 
-    bool IsAsteroidAvailableForNewMiningStation(AsteroidField asteroidField) {
+    private bool IsAsteroidAvailableForNewMiningStation(AsteroidField asteroidField) {
         if (asteroidField.totalResources <= 0)
             return false;
         return !stations.Concat(stationBlueprints).Any(friendlyStation =>
@@ -598,15 +610,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest enemy station to the position or null if there isn't any.
+    ///     Gets the closest enemy station to the position or null if there isn't any.
     /// </summary>
     /// <param name="position">the given position</param>
     /// <returns>the closest enemy station to the position</returns>
     public Station GetClosestEnemyStation(Vector2 position) {
         Station station = null;
         float distance = 0;
-        foreach (var faction in enemyFactions) {
-            foreach (var targetStation in faction.stations) {
+        foreach (Faction faction in enemyFactions) {
+            foreach (Station targetStation in faction.stations) {
                 if (!targetStation.IsTargetable()) continue;
                 float targetDistance = Vector2.Distance(position, targetStation.GetPosition());
                 if (station == null || targetDistance < distance) {
@@ -620,15 +632,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest enemy unit to the position or null if there isn't any.
+    ///     Gets the closest enemy unit to the position or null if there isn't any.
     /// </summary>
     /// <param name="position">the given position</param>
     /// <returns>the closest enemy unit to the position</returns>
     public Unit GetClosestEnemyUnit(Vector2 position) {
         Unit unit = null;
         float distance = 0;
-        foreach (var faction in enemyFactions) {
-            foreach (var targetUnit in faction.units) {
+        foreach (Faction faction in enemyFactions) {
+            foreach (Unit targetUnit in faction.units) {
                 if (!targetUnit.IsTargetable()) continue;
                 float targetDistance = Vector2.Distance(position, targetUnit.GetPosition());
                 if (unit == null || targetDistance < distance) {
@@ -644,7 +656,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     public Station GetClosestStation(Vector2 position) {
         Station station = null;
         float distance = 0;
-        foreach (var targetStation in stations) {
+        foreach (Station targetStation in stations) {
             if (!targetStation.IsSpawned()) continue;
             float targetDistance = Vector2.Distance(position, targetStation.GetPosition());
             if (station == null || targetDistance < distance) {
@@ -657,7 +669,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest mining station that wants transports to the position
+    ///     Gets the closest mining station that wants transports to the position
     /// </summary>
     /// <param name="position"> The given position </param>
     /// <returns> The closest mining station </returns>
@@ -665,15 +677,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         MiningStation miningStation = null;
         float distance = 0;
         int wantedTransportShips = int.MinValue;
-        foreach (var targetMiningStation in activeMiningStations) {
+        foreach (MiningStation targetMiningStation in activeMiningStations) {
             if (!targetMiningStation.IsSpawned() || !targetMiningStation.activelyMining)
                 continue;
             float targetDistance = Vector2.Distance(position, targetMiningStation.GetPosition());
             int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
             if (!targetWantedTransportShips.HasValue)
                 continue;
-            if ((targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0)) ||
-                (targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips)) {
+            if (targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0) ||
+                targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips) {
                 miningStation = targetMiningStation;
                 distance = targetDistance;
                 wantedTransportShips = targetWantedTransportShips.Value;
@@ -684,7 +696,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the total wanted transports of all the factions mining stations
+    ///     Gets the total wanted transports of all the factions mining stations
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
@@ -693,7 +705,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the count all ships of the given ShipType
+    ///     Gets the count all ships of the given ShipType
     /// </summary>
     /// <param name="shipType"> The given ShipType </param>
     /// <returns> All ships of the given ShipType </returns>
@@ -708,14 +720,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest star to the given position
+    ///     Gets the closest star to the given position
     /// </summary>
     /// <param name="position"> The given position </param>
     /// <returns> The closest star </returns>
     public Star GetClosestStar(Vector2 position) {
         Star closestStar = null;
         float distance = 0;
-        foreach (var star in battleManager.stars) {
+        foreach (Star star in battleManager.stars) {
             float targetDistance = Vector2.Distance(position, star.position);
             if (closestStar == null || targetDistance < distance) {
                 closestStar = star;
@@ -727,14 +739,14 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the closest gas cloud to the given position
+    ///     Gets the closest gas cloud to the given position
     /// </summary>
     /// <param name="position"> The given position </param>
     /// <returns> The closest gas cloud </returns>
     public GasCloud GetClosestGasCloud(Vector2 position) {
         GasCloud closestGasCloud = null;
         float distance = 0;
-        foreach (var gasCloud in battleManager.gasClouds) {
+        foreach (GasCloud gasCloud in battleManager.gasClouds) {
             if (gasCloud.resources <= 0) continue;
             float targetDistance = Vector2.Distance(position, gasCloud.position);
             if (closestGasCloud == null || targetDistance < distance) {
@@ -747,7 +759,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    /// Gets the improvement modifier aligned with the given improvement area
+    ///     Gets the improvement modifier aligned with the given improvement area
     /// </summary>
     /// <param name="improvementArea"> The given improvement area </param>
     /// <returns> The improvement modifier of the area </returns>

@@ -3,9 +3,9 @@ using System.Linq;
 using UnityEngine;
 
 public class FleetUI : ObjectUI {
-    public Fleet fleet { get; private set; }
     [SerializeField] private FleetAI fleetAI;
     private UIBattleManager uiBattleManager;
+    public Fleet fleet { get; private set; }
 
     public void Setup(Fleet fleet, UIBattleManager uiBattleManager) {
         base.Setup(fleet);
@@ -20,7 +20,8 @@ public class FleetUI : ObjectUI {
 
     public override void UpdateObject() { }
 
-    public override void SelectObject(UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) {
+    public override void SelectObject(
+        UnitIconUI.SelectionStrength selectionStrength = UnitIconUI.SelectionStrength.Unselected) {
         base.SelectObject(selectionStrength);
         GetShipsUI().ToList().ForEach(s => s.SelectObject(selectionStrength));
     }

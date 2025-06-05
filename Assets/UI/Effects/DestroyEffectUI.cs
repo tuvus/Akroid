@@ -3,15 +3,27 @@ using UnityEngine;
 using FlareState = DestroyEffect.FlareState;
 
 public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
+    [SerializeField] private ParticleSystem explosion;
+    [SerializeField] private ParticleSystem fragments;
+    [SerializeField] private LensFlare flare;
     private BattleObjectUI battleObjectUI;
-    private UIManager uIManager;
     private DestroyEffect destroyEffect;
     private DestroyEffectScriptableObject destroyEffectScriptableObject;
-    [SerializeField] ParticleSystem explosion;
-    [SerializeField] ParticleSystem fragments;
-    [SerializeField] LensFlare flare;
+    private UIManager uIManager;
 
-    public void SetupDestroyEffect(BattleObjectUI battleObjectUI, DestroyEffectScriptableObject destroyEffectScriptableObject,
+    public void ShowEffects(bool shown) {
+        flare.enabled = shown;
+    }
+
+    public void SetParticleSpeed(float speed) {
+        ParticleSystem.MainModule main = explosion.main;
+        main.simulationSpeed = speed;
+        main = fragments.main;
+        main.simulationSpeed = speed;
+    }
+
+    public void SetupDestroyEffect(BattleObjectUI battleObjectUI,
+        DestroyEffectScriptableObject destroyEffectScriptableObject,
         UIManager uIManager, SpriteRenderer targetRenderer) {
         this.battleObjectUI = battleObjectUI;
         this.uIManager = uIManager;
@@ -21,21 +33,23 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
         explosion.transform.localScale = transform.localScale;
         uIManager.uiBattleManager.particleHolders.Add(this);
 
-        var explosionMain = explosion.main;
-        explosionMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed + destroyEffectScriptableObject.flareFadeSpeed;
+        ParticleSystem.MainModule explosionMain = explosion.main;
+        explosionMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed +
+            destroyEffectScriptableObject.flareFadeSpeed;
         explosionMain.simulationSpeed = uIManager.GetParticleSpeed();
-        var fragmentsMain = fragments.main;
-        fragmentsMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed + destroyEffectScriptableObject.flareFadeSpeed;
+        ParticleSystem.MainModule fragmentsMain = fragments.main;
+        fragmentsMain.startLifetime = destroyEffectScriptableObject.flareNormalSpeed +
+            destroyEffectScriptableObject.flareFadeSpeed;
         fragmentsMain.simulationSpeed = uIManager.GetParticleSpeed();
-        var explosionShape = explosion.shape;
+        ParticleSystem.ShapeModule explosionShape = explosion.shape;
         explosionShape.spriteRenderer = targetRenderer;
         explosionShape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
-        var fragmentsShape = fragments.shape;
+        ParticleSystem.ShapeModule fragmentsShape = fragments.shape;
         fragmentsShape.spriteRenderer = targetRenderer;
         fragmentsShape.scale = new Vector2(transform.parent.localScale.x, transform.parent.localScale.x);
-        var explosionEmission = explosion.emission;
+        ParticleSystem.EmissionModule explosionEmission = explosion.emission;
         explosionEmission.enabled = true;
-        var fragmentEmission = fragments.emission;
+        ParticleSystem.EmissionModule fragmentEmission = fragments.emission;
         fragmentEmission.enabled = true;
 
         flare.enabled = false;
@@ -44,7 +58,8 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
     public void Explode(DestroyEffect destroyEffect) {
         this.destroyEffect = destroyEffect;
-        if (uIManager.GetParticlesShown() && uIManager.localPlayer.GetInputManager().IsObjectInViewingField(battleObjectUI)) {
+        if (uIManager.GetParticlesShown() &&
+            uIManager.localPlayer.GetInputManager().IsObjectInViewingField(battleObjectUI)) {
             explosion.Play(false);
             fragments.Play(false);
         }
@@ -64,16 +79,17 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
         switch (destroyEffect.flareState) {
             case FlareState.FlaringUp:
-                flare.brightness = GetFlareUpSize() * destroyEffect.flareTime / destroyEffectScriptableObject.flareUpSpeed;
+                flare.brightness = GetFlareUpSize() * destroyEffect.flareTime /
+                    destroyEffectScriptableObject.flareUpSpeed;
                 break;
             case FlareState.FadeToNormal:
                 flare.brightness = GetBaseFlareSize() + (GetFlareUpSize() - GetBaseFlareSize()) *
                     (float)(1 - Math.Pow(destroyEffect.flareTime / destroyEffectScriptableObject.flareUpFadeSpeed, 2));
                 break;
             case FlareState.KeepNormal:
-                var explosionEmission = explosion.emission;
+                ParticleSystem.EmissionModule explosionEmission = explosion.emission;
                 explosionEmission.enabled = false;
-                var fragmentEmission = fragments.emission;
+                ParticleSystem.EmissionModule fragmentEmission = fragments.emission;
                 fragmentEmission.enabled = false;
                 flare.brightness = GetBaseFlareSize();
                 break;
@@ -88,19 +104,8 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
         }
     }
 
-    public void ShowEffects(bool shown) {
-        flare.enabled = shown;
-    }
-
     public void OnBattleObjectRemoved() {
         uIManager.uiBattleManager.particleHolders.Remove(this);
-    }
-
-    public void SetParticleSpeed(float speed) {
-        var main = explosion.main;
-        main.simulationSpeed = speed;
-        main = fragments.main;
-        main.simulationSpeed = speed;
     }
 
     public void ShowParticles(bool shown) {

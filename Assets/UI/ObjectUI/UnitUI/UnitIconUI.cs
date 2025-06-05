@@ -8,25 +8,26 @@ public class UnitIconUI : MonoBehaviour {
     public enum SelectionStrength {
         Unselected = 0,
         Selected = 1,
-        Highlighted = 2,
+        Highlighted = 2
     }
 
     private const float unselectedAlpha = .6f;
     private const float highlightedAlpha = .8f;
     private const float selectedAlpha = 1f;
-    private SpriteRenderer spriteRenderer;
     private EngagedVisual engagedVisual;
-    private UnitUI unitUI;
-    private UIManager uIManager;
     private SpriteRenderer iconUI;
+    private SpriteRenderer spriteRenderer;
+    private UIManager uIManager;
     private float unitsize;
+    private UnitUI unitUI;
 
     public void SetupIconUI(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;
         this.uIManager = uIManager;
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.enabled = false;
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+            unselectedAlpha);
         spriteRenderer.sprite = unitUI.unit.unitScriptableObject.sprite;
         engagedVisual = GetComponentInChildren<EngagedVisual>();
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
@@ -36,7 +37,8 @@ public class UnitIconUI : MonoBehaviour {
         // We can do this by reducing the outline size and increasing the scale of the object
         unitsize = unitUI.unit.GetSize();
         if (unitUI.unit.IsStation()) unitsize *= 2f / 3;
-        iconUI.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize + new Vector2(5, 5);
+        iconUI.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize +
+            new Vector2(5, 5);
         iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         UpdateFactionColor();
         SetSelected();
@@ -53,18 +55,19 @@ public class UnitIconUI : MonoBehaviour {
         if (uIManager.GetFactionColoringShown()) {
             spriteRenderer.color = unitUI.unit.faction.GetColorBackgroundTint(previousAlpha);
         } else {
-            var relationColor = uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
+            Color relationColor =
+                uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
             spriteRenderer.color = new Color(relationColor.r, relationColor.g, relationColor.b, previousAlpha);
         }
     }
 
     /// <summary>
-    /// Updates the selection strength and size of the icon, may also hide it
+    ///     Updates the selection strength and size of the icon, may also hide it
     /// </summary>
     /// <returns>True if the icon is visible, false otherwise</returns>
     private bool UpdateIcon() {
         if (uIManager.localPlayer.playerUI.GetShowUnitZoomIndicators() == false ||
-            (unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt())
+            unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt()
             || !unitUI.IsVisible()) {
             ShowUnitIconUI(false);
             iconUI.enabled = false;
@@ -114,15 +117,18 @@ public class UnitIconUI : MonoBehaviour {
     public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, unselectedAlpha);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                    unselectedAlpha);
                 iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 0f);
                 break;
             case SelectionStrength.Selected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, selectedAlpha);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                    selectedAlpha);
                 iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 1f);
                 break;
             case SelectionStrength.Highlighted:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, highlightedAlpha);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                    highlightedAlpha);
                 iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, .4f);
                 break;
         }

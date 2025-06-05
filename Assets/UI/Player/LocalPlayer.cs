@@ -1,28 +1,28 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// LocalPlayer should contain all the relevant information that any part of the simulation/game
-/// below it needs to interact with the player. This allows the simulation/game to be oblivious
-/// to the PlayerUI and it's functions.
+///     LocalPlayer should contain all the relevant information that any part of the simulation/game
+///     below it needs to interact with the player. This allows the simulation/game to be oblivious
+///     to the PlayerUI and it's functions.
 /// </summary>
 public class LocalPlayer : MonoBehaviour {
-    private BattleManager battleManager;
-    private UIManager uIManager;
-    private UIBattleManager uiBattleManager;
-    public Player player { get; private set; }
-    public static LocalPlayer Instance { get; private set; }
-    private LocalPlayerInput localPlayerInput;
-    public PlayerUI playerUI { get; private set; }
-
     public enum PlayerState {
         free = 1,
-        following = 2,
+        following = 2
     }
+
+    private BattleManager battleManager;
+    private LocalPlayerInput localPlayerInput;
+    private UIBattleManager uiBattleManager;
+    private UIManager uIManager;
+    public Player player { get; private set; }
+    public static LocalPlayer Instance { get; private set; }
+    public PlayerUI playerUI { get; private set; }
 
     public void PreBattleManagerSetup(BattleManager battleManager, UIManager uIManager) {
         this.battleManager = battleManager;
         this.uIManager = uIManager;
-        this.uiBattleManager = uIManager.uiBattleManager;
+        uiBattleManager = uIManager.uiBattleManager;
         localPlayerInput = GetComponent<LocalPlayerInput>();
         playerUI = transform.GetChild(1).GetComponent<PlayerUI>();
     }
@@ -54,13 +54,13 @@ public class LocalPlayer : MonoBehaviour {
         Neutral = 0,
         Enemy = 1,
         Friendly = 2,
-        Owned = 3,
+        Owned = 3
     }
 
-    Color neutralColor = new Color(1, 1, 1);
-    Color friendlyColor = new Color(0, 1, 0);
-    Color enemyColor = new Color(1, 0.4f, 0.35f);
-    Color ownedColor = new Color(0, 1f, 1f);
+    private readonly Color neutralColor = new Color(1, 1, 1);
+    private readonly Color friendlyColor = new Color(0, 1, 0);
+    private readonly Color enemyColor = new Color(1, 0.4f, 0.35f);
+    private readonly Color ownedColor = new Color(0, 1f, 1f);
 
 
     public RelationType GetRelationToUnit(Unit unit) {

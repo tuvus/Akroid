@@ -2,22 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Profiling;
 using static Command;
 
 public class ShipAI {
-    enum CommandResult {
-        Stop = 0,
-        StopRemove = 1,
-        ContinueRemove = 2,
-        Continue = 3,
-    }
+    public readonly List<Command> commands;
 
     private readonly Ship ship;
-    private bool newCommand;
-
-    public readonly List<Command> commands;
     public CommandType currentCommandState;
+    private bool newCommand;
 
     public ShipAI(Ship ship) {
         this.ship = ship;
@@ -28,7 +20,7 @@ public class ShipAI {
 
     public void AddUnitAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
         if ((command.commandType == CommandType.AttackMove || command.commandType == CommandType.AttackMoveUnit ||
-            command.commandType == CommandType.Protect) && !ship.HasWeapons()) {
+                command.commandType == CommandType.Protect) && !ship.HasWeapons()) {
             return;
         }
 
@@ -88,9 +80,16 @@ public class ShipAI {
         }
     }
 
+    private enum CommandResult {
+        Stop = 0,
+        StopRemove = 1,
+        ContinueRemove = 2,
+        Continue = 3
+    }
+
     #region CommandLogic
 
-    CommandResult ResolveCommand(Command command, float deltaTime) {
+    private CommandResult ResolveCommand(Command command, float deltaTime) {
         return command.commandType switch {
             CommandType.Idle => DoIdleCommand(command, deltaTime),
             CommandType.Wait => DoWaitCommand(command, deltaTime),
@@ -111,12 +110,12 @@ public class ShipAI {
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             CommandType.Colonize => DoColonizeCommand(command, deltaTime),
-            CommandType.BuildStation => DoBuildStationCommand(command, deltaTime),
+            CommandType.BuildStation => DoBuildStationCommand(command, deltaTime)
         };
     }
 
     /// <summary> Idles until something removes this command. </summary>
-    CommandResult DoIdleCommand(Command command, float deltaTime) {
+    private CommandResult DoIdleCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Idle;
             ship.SetIdle();
@@ -126,8 +125,9 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished. </summary>
-    CommandResult DoWaitCommand(Command command, float deltaTime) {
+    /// <summary Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
+    /// </summary>
+    private CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Wait;
             newCommand = false;
@@ -142,7 +142,7 @@ public class ShipAI {
     }
 
     /// <summary> Rotates towards angle, Stop until turned to rotation, ContinueRemove once Finished </summary>
-    CommandResult DoTurnToRotationCommand(Command command, float deltaTime) {
+    private CommandResult DoTurnToRotationCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.TurnToRotation;
             ship.SetTargetRotate(command.targetRotation);
@@ -157,7 +157,7 @@ public class ShipAI {
     }
 
     /// <summary> Rotates towards position, Stop until turned to angle, ContinueRemove once Finished. </summary>
-    CommandResult DoTurnToPositionCommand(Command command, float deltaTime) {
+    private CommandResult DoTurnToPositionCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.TurnToPosition;
             ship.SetTargetRotate(command.targetPosition);
@@ -171,8 +171,11 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> Rotates towards position then moves towards position, Stop until moved to position, ContinueRemoveOnce Finished. </summary>
-    CommandResult DoMoveRotateCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Rotates towards position then moves towards position, Stop until moved to position, ContinueRemoveOnce
+    ///     Finished.
+    /// </summary>
+    private CommandResult DoMoveRotateCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
             ship.SetMovePosition(command.targetPosition);
@@ -187,8 +190,11 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at target position, ContinueRemove once Finished. </summary>
-    CommandResult DoAttackMoveCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Follows closest enemy ship then goes to target position, Stop until all nearby enemy ships are removed and at
+    ///     target position, ContinueRemove once Finished.
+    /// </summary>
+    private CommandResult DoAttackMoveCommand(Command command, float deltaTime) {
         if (command.waitTime > 0)
             command.waitTime -= deltaTime;
         if (command.waitTime < 0 || newCommand) {
@@ -201,11 +207,11 @@ public class ShipAI {
             //If there is a targetUnit check if a new one should be calculated
             if (currentCommandState != CommandType.Move &&
                 (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                    (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                    (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                        command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                    (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                        command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+                    ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2 ||
+                    ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                    command.targetUnit != ship.GetEnemyUnitsInRange()[0] ||
+                    distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                    command.targetUnit != GetClosestNearbyEnemyUnit())) {
                 newCommand = true;
                 command.targetUnit = null;
             }
@@ -231,7 +237,8 @@ public class ShipAI {
                     if (command.commandType == CommandType.Protect) {
                         if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) >
                             (ship.GetSize() + command.protectUnit.GetSize()) * 3)
-                            ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                            ship.SetMovePosition(command.protectUnit.GetPosition(),
+                                (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                         return CommandResult.Stop;
                     }
 
@@ -262,8 +269,11 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> Follows closest enemy ship then follows friendly ship, Stop until friendly ship is destroyed, Creates an attackMoveCommand on current position once the friendly ship is destroyed. </summary>
-    CommandResult DoProtectCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Follows closest enemy ship then follows friendly ship, Stop until friendly ship is destroyed, Creates an
+    ///     attackMoveCommand on current position once the friendly ship is destroyed.
+    /// </summary>
+    private CommandResult DoProtectCommand(Command command, float deltaTime) {
         if (command.commandType == CommandType.Protect && command.protectUnit == null) {
             command.commandType = CommandType.AttackMove;
             command.protectUnit = null;
@@ -282,17 +292,18 @@ public class ShipAI {
             //If there is a targetUnit check if a new one should be calculated
             if (currentCommandState != CommandType.Move &&
                 (command.targetUnit == null || !command.targetUnit.IsSpawned() ||
-                    (ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2) ||
-                    (ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
-                        command.targetUnit != ship.GetEnemyUnitsInRange()[0]) ||
-                    (distanceToTargetUnit > ship.GetMaxWeaponRange() &&
-                        command.targetUnit != GetClosestNearbyEnemyUnit()))) {
+                    ship.fleet == null && distanceToTargetUnit > ship.GetMaxWeaponRange() * 2 ||
+                    ship.fleet != null && ship.GetEnemyUnitsInRange().Count > 0 &&
+                    command.targetUnit != ship.GetEnemyUnitsInRange()[0] ||
+                    distanceToTargetUnit > ship.GetMaxWeaponRange() &&
+                    command.targetUnit != GetClosestNearbyEnemyUnit())) {
                 newCommand = true;
                 command.targetUnit = null;
             }
 
             if (newCommand) {
-                ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                ship.SetMovePosition(command.protectUnit.GetPosition(),
+                    (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                 command.targetPosition = ship.GetTargetMovePosition();
                 currentCommandState = CommandType.Move;
                 ship.SetMaxSpeed(command.maxSpeed);
@@ -313,13 +324,15 @@ public class ShipAI {
                     if (command.commandType == CommandType.Protect) {
                         if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) >
                             (ship.GetSize() + command.protectUnit.GetSize()) * 3)
-                            ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                            ship.SetMovePosition(command.protectUnit.GetPosition(),
+                                (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                         return CommandResult.Stop;
                     }
 
                     return CommandResult.ContinueRemove;
                 } else {
-                    ship.SetMovePosition(command.protectUnit.GetPosition(), (ship.GetSize() + command.protectUnit.GetSize()) * 2);
+                    ship.SetMovePosition(command.protectUnit.GetPosition(),
+                        (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                     command.targetPosition = ship.GetTargetMovePosition();
                     return CommandResult.Stop;
                 }
@@ -347,7 +360,7 @@ public class ShipAI {
     }
 
     /// <summary> Follows enemy ship, Stop until enemy ship is destroyed, ContinueRemove once Finished. </summary>
-    CommandResult DoAttackMoveUnitCommand(Command command, float deltaTime) {
+    private CommandResult DoAttackMoveUnitCommand(Command command, float deltaTime) {
         if (command.waitTime > 0)
             command.waitTime -= deltaTime;
         if (command.waitTime < 0 || newCommand) {
@@ -372,7 +385,8 @@ public class ShipAI {
             }
 
             if (currentCommandState == CommandType.Move) {
-                if (ship.shipAction == Ship.ShipAction.Idle || Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <=
+                if (ship.shipAction == Ship.ShipAction.Idle ||
+                    Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) <=
                     ship.GetMinWeaponRange() * .8f) {
                     currentCommandState = CommandType.TurnToRotation;
                 } else {
@@ -395,15 +409,17 @@ public class ShipAI {
     }
 
     /// <summary> Attacks the fleet with this ship </summary>
-    CommandResult DoAttackFleetCommand(Command command, float deltaTime) {
+    private CommandResult DoAttackFleetCommand(Command command, float deltaTime) {
         if (command.targetUnit == null || !command.targetUnit.IsSpawned()) {
             command.targetUnit = GetClosestShipInTargetFleet(command.targetFleet);
             newCommand = true;
         }
 
-        if ((newCommand || ship.shipAction == Ship.ShipAction.Idle) && command.targetUnit != null && command.targetUnit.IsSpawned()) {
+        if ((newCommand || ship.shipAction == Ship.ShipAction.Idle) && command.targetUnit != null &&
+            command.targetUnit.IsSpawned()) {
             Vector2 targetPosition;
-            float targetAngle = Calculator.GetAngleOutOfTwoPositions(ship.GetPosition(), command.targetUnit.GetPosition());
+            float targetAngle =
+                Calculator.GetAngleOutOfTwoPositions(ship.GetPosition(), command.targetUnit.GetPosition());
             if (targetAngle <= 0) {
                 targetAngle = Calculator.ConvertTo360DegRotation(targetAngle + 120);
                 targetPosition = command.targetUnit.GetPosition() +
@@ -428,7 +444,7 @@ public class ShipAI {
     }
 
     /// <summary> Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished. </summary>
-    CommandResult DoFollowCommand(Command command, float deltaTime) {
+    private CommandResult DoFollowCommand(Command command, float deltaTime) {
         if (newCommand) {
             ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
             newCommand = false;
@@ -445,17 +461,21 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> Follows the friendly ship in a formation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished. </summary>
-    CommandResult DoFormationCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Follows the friendly ship in a formation, Continue until friendly ship formation leader is destroyed,
+    ///     ContinueRemove once Finished.
+    /// </summary>
+    private CommandResult DoFormationCommand(Command command, float deltaTime) {
         if (command.targetUnit == null) {
             return CommandResult.ContinueRemove;
         }
 
-        float distance = Vector2.Distance(ship.position, (Vector2)command.targetUnit.position + command.targetPosition);
+        float distance = Vector2.Distance(ship.position, command.targetUnit.position + command.targetPosition);
         if (distance > ship.GetTurnSpeed() * deltaTime / 10) {
             CommandResult result =
                 ResolveCommand(
-                    CreateMoveCommand(Vector3.MoveTowards(ship.position, (Vector2)command.targetUnit.position + command.targetPosition,
+                    CreateMoveCommand(Vector3.MoveTowards(ship.position,
+                        command.targetUnit.position + command.targetPosition,
                         distance)), deltaTime);
             if (result == CommandResult.ContinueRemove || result == CommandResult.Continue) {
                 return CommandResult.Continue;
@@ -466,8 +486,11 @@ public class ShipAI {
         return CommandResult.Continue;
     }
 
-    /// <summary> Follows the friendly ship in a formation relative to their rotation, Continue until friendly ship formation leader is destroyed, ContinueRemove once Finished. </summary>
-    CommandResult DoFormationLocationCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Follows the friendly ship in a formation relative to their rotation, Continue until friendly ship formation
+    ///     leader is destroyed, ContinueRemove once Finished.
+    /// </summary>
+    private CommandResult DoFormationLocationCommand(Command command, float deltaTime) {
         if (command.targetUnit == null) {
             return CommandResult.ContinueRemove;
         }
@@ -475,12 +498,13 @@ public class ShipAI {
         float targetAngle = command.targetRotation - command.targetUnit.rotation;
         float distanceToTargetAngle = Calculator.GetDistanceToPosition(command.targetPosition);
         Vector2 targetOffsetPosition =
-            Calculator.GetPositionOutOfAngleAndDistance(targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition),
+            Calculator.GetPositionOutOfAngleAndDistance(
+                targetAngle + Calculator.GetAngleOutOfPosition(command.targetPosition),
                 distanceToTargetAngle);
-        float distance = Vector2.Distance(ship.position, (Vector2)command.targetUnit.position + targetOffsetPosition);
+        float distance = Vector2.Distance(ship.position, command.targetUnit.position + targetOffsetPosition);
         if (distance > ship.GetThrust() * deltaTime / 10) {
             CommandResult result =
-                ResolveCommand(CreateMoveCommand((Vector2)command.targetUnit.position + targetOffsetPosition), deltaTime);
+                ResolveCommand(CreateMoveCommand(command.targetUnit.position + targetOffsetPosition), deltaTime);
             if (result == CommandResult.Stop || result == CommandResult.StopRemove) {
                 return CommandResult.Stop;
             }
@@ -496,7 +520,7 @@ public class ShipAI {
     }
 
     /// <summary> Goes to then docks at the station. </summary>
-    CommandResult DoDockCommand(Command command, float deltaTime) {
+    private CommandResult DoDockCommand(Command command, float deltaTime) {
         if (newCommand) {
             if (command.destinationStation != null) {
                 ship.SetDockTarget(command.destinationStation);
@@ -510,7 +534,7 @@ public class ShipAI {
         }
 
         if (command.destinationStation == null ||
-            (ship.shipAction == Ship.ShipAction.Idle && ship.dockedStation == command.destinationStation)) {
+            ship.shipAction == Ship.ShipAction.Idle && ship.dockedStation == command.destinationStation) {
             ship.SetIdle();
             return CommandResult.StopRemove;
         }
@@ -519,7 +543,7 @@ public class ShipAI {
     }
 
     /// <summary> Undocks from the station </summary>
-    CommandResult DoUndockCommand(Command command, float deltaTime) {
+    private CommandResult DoUndockCommand(Command command, float deltaTime) {
         if (command.commandType == CommandType.UndockCommand) {
             if (ship.dockedStation != null)
                 ship.UndockShip(command.targetRotation);
@@ -530,14 +554,15 @@ public class ShipAI {
     }
 
     /// <summary> AttackMove to the star, do research, then remove command. </summary>
-    CommandResult DoResearchCommand(Command command, float deltaTime) {
+    private CommandResult DoResearchCommand(Command command, float deltaTime) {
         if (command.targetStar == null || command.destinationStation == null) {
             return CommandResult.StopRemove;
         }
 
         if (newCommand) {
             if (ship.moduleSystem.Get<ResearchEquipment>().Any(r => r.WantsMoreData())) {
-                ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+                ship.SetMovePosition(command.targetStar.GetPosition(),
+                    ship.GetSize() + command.targetStar.GetSize() * 2);
                 currentCommandState = CommandType.Move;
             } else {
                 ship.SetDockTarget(command.destinationStation);
@@ -552,8 +577,9 @@ public class ShipAI {
             if (currentCommandState == CommandType.Move) {
                 currentCommandState = CommandType.Research;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Research) {
-                foreach (var researchEquipment in ship.moduleSystem.Get<ResearchEquipment>()) {
+            }
+            if (currentCommandState == CommandType.Research) {
+                foreach (ResearchEquipment researchEquipment in ship.moduleSystem.Get<ResearchEquipment>()) {
                     if (!researchEquipment.GatherData(command.targetStar, deltaTime)) {
                         return CommandResult.Stop;
                     }
@@ -562,21 +588,26 @@ public class ShipAI {
                 ship.SetDockTarget(command.destinationStation);
                 currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Dock) {
+            }
+            if (currentCommandState == CommandType.Dock) {
                 if (ship.dockedStation == null) {
                     // The station must have been destroyed
                     return CommandResult.StopRemove;
                 }
 
                 currentCommandState = CommandType.Wait;
-                ship.moduleSystem.Get<ResearchEquipment>().ForEach(r => ship.dockedStation.faction.AddScience(r.DownloadData()));
+                ship.moduleSystem.Get<ResearchEquipment>()
+                    .ForEach(r => ship.dockedStation.faction.AddScience(r.DownloadData()));
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Wait) {
+            }
+            if (currentCommandState == CommandType.Wait) {
                 if (ship.GetHealth() < ship.GetMaxHealth()) return CommandResult.Stop;
-                ship.SetMovePosition(command.targetStar.GetPosition(), ship.GetSize() + command.targetStar.GetSize() * 2);
+                ship.SetMovePosition(command.targetStar.GetPosition(),
+                    ship.GetSize() + command.targetStar.GetSize() * 2);
                 currentCommandState = CommandType.Move;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Idle) {
+            }
+            if (currentCommandState == CommandType.Idle) {
                 newCommand = true;
             }
         }
@@ -585,7 +616,7 @@ public class ShipAI {
     }
 
     /// <summary> AttackMove to the gas cloud, do research, then remove command. </summary>
-    CommandResult DoCollectGasCommand(Command command, float deltaTime) {
+    private CommandResult DoCollectGasCommand(Command command, float deltaTime) {
         if (command.targetGasCloud == null || command.destinationStation == null) {
             return CommandResult.StopRemove;
         }
@@ -607,9 +638,10 @@ public class ShipAI {
             if (currentCommandState == CommandType.Move) {
                 currentCommandState = CommandType.CollectGas;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.CollectGas) {
+            }
+            if (currentCommandState == CommandType.CollectGas) {
                 if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
-                foreach (var gasCollector in ship.moduleSystem.Get<GasCollector>()) {
+                foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
                         return CommandResult.Stop;
                     }
@@ -618,10 +650,12 @@ public class ShipAI {
                 ship.SetDockTarget(command.destinationStation);
                 currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Dock) {
+            }
+            if (currentCommandState == CommandType.Dock) {
                 currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Wait) {
+            }
+            if (currentCommandState == CommandType.Wait) {
                 if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
                     if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
                     ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
@@ -634,7 +668,8 @@ public class ShipAI {
                 command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, CargoBay.CargoTypes.Gas, ship);
                 currentCommandState = CommandType.Wait;
                 return CommandResult.Stop;
-            } else if (currentCommandState == CommandType.Idle) {
+            }
+            if (currentCommandState == CommandType.Idle) {
                 newCommand = true;
             }
         }
@@ -644,9 +679,11 @@ public class ShipAI {
 
 
     /// <summary> Sets up the ship to transport goods from one station to another. The transport will only undock when full. </summary>
-    CommandResult DoTransportCommand(Command command, float deltaTime) {
-        if (command.destinationStation == null || !command.destinationStation.IsSpawned()) return CommandResult.StopRemove;
-        if (command.productionStation == null || !command.productionStation.IsSpawned()) return CommandResult.StopRemove;
+    private CommandResult DoTransportCommand(Command command, float deltaTime) {
+        if (command.destinationStation == null || !command.destinationStation.IsSpawned())
+            return CommandResult.StopRemove;
+        if (command.productionStation == null || !command.productionStation.IsSpawned())
+            return CommandResult.StopRemove;
 
         //TODO: Create a more robust cargo transfer system
         long cargoTransferSpeed = 400;
@@ -696,8 +733,11 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> Sets up the ship to transport goods from one station to another. The transport will undock when full or after a certain amount of time. </summary>
-    CommandResult DoTransportDelayCommand(Command command, float deltaTime) {
+    /// <summary>
+    ///     Sets up the ship to transport goods from one station to another. The transport will undock when full or after
+    ///     a certain amount of time.
+    /// </summary>
+    private CommandResult DoTransportDelayCommand(Command command, float deltaTime) {
         if (command.destinationStation == null || !command.destinationStation.IsSpawned()) {
             return CommandResult.StopRemove;
         }
@@ -758,7 +798,7 @@ public class ShipAI {
     }
 
     /// <summary> Moves the ship to the planet to colonize, then initiates colonization of the planet. </summary>
-    CommandResult DoColonizeCommand(Command command, float deltaTime) {
+    private CommandResult DoColonizeCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
             ship.SetMovePosition(command.targetPlanet.position, command.targetPlanet.size + ship.size + 100);
@@ -767,8 +807,10 @@ public class ShipAI {
             newCommand = false;
         }
 
-        if (Vector2.Distance(ship.position, command.targetPlanet.position) <= ship.size + command.targetPlanet.size + 102) {
-            foreach (var habitationModule in ship.moduleSystem.modules.Where((c) => c.GetType() == typeof(HabitationArea))
+        if (Vector2.Distance(ship.position, command.targetPlanet.position) <=
+            ship.size + command.targetPlanet.size + 102) {
+            foreach (HabitationArea habitationModule in ship.moduleSystem.modules
+                .Where(c => c.GetType() == typeof(HabitationArea))
                 .Cast<HabitationArea>()) {
                 habitationModule.ColonizePlanet(command.targetPlanet);
             }
@@ -781,9 +823,9 @@ public class ShipAI {
     }
 
     /// <summary>
-    /// Moves to the station and builds the station once it is close enough
+    ///     Moves to the station and builds the station once it is close enough
     /// </summary>
-    CommandResult DoBuildStationCommand(Command command, float deltaTime) {
+    private CommandResult DoBuildStationCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
             ship.SetMovePosition(command.destinationStation.position, command.destinationStation.size + ship.size + 2);
@@ -792,8 +834,10 @@ public class ShipAI {
             newCommand = false;
         }
 
-        if (Vector2.Distance(ship.position, command.destinationStation.position) <= ship.size + command.destinationStation.size + 4) {
-            if (!command.destinationStation.BuildStation()) throw new InvalidProgramException("Trying to build an already built station!");
+        if (Vector2.Distance(ship.position, command.destinationStation.position) <=
+            ship.size + command.destinationStation.size + 4) {
+            if (!command.destinationStation.BuildStation())
+                throw new InvalidProgramException("Trying to build an already built station!");
             ship.Explode();
             return CommandResult.Stop;
         }
@@ -806,7 +850,7 @@ public class ShipAI {
 
     #region HelperMethods
 
-    Unit GetClosestNearbyEnemyUnit() {
+    private Unit GetClosestNearbyEnemyUnit() {
         if (ship.fleet == null && ship.GetEnemyUnitsInRange().Count > 0)
             return ship.GetEnemyUnitsInRange()[0];
         Unit targetUnit = null;
@@ -823,7 +867,7 @@ public class ShipAI {
         return targetUnit;
     }
 
-    Ship GetClosestShipInTargetFleet(Fleet fleet) {
+    private Ship GetClosestShipInTargetFleet(Fleet fleet) {
         Ship targetShip = null;
         float targetDistance = 0;
         for (int i = 0; i < fleet.GetShips().Count; i++) {
@@ -839,7 +883,7 @@ public class ShipAI {
     }
 
 
-    Unit GetClosestEnemyUnitInRadius(float radius) {
+    private Unit GetClosestEnemyUnitInRadius(float radius) {
         Unit targetUnit = null;
         float distance = 0;
         for (int i = 0; i < ship.GetEnemyUnitsInRange().Count; i++) {
@@ -854,12 +898,12 @@ public class ShipAI {
         return targetUnit;
     }
 
-    Ship GetClosestEnemyShipInRadius(float radius) {
+    private Ship GetClosestEnemyShipInRadius(float radius) {
         Ship targetUnit = null;
         float distance = 0;
 
-        foreach (var faction in ship.faction.enemyFactions) {
-            foreach (var tempShip in faction.ships) {
+        foreach (Faction faction in ship.faction.enemyFactions) {
+            foreach (Ship tempShip in faction.ships) {
                 float tempDistance = Vector2.Distance(ship.position, tempShip.position);
                 if (tempDistance <= radius && (targetUnit == null || tempDistance < distance)) {
                     targetUnit = tempShip;
@@ -872,10 +916,10 @@ public class ShipAI {
     }
 
     public List<Vector3> GetMovementPositionPlan() {
-        List<Vector3> positions = new() { ship.GetPosition() };
+        List<Vector3> positions = new List<Vector3> { ship.GetPosition() };
 
-        foreach (var command in commands) {
-            if (command.commandType == Command.CommandType.Research) {
+        foreach (Command command in commands) {
+            if (command.commandType == CommandType.Research) {
                 if (currentCommandState == CommandType.Dock) {
                     if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
@@ -913,12 +957,12 @@ public class ShipAI {
 
                 if (command.targetFleet != null) {
                     positions.Add(command.targetFleet.GetPosition());
-                    continue;
                 }
             } else if (command.commandType == CommandType.Dock) {
                 if (command.destinationStation == null) continue;
                 positions.Add(command.destinationStation.GetPosition());
-            } else if (command.commandType == CommandType.Transport || command.commandType == CommandType.TransportDelay) {
+            } else if (command.commandType == CommandType.Transport ||
+                command.commandType == CommandType.TransportDelay) {
                 if (commands.First() == command) {
                     if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
                         if (command.destinationStation != null)

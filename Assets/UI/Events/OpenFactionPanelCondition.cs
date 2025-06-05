@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class OpenFactionPanelCondition : UIEventCondition {
-    private Faction factionToSelect;
+    private readonly Faction factionToSelect;
 
     public OpenFactionPanelCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Faction factionToSelect,
         bool visualize = false) : base(localPlayer, uiBattleManager, ConditionType.OpenFactionPanel, visualize) {
@@ -11,7 +11,8 @@ public class OpenFactionPanelCondition : UIEventCondition {
 
     public override bool CheckUICondition(EventManager eventManager) {
         if (factionToSelect == null) return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == null;
-        return localPlayer.playerUI.playerFactionOverviewUI.displayedObject == uiBattleManager.factionUIs[factionToSelect];
+        return localPlayer.playerUI.playerFactionOverviewUI.displayedObject ==
+            uiBattleManager.factionUIs[factionToSelect];
     }
 
     public override void GetVisualizedObjects(List<ObjectUI> objectsToVisualize, List<Button> buttonsToVisualize) {
