@@ -54,7 +54,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void SetupDefaultSimulation() {
         ShowSimulationSetup();
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings {
             asteroidFieldCount = 80,
@@ -74,7 +74,7 @@ public class SimulationSetup : MonoBehaviour {
 
     public void SetupBattleSimulation() {
         ShowSimulationSetup();
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         gameObject.SetActive(true);
         battleSettings = new BattleManager.BattleSettings() {
             asteroidFieldCount = 0,
@@ -90,7 +90,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void ToggleSimulationSettings() {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         editSimulationPanel.SetActive(!editSimulationPanel.activeSelf);
         if (editSimulationPanel.activeSelf) {
             editFactionPanel.SetActive(false);
@@ -160,7 +160,7 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void SelectFaction(int factionIndex) {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         if (factionIndex == -1 || factionIndex == selectedFaction) {
             selectedFaction = -1;
             editFactionPanel.SetActive(false);
@@ -189,14 +189,14 @@ public class SimulationSetup : MonoBehaviour {
     }
 
     public void RemoveSelectedFaction() {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         factions.RemoveAt(selectedFaction);
         Destroy(factionList.GetChild(selectedFaction).gameObject);
         SelectFaction(-1);
     }
 
     public void StartSimulation() {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         SceneLoader.LoadBattle(battleSettings, factions);
     }
 }

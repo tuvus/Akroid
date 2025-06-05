@@ -17,11 +17,13 @@ public class StartMenu : MonoBehaviour {
 
     [SerializeField] private StartMenuState state;
     [SerializeField] TMP_Text versionText;
-    [field:SerializeField] public AudioSource buttonSound { get; private set; }
+    [SerializeField] private AudioSource buttonClickSound;
+    [SerializeField] private AudioSource buttonHoverSound;
     [SerializeField] private SimulationSetup simulationSetup;
     [SerializeField] private CampaignSetup campaignSetup;
 
     public List<GameObject> tmpCharacters;
+    private float lastButtonSoundTime;
 
     public void Awake() {
         if (Instance == null) {
@@ -36,7 +38,7 @@ public class StartMenu : MonoBehaviour {
         }
         HideAllMenues();
         SetStartMenu();
-        buttonSound.Stop();
+        buttonClickSound.Stop();
         versionText.text = "Version: " + Application.version;
     }
 
@@ -52,10 +54,11 @@ public class StartMenu : MonoBehaviour {
     }
 
     #region StartMenue
+
     public void SetStartMenu() {
         HideAllMenues();
         ShowStartMenue(true);
-        buttonSound.Play();
+        buttonClickSound.Play();
         state = StartMenuState.StartMenue;
     }
 
@@ -71,7 +74,7 @@ public class StartMenu : MonoBehaviour {
         HideAllMenues();
         ShowSimulationMenue(true);
         state = StartMenuState.SimulationMenue;
-        buttonSound.Play();
+        buttonClickSound.Play();
     }
 
     public void ShowSimulationMenue(bool trueOrFalse) {
@@ -85,7 +88,7 @@ public class StartMenu : MonoBehaviour {
     public void SetCampaignMenu() {
         HideAllMenues();
         ShowCampaignMenue(true);
-        buttonSound.Play();
+        buttonClickSound.Play();
         state = StartMenuState.CampaingMenue;
     }
 
@@ -95,15 +98,27 @@ public class StartMenu : MonoBehaviour {
 
     #endregion
 
+    public void PlayButtonClickSound() {
+        buttonClickSound.Play();
+        lastButtonSoundTime = Time.time;
+    }
+
+    public void PlayButtonHoverSound() {
+        if (lastButtonSoundTime <= Time.time - .2f) {
+            buttonHoverSound.Play();
+            lastButtonSoundTime = Time.time;
+        }
+    }
+
     public void SetSimulationSetup() {
         HideAllMenues();
-        buttonSound.Play();
+        buttonClickSound.Play();
         state = StartMenuState.SimulationSetupMenu;
         simulationSetup.ShowSimulationSetup();
     }
 
     public void ExitGame() {
-        buttonSound.Play();
+        buttonClickSound.Play();
         Application.Quit();
     }
 }

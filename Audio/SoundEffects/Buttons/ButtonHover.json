@@ -1,5 +1,5 @@
 {
-	"name": "ButtonPush",
+	"name": "ButtonHover",
 	"format": "BeepBox",
 	"version": 5,
 	"scale": "Major",
@@ -241,7 +241,7 @@
 					"notes": [
 						{
 							"pitches": [
-								33
+								24
 							],
 							"points": [
 								{
@@ -251,7 +251,7 @@
 									"forMod": false
 								},
 								{
-									"tick": 2,
+									"tick": 4,
 									"pitchBend": 0,
 									"volume": 100,
 									"forMod": false

@@ -10,13 +10,13 @@ public class CampaignSetup : MonoBehaviour {
     }
 
     public void StartCampaignChapter(int chapter) {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         gameObject.SetActive(true);
         SceneLoader.LoadBattle(chapter1);
     }
 
     public void ShowCampaingChapterPanel(bool show) {
-        startMenu.buttonSound.Play();
+        startMenu.PlayButtonClickSound();
         gameObject.SetActive(show);
     }
 }
