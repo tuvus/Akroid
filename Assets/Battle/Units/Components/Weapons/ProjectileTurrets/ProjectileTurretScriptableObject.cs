@@ -10,7 +10,7 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     public int minDamage;
     public int maxDamage;
     public float projectileRange;
-    public GameObject turretPrefab;
+    [Tooltip("Can be left blank in the editor")] public GameObject turretPrefab;
     public GameObject projectilePrefab;
     public GameObject flashPrefab;
     public float flashSpeed = 0.5f;
