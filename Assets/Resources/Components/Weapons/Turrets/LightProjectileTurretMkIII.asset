@@ -12,23 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
   m_Name: LightProjectileTurretMkIII
   m_EditorClassIdentifier: 
-  cost: 81
-  resourceTypes: 01000000
-  resourceCosts: 3f00000000000000
+  cost: 68
+  resourceTypes: 0100000002000000
+  resourceCosts: 24000000000000001f00000000000000
   upgrade: {fileID: 0}
   DPS: 4.5454545
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
-  turretOffset: 1.5
   range: 330
   rotateSpeed: 76
   targeting: 1
   fireSpeed: 0.4
   reloadSpeed: 3.5
   maxAmmo: 5
+  baseScale: {x: 1, y: 1}
+  turretFire: {fileID: 8300000, guid: 0cef757858b3bf01bb9c5ae8c7649282, type: 3}
   fireVelocity: 76
   fireAccuracy: 2.6
   minDamage: 4
   maxDamage: 6
   projectileRange: 380
+  turretPrefab: {fileID: 0}
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
+  flashPrefab: {fileID: 4044898265301780897, guid: 671b2ad4233e47c45b6febc11094884c,
+    type: 3}
+  flashSpeed: 0.5

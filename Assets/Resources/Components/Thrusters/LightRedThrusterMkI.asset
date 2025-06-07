@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LightRedThrusterMkI
   m_EditorClassIdentifier: 
   cost: 342
-  resourceTypes: 01000000
-  resourceCosts: 4400000000000000
+  resourceTypes: 0100000002000000
+  resourceCosts: 44000000000000004400000000000000
   upgrade: {fileID: 11400000, guid: 998cafad1cfed9545bfb57b568021db3, type: 2}
   thrustSpeed: 3420
   color: {r: 1, g: 0.39607844, b: 0, a: 0}
@@ -22,3 +22,4 @@ MonoBehaviour:
   endThrustColor: {r: 1, g: 0.9372549, b: 0.3647059, a: 0}
   thrustEffect: {fileID: 6870540569906507293, guid: 607a5d926b03a1f41b8c0535257293cd,
     type: 3}
+  thrustSound: {fileID: 8300000, guid: db5e90ecb516421cd9f10fa302f3a9fa, type: 3}

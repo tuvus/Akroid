@@ -18,7 +18,6 @@ MonoBehaviour:
   upgrade: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
   DPS: 3.2407408
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
-  turretOffset: 1.5
   range: 270
   rotateSpeed: 76
   targeting: 1
@@ -26,10 +25,15 @@ MonoBehaviour:
   reloadSpeed: 4.4
   maxAmmo: 5
   baseScale: {x: 0.8, y: 0.8}
+  turretFire: {fileID: 8300000, guid: 0cef757858b3bf01bb9c5ae8c7649282, type: 3}
   fireVelocity: 64
   fireAccuracy: 3.6
   minDamage: 3
   maxDamage: 4
   projectileRange: 320
+  turretPrefab: {fileID: 0}
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}
+  flashPrefab: {fileID: 4044898265301780897, guid: 671b2ad4233e47c45b6febc11094884c,
+    type: 3}
+  flashSpeed: 0.5

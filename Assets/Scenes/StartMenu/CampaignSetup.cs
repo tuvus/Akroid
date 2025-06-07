@@ -14,7 +14,7 @@ public class CampaignSetup : MonoBehaviour {
         SceneLoader.LoadBattle(chapter1);
     }
 
-    public void ShowCampaingChapterPanel(bool show) {
+    public void ShowCampaignChapterPanel(bool show) {
         startMenu.PlayButtonClickSound();
         gameObject.SetActive(show);
     }

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: HeavyBlueThrusterMkII
   m_EditorClassIdentifier: 
   cost: 1025
-  resourceTypes: 01000000
-  resourceCosts: cd00000000000000
+  resourceTypes: 0100000002000000
+  resourceCosts: cd00000000000000cd00000000000000
   upgrade: {fileID: 0}
   thrustSpeed: 10250
   color: {r: 0, g: 0.96862745, b: 1, a: 0}
@@ -22,3 +22,4 @@ MonoBehaviour:
   endThrustColor: {r: 0, g: 0.27450982, b: 0.7058824, a: 0}
   thrustEffect: {fileID: 1613586205140506355, guid: 374d73192a08ec94992701665767fd24,
     type: 3}
+  thrustSound: {fileID: 8300000, guid: db5e90ecb516421cd9f10fa302f3a9fa, type: 3}
