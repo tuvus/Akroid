@@ -39,7 +39,7 @@ public class LaserTurretScriptableObject : TurretScriptableObject {
 
     protected override void UpdateCosts() {
         base.UpdateCosts();
-        cost += (long)(GetDamagePerSecond() * 26);
+        cost += (long)(GetDamagePerSecond() * 26 * (rotateSpeed / 80) * (range / 400));
         AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 8));
     }
 }

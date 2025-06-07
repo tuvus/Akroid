@@ -12,25 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5cc689ef747a8841a1f7d0e6a776a4b, type: 3}
   m_Name: HeavyProjectileTurretMkII
   m_EditorClassIdentifier: 
-  cost: 300
+  cost: 590
   resourceTypes: 0100000002000000
-  resourceCosts: a0000000000000008c00000000000000
+  resourceCosts: 2f010000000000000901000000000000
   upgrade: {fileID: 0}
-  DPS: 20
+  DPS: 37.894737
   turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
-  range: 405
-  rotateSpeed: 74
+  range: 430
+  rotateSpeed: 58
   targeting: 1
-  fireSpeed: 0.8
+  fireSpeed: 0.2
   reloadSpeed: 3
-  maxAmmo: 12
+  maxAmmo: 4
   baseScale: {x: 1.2, y: 1.2}
   turretFire: {fileID: 8300000, guid: 0cef757858b3bf01bb9c5ae8c7649282, type: 3}
-  fireVelocity: 114
-  fireAccuracy: 0.8
-  minDamage: 18
-  maxDamage: 24
-  projectileRange: 450
+  fireVelocity: 128
+  fireAccuracy: 0.25
+  minDamage: 34
+  maxDamage: 38
+  projectileRange: 480
   turretPrefab: {fileID: 0}
   projectilePrefab: {fileID: 9150894555189845616, guid: a237493d9574fbe4b8a06d39ec5be5e3,
     type: 3}

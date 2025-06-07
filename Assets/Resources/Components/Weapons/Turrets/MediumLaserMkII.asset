@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 396a28e365f47994182c196908c55114, type: 3}
   m_Name: MediumLaserMkII
   m_EditorClassIdentifier: 
-  cost: 487
+  cost: 641
   resourceTypes: 01000000
-  resourceCosts: 9600000000000000
+  resourceCosts: cf00000000000000
   upgrade: {fileID: 0}
-  DPS: 18.75
+  DPS: 25.96154
   turretSprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
   range: 400
   rotateSpeed: 76
   targeting: 1
   fireSpeed: 0.2
   reloadSpeed: 2
-  maxAmmo: 5
+  maxAmmo: 3
   baseScale: {x: 0.6, y: 0.6}
   turretFire: {fileID: 0}
-  laserDamagePerSecond: 90
+  laserDamagePerSecond: 180
   fireDuration: 0.1
   fadeDuration: 0.05
   laserRange: 440

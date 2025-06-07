@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HermesMissileMkIII
   m_EditorClassIdentifier: 
   type: 0
-  damage: 80
+  damage: 110
   thrust: 200
   turnSpeed: 60
   fuelRange: 1800
@@ -21,3 +21,5 @@ MonoBehaviour:
   sprite: {fileID: -795279756, guid: d178ef83e7ad40642b1295bc0c068466, type: 3}
   destroyEffect: {fileID: 11400000, guid: 1ecd3ef65dc4109a88eaffd73765f81d, type: 2}
   timeAfterExpire: 1
+  missilePrefab: {fileID: 6973132868627845797, guid: 7245374dc6feef641ac35d2bd70e1c22,
+    type: 3}
