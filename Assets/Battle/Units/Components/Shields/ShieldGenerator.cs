@@ -50,8 +50,8 @@ public class ShieldGenerator : ModuleComponent {
     /// <param name="worldPosition">The point to check in world coordinates</param>
     /// <returns>True if the point is inside the shield, false otherwise</returns>
     public bool IsPointInShield(Vector2 worldPosition) {
-        Vector2 localPosition = Calculator.ConvertWorldPositionToLocal(position, rotation, worldPosition);
-        return math.pow(localPosition.x, 2) / math.pow(unit.unitScriptableObject.sprite.bounds.size.x * 1.6f, 2)
-            + math.pow(localPosition.y, 2) / math.pow(unit.unitScriptableObject.sprite.bounds.size.x * 4f, 2) <= 0;
+        Vector2 localPosition = Calculator.ConvertWorldPositionToLocal(unit.position, unit.rotation, worldPosition);
+        return math.pow(localPosition.x, 2) / math.pow(unit.unitScriptableObject.spriteBounds.x * 1.6f, 2)
+            + math.pow(localPosition.y, 2) / math.pow(unit.unitScriptableObject.spriteBounds.x * 4f, 2) <= 1;
     }
 }
