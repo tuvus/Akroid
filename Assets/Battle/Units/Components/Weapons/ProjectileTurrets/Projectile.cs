@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 public class Projectile : BattleObject {
     private int damage;
@@ -62,24 +63,24 @@ public class Projectile : BattleObject {
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
             foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
-                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
-                if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
+                if (math.distancesq(position, targetUnit.GetPosition()) > math.pow(targetUnit.size + size + distanceTraveled, 2)) continue;
 
                 // Start checking positions that the projectile traveled across
                 int collisionChecks = 10;
                 for (int j = 0; j < collisionChecks; j++) {
                     Vector2 collisionPosition = position + shipVelocity * j / collisionChecks +
                         Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed * j / collisionChecks);
-                    if (Vector2.Distance(collisionPosition, targetUnit.position) > size + targetUnit.size) continue;
 
                     foreach (ShieldGenerator shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
-                        if (shieldGenerator.shield.IsSpawned()) {
+                        if (shieldGenerator.shield.IsSpawned() && shieldGenerator.IsPointInShield(collisionPosition)) {
                             shieldGenerator.shield.TakeDamage(damage);
                             position = collisionPosition;
                             Explode(targetUnit);
                             return true;
                         }
                     }
+
+                    if (!targetUnit.IsPointInUnit(collisionPosition)) continue;
 
                     targetUnit.TakeDamage(damage);
                     position = collisionPosition;

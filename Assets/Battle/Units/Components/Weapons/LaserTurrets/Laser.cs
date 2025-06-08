@@ -84,15 +84,13 @@ public class Laser : BattleObject {
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction + laserLength) break;
             foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
-                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
-                if (distanceToUnit > targetUnit.size + size + laserLength) continue;
+                if (math.distancesq(position, targetUnit.GetPosition()) > math.pow(targetUnit.size + size + laserLength, 2)) continue;
 
                 // Check if the laser could possibly hit the unit given the max laserLength
                 Vector2 closestPoint =
                     Calculator.GetClosestPointToAPointOnALine(firePosition, laserTurret.GetWorldRotation(),
                         targetUnit.position);
-                float closestPointDistanceToTargetUnit = Vector2.Distance(closestPoint, targetUnit.position);
-                if (closestPointDistanceToTargetUnit > targetUnit.size) continue;
+                if (math.distancesq(closestPoint, targetUnit.position) > targetUnit.size * targetUnit.size) continue;
 
                 // If the distance to the center of the unit is greater than the laserLength plus the target unit's size
                 // Then there is no possibility that this can be the closest point hit

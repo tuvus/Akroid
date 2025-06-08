@@ -28,7 +28,9 @@ public class ShieldGenderatorUI : ComponentUI {
         return unitUI.IsVisible() && shieldGenerator.shield.visible;
     }
 
-    public override void OnUnitDestroyed() { }
+    public override void OnUnitDestroyed() {
+        shieldRenderer.enabled = false;
+    }
 
     public override void OnUnitRemoved() { }
 }

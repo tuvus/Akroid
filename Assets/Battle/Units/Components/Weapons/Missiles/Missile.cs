@@ -1,3 +1,5 @@
+using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Missile : BattleObject {
@@ -106,26 +108,28 @@ public class Missile : BattleObject {
             if (faction.closeEnemyGroupsDistance[g] > distanceToFaction) break;
             foreach (Unit targetUnit in faction.closeEnemyGroups[g].battleObjects) {
                 if (!targetUnit.IsTargetable()) continue;
-                float distanceToUnit = Vector2.Distance(position, targetUnit.GetPosition());
-                if (distanceToUnit > targetUnit.size + size + distanceTraveled) continue;
+                if (math.distancesq(position, targetUnit.GetPosition()) > math.pow(targetUnit.size + size + distanceTraveled, 2)) continue;
 
                 // Start checking positions that the missile traveled across
                 int collisionChecks = 10;
                 for (int j = 0; j < collisionChecks; j++) {
-                    Vector2 tempPosition = position + velocity * j / collisionChecks +
+                    Vector2 collisionPosition = position + velocity * j / collisionChecks +
                         Calculator.GetPositionOutOfAngleAndDistance(rotation,
                             deltaTime * missileScriptableObject.thrust * j / collisionChecks);
-                    if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
 
                     foreach (ShieldGenerator shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
-                        shieldGenerator.shield.TakeDamage(missileScriptableObject.damage / 2);
-                        position = tempPosition;
-                        Explode(targetUnit);
-                        return true;
+                        if (shieldGenerator.shield.IsSpawned() && shieldGenerator.IsPointInShield(collisionPosition)) {
+                            shieldGenerator.shield.TakeDamage(missileScriptableObject.damage / 2);
+                            position = collisionPosition;
+                            Explode(targetUnit);
+                            return true;
+                        }
                     }
 
+                    if (!targetUnit.IsPointInUnit(collisionPosition)) continue;
+
                     targetUnit.TakeDamage(missileScriptableObject.damage);
-                    position = tempPosition;
+                    position = collisionPosition;
                     Explode(targetUnit);
                     return true;
                 }

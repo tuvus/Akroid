@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 public class ShieldGenerator : ModuleComponent {
     private float timeTillShieldCount;
@@ -41,5 +42,16 @@ public class ShieldGenerator : ModuleComponent {
     public int GetMaxShieldStrength() {
         return Mathf.RoundToInt(shieldGeneratorScriptableObject.maxShieldHealth *
             unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ShieldHealth));
+    }
+
+    /// <summary>
+    /// Finds if a point is in the shield
+    /// </summary>
+    /// <param name="worldPosition">The point to check in world coordinates</param>
+    /// <returns>True if the point is inside the shield, false otherwise</returns>
+    public bool IsPointInShield(Vector2 worldPosition) {
+        Vector2 localPosition = Calculator.ConvertWorldPositionToLocal(position, rotation, worldPosition);
+        return math.pow(localPosition.x, 2) / math.pow(unit.unitScriptableObject.sprite.bounds.size.x * 1.6f, 2)
+            + math.pow(localPosition.y, 2) / math.pow(unit.unitScriptableObject.sprite.bounds.size.x * 4f, 2) <= 0;
     }
 }

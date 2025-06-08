@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Unity.Mathematics;
 using UnityEngine;
 
 public abstract class Unit : BattleObject {
@@ -371,10 +372,15 @@ public abstract class Unit : BattleObject {
             + moduleSystem.Get<MissileLauncher>().Count;
     }
 
+    /// <summary>
+    /// Finds if a point is in the unit
+    /// </summary>
+    /// <param name="worldPosition">The position to test in world coordinates</param>
+    /// <returns>True if the point is inside the unit's sprite box, false otherwise</returns>
     public bool IsPointInUnit(Vector2 worldPosition) {
-        Vector2 localPosition = Calculator.ConvertLocalPositionToWorld(position, rotation, worldPosition);
-        // if (localPosition.y <= unitScriptableObject.spriteBounds.y)
-        return true;
+        Vector2 localPosition = Calculator.ConvertWorldPositionToLocal(position, rotation, worldPosition);
+        if (math.abs(localPosition.x) > unitScriptableObject.spriteBounds.x / 2) return false;
+        return math.abs(localPosition.y) <= unitScriptableObject.spriteBounds.y / 2;
     }
 
     public override float GetSpriteSize() {
