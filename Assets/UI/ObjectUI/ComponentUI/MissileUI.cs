@@ -21,6 +21,7 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         base.Setup(battleObject, uIManager);
         missile = (Missile)battleObject;
         spriteRenderer.enabled = true;
+        if (uIManager.GetEffectsShown()) highlight.enabled = true;
         if (uIManager.GetParticlesShown()) thrust.Play();
         ParticleSystem.MainModule main = thrust.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
@@ -40,13 +41,14 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
             highlight.enabled = false;
         } else if (missile.hit) {
             destroyEffectUI.UpdateExplosion();
-            highlight.enabled = false;
         } else if (missile.expired && !expired) {
             expired = true;
-            ParticleSystem.EmissionModule emmission = thrust.emission;
-            emmission.enabled = false;
+            ParticleSystem.EmissionModule emission = thrust.emission;
+            emission.enabled = false;
+            highlight.enabled = false;
         } else {
             highlight.enabled = uIManager.GetEffectsShown();
+            if (thrust.isPlaying && !uIManager.GetParticlesShown()) thrust.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 
@@ -54,7 +56,8 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         base.OnBattleObjectRemoved();
         uIManager.uiBattleManager.particleHolders.Remove(this);
         destroyEffectUI.OnBattleObjectRemoved();
+        ParticleSystem.EmissionModule emission = thrust.emission;
+        emission.enabled = false;
+        highlight.enabled = false;
     }
-
-    public void ShowParticles(bool shown) { }
 }
