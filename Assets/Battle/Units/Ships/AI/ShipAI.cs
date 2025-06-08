@@ -716,7 +716,7 @@ public class ShipAI {
                     else
                         currentCommandState = CommandType.Dock;
                 } else {
-                    command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
+                    if (command.autoUnload) command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {
@@ -779,7 +779,7 @@ public class ShipAI {
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
-                    command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
+                    if (command.autoUnload) command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {

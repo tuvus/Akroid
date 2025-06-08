@@ -22,13 +22,13 @@ public class OtherMiningFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
         if (otherMiningStation.faction == faction) {
-            BuyMinningShips();
+            BuyMiningShips();
         }
 
         ManageIdleShips();
     }
 
-    private void BuyMinningShips() {
+    private void BuyMiningShips() {
         if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() >
             shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             Ship.ShipBlueprint shipBlueprint = battleManager.GetShipBlueprint(Ship.ShipClass.Transport);
@@ -52,7 +52,7 @@ public class OtherMiningFactionAI : FactionAI {
         foreach (Ship idleShip in idleShips) {
             if (idleShip.IsTransportShip()) {
                 idleShip.shipAI.AddUnitAICommand(
-                    Command.CreateTransportCommand(otherMiningStation, tradeStation, CargoBay.CargoTypes.Metal));
+                    Command.CreateTransportCommand(otherMiningStation, tradeStation, CargoBay.CargoTypes.Metal, false, false));
             }
         }
     }

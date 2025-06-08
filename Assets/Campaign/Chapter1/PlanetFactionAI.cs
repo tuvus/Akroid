@@ -61,9 +61,9 @@ public class PlanetFactionAI : FactionAI {
             if (transportShip.faction != faction && transportShip.faction != shipyardFactionAI.faction) {
                 long amountToTransfer = 300;
                 foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
-                    if (amountToTransfer <= 0) break;
                     long amountOfResource = math.min(amountToTransfer, transportShip.GetAllCargoOfType(type));
-                    if (faction.TransferCredits((long)(amountOfResource * chapter1.resourceCosts[type]),
+                    if (amountOfResource <= 0) break;
+                    if (faction.TransferCredits((long)(amountOfResource * chapter1.resourceCosts[type] * .7f),
                         transportShip.faction)) {
                         tradeStation.LoadCargoFromUnit(amountOfResource, type, transportShip);
                     }
@@ -73,10 +73,10 @@ public class PlanetFactionAI : FactionAI {
 
         if (sellResourcesToPlanetTime <= 0) {
             foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
-                long amount = math.min(100, tradeStation.GetAllCargoOfType(type, true) - 4800);
+                long amount = math.min(math.max(100, tradeStation.GetAllCargoOfType(type) / 6), tradeStation.GetAllCargoOfType(type) - 4800);
                 if (amount <= 0) continue;
                 tradeStation.UseCargo(amount, type);
-                faction.AddCredits((long)(amount * chapter1.resourceCosts[type] * .5f));
+                faction.AddCredits((long)(amount * chapter1.resourceCosts[type]));
             }
 
             sellResourcesToPlanetTime += 5;

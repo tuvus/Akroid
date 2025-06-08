@@ -41,6 +41,7 @@ public class Command {
     public Vector2 targetPosition;
     public bool useAlternateCommandOnceDone;
     public CargoBay.CargoTypes cargoType;
+    public bool autoUnload;
 
     public float maxSpeed;
     public Station destinationStation;
@@ -177,25 +178,25 @@ public class Command {
     }
 
     public static Command CreateTransportCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType,
-        bool oneTrip = false) {
+        CargoBay.CargoTypes cargoType, bool oneTrip = false, bool autoUnload = true) {
         return new Command(CommandType.Transport) {
             destinationStation = destinationStation,
             productionStation = productionStation,
             useAlternateCommandOnceDone = oneTrip,
-            cargoType = cargoType
+            cargoType = cargoType,
+            autoUnload = autoUnload
         };
     }
 
     public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType,
-        float delay) {
+        CargoBay.CargoTypes cargoType, float delay, bool autoUnload = true) {
         return new Command(CommandType.TransportDelay) {
             destinationStation = destinationStation,
             productionStation = productionStation,
             waitTime = delay,
             cargoType = cargoType,
-            targetRotation = delay
+            targetRotation = delay,
+            autoUnload = autoUnload
         };
     }
 

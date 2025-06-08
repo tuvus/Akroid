@@ -50,8 +50,8 @@ public class Chapter1 : CampaingController {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
         resourceCosts = new Dictionary<CargoBay.CargoTypes, double>(10) {
-            { CargoBay.CargoTypes.Metal, 4.6f },
-            { CargoBay.CargoTypes.Gas, 13.9f }
+            { CargoBay.CargoTypes.Metal, 1.6f },
+            { CargoBay.CargoTypes.Gas, 7.9f }
         };
         battleManager.CreateNewStar("Sun");
         colorPicker = new ColorPicker();
@@ -247,7 +247,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = false;
+        bool skipTutorial = true;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -291,9 +291,7 @@ public class Chapter1 : CampaingController {
             "Undocking procedure successful! \n You are now on route to the designated mining location. " +
             "As we planned, you will construct the mining station at the designated point (" +
             Mathf.RoundToInt(playerMiningStation.GetPosition().x) + ", " +
-            Mathf.RoundToInt(playerMiningStation.GetPosition().y) +
-            ") and begin operations.\nGood luck!",
-            _ => {
+            Mathf.RoundToInt(playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!", _ => {
                 if (!skipTutorial) {
                     AddTutorial1();
                     return;
@@ -311,7 +309,7 @@ public class Chapter1 : CampaingController {
                             }
 
                             playerFactionAI.AddTradeRouteToStation(tradeStation);
-                            playerFaction.AddCredits(10000000);
+                            // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
                             AddWarEscalationEventLine();
@@ -335,7 +333,7 @@ public class Chapter1 : CampaingController {
             "If I am talking too fast for you press the \"?\" key to pause and un-pause the game. " +
             "The [<, >] keys can also change how quickly the game time passes.", 15 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Lets review the controls while we are on route to the asteroid fields.", 15 * GetTimeScale());
+            "Lets review the controls while we are on route to the asteroid field.", 15 * GetTimeScale());
 
         // Camera movement Tutorial
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -578,7 +576,7 @@ public class Chapter1 : CampaingController {
         EventChainBuilder researchChain = new EventChainBuilder();
         researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
             "Hello there, this is " + researchCommManager.GetSenderName() + ". " +
-            "I'm the lead reasearcher of the " + researchStation.objectName + ".", 5 * GetTimeScale());
+            "I'm the lead researcher of the " + researchStation.objectName + ".", 5 * GetTimeScale());
         researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
             "I see that your mining operations are all set up. ", 7 * GetTimeScale());
         researchChain.AddCommEvent(researchFaction.GetFactionCommManager(), playerFaction,
@@ -1018,7 +1016,7 @@ public class Chapter1 : CampaingController {
         EventChainBuilder pirateChain = new EventChainBuilder();
         pirateChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()));
         pirateChain.AddCondition(eventManager.CreateWaitCondition(600));
-        // Pirates capture the two two civilian ships and one minning station transport
+        // Pirates capture the two civilian ships and one mining station transport
         pirateChain.AddAction(() => {
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ =>
                 tradeStation.GetAllDockedShips().Any(s => s.faction == planetFaction && s.IsCivilianShip())), () => {
@@ -1125,7 +1123,7 @@ public class Chapter1 : CampaingController {
         FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
 
         EventChainBuilder planetEscalationChain = new EventChainBuilder();
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(1200));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(2400));
         planetEscalationChain.AddAction(() => {
             planetOligarchy.GetFactionAI().attackSpeed = 6f;
             planetOligarchy.GetFactionAI().attackStrength = .04f;
@@ -1139,7 +1137,7 @@ public class Chapter1 : CampaingController {
             $"Warning: The {planetOligarchy.name} has declared war on {planetDemocracy.name}");
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"Warning: The {planetOligarchy.name} has declared war on {planetDemocracy.name}");
-        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(300));
+        planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(600));
         planetEscalationChain.AddAction(() => {
             planetEmpire.StartWar(planetDemocracy);
             planetEmpire.StartWar(planetOligarchy);
@@ -1180,7 +1178,7 @@ public class Chapter1 : CampaingController {
             oligarchyTerritory.SubtractFrom(planet.planetFactions[robotFaction].territory);
         });
         for (int i = 0; i < 20; i++) {
-            planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(20));
+            planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
             planetEscalationChain.AddAction(() => {
                 planet.planetFactions[planetOligarchy].AddForce(70000);
                 Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;

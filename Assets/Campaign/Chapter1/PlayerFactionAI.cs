@@ -38,7 +38,7 @@ public class PlayerFactionAI : FactionAI {
                 nextStationToSendTo = 0;
             ship.shipAI.AddUnitAICommand(
                 Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo],
-                    CargoBay.CargoTypes.All, true));
+                    CargoBay.CargoTypes.All, true, false));
         }
     }
 
