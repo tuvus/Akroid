@@ -68,21 +68,21 @@ public class Projectile : BattleObject {
                 // Start checking positions that the projectile traveled across
                 int collisionChecks = 10;
                 for (int j = 0; j < collisionChecks; j++) {
-                    Vector2 tempPosition = position + shipVelocity * j / collisionChecks +
+                    Vector2 collisionPosition = position + shipVelocity * j / collisionChecks +
                         Calculator.GetPositionOutOfAngleAndDistance(rotation, deltaTime * speed * j / collisionChecks);
-                    if (Vector2.Distance(tempPosition, targetUnit.position) > size + targetUnit.size) continue;
+                    if (Vector2.Distance(collisionPosition, targetUnit.position) > size + targetUnit.size) continue;
 
                     foreach (ShieldGenerator shieldGenerator in targetUnit.moduleSystem.Get<ShieldGenerator>()) {
                         if (shieldGenerator.shield.IsSpawned()) {
                             shieldGenerator.shield.TakeDamage(damage);
-                            position = tempPosition;
+                            position = collisionPosition;
                             Explode(targetUnit);
                             return true;
                         }
                     }
 
                     targetUnit.TakeDamage(damage);
-                    position = tempPosition;
+                    position = collisionPosition;
                     Explode(targetUnit);
                     return true;
                 }

@@ -16,4 +16,21 @@ public class CalculatorTests {
             Calculator.GetClosestPointToAPointOnALine(Vector2.zero, 225f, new Vector2(1, -1)));
         Assert.True(-Vector2.one == Calculator.GetClosestPointToAPointOnALine(Vector2.zero, 135f, -Vector2.one));
     }
+
+    [Test]
+    public void TestConvertWorldToLocalPosition() {
+        Assert.True(new Vector2(30, 100) == Calculator.ConvertWorldPositionToLocal(new(10, 4), 270,
+            Calculator.ConvertLocalPositionToWorld(new(10, 4), 270, new(30, 100))));
+        for (int i = 0; i < 100; i++) {
+            Vector2 localPos = new Vector2(Random.Range(-100000, 100000), Random.Range(-100000, 100000));
+            Vector2 parentPos = new Vector2(Random.Range(-100000, 100000), Random.Range(-100000, 100000));
+            float rotation = Random.Range(0, 360);
+            Vector2 result = Calculator.ConvertWorldPositionToLocal(parentPos, rotation,
+                Calculator.ConvertLocalPositionToWorld(parentPos, rotation, localPos));
+            Assert.True((localPos - result).sqrMagnitude < .001f,
+                "Failed converting world to local position with local position: " + localPos.ToString() +
+                " parent position: " + parentPos.ToString() + " rotation: " + rotation + " was: " + result +
+                " attempt: " + i);
+        }
+    }
 }

@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AriaMkI
   m_EditorClassIdentifier: 
-  cost: 3575
+  cost: 3626
   resourceTypes: 0100000002000000
-  resourceCosts: 51020000000000003601000000000000
+  resourceCosts: 56020000000000003901000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
+  prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Aria
   maxHealth: 224
   sprite: {fileID: 2014477746, guid: dafc31837f98a4b4687f98ecfb498daa, type: 3}
@@ -41,6 +42,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 2.64, y: 7.565}
   shipClass: 2
   shipType: 4
   turnSpeed: 60

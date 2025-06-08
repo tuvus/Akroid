@@ -75,6 +75,18 @@ public static class Calculator {
     }
 
     /// <summary>
+    ///     Converts a world position to the local position given the parents position and rotation.
+    /// </summary>
+    public static Vector2 ConvertWorldPositionToLocal(Vector2 parentPos, float parentRot, Vector2 localPos) {
+        parentRot -= 180;
+        if (parentRot < 0) parentRot += 360;
+        float radians = parentRot * Mathf.Deg2Rad;
+        Vector2 difference = parentPos - localPos;
+        return new Vector2(difference.x * Mathf.Cos(radians) + difference.y * Mathf.Sin(radians),
+            difference.y * Mathf.Cos(radians) - difference.x * Mathf.Sin(radians));
+    }
+
+    /// <summary>
     ///     Simplifies the rotation so that it is not higher or lower than 360,-360.
     /// </summary>
     public static float SimplifyRotation360(float rotation) {

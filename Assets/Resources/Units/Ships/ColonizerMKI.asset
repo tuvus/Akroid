@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ColonizerMKI
   m_EditorClassIdentifier: 
-  cost: 11416
+  cost: 11488
   resourceTypes: 0100000002000000
-  resourceCosts: d9070000000000001202000000000000
+  resourceCosts: e2070000000000001802000000000000
   prefabPath: Prefabs/ShipPrefabs/Colonizer
+  prefab: {fileID: 4268936986182817265, guid: c510b40027d50b10b94036a66a3b3f9e, type: 3}
   unitName: Colonizer
   maxHealth: 850
   sprite: {fileID: 2143475390, guid: 9256f3aff4adf1346aae1320292696a2, type: 3}
@@ -45,6 +46,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: a33a08d6956c46847aec3fa8de0f0be1, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 6.6, y: 17.92}
   shipClass: 7
   shipType: 9
   turnSpeed: 30

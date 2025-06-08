@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AternaMkI
   m_EditorClassIdentifier: 
-  cost: 40901
+  cost: 43640
   resourceTypes: 0100000002000000
-  resourceCosts: e9170000000000009806000000000000
+  resourceCosts: ee1b000000000000c60b000000000000
   prefabPath: Prefabs/ShipPrefabs/Aterna
+  prefab: {fileID: 8328976631515970221, guid: 230a9a6ed5c173a4398e983da8509c10, type: 3}
   unitName: Aterna
   maxHealth: 3400
   sprite: {fileID: -1913859534, guid: 70aef500846276d47b1c2fbc712ca58a, type: 3}
@@ -49,6 +50,8 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
     moduleSize: 0
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 11.142858, y: 29.185715}
   shipClass: 4
   shipType: 7
   turnSpeed: 45

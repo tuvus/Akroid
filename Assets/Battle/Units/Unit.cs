@@ -371,6 +371,12 @@ public abstract class Unit : BattleObject {
             + moduleSystem.Get<MissileLauncher>().Count;
     }
 
+    public bool IsPointInUnit(Vector2 worldPosition) {
+        Vector2 localPosition = Calculator.ConvertLocalPositionToWorld(position, rotation, worldPosition);
+        // if (localPosition.y <= unitScriptableObject.spriteBounds.y)
+        return true;
+    }
+
     public override float GetSpriteSize() {
         return Calculator.GetSpriteSizeFromBounds(unitScriptableObject.spriteBounds, scale);
     }
