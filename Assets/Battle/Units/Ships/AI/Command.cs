@@ -203,7 +203,8 @@ public class Command {
     public static Command CreateResearchCommand(Star targetStar, Station returnStation) {
         return new Command(CommandType.Research) {
             destinationStation = returnStation,
-            targetStar = targetStar
+            targetStar = targetStar,
+            targetPosition = targetStar.GetPosition()
         };
     }
 
@@ -211,7 +212,7 @@ public class Command {
         return new Command(CommandType.CollectGas) {
             destinationStation = returnStation,
             targetGasCloud = targetGasCloud,
-            targetPosition = targetGasCloud.position
+            targetPosition = targetGasCloud.GetPosition()
         };
     }
 

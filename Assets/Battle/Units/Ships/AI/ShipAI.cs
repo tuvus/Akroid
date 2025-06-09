@@ -561,8 +561,10 @@ public class ShipAI {
 
         if (newCommand) {
             if (ship.moduleSystem.Get<ResearchEquipment>().Any(r => r.WantsMoreData())) {
-                ship.SetMovePosition(command.targetStar.GetPosition(),
-                    ship.GetSize() + command.targetStar.GetSize() * 2);
+                command.targetPosition = command.targetStar.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(
+                    Calculator.GetAngleOutOfTwoPositions(command.targetStar.GetPosition(), ship.position) +
+                    ship.random.NextFloat(-10, 10), ship.GetSize() + command.targetStar.GetSize() * 2);
+                ship.SetMovePosition(command.targetPosition);
                 currentCommandState = CommandType.Move;
             } else {
                 ship.SetDockTarget(command.destinationStation);
@@ -602,8 +604,10 @@ public class ShipAI {
             }
             if (currentCommandState == CommandType.Wait) {
                 if (ship.GetHealth() < ship.GetMaxHealth()) return CommandResult.Stop;
-                ship.SetMovePosition(command.targetStar.GetPosition(),
-                    ship.GetSize() + command.targetStar.GetSize() * 2);
+                command.targetPosition = command.targetStar.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(
+                    Calculator.GetAngleOutOfTwoPositions(command.targetStar.GetPosition(), ship.position) +
+                    ship.random.NextFloat(-10, 10), ship.GetSize() + command.targetStar.GetSize() * 2);
+                ship.SetMovePosition(command.targetPosition);
                 currentCommandState = CommandType.Move;
                 return CommandResult.Stop;
             }
@@ -932,9 +936,7 @@ public class ShipAI {
                     if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
                 } else {
-                    positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetStar.GetPosition(),
-                        Vector2.Distance(ship.GetPosition(), command.targetStar.GetPosition()) -
-                        (ship.GetSize() + command.targetStar.GetSize() * 2)));
+                    positions.Add(command.targetPosition);
                 }
             } else if (command.commandType == CommandType.CollectGas) {
                 if (currentCommandState == CommandType.Dock) {
