@@ -253,6 +253,7 @@ public class Ship : Unit {
 
         if (shipAction == ShipAction.Dock) {
             DockShip(targetStation);
+            return;
         }
 
         if (shipAction == ShipAction.MoveLateral) {
@@ -394,9 +395,8 @@ public class Ship : Unit {
             dockedStation = station;
             position = station.position;
             rotation = 0;
+            SetIdle();
         }
-
-        SetIdle();
     }
 
     public void UndockShip() {

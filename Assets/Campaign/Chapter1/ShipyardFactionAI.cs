@@ -14,8 +14,19 @@ public class ShipyardFactionAI : FactionAI {
         this.planetFactionAI = planetFactionAI;
         this.shipyard = shipyard;
         transportTime = 0;
-        // We need to re-add the Idle ships since we are seting up after creating them
+        // We need to re-add the Idle ships since we are setting up after creating them
         faction.ships.ToList().ForEach(s => idleShips.Add(s));
+        EventChainBuilder purchaseTransportsChain = new EventChainBuilder();
+        purchaseTransportsChain.AddCondition(new PredicateCondition(_ => faction.credits > battleManager.GetShipBlueprint(Ship.ShipClass.Transport).shipScriptableObject.cost * 5));
+        purchaseTransportsChain.AddAction(() => shipyard.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Transport))));
+        purchaseTransportsChain.AddCondition(new PredicateCondition(_ => faction.credits > battleManager.GetShipBlueprint(Ship.ShipClass.Transport).shipScriptableObject.cost * 10));
+        purchaseTransportsChain.AddAction(() => shipyard.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.Transport))));
+        purchaseTransportsChain.AddCondition(new PredicateCondition(_ => faction.credits > battleManager.GetShipBlueprint(Ship.ShipClass.HeavyTransport).shipScriptableObject.cost * 5));
+        purchaseTransportsChain.AddAction(() => shipyard.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.HeavyTransport))));
+        purchaseTransportsChain.AddCondition(new PredicateCondition(_ => faction.credits > battleManager.GetShipBlueprint(Ship.ShipClass.HeavyTransport).shipScriptableObject.cost * 10));
+        purchaseTransportsChain.AddAction(() => shipyard.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(faction, battleManager.GetShipBlueprint(Ship.ShipClass.HeavyTransport))));
+
+        purchaseTransportsChain.Build(chapter1.eventManager)();
     }
 
     public override void UpdateFactionAI(float deltaTime) {
@@ -38,15 +49,28 @@ public class ShipyardFactionAI : FactionAI {
         if (transportTime > 0) return;
         foreach (Ship ship in faction.ships.Where(s => s.IsTransportShip())) {
             if (ship.dockedStation == shipyard) {
-                shipyard.LoadCargoFromUnit(100, CargoBay.CargoTypes.Metal, ship);
+                shipyard.LoadCargoFromUnit(300, CargoBay.CargoTypes.Metal, ship);
+                shipyard.LoadCargoFromUnit(300, CargoBay.CargoTypes.Gas, ship);
             } else if (ship.dockedStation == chapter1.tradeStation) {
-                long cargoToLoad = math.min(100, ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal));
-                if (faction.credits >= cargoToLoad * chapter1.resourceCosts[CargoBay.CargoTypes.Metal]) {
-                    ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
-                } else if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                bool loadedCargo = false;
+                if (shipyard.GetAllCargoOfType(CargoBay.CargoTypes.Metal, true) < 2400 * 20) {
+                    long cargoToLoad = math.min(300, ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal));
+                    if (faction.credits >= cargoToLoad * chapter1.resourceCosts[CargoBay.CargoTypes.Metal]) {
+                        long cargoLoaded = 300 - ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Metal);
+                        if (cargoLoaded > 0) loadedCargo = true;
+                    }
+                }
+                if (shipyard.GetAllCargoOfType(CargoBay.CargoTypes.Gas, true) < 2400 * 20) {
+                    long cargoToLoad = math.min(300, ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas));
+                    if (faction.credits >= cargoToLoad * chapter1.resourceCosts[CargoBay.CargoTypes.Gas]) {
+                        long cargoLoaded = 300 - ship.LoadCargo(cargoToLoad, CargoBay.CargoTypes.Gas);
+                        if (cargoLoaded > 0) loadedCargo = true;
+                    }
+                }
+                if (!loadedCargo && ship.GetAllCargoOfType(CargoBay.CargoTypes.All, true) > 0) {
                     ship.UndockShip(shipyard.GetPosition());
                     ship.shipAI.AddUnitAICommand(
-                        Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                        Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.All, true),
                         Command.CommandAction.Replace);
                 }
             }
@@ -59,7 +83,7 @@ public class ShipyardFactionAI : FactionAI {
         foreach (Ship ship in idleShips) {
             if (ship.IsTransportShip()) {
                 ship.shipAI.AddUnitAICommand(
-                    Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.Metal),
+                    Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.All),
                     Command.CommandAction.Replace);
             }
         }

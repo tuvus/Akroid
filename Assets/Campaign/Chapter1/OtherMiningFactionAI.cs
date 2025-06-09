@@ -15,7 +15,7 @@ public class OtherMiningFactionAI : FactionAI {
         this.shipyardFactionAI = shipyardFactionAI;
         this.otherMiningStation = otherMiningStation;
         this.tradeStation = tradeStation;
-        // We need to re-add the Idle ships since we are seting up after creating them
+        // We need to re-add the Idle ships since we are setting up after creating them
         faction.ships.ToList().ForEach(s => idleShips.Add(s));
     }
 

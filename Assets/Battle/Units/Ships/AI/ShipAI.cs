@@ -757,11 +757,11 @@ public class ShipAI {
             }
 
             if (ship.dockedStation == command.productionStation) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                if (ship.GetAllCargoOfType(command.cargoType) > 0) {
                     command.waitTime -= deltaTime;
                 }
 
-                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
+                if (ship.GetAvailableCargoSpace(command.cargoType) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
@@ -770,11 +770,11 @@ public class ShipAI {
                     currentCommandState = CommandType.Wait;
                 }
             } else if (ship.dockedStation == command.destinationStation) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                if (ship.GetAllCargoOfType(command.cargoType) > 0) {
                     command.waitTime -= deltaTime;
                 }
 
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0 || command.waitTime <= 0) {
+                if (ship.GetAllCargoOfType(command.cargoType) <= 0 || command.waitTime <= 0) {
                     ship.SetDockTarget(command.productionStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
@@ -784,7 +784,7 @@ public class ShipAI {
                 }
             } else {
                 command.waitTime = command.targetRotation;
-                if (ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal) <= 0) {
+                if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
                     ship.SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
@@ -964,7 +964,7 @@ public class ShipAI {
             } else if (command.commandType == CommandType.Transport ||
                 command.commandType == CommandType.TransportDelay) {
                 if (commands.First() == command) {
-                    if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 0) {
+                    if (ship.GetAllCargoOfType(command.cargoType) > 0) {
                         if (command.destinationStation != null)
                             positions.Add(command.destinationStation.GetPosition());
                         if (command.productionStation != null)
