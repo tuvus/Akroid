@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ResearchEquipment : ModuleComponent {
     [SerializeField] private int data;
-    private readonly ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
+    private ResearchEquipmentScriptableObject researchEquipmentScriptableObject;
     private float researchTime;
 
     public ResearchEquipment(BattleManager battleManager, IModule module, Unit unit,
@@ -12,6 +12,11 @@ public class ResearchEquipment : ModuleComponent {
 
         researchTime = researchEquipmentScriptableObject.researchSpeed;
         data = 0;
+    }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        researchEquipmentScriptableObject = (ResearchEquipmentScriptableObject)componentScriptableObject;
     }
 
     /// <returns> False if we done collecting data, true otherwise </returns>

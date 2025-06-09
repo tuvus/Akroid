@@ -124,15 +124,21 @@ public class ModuleSystem {
         systems[systemIndex].component = upgrade;
 
         //Upgrade the moduleComponents
-        for (int i = 0; i < modules.Count(); i++) {
-            ModuleComponent oldModule = modules[i];
-            if (moduleToSystem[oldModule] == system) {
-                object[] args = { unit.battleManager, oldModule.module, unit, upgrade };
-                modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
-                moduleToSystem.Remove(oldModule);
-                moduleToSystem.Add(modules[i], system);
-            }
-        }
+
+        // Creating an entirely new module for upgrading allows for us to upgrade into different components.
+        // However, this causes a problem with any state the old component might have had and any temporary variables referring to it.
+        // Therefore, I have disabled the extra functionality for now, although it might never be used again.
+        // for (int i = 0; i < modules.Count(); i++) {
+        //     ModuleComponent oldModule = modules[i];
+        //     if (moduleToSystem[oldModule] == system) {
+        //         object[] args = { unit.battleManager, oldModule.module, unit, upgrade };
+        //         modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
+        //         moduleToSystem.Remove(oldModule);
+        //         moduleToSystem.Add(modules[i], system);
+        //     }
+        // }
+        modules.Where(m => moduleToSystem[m] == system).ToList()
+            .ForEach(m => m.Upgrade(upgrade));
     }
 
     #endregion

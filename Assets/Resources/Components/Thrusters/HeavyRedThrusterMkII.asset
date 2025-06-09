@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1a4dc295f981b646b62533ac9bfb628, type: 3}
   m_Name: HeavyRedThrusterMkII
   m_EditorClassIdentifier: 
-  cost: 520
+  cost: 1080
   resourceTypes: 0100000002000000
-  resourceCosts: 68000000000000006800000000000000
+  resourceCosts: d800000000000000d800000000000000
   upgrade: {fileID: 0}
-  thrustSpeed: 5200
+  thrustSpeed: 10800
   color: {r: 1, g: 0.39607844, b: 0, a: 0}
   startThrustColor: {r: 0.50980395, g: 0.078431375, b: 0, a: 0}
   endThrustColor: {r: 1, g: 0.9372549, b: 0.3647059, a: 0}

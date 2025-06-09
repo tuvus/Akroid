@@ -575,7 +575,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     private void UpdateShipThrustPower() {
         foreach (Ship ship in ships) {
-            ship.SetupThrusters();
+            ship.RecalculateThrust();
         }
     }
 

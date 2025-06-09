@@ -2,11 +2,16 @@ using Unity.Mathematics;
 
 public class Generator : ModuleComponent {
     private float consumptionTime;
-    private readonly GeneratorScriptableObject generatorScriptableObject;
+    private GeneratorScriptableObject generatorScriptableObject;
 
     public Generator(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
+        generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;
+    }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
         generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;
     }
 

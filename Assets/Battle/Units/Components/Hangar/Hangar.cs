@@ -3,8 +3,9 @@ using System.Linq;
 using UnityEngine;
 
 public class Hangar : ModuleComponent {
-    [SerializeField] private int dockSpace;
-    private readonly HangarScriptableObject hangarScriptableObject;
+    [SerializeField] private int usedDockSpace;
+    private HangarScriptableObject hangarScriptableObject;
+    public List<Ship> ships { get; }
 
     public Hangar(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -13,12 +14,16 @@ public class Hangar : ModuleComponent {
 
         ships = new List<Ship>(hangarScriptableObject.maxDockSpace);
     }
-    public List<Ship> ships { get; }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        hangarScriptableObject = (HangarScriptableObject)componentScriptableObject;
+    }
 
     public bool DockShip(Ship ship) {
-        if (dockSpace < hangarScriptableObject.maxDockSpace) {
+        if (usedDockSpace < hangarScriptableObject.maxDockSpace) {
             ships.Add(ship);
-            dockSpace++;
+            usedDockSpace++;
             return true;
         }
 
@@ -27,11 +32,11 @@ public class Hangar : ModuleComponent {
 
     public void RemoveShip(Ship ship) {
         ships.Remove(ship);
-        dockSpace--;
+        usedDockSpace--;
     }
 
     public bool CanDockShip() {
-        return dockSpace < hangarScriptableObject.maxDockSpace;
+        return usedDockSpace < hangarScriptableObject.maxDockSpace;
     }
 
     public void UndockAll() {
@@ -106,7 +111,7 @@ public class Hangar : ModuleComponent {
     }
 
     public int GetDockedSpace() {
-        return dockSpace;
+        return usedDockSpace;
     }
 
     public int GetMaxDockSpace() {

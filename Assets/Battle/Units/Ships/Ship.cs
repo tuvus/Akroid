@@ -67,7 +67,8 @@ public class Ship : Unit {
         }
 
         mass = GetSize() * 100;
-        SetupThrusters();
+        thrusting = false;
+        RecalculateThrust();
         SetIdle();
         visible = true;
     }
@@ -77,12 +78,6 @@ public class Ship : Unit {
     public bool thrusting { get; private set; }
     /// <summary> A modifier to the thrust size between 0 and 1 based on the ships speed. </summary>
     public float thrustSize { get; private set; }
-
-    public void SetupThrusters() {
-        thrusting = false;
-        thrust = moduleSystem.Get<Thruster>()
-            .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
-    }
 
     [Serializable]
     public class ShipBlueprint {
@@ -269,6 +264,10 @@ public class Ship : Unit {
         }
     }
 
+    public void RecalculateThrust() {
+        thrust = moduleSystem.Get<Thruster>()
+            .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
+    }
     #endregion
 
     #region ShipControlls

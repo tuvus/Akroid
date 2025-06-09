@@ -13,7 +13,7 @@ public class Station : Unit, IPositionConfirmer {
         MiningStation = 3,
         Shipyard = 4,
         TradeStation = 5,
-        ReserchStation = 6
+        ResearchStation = 6
     }
 
     protected bool built;

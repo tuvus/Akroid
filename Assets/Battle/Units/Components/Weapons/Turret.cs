@@ -23,6 +23,9 @@ public abstract class Turret : ModuleComponent {
     public Unit targetUnit;
     public Vector2 targetVector;
     private readonly float turretOffset;
+    public TurretScriptableObject turretScriptableObject { get; private set; }
+
+    public event Action OnFire = delegate { };
 
     public Turret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -39,9 +42,10 @@ public abstract class Turret : ModuleComponent {
         SetSize(SetupSize());
     }
 
-    public TurretScriptableObject turretScriptableObject { get; }
-
-    public event Action OnFire = delegate { };
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        turretScriptableObject = (TurretScriptableObject)componentScriptableObject;
+    }
 
     /// <returns>True if the turret is hibernating, false otherwise </returns>
     public virtual bool UpdateTurret(float deltaTime) {

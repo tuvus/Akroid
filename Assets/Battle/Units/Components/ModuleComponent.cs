@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public abstract class ModuleComponent : BattleObject {
     public IModule module;
+    protected Unit unit { get; }
+    public ComponentScriptableObject componentScriptableObject { get; private set; }
 
     public ModuleComponent(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -14,8 +16,10 @@ public abstract class ModuleComponent : BattleObject {
         this.module = module;
         this.componentScriptableObject = componentScriptableObject;
     }
-    protected Unit unit { get; }
-    public ComponentScriptableObject componentScriptableObject { get; private set; }
+
+    public virtual void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        this.componentScriptableObject = componentScriptableObject;
+    }
 
     public Vector2 GetWorldPosition() {
         return Calculator.ConvertLocalPositionToWorld(unit.position, unit.rotation, position);

@@ -6,7 +6,7 @@ using static Ship;
 
 public class ConstructionBay : ModuleComponent {
     [SerializeField] public List<ShipConstructionBlueprint> buildQueue;
-    private readonly ConstructionBayScriptableObject constructionBayScriptableObject;
+    private ConstructionBayScriptableObject constructionBayScriptableObject;
 
     private float constructionTime;
 
@@ -16,6 +16,11 @@ public class ConstructionBay : ModuleComponent {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
 
         buildQueue = new List<ShipConstructionBlueprint>(10);
+    }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
     }
 
     public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {

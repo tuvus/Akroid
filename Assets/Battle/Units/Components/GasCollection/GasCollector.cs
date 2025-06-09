@@ -1,6 +1,6 @@
 public class GasCollector : ModuleComponent {
     private float collectionTime;
-    private readonly GasCollectorScriptableObject gasCollectorScriptableObject;
+    private GasCollectorScriptableObject gasCollectorScriptableObject;
 
     public GasCollector(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -8,6 +8,11 @@ public class GasCollector : ModuleComponent {
         gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
 
         collectionTime = gasCollectorScriptableObject.collectionSpeed;
+    }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        gasCollectorScriptableObject = (GasCollectorScriptableObject)componentScriptableObject;
     }
 
     /// <returns> False if we are finished collecting gas, true otherwise </returns>

@@ -1,7 +1,8 @@
 using UnityEngine;
 
 public class HabitationArea : ModuleComponent {
-    private readonly HabitationAreaScriptableObject habitationAreaScriptableObject;
+    private HabitationAreaScriptableObject habitationAreaScriptableObject;
+    [field: SerializeField] public long population { get; private set; }
 
 
     public HabitationArea(BattleManager battleManager, IModule module, Unit unit,
@@ -11,7 +12,11 @@ public class HabitationArea : ModuleComponent {
 
         population = habitationAreaScriptableObject.populationSpace;
     }
-    [field: SerializeField] public long population { get; private set; }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        habitationAreaScriptableObject = (HabitationAreaScriptableObject)componentScriptableObject;
+    }
 
     public void ColonizePlanet(Planet planet) {
         if (planet.planetFactions.ContainsKey(faction)) {

@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ShieldGenerator : ModuleComponent {
     private float timeTillShieldCount;
+    public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; private set; }
+    public Shield shield { get; }
 
     public ShieldGenerator(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -10,8 +12,11 @@ public class ShieldGenerator : ModuleComponent {
         shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
         shield = new Shield(this, unit, GetMaxShieldStrength());
     }
-    public ShieldGeneratorScriptableObject shieldGeneratorScriptableObject { get; }
-    public Shield shield { get; }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        shieldGeneratorScriptableObject = (ShieldGeneratorScriptableObject)componentScriptableObject;
+    }
 
     public void UpdateShieldGenerator(float deltaTime) {
         if (shield.spawned && shield.health <= 0) DestroyShield();

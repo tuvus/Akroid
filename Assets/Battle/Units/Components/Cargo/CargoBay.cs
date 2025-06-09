@@ -20,8 +20,9 @@ public class CargoBay : ModuleComponent {
 
     public static List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
 
-    private readonly CargoBayScriptableObject cargoBayScriptableObject;
+    private CargoBayScriptableObject cargoBayScriptableObject;
     private int cargoBaysInUse;
+    public Dictionary<CargoTypes, long> cargoBays { get; } = new Dictionary<CargoTypes, long>();
 
     /// <summary>
     ///     How many cargo bays are reserved for each type of cargo.
@@ -48,7 +49,11 @@ public class CargoBay : ModuleComponent {
         }
     }
 
-    public Dictionary<CargoTypes, long> cargoBays { get; } = new Dictionary<CargoTypes, long>();
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
+    }
+
 
     /// <returns> Returns the amount of cargo that could not be loaded. </returns>
     public long LoadCargo(long cargoToLoad, CargoTypes cargoType) {

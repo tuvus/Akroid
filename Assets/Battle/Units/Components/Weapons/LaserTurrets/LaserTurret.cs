@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
 public class LaserTurret : Turret {
+    public LaserTurretScriptableObject laserTurretScriptableObject { get; private set; }
+    public Laser laser { get; }
+
     public LaserTurret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
@@ -8,8 +11,11 @@ public class LaserTurret : Turret {
 
         laser = new Laser(new BattleObjectData("Laser", unit.faction), battleManager, this);
     }
-    public LaserTurretScriptableObject laserTurretScriptableObject { get; }
-    public Laser laser { get; }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        laserTurretScriptableObject = (LaserTurretScriptableObject)componentScriptableObject;
+    }
 
     protected override void UpdateTurretReload(float deltaTime) {
         if (!laser.IsFireing())

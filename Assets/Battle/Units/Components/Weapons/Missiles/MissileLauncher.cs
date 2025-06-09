@@ -15,7 +15,7 @@ public class MissileLauncher : ModuleComponent {
     private static readonly float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
 
-    private readonly MissileLauncherScriptableObject missileLauncherScriptableObject;
+    private MissileLauncherScriptableObject missileLauncherScriptableObject;
     public float range;
 
     private ReloadController reloadController;
@@ -33,6 +33,11 @@ public class MissileLauncher : ModuleComponent {
             missileLauncherScriptableObject.maxAmmo);
         Random random = new Random((uint)battleManager.battleObjects.Count + 1);
         findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
+    }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        missileLauncherScriptableObject = (MissileLauncherScriptableObject)componentScriptableObject;
     }
 
     /// <returns>True if the turret is hibernating, false otherwise </returns>

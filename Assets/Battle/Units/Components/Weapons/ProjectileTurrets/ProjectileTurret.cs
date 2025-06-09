@@ -2,14 +2,19 @@
 using Random = Unity.Mathematics.Random;
 
 public class ProjectileTurret : Turret {
+    public ProjectileTurretScriptableObject projectileTurretScriptableObject { get; private set; }
+    public double lastFlashTime { get; private set; }
     public ProjectileTurret(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
         lastFlashTime = -projectileTurretScriptableObject.flashSpeed;
     }
-    public ProjectileTurretScriptableObject projectileTurretScriptableObject { get; }
-    public double lastFlashTime { get; private set; }
+
+    public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
+        base.Upgrade(componentScriptableObject);
+        projectileTurretScriptableObject = (ProjectileTurretScriptableObject)componentScriptableObject;
+    }
 
     public override bool Fire() {
         base.Fire();
