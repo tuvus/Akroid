@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public class Ship : Unit {
     public enum ShipAction {
@@ -55,11 +56,13 @@ public class Ship : Unit {
     private float thrust;
     public float speed { get; private set; }
     private float timeUntilCheckRotation;
+    public Random random;
 
     public Ship(BattleObjectData battleObjectData, BattleManager battleManager,
-        ShipScriptableObject shipScriptableObject) :
+        ShipScriptableObject shipScriptableObject, Random random) :
         base(battleObjectData, battleManager, shipScriptableObject) {
         this.shipScriptableObject = shipScriptableObject;
+        this.random = random;
         faction.AddShip(this);
         switch (shipScriptableObject.shipType) {
             default:

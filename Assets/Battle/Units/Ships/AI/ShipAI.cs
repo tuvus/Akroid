@@ -623,7 +623,10 @@ public class ShipAI {
 
         if (newCommand) {
             if (ship.moduleSystem.Get<GasCollector>().Any(g => g.WantsMoreGas())) {
-                ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
+                command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
+                ship.SetMovePosition(command.targetPosition, 2);
                 currentCommandState = CommandType.Move;
             } else {
                 ship.SetDockTarget(command.destinationStation);
@@ -658,7 +661,10 @@ public class ShipAI {
             if (currentCommandState == CommandType.Wait) {
                 if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
                     if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
-                    ship.SetMovePosition(command.targetGasCloud.GetPosition(), 2);
+                    command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
+                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
+                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
+                    ship.SetMovePosition(command.targetPosition, 2);
                     currentCommandState = CommandType.Move;
                     return CommandResult.Stop;
                 }
@@ -716,7 +722,8 @@ public class ShipAI {
                     else
                         currentCommandState = CommandType.Dock;
                 } else {
-                    if (command.autoUnload) command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
+                    if (command.autoUnload)
+                        command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {
@@ -779,7 +786,8 @@ public class ShipAI {
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
-                    if (command.autoUnload) command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
+                    if (command.autoUnload)
+                        command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, ship);
                     currentCommandState = CommandType.Wait;
                 }
             } else {
@@ -933,7 +941,7 @@ public class ShipAI {
                     if (command.destinationStation == null) continue;
                     positions.Add(command.destinationStation.GetPosition());
                 } else {
-                    positions.Add(command.targetGasCloud.GetPosition());
+                    positions.Add(command.targetPosition);
                 }
             } else if (command.commandType == CommandType.Colonize) {
                 if (command.targetPlanet == null) continue;

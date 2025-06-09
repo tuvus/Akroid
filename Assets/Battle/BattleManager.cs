@@ -348,7 +348,7 @@ public class BattleManager : MonoBehaviour {
 
     public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData,
         ShipScriptableObject shipScriptableObject) {
-        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject);
+        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject, Random.CreateFromIndex(random.NextUInt()));
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);

@@ -210,7 +210,8 @@ public class Command {
     public static Command CreateCollectGasCommand(GasCloud targetGasCloud, Station returnStation) {
         return new Command(CommandType.CollectGas) {
             destinationStation = returnStation,
-            targetGasCloud = targetGasCloud
+            targetGasCloud = targetGasCloud,
+            targetPosition = targetGasCloud.position
         };
     }
 
