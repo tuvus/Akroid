@@ -188,7 +188,7 @@ public class Fleet : ShipGroup {
     }
 
     public float GetMinShipSpeed() {
-        return ships.Min(s => s.GetSpeed());
+        return ships.Min(s => s.speed);
     }
 
     public float GetMaxShipSize() {

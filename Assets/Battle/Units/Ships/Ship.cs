@@ -53,6 +53,7 @@ public class Ship : Unit {
     [SerializeField] private float targetRotation;
     [SerializeField] private Station targetStation;
     private float thrust;
+    public float speed { get; private set; }
     private float timeUntilCheckRotation;
 
     public Ship(BattleObjectData battleObjectData, BattleManager battleManager,
@@ -221,11 +222,11 @@ public class Ship : Unit {
         if (shipAction == ShipAction.Move || shipAction == ShipAction.DockMove ||
             shipAction == ShipAction.MoveAndRotate) {
             float distance = Calculator.GetDistanceToPosition(position - movePosition);
-            float speed = math.min(maxSetSpeed, GetSpeed());
+            float currentSpeed = math.min(maxSetSpeed, speed);
             if (GetEnemyUnitsInRangeDistance().Count != 0)
-                speed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
-            float thrust = speed * deltaTime;
-            thrustSize = speed / GetSpeed();
+                currentSpeed *= GetBattleSpeed(GetEnemyUnitsInRangeDistance().First());
+            float thrust = currentSpeed * deltaTime;
+            thrustSize = currentSpeed / speed;
 
             if (shipAction == ShipAction.DockMove && distance - thrust < GetSize() + targetStation.GetSize()) {
                 DockShip(targetStation);
@@ -241,7 +242,7 @@ public class Ship : Unit {
                 }
             } else {
                 position += Calculator.GetPositionOutOfAngleAndDistance(rotation, thrust);
-                velocity = Calculator.GetPositionOutOfAngleAndDistance(rotation, speed);
+                velocity = Calculator.GetPositionOutOfAngleAndDistance(rotation, currentSpeed);
                 return;
             }
         }
@@ -253,12 +254,12 @@ public class Ship : Unit {
 
         if (shipAction == ShipAction.MoveLateral) {
             thrusting = false;
-            float speed = math.min(maxSetSpeed, GetSpeed()) / 2;
-            if (Vector2.Distance(GetPosition(), movePosition) <= speed * deltaTime) {
+            float currentSpeed = math.min(maxSetSpeed, speed) / 2;
+            if (Vector2.Distance(GetPosition(), movePosition) <= currentSpeed * deltaTime) {
                 position = movePosition;
                 SetIdle();
             } else {
-                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, speed * deltaTime) - GetPosition();
+                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, currentSpeed * deltaTime) - GetPosition();
                 position += (Vector2)temp;
             }
         }
@@ -267,6 +268,7 @@ public class Ship : Unit {
     public void RecalculateThrust() {
         thrust = moduleSystem.Get<Thruster>()
             .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
+        speed = thrust / GetMass();
     }
     #endregion
 
@@ -369,9 +371,6 @@ public class Ship : Unit {
         return thrust;
     }
 
-    public float GetSpeed() {
-        return thrust / GetMass();
-    }
 
     public float GetBattleSpeed(float distanceToClosestEnemy) {
         if (distanceToClosestEnemy > GetMaxWeaponRange()) return 1f;
