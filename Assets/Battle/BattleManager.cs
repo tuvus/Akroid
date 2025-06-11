@@ -249,7 +249,8 @@ public class BattleManager {
         }
 
         foreach (Faction faction in factions) {
-            faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
+            if (faction.GetFleetCommand() != null)
+                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
             foreach (Faction faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);
