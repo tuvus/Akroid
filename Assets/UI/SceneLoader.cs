@@ -27,11 +27,11 @@ public class SceneLoader : MonoBehaviour {
     }
 
     /// <summary>
-    ///     Loads the battle scene asyncronusly with either the campaing or the randomized setup.
+    ///     Loads the battle scene asynchronously with either the camping or the randomized setup.
     ///     Since setting up the battle can take a while we load the loading scene first and display a progress bar.
-    ///     We do most of the expensive setup on a seperate thread so that it doesn't block the UI and make the program
+    ///     We do most of the expensive setup on a separate thread so that it doesn't block the UI and make the program
     ///     unresponsive.
-    ///     Calls to unity's api, for example Resources.Load can only be done on the main thread so we can't put the campaing
+    ///     Calls to unity's api, for example Resources.Load can only be done on the main thread so we can't put the camping
     ///     loading
     ///     on a different thread without restructuring it.
     /// </summary>
@@ -49,7 +49,7 @@ public class SceneLoader : MonoBehaviour {
             yield return null;
         }
 
-        // Unfortunatly unity gives no good way to handle multiple audio listeners when loading a new scene.
+        // Unfortunately unity gives no good way to handle multiple audio listeners when loading a new scene.
         // The current solution I have found is to have a deactivated camera object with an audio listener in the loading scene
         // and deactivating the previous camera right before activating the loading camera.
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Loading"));
@@ -86,7 +86,7 @@ public class SceneLoader : MonoBehaviour {
 
         SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetSceneByName("Battle"));
         Transform gameTransform = GameObject.Find("Game").transform;
-        BattleManager battleManager = gameTransform.GetChild(0).GetComponent<BattleManager>();
+        BattleManager battleManager = gameTransform.GetChild(0).GetComponent<BattleManagerHolder>().battleManager;
         UIManager uIManager = gameTransform.GetChild(0).GetComponent<UIManager>();
         uIManager.PreBattleManagerSetup(battleManager);
         battleManager.InitializeBattle();
@@ -96,11 +96,11 @@ public class SceneLoader : MonoBehaviour {
             loadingBar.value = 25 / totalProgress;
             statusText.SetText("Loading Campaing...");
             yield return null;
-            // Campaing loading must be done syncronously
+            // Camping loading must be done synchronously
             // This can change in the future if we force it to load resources first
             battleManager.SetupBattle(campaingController);
         } else if (Application.platform == RuntimePlatform.WebGLPlayer) {
-            // Unity does not support async very well on threads, so do this syncronously
+            // Unity does not support async very well on threads, so do this synchronously
             battleManager.SetupBattle(battleSettings, factions);
         } else {
             Task.Run(() => battleManager.SetupBattle(battleSettings, factions));

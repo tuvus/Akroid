@@ -21,7 +21,8 @@ using Random = Unity.Mathematics.Random;
 ///     however the events OnBattleEnd, OnObjectCreated, OnObjectRemoved will send information to the UI if the UI
 ///     subscribed to them.
 /// </summary>
-public class BattleManager : MonoBehaviour {
+[Serializable]
+public class BattleManager {
     public enum BattleState {
         SettingUp,
         Setup,
@@ -72,7 +73,7 @@ public class BattleManager : MonoBehaviour {
     ///     Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
     ///     Also has profiling for most method calls.
     /// </summary>
-    public virtual void FixedUpdate() {
+    public virtual void UpdateBattle() {
         if (battleState == BattleState.SettingUp || battleState == BattleState.Setup) return;
         float deltaTime = Time.fixedDeltaTime * timeScale;
         simulationTime += deltaTime;
@@ -107,7 +108,7 @@ public class BattleManager : MonoBehaviour {
 
     // Here are events that the UI can subscribe to
     // However the UI should not do any computationally heavy work in them
-    // since they may be called syncronized on a different thread
+    // since they may be called synchronized on a different thread
     // Instead it should wait for the next UI update
     public event Action<Faction> OnBattleEnd = delegate { };
     public event Action<IObject> OnObjectCreated = delegate { };
@@ -348,7 +349,8 @@ public class BattleManager : MonoBehaviour {
 
     public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData,
         ShipScriptableObject shipScriptableObject) {
-        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject, Random.CreateFromIndex(random.NextUInt()));
+        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject,
+            Random.CreateFromIndex(random.NextUInt()));
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);
