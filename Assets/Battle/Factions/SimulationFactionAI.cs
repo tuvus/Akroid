@@ -269,10 +269,10 @@ public class SimulationFactionAI : FactionAI {
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),
                         Command.CommandAction.Replace);
                 } else if (idleShip.IsGasCollectorShip()) {
-                    idleShip.shipAI.AddUnitAICommand(
-                        Command.CreateCollectGasCommand(faction.GetClosestGasCloud(idleShip.GetPosition()),
-                            fleetCommand),
-                        Command.CommandAction.Replace);
+                    var gasCloud = faction.GetClosestGasCloud(idleShip.GetPosition());
+                    if (gasCloud != null)
+                        idleShip.shipAI.AddUnitAICommand(
+                            Command.CreateCollectGasCommand(gasCloud, fleetCommand), Command.CommandAction.Replace);
                 } else if (idleShip.IsConstructionShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateBuildStationCommand(idleShip.faction, Station.StationType.MiningStation,
