@@ -168,7 +168,7 @@ public class Chapter1 : CampaingController {
 
         otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
-            .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBegining);
+            .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBeginning);
 
         var civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(0, 2); i++) {

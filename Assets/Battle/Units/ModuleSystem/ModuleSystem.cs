@@ -80,7 +80,7 @@ public class ModuleSystem {
             moduleSize = prefabSystem.moduleSize;
             this.component = component;
         }
-        public int moduleCount { get; private set; }
+        public int moduleCount;
     }
 
     #region SystemUpgrades

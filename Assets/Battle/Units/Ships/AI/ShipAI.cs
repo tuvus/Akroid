@@ -24,7 +24,7 @@ public class ShipAI {
             return;
         }
 
-        if (commandAction == CommandAction.AddToBegining) {
+        if (commandAction == CommandAction.AddToBeginning) {
             newCommand = true;
             if (commands.Any()) commands.First().OnCommandNoLongerActive(ship);
             commands.Insert(0, command);

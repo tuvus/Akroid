@@ -67,7 +67,7 @@ public class ShipyardFactionAI : FactionAI {
                         if (cargoLoaded > 0) loadedCargo = true;
                     }
                 }
-                if (!loadedCargo && ship.GetAllCargoOfType(CargoBay.CargoTypes.All, true) > 0) {
+                if (!loadedCargo && ship.GetAllCargoOfType(CargoBay.CargoTypes.All) > 0) {
                     ship.UndockShip(shipyard.GetPosition());
                     ship.shipAI.AddUnitAICommand(
                         Command.CreateTransportCommand(chapter1.tradeStation, shipyard, CargoBay.CargoTypes.All, true),

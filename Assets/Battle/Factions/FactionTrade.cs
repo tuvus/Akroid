@@ -9,14 +9,18 @@ public class FactionTrade {
         public CargoBay.CargoTypes cargoType;
         public long amount;
         public float price;
+
+        public Offer(CargoBay.CargoTypes cargoType, long amount, float price) {
+            this.cargoType = cargoType;
+            this.amount = amount;
+            this.price = price;
+        }
     }
 
     public struct Contract {
         public Unit provider;
         public Unit receiver;
-        public CargoBay.CargoTypes cargoType;
-        public long amount;
-        public float price;
+        public Dictionary<CargoBay.CargoTypes, Offer> cargo;
     }
 
     /// <summary>

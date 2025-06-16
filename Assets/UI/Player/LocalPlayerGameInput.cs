@@ -424,7 +424,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             } else if (AdditiveButtonPressed) {
                 selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             } else if (AltButtonPressed) {
-                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBeginning);
             } else {
                 selectedUnits.fleet.fleet.fleetAI.AddFormationCommand();
             }
@@ -446,7 +446,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     protected Command.CommandAction GetCommandAction() {
         if (AltButtonPressed)
-            return Command.CommandAction.AddToBegining;
+            return Command.CommandAction.AddToBeginning;
         if (AdditiveButtonPressed)
             return Command.CommandAction.AddToEnd;
         return Command.CommandAction.Replace;

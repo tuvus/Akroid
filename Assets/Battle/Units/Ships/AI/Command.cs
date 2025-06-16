@@ -5,7 +5,7 @@ using Random = Unity.Mathematics.Random;
 [Serializable]
 public class Command {
     public enum CommandAction {
-        AddToBegining = -1,
+        AddToBeginning = -1,
         Replace = 0,
         AddToEnd = 1
     }
