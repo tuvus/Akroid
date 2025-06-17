@@ -349,12 +349,13 @@ public class Station : Unit, IPositionConfirmer {
     /// <summary>
     /// Unloads the cargo from the ship to the station based on the contract.
     /// </summary>
+    /// <param name="amount">The total amount of cargo to unload in this operation</param>
     /// <returns>True if the contract is finished, false otherwise</returns>
-    public bool UnloadContractFromShip(FactionTrade.Contract contract) {
+    public bool UnloadContractFromShip(long amount, FactionTrade.Contract contract) {
         Assert.AreEqual(contract.receiver, this);
         Assert.IsTrue(contract.provider.IsShip());
         Assert.AreEqual(((Ship)contract.provider).dockedStation, this);
-        long cargoToMove = 400;
+        long cargoToMove = amount;
 
         foreach (var offer in contract.cargo.Values.ToList()) {
             long toMove = math.min(cargoToMove, offer.amount);
