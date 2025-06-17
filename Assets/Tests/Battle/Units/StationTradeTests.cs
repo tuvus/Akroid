@@ -227,6 +227,22 @@ public class StationTradeTests {
         Assert.Zero(contract.cargo.Count);
     }
 
+    [Explicit] [Category("Unit Tests")]
+    [Test]
+    public void AddAndRemoveContract() {
+        SetupTradeTests();
+        FactionTrade.Contract contract = new FactionTrade.Contract(testStation, testShip,
+            new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
+        Assert.AreEqual(0,testStation.contractedCargo.Count);
+
+        testStation.AddContract(contract);
+        Assert.AreEqual(1, testStation.contractedCargo.Count);
+        Assert.AreEqual(400, testStation.contractedCargo[CargoTypes.Metal].wanted);
+
+        testStation.RemoveContract(contract);
+        Assert.AreEqual(0, testStation.contractedCargo.Count);
+    }
+
 
     class TestStationScriptableObject : StationScriptableObject {
         public TestStationScriptableObject SetupScriptableObject(

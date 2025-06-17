@@ -340,7 +340,9 @@ public class Station : Unit, IPositionConfirmer {
                 long extra = contractedCargo[request.cargoType].has - contractedCargo[request.cargoType].wanted +
                     request.amount;
                 var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
-                contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
+                if (contractedCargo[request.cargoType].wanted - request.amount == 0)
+                    contractedCargo.Remove(request.cargoType);
+                else contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
                 if (extra > 0) LoadCargo(extra, request.cargoType);
             }
         }
