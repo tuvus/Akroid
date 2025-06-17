@@ -233,12 +233,7 @@ public class Station : Unit, IPositionConfirmer {
 
     /// <summary> Docks a ship to the staiton, should only be called from the ship. /// </summary>
     public bool DockShip(Ship ship) {
-        Hangar openHangar = moduleSystem.Get<Hangar>().FirstOrDefault(h => h.CanDockShip());
-        if (IsSpawned() && IsBuilt() && openHangar != null && openHangar.DockShip(ship)) {
-            return true;
-        }
-
-        return false;
+        return IsSpawned() && IsBuilt() && moduleSystem.Get<Hangar>().Any(h => h.DockShip(ship));
     }
 
     public void UndockShip(Ship ship) {
@@ -324,6 +319,33 @@ public class Station : Unit, IPositionConfirmer {
         return leftover;
     }
 
+    public void AddContract(FactionTrade.Contract contract) {
+        if (contract.provider == this) {
+            foreach (var request in contract.cargo.Values) {
+                long initialAmount = 0;
+                if (freeCargo.ContainsKey(request.cargoType)) {
+                    initialAmount = math.min(request.amount, freeCargo[request.cargoType].has);
+                    freeCargo[request.cargoType] = (freeCargo[request.cargoType].wanted,
+                        freeCargo[request.cargoType].has - initialAmount);
+                }
+                var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
+                contractedCargo[request.cargoType] = (current.wanted + request.amount, current.has + initialAmount);
+            }
+        }
+    }
+
+    public void RemoveContract(FactionTrade.Contract contract) {
+        if (contract.provider == this) {
+            foreach (var request in contract.cargo.Values) {
+                long extra = contractedCargo[request.cargoType].has - contractedCargo[request.cargoType].wanted +
+                    request.amount;
+                var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
+                contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
+                if (extra > 0) LoadCargo(extra, request.cargoType);
+            }
+        }
+    }
+
     /// <summary>
     /// Unloads the cargo from the ship to the station based on the contract.
     /// </summary>
@@ -342,11 +364,17 @@ public class Station : Unit, IPositionConfirmer {
                 new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
             faction.TransferCredits((long)(toMove * offer.price), contract.provider.faction);
             if (contract.cargo[offer.cargoType].amount == 0) contract.cargo.Remove(offer.cargoType);
-            if (cargoToMove == 0) return false;
+            if (cargoToMove == 0) break;
         }
         return !contract.cargo.Any();
     }
 
+    /// <summary>
+    /// Loads cargo from the station onto the ship based on the contract.
+    /// </summary>
+    /// <param name="amount">The total amount of cargo to load in this operation</param>
+    /// <param name="contract">The contract to load</param>
+    /// <returns>True if the contract is finished, false otherwise</returns>
     public bool LoadContractToShip(long amount, FactionTrade.Contract contract) {
         Assert.AreEqual(contract.provider, this);
         Assert.IsTrue(contract.receiver.IsShip());
@@ -354,16 +382,28 @@ public class Station : Unit, IPositionConfirmer {
         long cargoToMove = amount;
 
         foreach (var offer in contract.cargo.Values.ToList()) {
-            long toMove = math.min(cargoToMove, offer.amount);
-            toMove -= contract.receiver.LoadCargoFromUnit(toMove, offer.cargoType, contract.provider);
-            cargoToMove -= toMove;
-            contract.cargo[offer.cargoType] =
-                new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
-            contractedCargo[offer.cargoType] = (contractedCargo[offer.cargoType].wanted - toMove,
-                contractedCargo[offer.cargoType].has - toMove);
+            long toMove = math.min(math.min(math.min(cargoToMove, offer.amount),
+                    contract.receiver.GetAvailableCargoSpace(offer.cargoType)),
+                contractedCargo.GetValueOrDefault(offer.cargoType, (0, 0)).has);
+            // Actually update the cargo bays
+            base.UseCargo(toMove, offer.cargoType);
+            contract.receiver.LoadCargo(toMove, offer.cargoType);
+            if (offer.amount - toMove == 0) {
+                contract.cargo.Remove(offer.cargoType);
+            } else {
+                contract.cargo[offer.cargoType] =
+                    new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
+            }
+            if (contractedCargo[offer.cargoType].wanted - toMove == 0) {
+                contractedCargo.Remove(offer.cargoType);
+            } else {
+                contractedCargo[offer.cargoType] = (contractedCargo[offer.cargoType].wanted - toMove,
+                    contractedCargo[offer.cargoType].has - toMove);
+            }
             contract.receiver.faction.TransferCredits((long)(toMove * offer.price), faction);
-            if (contract.cargo[offer.cargoType].amount == 0) contract.cargo.Remove(offer.cargoType);
-            if (cargoToMove == 0) return false;
+            cargoToMove -= toMove;
+            if (cargoToMove == 0)
+                break;
         }
         return !contract.cargo.Any();
     }

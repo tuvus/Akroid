@@ -21,6 +21,15 @@ public class FactionTrade {
         public Unit provider;
         public Unit receiver;
         public Dictionary<CargoBay.CargoTypes, Offer> cargo;
+
+        public Contract(Unit provider, Unit reciever, params Offer[] offers) {
+            this.provider = provider;
+            this.receiver = reciever;
+            cargo = new Dictionary<CargoBay.CargoTypes, Offer>();
+            foreach (Offer offer in offers) {
+                cargo.Add(offer.cargoType, offer);
+            }
+        }
     }
 
     /// <summary>
