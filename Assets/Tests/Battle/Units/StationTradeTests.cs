@@ -44,13 +44,13 @@ public class StationTradeTests {
     [Test]
     public void StationReservingCargo() {
         SetupTradeTests();
-        testStation.AddReservedCargo(200, CargoTypes.Metal);
+        testStation.ReserveCargo(200, CargoTypes.Metal);
         Assert.True(testStation.reservedCargo.ContainsKey(CargoTypes.Metal));
         Assert.Zero(testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(200, testStation.reservedCargo[CargoTypes.Metal].wanted);
         Assert.Zero(testStation.GetAllCargoOfType(CargoTypes.Metal));
 
-        testStation.AddReservedCargo(300, CargoTypes.Metal);
+        testStation.ReserveCargo(300, CargoTypes.Metal);
         Assert.Zero(testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(500, testStation.reservedCargo[CargoTypes.Metal].wanted);
         Assert.Zero(testStation.GetAllCargoOfType(CargoTypes.Metal));
@@ -91,7 +91,7 @@ public class StationTradeTests {
         Assert.AreEqual(600,
             testStation.moduleSystem.Get<CargoBay>().Sum(c => c.GetAllCargo(CargoTypes.Metal)));
 
-        testStation.RemoveReservedCargo(300, CargoTypes.Metal);
+        testStation.UnReserveCargo(300, CargoTypes.Metal);
         Assert.AreEqual(200, testStation.reservedCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(200, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(400, testStation.freeCargo[CargoTypes.Metal].has);
@@ -101,7 +101,7 @@ public class StationTradeTests {
         Assert.AreEqual(600,
             testStation.moduleSystem.Get<CargoBay>().Sum(c => c.GetAllCargo(CargoTypes.Metal)));
 
-        testStation.RemoveReservedCargo(200, CargoTypes.Metal);
+        testStation.UnReserveCargo(200, CargoTypes.Metal);
         Assert.Zero(testStation.reservedCargo.Count);
         Assert.AreEqual(600, testStation.freeCargo[CargoTypes.Metal].has);
         Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
@@ -110,7 +110,7 @@ public class StationTradeTests {
         Assert.AreEqual(600,
             testStation.moduleSystem.Get<CargoBay>().Sum(c => c.GetAllCargo(CargoTypes.Metal)));
 
-        testStation.AddReservedCargo(600, CargoTypes.Metal);
+        testStation.ReserveCargo(600, CargoTypes.Metal);
         Assert.AreEqual(1, testStation.reservedCargo.Count);
         Assert.AreEqual(600, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(600, testStation.reservedCargo[CargoTypes.Metal].wanted);

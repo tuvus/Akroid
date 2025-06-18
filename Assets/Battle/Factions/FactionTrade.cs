@@ -40,13 +40,11 @@ public class FactionTrade {
 
     /// <summary>
     /// The resources being offered by each station in the faction.
-    /// The tuple represents how much is being offered and at what the base price per unit is.
     /// </summary>
     public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesOffered;
 
     /// <summary>
     /// The resources being requested by each station in the faction.
-    /// The tuple represents how much is being offered and at what the base price per unit is.
     /// </summary>
     public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesRequested;
 
@@ -55,6 +53,7 @@ public class FactionTrade {
     /// when selling to them.
     /// </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
+    public HashSet<Contract> activeContracts;
 
     public FactionTrade(Faction faction) {
         this.faction = faction;
@@ -66,6 +65,7 @@ public class FactionTrade {
             resourcesRequested.Add(cargoType, new());
         }
         tradeBuyAgreements = new();
+        activeContracts = new();
     }
 
     public void MakeSellTradeAgreement(Faction tradePartner, float markupPrice = 1.2f) {
