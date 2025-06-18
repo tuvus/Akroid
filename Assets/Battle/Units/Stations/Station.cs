@@ -271,9 +271,7 @@ public class Station : Unit, IPositionConfirmer {
     /// </summary>
     public override long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
         // Use up free cargo first
-        long cargoUsed = math.min(amount, freeCargo.GetValueOrDefault(cargoType, (0, 0)).has);
-        if (cargoUsed != 0)
-            freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has - cargoUsed);
+        long cargoUsed = amount - RemoveFreeCargo(amount, cargoType);
 
         // Use up reserved cargo next
         long reservedCargoUsed = math.min(amount - cargoUsed, reservedCargo.GetValueOrDefault(cargoType, (0, 0)).has);
@@ -310,26 +308,37 @@ public class Station : Unit, IPositionConfirmer {
             if (toStore <= 0) return leftover;
         }
 
-        if (toStore > 0) {
-            // Finally, all the rest should be added to free cargo
-            if (freeCargo.ContainsKey(cargoType))
-                freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has + toStore);
-            else freeCargo[cargoType] = (0, toStore);
-        }
+        // Finally, all the rest should be added to free cargo
+        AddFreeCargo(toStore, cargoType);
         return leftover;
     }
 
     public void AddContract(FactionTrade.Contract contract) {
+        // Validate that the receiver can buy from the provider
+        if (!contract.provider.faction.factionTrade.tradeBuyAgreements.ContainsKey(contract.receiver.faction))
+            throw new Exception("Trying to buy without a trade agreement!");
         if (contract.provider == this) {
-            foreach (var request in contract.cargo.Values) {
-                long initialAmount = 0;
-                if (freeCargo.ContainsKey(request.cargoType)) {
-                    initialAmount = math.min(request.amount, freeCargo[request.cargoType].has);
-                    freeCargo[request.cargoType] = (freeCargo[request.cargoType].wanted,
-                        freeCargo[request.cargoType].has - initialAmount);
+            foreach (var offer in contract.cargo.Values) {
+                if (!faction.factionTrade.resourcesOffered[offer.cargoType].ContainsKey(this) ||
+                    offer.amount > faction.factionTrade.resourcesOffered[offer.cargoType][this].amount)
+                    throw new Exception("Trying to create a contract without supplied resources!");
+                long initialAmount = offer.amount - RemoveFreeCargo(offer.amount, offer.cargoType);
+                var current = contractedCargo.GetValueOrDefault(offer.cargoType, (0, 0));
+                contractedCargo[offer.cargoType] = (current.wanted + offer.amount, current.has + initialAmount);
+            }
+        } else {
+            foreach (var offer in contract.cargo.Values) {
+                if (!faction.factionTrade.resourcesRequested[offer.cargoType].ContainsKey(this) ||
+                    offer.amount > faction.factionTrade.resourcesRequested[offer.cargoType][this].amount)
+                    throw new Exception("Trying to create a contract without supplied resources!");
+                long amount = faction.factionTrade.resourcesRequested[offer.cargoType][this].amount;
+                if (offer.amount == amount) {
+                    faction.factionTrade.resourcesRequested[offer.cargoType].Remove(this);
+                } else {
+                    faction.factionTrade.resourcesRequested[offer.cargoType][this] = new FactionTrade.Offer(
+                        offer.cargoType, amount - offer.amount,
+                        faction.factionTrade.resourcesRequested[offer.cargoType][this].price);
                 }
-                var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
-                contractedCargo[request.cargoType] = (current.wanted + request.amount, current.has + initialAmount);
             }
         }
     }
@@ -434,11 +443,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public void AddReservedCargo(long amount, CargoBay.CargoTypes cargoType) {
-        long initialAmount = 0;
-        if (freeCargo.ContainsKey(cargoType)) {
-            initialAmount = math.min(amount, freeCargo[cargoType].has);
-            freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has - initialAmount);
-        }
+        long initialAmount = amount - RemoveFreeCargo(amount, cargoType);
         if (reservedCargo.ContainsKey(cargoType)) {
             reservedCargo[cargoType] = (reservedCargo[cargoType].wanted + amount,
                 reservedCargo[cargoType].has + initialAmount);
@@ -449,16 +454,46 @@ public class Station : Unit, IPositionConfirmer {
 
     public void RemoveReservedCargo(long amount, CargoBay.CargoTypes cargoType) {
         long extra = math.max(reservedCargo[cargoType].has - reservedCargo[cargoType].wanted + amount, 0);
-        if (extra > 0) {
-            if (freeCargo.ContainsKey(cargoType))
-                freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has + extra);
-            else freeCargo[cargoType] = (0, extra);
-        }
+        AddFreeCargo(extra, cargoType);
         if (reservedCargo[cargoType].wanted > amount) {
             reservedCargo[cargoType] = (reservedCargo[cargoType].wanted - amount, reservedCargo[cargoType].has - extra);
         } else {
             reservedCargo.Remove(cargoType);
         }
+    }
+
+    /// <returns>The amount of cargo not removed. Does not modify the cargo bay.</returns>
+    private long RemoveFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
+        if (!freeCargo.TryGetValue(cargoType, out (long wanted, long has) value)) return amount;
+        long amountUsed = math.min(amount, value.has);
+        if (value.has == amount && freeCargo[cargoType].wanted == 0)
+            freeCargo.Remove(cargoType);
+        else freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has - amountUsed);
+        if (amount == faction.factionTrade.resourcesOffered[cargoType][this].amount) {
+            faction.factionTrade.resourcesOffered[cargoType].Remove(this);
+        } else {
+            faction.factionTrade.resourcesOffered[cargoType][this] =
+                new FactionTrade.Offer(faction.factionTrade.resourcesOffered[cargoType][this],
+                    faction.factionTrade.resourcesOffered[cargoType][this].amount - amount);
+        }
+        return amount - amountUsed;
+    }
+
+    /// <summary>
+    /// Adds the free cargo, does not modify the cargo bay or check if it is over capacity.
+    /// </summary>
+    private void AddFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
+        if (amount == 0) return;
+        if (!faction.factionTrade.resourcesOffered[cargoType].ContainsKey(this)) {
+            faction.factionTrade.resourcesOffered[cargoType].Add(this, new FactionTrade.Offer(cargoType, amount, 1.2f));
+        } else {
+            faction.factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(cargoType,
+                faction.factionTrade.resourcesOffered[cargoType][this].amount + amount,
+                faction.factionTrade.resourcesOffered[cargoType][this].price);
+        }
+        if (freeCargo.ContainsKey(cargoType))
+            freeCargo[cargoType] = (freeCargo[cargoType].wanted, freeCargo[cargoType].has + amount);
+        else freeCargo[cargoType] = (0, amount);
     }
 
     #endregion

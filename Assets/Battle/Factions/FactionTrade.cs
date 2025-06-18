@@ -15,6 +15,12 @@ public class FactionTrade {
             this.amount = amount;
             this.price = price;
         }
+
+        public Offer(Offer offer, long newAmount) {
+            this.cargoType = offer.cargoType;
+            this.amount = newAmount;
+            this.price = offer.price;
+        }
     }
 
     public struct Contract {
@@ -42,10 +48,11 @@ public class FactionTrade {
     /// The resources being requested by each station in the faction.
     /// The tuple represents how much is being offered and at what the base price per unit is.
     /// </summary>
-    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Contract>> resourcesRequested;
+    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesRequested;
 
     /// <summary>
-    /// The factions that this faction can buy from their price modifier.
+    /// The factions that we have a trade agreement with and the markup value of our resources
+    /// when selling to them.
     /// </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
 
@@ -53,7 +60,8 @@ public class FactionTrade {
         this.faction = faction;
         resourcesOffered = new();
         resourcesRequested = new();
-        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes)).Cast<CargoBay.CargoTypes>()) {
+        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes))
+            .Cast<CargoBay.CargoTypes>()) {
             resourcesOffered.Add(cargoType, new());
             resourcesRequested.Add(cargoType, new());
         }
@@ -62,8 +70,8 @@ public class FactionTrade {
 
     public void MakeSellTradeAgreement(Faction tradePartner, float markupPrice = 1.2f) {
         if (!tradeBuyAgreements.TryAdd(tradePartner, markupPrice))
-            throw new Exception(
-                "Trying to start a trade agreement that already exists with " + tradePartner.name + "!");
+            throw new Exception("Trying to start a trade agreement that already exists with " + tradePartner.name +
+                "!");
     }
 
     public void BreakSellTradeAgreement(Faction tradePartner) {
@@ -71,6 +79,4 @@ public class FactionTrade {
             throw new Exception("Trying to remove a trade agreement with " + tradePartner.name +
                 " but the agreement doesn't exist!");
     }
-
-
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Moq;
 using NUnit.Framework;
 using UnityEngine;
@@ -22,11 +21,11 @@ public class StationTradeTests {
         HangarScriptableObject hangarScriptableObject = ScriptableObject.CreateInstance<HangarScriptableObject>();
         hangarScriptableObject.maxDockSpace = 10000;
         testStation = battleManager.CreateNewStation(new BattleObject.BattleObjectData("TestStation", testFaction),
-            ScriptableObject.CreateInstance<TestStationScriptableObject>()
+            ScriptableObject.CreateInstance<TestUtils.TestStationScriptableObject>()
                 .SetupScriptableObject(cargoBayScriptableObject, hangarScriptableObject), true);
         testFaction2 = battleManager.CreateTestFaction();
         testShip = testStation.BuildShip(new BattleObject.BattleObjectData("TestShip", testFaction2),
-            ScriptableObject.CreateInstance<TestShipScriptableObject>()
+            ScriptableObject.CreateInstance<TestUtils.TestShipScriptableObject>()
                 .SetupScriptableObject(cargoBayScriptableObject));
         Assert.AreEqual(testStation, testShip.dockedStation);
     }
@@ -241,43 +240,5 @@ public class StationTradeTests {
 
         testStation.RemoveContract(contract);
         Assert.AreEqual(0, testStation.contractedCargo.Count);
-    }
-
-
-    class TestStationScriptableObject : StationScriptableObject {
-        public TestStationScriptableObject SetupScriptableObject(
-            params ComponentScriptableObject[] componentScriptableObject) {
-            List<IModule> setupModules = new();
-            List<ModuleSystem.System> setupSystems = new();
-            foreach (ComponentScriptableObject scriptableObject in componentScriptableObject) {
-                var system = new ModuleSystem.System("TestSystem", PrefabModuleSystem.SystemType.Any);
-                system.moduleCount = 1;
-                system.component = scriptableObject;
-                setupSystems.Add(system);
-                var module = new Mock<IModule>();
-                module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
-                module.Setup(e => e.GetRotation()).Returns(0);
-                module.Setup(e => e.GetSystemIndex()).Returns(setupSystems.Count - 1);
-                setupModules.Add(module.Object);
-            }
-            modules = setupModules.ToArray();
-            systems = setupSystems.ToArray();
-            return this;
-        }
-    }
-
-    class TestShipScriptableObject : ShipScriptableObject {
-        public TestShipScriptableObject SetupScriptableObject(ComponentScriptableObject componentScriptableObject) {
-            var module = new Mock<IModule>();
-            module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
-            module.Setup(e => e.GetRotation()).Returns(0);
-            module.Setup(e => e.GetSystemIndex()).Returns(0);
-            modules = new[] { module.Object };
-            var system = new ModuleSystem.System("TestSystem", PrefabModuleSystem.SystemType.Any);
-            system.moduleCount = 1;
-            system.component = componentScriptableObject;
-            systems = new[] { system };
-            return this;
-        }
     }
 }
