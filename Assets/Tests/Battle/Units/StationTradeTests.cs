@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Linq;
-using Moq;
 using NUnit.Framework;
 using UnityEngine;
 using CargoTypes = CargoBay.CargoTypes;
@@ -75,7 +73,6 @@ public class StationTradeTests {
         Assert.AreEqual(500, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.True(testStation.freeCargo.ContainsKey(CargoTypes.Metal));
         Assert.AreEqual(300, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(300, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(800, testStation.GetAllCargoOfType(CargoTypes.Metal, true));
         Assert.AreEqual(800,
@@ -85,7 +82,6 @@ public class StationTradeTests {
         Assert.AreEqual(500, testStation.reservedCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(500, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(100, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(100, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(600, testStation.GetAllCargoOfType(CargoTypes.Metal, true));
         Assert.AreEqual(600,
@@ -95,7 +91,6 @@ public class StationTradeTests {
         Assert.AreEqual(200, testStation.reservedCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(200, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(400, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(400, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(600, testStation.GetAllCargoOfType(CargoTypes.Metal, true));
         Assert.AreEqual(600,
@@ -104,7 +99,6 @@ public class StationTradeTests {
         testStation.UnReserveCargo(200, CargoTypes.Metal);
         Assert.Zero(testStation.reservedCargo.Count);
         Assert.AreEqual(600, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
         Assert.AreEqual(600, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(600, testStation.GetAllCargoOfType(CargoTypes.Metal, true));
         Assert.AreEqual(600,
@@ -114,8 +108,7 @@ public class StationTradeTests {
         Assert.AreEqual(1, testStation.reservedCargo.Count);
         Assert.AreEqual(600, testStation.reservedCargo[CargoTypes.Metal].has);
         Assert.AreEqual(600, testStation.reservedCargo[CargoTypes.Metal].wanted);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.Zero(testStation.freeCargo[CargoTypes.Metal].wanted);
+        Assert.Zero(testStation.freeCargo.Count);
         Assert.Zero(testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(600, testStation.GetAllCargoOfType(CargoTypes.Metal, true));
         Assert.AreEqual(600,
@@ -126,10 +119,11 @@ public class StationTradeTests {
     [Test]
     public void StationSupplyContractCargo() {
         SetupTradeTests();
+        testFaction.factionTrade.MakeSellTradeAgreement(testFaction2);
         FactionTrade.Contract contract = new FactionTrade.Contract(testStation, testShip,
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
-        testStation.AddContract(contract);
+        testStation.AddContract(contract, false);
         Assert.AreEqual(1, testStation.contractedCargo.Count);
         Assert.True(testStation.contractedCargo.ContainsKey(CargoTypes.Metal));
         Assert.AreEqual(400, testStation.contractedCargo[CargoTypes.Metal].wanted);
@@ -195,10 +189,11 @@ public class StationTradeTests {
     [Test]
     public void StationRequestContractCargo() {
         SetupTradeTests();
+        testFaction2.factionTrade.MakeSellTradeAgreement(testFaction);
         FactionTrade.Contract contract = new FactionTrade.Contract(testShip, testStation,
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
-        testStation.AddContract(contract);
+        testStation.AddContract(contract, false);
         Assert.Zero(testShip.LoadCargo(200, CargoTypes.Metal));
         Assert.AreEqual(0, testStation.contractedCargo.Count);
         Assert.AreEqual(400, contract.cargo[CargoTypes.Metal].amount);
@@ -208,20 +203,20 @@ public class StationTradeTests {
         Assert.AreEqual(100, testStation.freeCargo[CargoTypes.Metal].has);
         Assert.AreEqual(100, testShip.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(100, testShip.GetAllCargoOfType(CargoTypes.Metal));
-        Assert.AreEqual(300, contract.cargo[CargoTypes.Metal]);
+        Assert.AreEqual(300, contract.cargo[CargoTypes.Metal].amount);
 
         Assert.False(testStation.UnloadContractFromShip(200, contract));
         Assert.Zero(testStation.reservedCargo.Count);
         Assert.AreEqual(200, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.AreEqual(200, testShip.GetAllCargoOfType(CargoTypes.Metal));
+        Assert.AreEqual(200, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(0, testShip.GetAllCargoOfType(CargoTypes.Metal));
-        Assert.AreEqual(200, contract.cargo[CargoTypes.Metal]);
+        Assert.AreEqual(200, contract.cargo[CargoTypes.Metal].amount);
 
         Assert.Zero(testShip.LoadCargo(400, CargoTypes.Metal));
         Assert.True(testStation.UnloadContractFromShip(400, contract));
         Assert.Zero(testStation.reservedCargo.Count);
         Assert.AreEqual(400, testStation.freeCargo[CargoTypes.Metal].has);
-        Assert.AreEqual(400, testShip.GetAllCargoOfType(CargoTypes.Metal));
+        Assert.AreEqual(400, testStation.GetAllCargoOfType(CargoTypes.Metal));
         Assert.AreEqual(200, testShip.GetAllCargoOfType(CargoTypes.Metal));
         Assert.Zero(contract.cargo.Count);
     }
@@ -230,11 +225,12 @@ public class StationTradeTests {
     [Test]
     public void AddAndRemoveContract() {
         SetupTradeTests();
+        testFaction.factionTrade.MakeSellTradeAgreement(testFaction2);
         FactionTrade.Contract contract = new FactionTrade.Contract(testStation, testShip,
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         Assert.AreEqual(0,testStation.contractedCargo.Count);
 
-        testStation.AddContract(contract);
+        testStation.AddContract(contract, false);
         Assert.AreEqual(1, testStation.contractedCargo.Count);
         Assert.AreEqual(400, testStation.contractedCargo[CargoTypes.Metal].wanted);
 

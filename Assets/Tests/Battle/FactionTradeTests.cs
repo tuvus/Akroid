@@ -116,6 +116,51 @@ public class FactionTradeTests {
         Assert.False(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].ContainsKey(testStation));
     }
 
+
+    [Explicit] [Category("Unit Tests")]
+    [Test]
+    public void TestStationFreeCargoRequest() {
+        SetupTradeTests();
+        FactionTrade factionTrade = testFaction.factionTrade;
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 500, 1000);
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.AreEqual(500, factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal][testStation].amount);
+
+        Assert.Zero(testStation.LoadCargo(100, CargoBay.CargoTypes.Metal));
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.AreEqual(400, factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal][testStation].amount);
+
+        Assert.Zero(testStation.LoadCargo(500, CargoBay.CargoTypes.Metal));
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 700, 1000);
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.AreEqual(100, factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal][testStation].amount);
+
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 500, 1000);
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+
+        testStation.LoadCargo(500, CargoBay.CargoTypes.Metal);
+        Assert.AreEqual(100, factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal][testStation].amount);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 500, 1200);
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 500, 800);
+        Assert.AreEqual(300, factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal][testStation].amount);
+        Assert.Zero(factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal].Count);
+
+        testStation.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 1150, 1200);
+        Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoTypes.Metal].Count);
+        Assert.AreEqual(50, factionTrade.resourcesRequested[CargoBay.CargoTypes.Metal][testStation].amount);
+    }
+
     [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestStationContractFulfillment() {
