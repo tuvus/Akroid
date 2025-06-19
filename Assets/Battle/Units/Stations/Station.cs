@@ -602,7 +602,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public void SetDesiredFreeCargoRange(CargoBay.CargoTypes cargoType, long minWanted, long maxWanted) {
         var previousCargo = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
-        freeCargo[CargoBay.CargoTypes.Metal] = (minWanted, maxWanted, previousCargo.has);
+        freeCargo[cargoType] = (minWanted, maxWanted, previousCargo.has);
         if (minWanted > maxWanted)
             throw new Exception("Illegal arguments given: minWanted must be lower than maxWanted!");
 
