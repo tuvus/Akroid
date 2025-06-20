@@ -5,9 +5,11 @@ public class ShipyardAI : StationAI {
 
     public ShipyardAI(Station station) : base(station) {
         autoCollectCargo = true;
-        CargoBay cargoBay = station.moduleSystem.Get<CargoBay>().First();
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 4);
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Gas, 4);
+        // CargoBay cargoBay = station.moduleSystem.Get<CargoBay>().First();
+        // cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 4);
+        // cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Gas, 4);
+        station.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 1200 * 6, 1200 * 10);
+        station.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Gas, 1200 * 4, 1200 * 8);
     }
 
     public override void UpdateAI(float deltaTime) {

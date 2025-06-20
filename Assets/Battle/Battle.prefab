@@ -397,6 +397,9 @@ MonoBehaviour:
     - name: Colonizer
       shipScriptableObject: {fileID: 11400000, guid: f07cb425368a6cc4093c90cf49d98ecd,
         type: 2}
+    - name: Civlian
+      shipScriptableObject: {fileID: 11400000, guid: a2df7a2ae215b234ca04329de4bfa99e,
+        type: 2}
     stationBlueprints:
     - name: Fleet Command
       stationScriptableObject: {fileID: 11400000, guid: 6e8928d1a14d93d40926ad2542df690f,

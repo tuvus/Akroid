@@ -27,6 +27,7 @@ public class Command {
         UndockCommand,
         Transport,
         TransportDelay,
+        Trade,
         Research,
         CollectGas,
         DisbandFleet,
@@ -53,6 +54,8 @@ public class Command {
     public Planet targetPlanet;
     public Star targetStar;
     public Unit targetUnit;
+    public FactionTrade.Contract? supplierContract;
+    public FactionTrade.Contract? demandContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -197,6 +200,14 @@ public class Command {
             cargoType = cargoType,
             targetRotation = delay,
             autoUnload = autoUnload
+        };
+    }
+
+    public static Command CreateTradeCommand(CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All,
+        Station mustTradeWith = null) {
+        return new Command(CommandType.Trade) {
+            cargoType = cargoTypeToTrade,
+            destinationStation = mustTradeWith
         };
     }
 

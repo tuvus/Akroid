@@ -4,7 +4,6 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Assertions.Must;
 using static Ship;
 using Random = Unity.Mathematics.Random;
 
@@ -28,9 +27,9 @@ public class Station : Unit, IPositionConfirmer {
     public StationAI stationAI { get; protected set; }
     public float repairTime { get; protected set; }
 
-    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> reservedCargo;
-    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> contractedCargo;
-    public Dictionary<CargoBay.CargoTypes, (long minWanted, long maxWanted, long has)> freeCargo;
+    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> reservedCargo = new();
+    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> contractedCargo = new();
+    public Dictionary<CargoBay.CargoTypes, (long minWanted, long maxWanted, long has)> freeCargo = new();
     public HashSet<FactionTrade.Contract> contractShipsDocked;
 
     [Serializable]
@@ -64,9 +63,7 @@ public class Station : Unit, IPositionConfirmer {
         StationScriptableObject stationScriptableObject, bool built)
         : base(battleObjectData, battleManager, stationScriptableObject) {
         this.stationScriptableObject = stationScriptableObject;
-        reservedCargo = new Dictionary<CargoBay.CargoTypes, (long wanted, long has)>();
-        contractedCargo = new Dictionary<CargoBay.CargoTypes, (long wanted, long has)>();
-        freeCargo = new Dictionary<CargoBay.CargoTypes, (long minWanted, long maxWanted, long has)>();
+        contractShipsDocked = new HashSet<FactionTrade.Contract>();
         switch (stationScriptableObject.stationType) {
             case StationType.MiningStation:
                 stationAI = new MiningStationAI(this);
@@ -147,6 +144,14 @@ public class Station : Unit, IPositionConfirmer {
             stationAI.UpdateAI(deltaTime);
             if (repairTime <= 0) {
                 repairTime += stationScriptableObject.repairSpeed;
+            }
+
+            foreach (FactionTrade.Contract contract in contractShipsDocked.ToList()) {
+                if (contract.provider == this) {
+                    LoadContractToShip(200, contract);
+                } else {
+                    UnloadContractFromShip(200, contract);
+                }
             }
         }
     }
@@ -336,7 +341,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public void AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
         // Validate that the receiver can buy from the provider
-        if (!contract.provider.faction.factionTrade.tradeBuyAgreements.ContainsKey(contract.receiver.faction))
+        if (contract.provider.faction != contract.receiver.faction && !contract.provider.faction.factionTrade.tradeBuyAgreements.ContainsKey(contract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
         if (contract.provider == this) {
             foreach (var offer in contract.cargo.Values) {
@@ -383,6 +388,7 @@ public class Station : Unit, IPositionConfirmer {
         }
         contract.provider.faction.factionTrade.activeContracts.Remove(contract);
         contract.receiver.faction.factionTrade.activeContracts.Remove(contract);
+        contractShipsDocked.Remove(contract);
     }
 
     /// <summary>
@@ -521,8 +527,8 @@ public class Station : Unit, IPositionConfirmer {
 
     /// <returns>The amount of cargo not removed. Does not modify the cargo bay.</returns>
     private long RemoveFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
-        if (!freeCargo.TryGetValue(cargoType, out (long minWanted, long maxWanted, long has) previousCargo))
-            return amount;
+        if (!freeCargo.ContainsKey(cargoType)) return amount;
+        var previousCargo = freeCargo[cargoType];
         long amountUsed = math.min(amount, previousCargo.has);
 
         // Remove the cargo

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using static Command;
 
@@ -107,6 +108,7 @@ public class ShipAI {
             CommandType.UndockCommand => DoUndockCommand(command, deltaTime),
             CommandType.Transport => DoTransportCommand(command, deltaTime),
             CommandType.TransportDelay => DoTransportDelayCommand(command, deltaTime),
+            CommandType.Trade => DoTradeCommand(command, deltaTime),
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             CommandType.Colonize => DoColonizeCommand(command, deltaTime),
@@ -808,6 +810,91 @@ public class ShipAI {
 
         return CommandResult.Stop;
     }
+
+    private CommandResult DoTradeCommand(Command command, float deltaTime) {
+        if (command.supplierContract == null && command.demandContract == null) {
+            FactionTrade factionTrade = ship.faction.factionTrade;
+            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> cheapestResources = new();
+            CargoBay.allCargoTypes.ForEach(c =>
+                cheapestResources.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+            factionTrade.GetAllTradableFactions().ToList().ForEach(f =>
+                CargoBay.allCargoTypes.ForEach(c =>
+                    cheapestResources[c].AddRange(f.resourcesOffered[c]
+                        .Select(offer => new Tuple<float, Unit, FactionTrade.Offer>(
+                            factionTrade.GetOurBuyCostOfOffer(offer.Key.faction, offer.Value), offer.Key,
+                            offer.Value)))));
+            CargoBay.allCargoTypes.ForEach(c => cheapestResources[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
+
+            List<Tuple<long, Unit, FactionTrade.Offer, Unit, FactionTrade.Offer>> possibleContracts = new();
+            factionTrade.GetAllTradableFactions().ToList().ForEach(f =>
+                CargoBay.allCargoTypes.ForEach(c => f.resourcesRequested[c]
+                    .ToList().ForEach(wanted => {
+                        if (cheapestResources[c].All(p => p.Item2 == wanted.Key)) return;
+                        var provider = cheapestResources[c].First(p => p.Item2 != wanted.Key);
+                        long amount = math.min(provider.Item3.amount,
+                            math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount));
+                        long creditGain =
+                            (long)(factionTrade.GetOurSellCostOfOffer(wanted.Key.faction, wanted.Value) * amount -
+                                provider.Item1 * amount);
+                        if (creditGain > 0)
+                            possibleContracts.Add(new(creditGain, provider.Item2, provider.Item3, wanted.Key,
+                                wanted.Value));
+                    })));
+            var chosen = possibleContracts.OrderByDescending(c => c.Item1).FirstOrDefault();
+            if (chosen == null) return CommandResult.Stop;
+            long amount = math.min(chosen.Item3.amount,
+                math.min(ship.GetAvailableCargoSpace(chosen.Item3.cargoType), chosen.Item5.amount));
+            command.supplierContract =
+                new FactionTrade.Contract(chosen.Item2, ship, new FactionTrade.Offer(chosen.Item3, amount));
+            ((Station)chosen.Item2).AddContract(command.supplierContract.Value);
+            command.demandContract =
+                new FactionTrade.Contract(ship, chosen.Item4, new FactionTrade.Offer(chosen.Item5, amount));
+            ((Station)chosen.Item4).AddContract(command.demandContract.Value);
+            currentCommandState = CommandType.Trade;
+            newCommand = true;
+        }
+
+        if (ship.shipAction == Ship.ShipAction.Idle || newCommand) {
+            newCommand = false;
+            if (command.supplierContract != null) {
+                if (ship.dockedStation != command.supplierContract.Value.provider) {
+                    ship.SetDockTarget((Station)command.supplierContract.Value.provider);
+                    ship.SetMaxSpeed(command.maxSpeed);
+                    currentCommandState = CommandType.Dock;
+                    return CommandResult.Stop;
+                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
+                    command.supplierContract = null;
+                } else {
+                    //Add Contract to station to transfer cargo
+                    if (currentCommandState != CommandType.Transport)
+                        ((Station)command.supplierContract.Value.provider).contractShipsDocked.Add(
+                            command.supplierContract.Value);
+                    currentCommandState = CommandType.Transport;
+                    return CommandResult.Stop;
+                }
+            }
+            if (command.demandContract != null) {
+                if (ship.dockedStation != command.demandContract.Value.receiver) {
+                    ship.SetDockTarget((Station)command.demandContract.Value.receiver);
+                    ship.SetMaxSpeed(command.maxSpeed);
+                    currentCommandState = CommandType.Dock;
+                    return CommandResult.Stop;
+                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.demandContract.Value)) {
+                    command.demandContract = null;
+                } else {
+                    //Add Contract to station to transfer cargo
+                    if (currentCommandState != CommandType.Transport)
+                        ((Station)command.demandContract.Value.receiver).contractShipsDocked.Add(
+                            command.demandContract.Value);
+                    currentCommandState = CommandType.Transport;
+                    return CommandResult.Stop;
+                }
+            }
+        }
+
+        return CommandResult.Stop;
+    }
+
 
     /// <summary> Moves the ship to the planet to colonize, then initiates colonization of the planet. </summary>
     private CommandResult DoColonizeCommand(Command command, float deltaTime) {

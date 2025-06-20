@@ -59,8 +59,7 @@ public class FactionTrade {
         this.faction = faction;
         resourcesOffered = new();
         resourcesRequested = new();
-        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes))
-            .Cast<CargoBay.CargoTypes>()) {
+        foreach (CargoBay.CargoTypes cargoType in CargoBay.allCargoTypes) {
             resourcesOffered.Add(cargoType, new());
             resourcesRequested.Add(cargoType, new());
         }
@@ -78,5 +77,24 @@ public class FactionTrade {
         if (!tradePartner.factionTrade.tradeBuyAgreements.Remove(faction))
             throw new Exception("Trying to remove a trade agreement with " + tradePartner.name +
                 " but the agreement doesn't exist!");
+    }
+
+    public float GetOurBuyCostOfOffer(Faction otherFaction, Offer offer) {
+        if (otherFaction == faction) {
+            return offer.price * .8f;
+        }
+        return offer.price * otherFaction.factionTrade.tradeBuyAgreements[faction];
+    }
+
+    public float GetOurSellCostOfOffer(Faction otherFaction, Offer offer) {
+        if (otherFaction == faction) {
+            return offer.price * 1.2f;
+        }
+        return offer.price;
+    }
+
+
+    public IEnumerable<FactionTrade> GetAllTradableFactions() {
+        return tradeBuyAgreements.Select(t => t.Key.factionTrade).Append(this);
     }
 }

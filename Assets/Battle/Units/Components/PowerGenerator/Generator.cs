@@ -8,6 +8,7 @@ public class Generator : ModuleComponent {
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         generatorScriptableObject = (GeneratorScriptableObject)componentScriptableObject;
+        if (unit.IsStation()) ((Station)unit).ReserveCargo(1200 * 4, CargoBay.CargoTypes.Gas);
     }
 
     public override void Upgrade(ComponentScriptableObject componentScriptableObject) {

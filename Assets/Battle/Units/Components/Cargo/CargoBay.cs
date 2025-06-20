@@ -18,7 +18,7 @@ public class CargoBay : ModuleComponent {
         Gas = 2
     }
 
-    public static List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
+    public static readonly List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
 
     private CargoBayScriptableObject cargoBayScriptableObject;
     private int cargoBaysInUse;

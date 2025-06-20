@@ -257,13 +257,14 @@ public class SimulationFactionAI : FactionAI {
                             Command.CommandAction.Replace);
                     }
                 } else if (idleShip.IsTransportShip()) {
-                    Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
-                    if (miningStation != null) {
-                        ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
-                    } else if (idleShip.dockedStation != fleetCommand) {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
-                            Command.CommandAction.Replace);
-                    }
+                    // Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
+                    // if (miningStation != null) {
+                        // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
+                    // } else if (idleShip.dockedStation != fleetCommand) {
+                        // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
+                            // Command.CommandAction.Replace);
+                    // }
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand(), Command.CommandAction.Replace);
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),

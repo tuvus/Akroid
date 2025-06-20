@@ -15,6 +15,10 @@ public class ConstructionBay : ModuleComponent {
         base(battleManager, module, unit, componentScriptableObject) {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
 
+        if (unit.IsStation()) {
+            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoTypes.Metal);
+            ((Station)unit).ReserveCargo(1200 * 6, CargoBay.CargoTypes.Gas);
+        }
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
 
@@ -68,7 +72,7 @@ public class ConstructionBay : ModuleComponent {
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
             foreach (KeyValuePair<CargoBay.CargoTypes, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
                 long availableCargo = math.max(0,
-                    unit.GetAllCargoOfType(resourceCost.Key) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
+                    unit.GetAllCargoOfType(resourceCost.Key, true) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
                 shipBlueprint.resourceCosts[resourceCost.Key] -= amountToUse;
                 unit.UseCargo(amountToUse, resourceCost.Key);
@@ -82,7 +86,6 @@ public class ConstructionBay : ModuleComponent {
                 }
             }
 
-            AddReservedResources(shipBlueprint, cargoReserved);
         }
     }
 
@@ -105,24 +108,6 @@ public class ConstructionBay : ModuleComponent {
                 faction.GetFactionAI().GetSellCostOfMetal());
         }
         return ship.cost;
-    }
-
-    public Dictionary<CargoBay.CargoTypes, long> GetReservedResources() {
-        Dictionary<CargoBay.CargoTypes, long> reservedResources = new Dictionary<CargoBay.CargoTypes, long>();
-        buildQueue.ForEach(blueprint => AddReservedResources(blueprint, reservedResources));
-        return reservedResources;
-    }
-
-    /// <summary> Adds the resources to reserve from constructionBlueprint to the reservedResources Dictionary passed in. </summary>
-    private void AddReservedResources(ShipConstructionBlueprint constructionBlueprint,
-        Dictionary<CargoBay.CargoTypes, long> reservedResources) {
-        foreach (KeyValuePair<CargoBay.CargoTypes, long> cost in constructionBlueprint.resourceCosts) {
-            if (reservedResources.ContainsKey(cost.Key)) {
-                reservedResources[cost.Key] = reservedResources[cost.Key] + cost.Value;
-            } else {
-                reservedResources.Add(cost.Key, cost.Value);
-            }
-        }
     }
 
     public int GetNumberOfShipsOfClass(ShipClass shipClass) {
