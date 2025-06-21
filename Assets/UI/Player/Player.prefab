@@ -1627,7 +1627,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1939976486909118287}
   m_HandleRect: {fileID: 6364087356304033362}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4275,7 +4275,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4618830592714790721}
   m_HandleRect: {fileID: 4137147038010350586}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7252,7 +7252,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 1.0000004
+  m_Value: 1
   m_Size: 0.6802721
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22607,7 +22607,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1674003577351984642}
   m_HandleRect: {fileID: 1105404025253671302}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -33555,7 +33555,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 203353127213737578}
   m_HandleRect: {fileID: 8042583210906613712}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -38378,8 +38378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'All Transport Ships: Create a transport command with the closest minning
-    station'
+  m_text: 'All Transport Ships: Create a trade command'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -47127,7 +47126,7 @@ PrefabInstance:
     - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3920508318628320845, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
@@ -47391,7 +47390,7 @@ PrefabInstance:
     - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3920508318628320845, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}

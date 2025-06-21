@@ -127,7 +127,8 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
+    /// <summary>
+    /// Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
     /// </summary>
     private CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
@@ -870,10 +871,10 @@ public class ShipAI {
                     command.supplierContract = null;
                 } else {
                     //Add Contract to station to transfer cargo
-                    if (currentCommandState != CommandType.Transport)
+                    if (currentCommandState != CommandType.Wait)
                         ((Station)command.supplierContract.Value.provider).contractShipsDocked.Add(
                             command.supplierContract.Value);
-                    currentCommandState = CommandType.Transport;
+                    currentCommandState = CommandType.Wait;
                     return CommandResult.Stop;
                 }
             }
@@ -887,10 +888,10 @@ public class ShipAI {
                     command.demandContract = null;
                 } else {
                     //Add Contract to station to transfer cargo
-                    if (currentCommandState != CommandType.Transport)
+                    if (currentCommandState != CommandType.Wait)
                         ((Station)command.demandContract.Value.receiver).contractShipsDocked.Add(
                             command.demandContract.Value);
-                    currentCommandState = CommandType.Transport;
+                    currentCommandState = CommandType.Wait;
                     return CommandResult.Stop;
                 }
             }
@@ -1080,6 +1081,11 @@ public class ShipAI {
                     if (command.destinationStation != null)
                         positions.Add(command.destinationStation.GetPosition());
                 }
+            } else if (command.commandType == CommandType.Trade) {
+                if (command.supplierContract != null)
+                    positions.Add(command.supplierContract.Value.provider.position);
+                if (command.demandContract != null)
+                    positions.Add(command.demandContract.Value.receiver.position);
             } else {
                 if (command.targetPosition == null) continue;
                 positions.Add(command.targetPosition);

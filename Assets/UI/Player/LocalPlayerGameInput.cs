@@ -357,27 +357,13 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     private void GenerateTransportCommand() {
-        Vector2 mousePos = GetMouseWorldPosition();
-        Station closestProductionStation = null;
-        float closestStationDistance = 0;
-        foreach (Station station in localPlayer.GetFaction().stations) {
-            float newStationDistance = Vector2.Distance(mousePos, station.position);
-            if (closestProductionStation == null || newStationDistance < closestStationDistance) {
-                closestProductionStation = station;
-                closestStationDistance = newStationDistance;
-            }
-        }
-
-        if (closestProductionStation == null) return;
+        Station station = null;
+        if (mouseOverBattleObject is StationUI stationUI) station = stationUI.station;
 
         List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].ship.IsTransportShip()) {
-                allShips[i].ship.shipAI
-                    .AddUnitAICommand(
-                        Command.CreateTransportCommand(closestProductionStation,
-                            localPlayer.GetFaction().GetFleetCommand(),
-                            CargoBay.CargoTypes.Metal), GetCommandAction());
+                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand(station), GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }

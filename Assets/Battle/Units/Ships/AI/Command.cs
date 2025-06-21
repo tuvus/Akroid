@@ -269,6 +269,14 @@ public class Command {
         } else if (commandType == CommandType.BuildStation && !destinationStation.IsBuilt()) {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
+        } else if (commandType == CommandType.Trade) {
+            if (supplierContract != null &&
+                ((Station)supplierContract.Value.provider).contractShipsDocked.Contains(supplierContract.Value))
+                ((Station)supplierContract.Value.provider).RemoveContract(supplierContract.Value);
+            if (demandContract != null &&
+                ((Station)demandContract.Value.receiver).contractShipsDocked.Contains(demandContract.Value))
+                ((Station)demandContract.Value.receiver).RemoveContract(demandContract.Value);
+
         }
     }
 
