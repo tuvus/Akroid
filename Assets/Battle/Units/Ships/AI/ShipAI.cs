@@ -817,16 +817,16 @@ public class ShipAI {
             Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> cheapestResources = new();
             CargoBay.allCargoTypes.ForEach(c =>
                 cheapestResources.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
-            factionTrade.GetAllTradableFactions().ToList().ForEach(f =>
+            factionTrade.GetFactionsWeCanBuyFrom().ToList().ForEach(f =>
                 CargoBay.allCargoTypes.ForEach(c =>
                     cheapestResources[c].AddRange(f.resourcesOffered[c]
                         .Select(offer => new Tuple<float, Unit, FactionTrade.Offer>(
-                            factionTrade.GetOurBuyCostOfOffer(offer.Key.faction, offer.Value), offer.Key,
+                            factionTrade.GetOurBuyCostOfOffer(f.faction, offer.Value), offer.Key,
                             offer.Value)))));
             CargoBay.allCargoTypes.ForEach(c => cheapestResources[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
 
             List<Tuple<long, Unit, FactionTrade.Offer, Unit, FactionTrade.Offer>> possibleContracts = new();
-            factionTrade.GetAllTradableFactions().ToList().ForEach(f =>
+            factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f =>
                 CargoBay.allCargoTypes.ForEach(c => f.resourcesRequested[c]
                     .ToList().ForEach(wanted => {
                         if (cheapestResources[c].All(p => p.Item2 == wanted.Key)) return;

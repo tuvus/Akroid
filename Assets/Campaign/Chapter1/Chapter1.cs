@@ -235,6 +235,16 @@ public class Chapter1 : CampaingController {
                 b.shipScriptableObject.shipType == Ship.ShipType.Dreadnaught).ToList()
             .ForEach(b => battleManager.shipBlueprints.Remove(b));
 
+        playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        otherMiningFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(otherMiningFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(researchFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(otherMiningFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(playerFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(researchFaction);
+
         StartTutorial();
         AddMoonQuestLine();
         AddPiratesEventLine();
@@ -308,7 +318,7 @@ public class Chapter1 : CampaingController {
                                 battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
                             }
 
-                            playerFactionAI.AddTradeRouteToStation(tradeStation);
+                            playerFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
                             // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
@@ -514,7 +524,7 @@ public class Chapter1 : CampaingController {
                     communicationEvent => {
                         if (!communicationEvent.isActive)
                             return false;
-                        playerFactionAI.AddTradeRouteToStation(tradeStation);
+                        playerFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
                         communicationEvent.DeactivateEvent();
                         shipyardFaction.GetFactionCommManager().SendCommunication(playerFaction,
                             "Good to see that you are set up and everything is going well. " +

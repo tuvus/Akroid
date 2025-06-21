@@ -203,8 +203,8 @@ public class Command {
         };
     }
 
-    public static Command CreateTradeCommand(CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All,
-        Station mustTradeWith = null) {
+    public static Command CreateTradeCommand(Station mustTradeWith = null,
+        CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All) {
         return new Command(CommandType.Trade) {
             cargoType = cargoTypeToTrade,
             destinationStation = mustTradeWith

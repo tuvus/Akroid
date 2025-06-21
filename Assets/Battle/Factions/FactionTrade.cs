@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class FactionTrade {
-    private Faction faction;
+    public Faction faction { get; private set; }
 
     public struct Offer {
         public CargoBay.CargoTypes cargoType;
@@ -49,8 +49,11 @@ public class FactionTrade {
     public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesRequested;
 
     /// <summary>
-    /// The factions that we have a trade agreement with and the markup value of our resources
-    /// when selling to them.
+    /// The factions that we can sell to and how much of a markup we have.
+    /// </summary>
+    public Dictionary<Faction, float> tradeSellAgreements;
+    /// <summary>
+    /// The factions that we can buy from and how much of a markup they have.
     /// </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
     public HashSet<Contract> activeContracts;
@@ -63,18 +66,19 @@ public class FactionTrade {
             resourcesOffered.Add(cargoType, new());
             resourcesRequested.Add(cargoType, new());
         }
+        tradeSellAgreements = new();
         tradeBuyAgreements = new();
         activeContracts = new();
     }
 
     public void MakeSellTradeAgreement(Faction tradePartner, float markupPrice = 1.2f) {
-        if (!tradeBuyAgreements.TryAdd(tradePartner, markupPrice))
+        if (!tradeSellAgreements.TryAdd(tradePartner, markupPrice) || !tradePartner.factionTrade.tradeBuyAgreements.TryAdd(faction, markupPrice))
             throw new Exception("Trying to start a trade agreement that already exists with " + tradePartner.name +
                 "!");
     }
 
     public void BreakSellTradeAgreement(Faction tradePartner) {
-        if (!tradePartner.factionTrade.tradeBuyAgreements.Remove(faction))
+        if (!tradeBuyAgreements.Remove(tradePartner) || !tradePartner.factionTrade.tradeSellAgreements.Remove(faction))
             throw new Exception("Trying to remove a trade agreement with " + tradePartner.name +
                 " but the agreement doesn't exist!");
     }
@@ -83,7 +87,7 @@ public class FactionTrade {
         if (otherFaction == faction) {
             return offer.price * .8f;
         }
-        return offer.price * otherFaction.factionTrade.tradeBuyAgreements[faction];
+        return offer.price * tradeBuyAgreements[otherFaction];
     }
 
     public float GetOurSellCostOfOffer(Faction otherFaction, Offer offer) {
@@ -94,7 +98,11 @@ public class FactionTrade {
     }
 
 
-    public IEnumerable<FactionTrade> GetAllTradableFactions() {
+    public IEnumerable<FactionTrade> GetFactionsWeCanBuyFrom() {
         return tradeBuyAgreements.Select(t => t.Key.factionTrade).Append(this);
+    }
+
+    public IEnumerable<FactionTrade> GetFactionsWeCanSellTo() {
+        return tradeSellAgreements.Select(t => t.Key.factionTrade).Append(this);
     }
 }

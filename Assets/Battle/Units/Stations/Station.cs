@@ -341,7 +341,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public void AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
         // Validate that the receiver can buy from the provider
-        if (contract.provider.faction != contract.receiver.faction && !contract.provider.faction.factionTrade.tradeBuyAgreements.ContainsKey(contract.receiver.faction))
+        if (contract.provider.faction != contract.receiver.faction && !contract.provider.faction.factionTrade.tradeSellAgreements.ContainsKey(contract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
         if (contract.provider == this) {
             foreach (var offer in contract.cargo.Values) {

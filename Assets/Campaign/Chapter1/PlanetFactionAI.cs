@@ -27,7 +27,7 @@ public class PlanetFactionAI : FactionAI {
         this.shipyard = shipyard;
         this.civilianShips = civilianShips;
         friendlyStations = new List<Station>();
-        // We need to re-add the Idle ships since we are seting up after creating them
+        // We need to re-add the Idle ships since we are setting up after creating them
         faction.ships.ToList().ForEach(s => idleShips.Add(s));
 
         void produceCivilianShipDelayed() {
@@ -56,21 +56,6 @@ public class PlanetFactionAI : FactionAI {
     }
 
     private void UpdateTradeStation() {
-        //TODO: Add Cargo selling command
-        foreach (Ship transportShip in tradeStation.GetAllDockedShips().Where(s => s.IsTransportShip())) {
-            if (transportShip.faction != faction && transportShip.faction != shipyardFactionAI.faction) {
-                long amountToTransfer = 300;
-                foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
-                    long amountOfResource = math.min(amountToTransfer, transportShip.GetAllCargoOfType(type));
-                    if (amountOfResource <= 0) break;
-                    if (faction.TransferCredits((long)(amountOfResource * chapter1.resourceCosts[type] * .7f),
-                        transportShip.faction)) {
-                        tradeStation.LoadCargoFromUnit(amountOfResource, type, transportShip);
-                    }
-                }
-            }
-        }
-
         if (sellResourcesToPlanetTime <= 0) {
             foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
                 long amount = math.min(math.max(100, tradeStation.GetAllCargoOfType(type) / 6),
@@ -109,6 +94,8 @@ public class PlanetFactionAI : FactionAI {
                     }
                     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
                 }
+            } else if (idleShip.IsIdle() && idleShip.IsTransportShip()) {
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand());
             }
         }
     }
