@@ -63,7 +63,7 @@ public class Chapter1 : CampaingController {
         otherMiningFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(),
                 1000, 0, 0, 0),
-            new PositionGiver(-playerFaction.position, 0, 4000, 500, 200, 10), 100);
+            new PositionGiver(-playerFaction.position, 0, 4000, 500, 2000, 10), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
 
         int asteroidFieldCount = Random.Range(80, 100);
@@ -235,7 +235,7 @@ public class Chapter1 : CampaingController {
                 b.shipScriptableObject.shipType == Ship.ShipType.Dreadnaught).ToList()
             .ForEach(b => battleManager.shipBlueprints.Remove(b));
 
-        playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(playerFaction);
         otherMiningFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
         planetFaction.factionTrade.MakeSellTradeAgreement(otherMiningFaction);
         planetFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
@@ -318,7 +318,7 @@ public class Chapter1 : CampaingController {
                                 battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
                             }
 
-                            playerFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
+                            playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
                             // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
@@ -524,7 +524,7 @@ public class Chapter1 : CampaingController {
                     communicationEvent => {
                         if (!communicationEvent.isActive)
                             return false;
-                        playerFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
+                        playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
                         communicationEvent.DeactivateEvent();
                         shipyardFaction.GetFactionCommManager().SendCommunication(playerFaction,
                             "Good to see that you are set up and everything is going well. " +

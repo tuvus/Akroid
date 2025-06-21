@@ -815,10 +815,11 @@ public class ShipAI {
         if (command.supplierContract == null && command.demandContract == null) {
             FactionTrade factionTrade = ship.faction.factionTrade;
             Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> cheapestResources = new();
-            CargoBay.allCargoTypes.ForEach(c =>
-                cheapestResources.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+            CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
+                .ToList().ForEach(c =>
+                    cheapestResources.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
             factionTrade.GetFactionsWeCanBuyFrom().ToList().ForEach(f =>
-                CargoBay.allCargoTypes.ForEach(c =>
+                cheapestResources.Keys.ToList().ForEach(c =>
                     cheapestResources[c].AddRange(f.resourcesOffered[c]
                         .Select(offer => new Tuple<float, Unit, FactionTrade.Offer>(
                             factionTrade.GetOurBuyCostOfOffer(f.faction, offer.Value), offer.Key,
@@ -827,10 +828,13 @@ public class ShipAI {
 
             List<Tuple<long, Unit, FactionTrade.Offer, Unit, FactionTrade.Offer>> possibleContracts = new();
             factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f =>
-                CargoBay.allCargoTypes.ForEach(c => f.resourcesRequested[c]
+                cheapestResources.Keys.ToList().ForEach(c => f.resourcesRequested[c]
                     .ToList().ForEach(wanted => {
                         if (cheapestResources[c].All(p => p.Item2 == wanted.Key)) return;
-                        var provider = cheapestResources[c].First(p => p.Item2 != wanted.Key);
+                        var provider = cheapestResources[c].FirstOrDefault(p => p.Item2 != wanted.Key
+                            && command.destinationStation == null || wanted.Key == command.destinationStation ||
+                            p.Item2 == command.destinationStation);
+                        if (provider == null) return;
                         long amount = math.min(provider.Item3.amount,
                             math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount));
                         long creditGain =

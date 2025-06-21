@@ -38,6 +38,10 @@ public class PlanetFactionAI : FactionAI {
             });
         }
 
+        foreach (var keyValuePair in tradeStation.reservedCargo.ToList()) {
+            tradeStation.UnReserveCargo(keyValuePair.Value.wanted, keyValuePair.Key);
+        }
+
         eventManager.AddEvent(eventManager.CreateWaitCondition(40000), () => { produceCivilianShipDelayed(); });
         produceCivilianShipDelayed();
     }

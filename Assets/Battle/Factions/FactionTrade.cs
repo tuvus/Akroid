@@ -78,7 +78,7 @@ public class FactionTrade {
     }
 
     public void BreakSellTradeAgreement(Faction tradePartner) {
-        if (!tradeBuyAgreements.Remove(tradePartner) || !tradePartner.factionTrade.tradeSellAgreements.Remove(faction))
+        if (!tradeSellAgreements.Remove(tradePartner) || !tradePartner.factionTrade.tradeBuyAgreements.Remove(faction))
             throw new Exception("Trying to remove a trade agreement with " + tradePartner.name +
                 " but the agreement doesn't exist!");
     }

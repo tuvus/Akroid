@@ -16,8 +16,8 @@ public class ConstructionBay : ModuleComponent {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
 
         if (unit.IsStation()) {
-            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoTypes.Metal);
-            ((Station)unit).ReserveCargo(1200 * 6, CargoBay.CargoTypes.Gas);
+            ((Station)unit).ReserveCargo(1200 * 12, CargoBay.CargoTypes.Metal);
+            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoTypes.Gas);
         }
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
