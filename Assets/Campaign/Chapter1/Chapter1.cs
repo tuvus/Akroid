@@ -63,7 +63,7 @@ public class Chapter1 : CampaingController {
         otherMiningFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(),
                 1000, 0, 0, 0),
-            new PositionGiver(-playerFaction.position, 0, 4000, 500, 2000, 10), 100);
+            new PositionGiver(-playerFaction.position, 0, 4000, 1000, 200, 4), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
 
         int asteroidFieldCount = Random.Range(80, 100);
