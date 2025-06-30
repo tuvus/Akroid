@@ -204,7 +204,7 @@ public abstract class Unit : BattleObject {
         long totalCargoToUse = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
-            if (totalCargoToUse <= 0) return 0;
+            if (totalCargoToUse == 0) return 0;
         }
 
         return totalCargoToUse;
@@ -214,7 +214,7 @@ public abstract class Unit : BattleObject {
     ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
-    public virtual long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public virtual long LoadCargo(long amount, CargoBay.CargoTypes cargoType, FactionTrade.Contract? contract = null) {
         long totalCargoToLoad = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
@@ -229,7 +229,7 @@ public abstract class Unit : BattleObject {
     ///     Does not take contracts into account.
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
-    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit) {
+    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit, FactionTrade.Contract? contract = null) {
         if (cargoType == CargoBay.CargoTypes.All) {
             foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);
@@ -242,7 +242,7 @@ public abstract class Unit : BattleObject {
         long cargoToLoad = Math.Min(amount,
             Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
         unit.UseCargo(cargoToLoad, cargoType);
-        LoadCargo(cargoToLoad, cargoType);
+        LoadCargo(cargoToLoad, cargoType, contract);
         return amount - cargoToLoad;
     }
 

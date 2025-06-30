@@ -55,7 +55,7 @@ public class Command {
     public Star targetStar;
     public Unit targetUnit;
     public FactionTrade.Contract? supplierContract;
-    public FactionTrade.Contract? demandContract;
+    public FactionTrade.Contract? requestContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -273,9 +273,9 @@ public class Command {
             if (supplierContract != null &&
                 ((Station)supplierContract.Value.provider).contractShipsDocked.Contains(supplierContract.Value))
                 ((Station)supplierContract.Value.provider).RemoveContract(supplierContract.Value);
-            if (demandContract != null &&
-                ((Station)demandContract.Value.receiver).contractShipsDocked.Contains(demandContract.Value))
-                ((Station)demandContract.Value.receiver).RemoveContract(demandContract.Value);
+            if (requestContract != null &&
+                ((Station)requestContract.Value.receiver).contractShipsDocked.Contains(requestContract.Value))
+                ((Station)requestContract.Value.receiver).RemoveContract(requestContract.Value);
 
         }
     }

@@ -83,16 +83,30 @@ public class FactionTrade {
                 " but the agreement doesn't exist!");
     }
 
-    public float GetOurBuyCostOfOffer(Faction otherFaction, Offer offer) {
+    public float GetBuyCostOfOffer(Faction otherFaction, Offer offer) {
         if (otherFaction == faction) {
-            return offer.price * .8f;
+            return faction.battleManager.baseResourcePrice[offer.cargoType] + offer.price * .8f;
         }
         return offer.price * tradeBuyAgreements[otherFaction];
     }
 
-    public float GetOurSellCostOfOffer(Faction otherFaction, Offer offer) {
+    public float GetSellCostOfOffer(Faction otherFaction, Offer offer) {
         if (otherFaction == faction) {
-            return offer.price * 1.2f;
+            return faction.battleManager.baseResourcePrice[offer.cargoType] + offer.price * 1.2f;
+        }
+        return offer.price;
+    }
+
+    public float GetOurBuyValueOfOffer(Faction otherFaction, Offer offer) {
+        if (otherFaction == faction) {
+            return 1.3f / offer.price;
+        }
+        return 1 / offer.price;
+    }
+
+    public float GetOurSellValueOfOffer(Faction otherFaction, Offer offer) {
+        if (otherFaction == faction) {
+            return offer.price * 1.3f;
         }
         return offer.price;
     }

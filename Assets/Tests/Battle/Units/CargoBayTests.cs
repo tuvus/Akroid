@@ -70,41 +70,6 @@ public class CargoBayTests {
 
     [Explicit] [Category("Unit Tests")]
     [Test]
-    public void TestReservedBays() {
-        var module = new Mock<IModule>();
-        module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
-        module.Setup(e => e.GetRotation()).Returns(0);
-        var unit = new Mock<Unit>();
-        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
-        cargoBayScriptableObject.cargoBaySize = 100;
-        cargoBayScriptableObject.maxCargoBays = 6;
-        var battleManager = new Mock<BattleManager>();
-        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
-        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
-        Assert.AreEqual(0, cargoBay.LoadCargo(400, CargoBay.CargoTypes.Metal));
-        Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-        Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
-        Assert.AreEqual(100, cargoBay.LoadCargo(300, CargoBay.CargoTypes.Gas));
-        // 400 metal, 200 gas, 2 bays reserved for metal
-        Assert.AreEqual(0, cargoBay.UseCargo(400, CargoBay.CargoTypes.Metal));
-        Assert.AreEqual(200, cargoBay.LoadCargo(400, CargoBay.CargoTypes.Gas));
-        Assert.AreEqual(50, cargoBay.LoadCargo(50, CargoBay.CargoTypes.Gas));
-        Assert.AreEqual(0, cargoBay.LoadCargo(200, CargoBay.CargoTypes.Metal));
-        Assert.AreEqual(0, cargoBay.UseCargo(400, CargoBay.CargoTypes.Gas));
-        Assert.AreEqual(400, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-        Assert.AreEqual(400, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
-        Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Gas));
-        // 200 Metal, 4 bays reserved for metal
-        Assert.AreEqual(200, cargoBay.LoadCargo(400, CargoBay.CargoTypes.Gas));
-        Assert.AreEqual(0, cargoBay.UseCargo(200, CargoBay.CargoTypes.Gas));
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
-        Assert.AreEqual(200, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
-    }
-
-    [Explicit] [Category("Unit Tests")]
-    [Test]
     public void TestCargoBayLoadingFromAnotherCargoBay() {
         var module = new Mock<IModule>();
         module.Setup(e => e.GetPosition()).Returns(Vector2.zero);

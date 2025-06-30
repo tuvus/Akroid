@@ -298,10 +298,12 @@ public class Station : Unit, IPositionConfirmer {
         return base.UseCargo(cargoUsed + reservedCargoUsed, cargoType);
     }
 
-    public override long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public override long LoadCargo(long amount, CargoBay.CargoTypes cargoType, FactionTrade.Contract? contract = null) {
         long leftover = base.LoadCargo(amount, cargoType);
         long toStore = amount - leftover;
         long toAdd = 0;
+        bool updateRequestedOfferedResources = contract == null || contract.Value.receiver != this;
+
         if (reservedCargo.ContainsKey(cargoType)) {
             // Add to reserved cargo first
             toAdd = math.min(toStore, reservedCargo[cargoType].wanted - reservedCargo[cargoType].has);
@@ -309,7 +311,8 @@ public class Station : Unit, IPositionConfirmer {
                 reservedCargo[cargoType] = (reservedCargo[cargoType].wanted,
                     reservedCargo[cargoType].has + math.min(toStore, toAdd));
 
-                if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
+                if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this) &&
+                    updateRequestedOfferedResources) {
                     // Remove the cargo request from the faction level
                     if (faction.factionTrade.resourcesRequested[cargoType][this].amount == toAdd) {
                         faction.factionTrade.resourcesRequested[cargoType].Remove(this);
@@ -324,7 +327,7 @@ public class Station : Unit, IPositionConfirmer {
             if (toStore <= 0) return leftover;
         }
 
-        if (contractedCargo.ContainsKey(cargoType)) {
+        if (contractedCargo.ContainsKey(cargoType) && updateRequestedOfferedResources) {
             // Then add to contracted cargo next
             toAdd = math.min(toStore, contractedCargo[cargoType].wanted - contractedCargo[cargoType].has);
             if (toAdd > 0)
@@ -335,13 +338,21 @@ public class Station : Unit, IPositionConfirmer {
         }
 
         // Finally, all the rest should be added to free cargo
-        AddFreeCargo(toStore, cargoType);
+        if (updateRequestedOfferedResources) {
+            AddFreeCargo(toStore, cargoType);
+        } else {
+            if (freeCargo.ContainsKey(cargoType))
+                freeCargo[cargoType] = (freeCargo[cargoType].minWanted, freeCargo[cargoType].maxWanted,
+                    freeCargo[cargoType].has + amount);
+            else freeCargo[cargoType] = (0, 0, amount);
+        }
         return leftover;
     }
 
     public void AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
         // Validate that the receiver can buy from the provider
-        if (contract.provider.faction != contract.receiver.faction && !contract.provider.faction.factionTrade.tradeSellAgreements.ContainsKey(contract.receiver.faction))
+        if (contract.provider.faction != contract.receiver.faction &&
+            !contract.provider.faction.factionTrade.tradeSellAgreements.ContainsKey(contract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
         if (contract.provider == this) {
             foreach (var offer in contract.cargo.Values) {
@@ -400,11 +411,13 @@ public class Station : Unit, IPositionConfirmer {
         Assert.AreEqual(contract.receiver, this);
         Assert.IsTrue(contract.provider.IsShip());
         Assert.AreEqual(((Ship)contract.provider).dockedStation, this);
+        if (((Ship)contract.provider).dockedStation != this)
+            Debug.Log("asdfsadfsf");
         long cargoToMove = amount;
 
         foreach (var offer in contract.cargo.Values.ToList()) {
             long toMove = math.min(cargoToMove, offer.amount);
-            toMove -= LoadCargoFromUnit(toMove, offer.cargoType, contract.provider);
+            toMove -= LoadCargoFromUnit(toMove, offer.cargoType, contract.provider, contract);
             cargoToMove -= toMove;
             contract.cargo[offer.cargoType] =
                 new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
@@ -432,22 +445,23 @@ public class Station : Unit, IPositionConfirmer {
 
         foreach (var offer in contract.cargo.Values.ToList()) {
             long toMove = math.min(math.min(math.min(cargoToMove, offer.amount),
-                    contract.receiver.GetAvailableCargoSpace(offer.cargoType)),
-                contractedCargo.GetValueOrDefault(offer.cargoType, (0, 0)).has);
+                contract.receiver.GetAvailableCargoSpace(offer.cargoType)), contractedCargo[offer.cargoType].has);
             // Actually update the cargo bays
-            base.UseCargo(toMove, offer.cargoType);
-            contract.receiver.LoadCargo(toMove, offer.cargoType);
+            Assert.AreEqual(0, base.UseCargo(toMove, offer.cargoType));
+            Assert.AreEqual(0, contract.receiver.LoadCargo(toMove, offer.cargoType));
             if (offer.amount - toMove == 0) {
                 contract.cargo.Remove(offer.cargoType);
             } else {
-                contract.cargo[offer.cargoType] =
-                    new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
+                contract.cargo[offer.cargoType] = new FactionTrade.Offer(offer, offer.amount - toMove);
             }
+
             if (contractedCargo[offer.cargoType].wanted - toMove == 0) {
                 contractedCargo.Remove(offer.cargoType);
             } else {
                 contractedCargo[offer.cargoType] = (contractedCargo[offer.cargoType].wanted - toMove,
                     contractedCargo[offer.cargoType].has - toMove);
+                if (contractedCargo[offer.cargoType].has < 0)
+                    Debug.Log("asdfasfasfdsf");
             }
             contract.receiver.faction.TransferCredits((long)(toMove * offer.price), faction);
             cargoToMove -= toMove;
@@ -530,6 +544,7 @@ public class Station : Unit, IPositionConfirmer {
         if (!freeCargo.ContainsKey(cargoType)) return amount;
         var previousCargo = freeCargo[cargoType];
         long amountUsed = math.min(amount, previousCargo.has);
+        if (amountUsed == 0) return amount;
 
         // Remove the cargo
         if (previousCargo.has == amount && freeCargo[cargoType].minWanted == 0 && freeCargo[cargoType].maxWanted == 0) {

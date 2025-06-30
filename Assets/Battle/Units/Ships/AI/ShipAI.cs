@@ -813,48 +813,64 @@ public class ShipAI {
     }
 
     private CommandResult DoTradeCommand(Command command, float deltaTime) {
-        if (command.supplierContract == null && command.demandContract == null) {
+        if (command.supplierContract == null && command.requestContract == null) {
             FactionTrade factionTrade = ship.faction.factionTrade;
-            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> cheapestResources = new();
+            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> providedContracts = new();
             CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
                 .ToList().ForEach(c =>
-                    cheapestResources.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+                    providedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
             factionTrade.GetFactionsWeCanBuyFrom().ToList().ForEach(f =>
-                cheapestResources.Keys.ToList().ForEach(c =>
-                    cheapestResources[c].AddRange(f.resourcesOffered[c]
-                        .Select(offer => new Tuple<float, Unit, FactionTrade.Offer>(
-                            factionTrade.GetOurBuyCostOfOffer(f.faction, offer.Value), offer.Key,
+                providedContracts.Keys.ToList().ForEach(c =>
+                    providedContracts[c].AddRange(f.resourcesOffered[c].Select(offer =>
+                        new Tuple<float, Unit, FactionTrade.Offer>(
+                            factionTrade.GetOurBuyValueOfOffer(f.faction, offer.Value) *
+                            math.min(ship.GetAvailableCargoSpace(c), offer.Value.amount), offer.Key,
                             offer.Value)))));
-            CargoBay.allCargoTypes.ForEach(c => cheapestResources[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
+            CargoBay.allCargoTypes.ForEach(c => providedContracts[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
 
-            List<Tuple<long, Unit, FactionTrade.Offer, Unit, FactionTrade.Offer>> possibleContracts = new();
+            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>>
+                requestedContracts = new();
+
+            CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
+                .ToList().ForEach(c =>
+                    requestedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
             factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f =>
-                cheapestResources.Keys.ToList().ForEach(c => f.resourcesRequested[c]
-                    .ToList().ForEach(wanted => {
-                        if (cheapestResources[c].All(p => p.Item2 == wanted.Key)) return;
-                        var provider = cheapestResources[c].FirstOrDefault(p => p.Item2 != wanted.Key
-                            && command.destinationStation == null || wanted.Key == command.destinationStation ||
-                            p.Item2 == command.destinationStation);
-                        if (provider == null) return;
-                        long amount = math.min(provider.Item3.amount,
-                            math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount));
-                        long creditGain =
-                            (long)(factionTrade.GetOurSellCostOfOffer(wanted.Key.faction, wanted.Value) * amount -
-                                provider.Item1 * amount);
-                        if (creditGain > 0)
-                            possibleContracts.Add(new(creditGain, provider.Item2, provider.Item3, wanted.Key,
-                                wanted.Value));
-                    })));
-            var chosen = possibleContracts.OrderByDescending(c => c.Item1).FirstOrDefault();
-            if (chosen == null) return CommandResult.Stop;
-            long amount = math.min(chosen.Item3.amount,
-                math.min(ship.GetAvailableCargoSpace(chosen.Item3.cargoType), chosen.Item5.amount));
-            command.supplierContract =
-                new FactionTrade.Contract(chosen.Item2, ship, new FactionTrade.Offer(chosen.Item3, amount));
-            ((Station)chosen.Item2).AddContract(command.supplierContract.Value);
-            command.demandContract =
-                new FactionTrade.Contract(ship, chosen.Item4, new FactionTrade.Offer(chosen.Item5, amount));
-            ((Station)chosen.Item4).AddContract(command.demandContract.Value);
+                requestedContracts.Keys.ToList().ForEach(c => requestedContracts[c].AddRange(
+                    f.resourcesRequested[c].Select(wanted =>
+                        new Tuple<float, Unit, FactionTrade.Offer>(
+                            factionTrade.GetOurSellValueOfOffer(wanted.Key.faction, wanted.Value) *
+                            math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount), wanted.Key,
+                            wanted.Value)
+                    ))));
+            CargoBay.allCargoTypes.ForEach(c => requestedContracts[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
+
+            var possibleContracts = new List<Tuple<float, FactionTrade.Contract, FactionTrade.Contract>>();
+            CargoBay.allCargoTypes.ForEach(c => {
+                foreach (var wanted in requestedContracts[c]) {
+                    var provided = providedContracts[c].FirstOrDefault();
+                    if (provided == null) continue;
+                    if (factionTrade.GetOurBuyValueOfOffer(wanted.Item2.faction, wanted.Item3) >=
+                        factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3)) break;
+                    long amount = math.min(math.min(ship.GetAvailableCargoSpace(c), wanted.Item3.amount),
+                        provided.Item3.amount);
+                    var providedOffer = new FactionTrade.Offer(provided.Item3, amount);
+                    var reqiested = new FactionTrade.Offer(wanted.Item3, amount);
+                    possibleContracts.Add(new Tuple<float, FactionTrade.Contract, FactionTrade.Contract>(
+                        (factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, providedOffer) +
+                            factionTrade.GetOurSellValueOfOffer(provided.Item2.faction, reqiested)) * amount,
+                        new FactionTrade.Contract(provided.Item2, ship, providedOffer),
+                        new FactionTrade.Contract(ship, wanted.Item2, reqiested)
+                    ));
+                }
+            });
+            possibleContracts.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+
+            if (possibleContracts.Count == 0) return CommandResult.Stop;
+            var chosenContract = possibleContracts.First();
+            command.supplierContract = chosenContract.Item2;
+            command.requestContract = chosenContract.Item3;
+            ((Station)command.supplierContract.Value.provider).AddContract(command.supplierContract.Value);
+            ((Station)command.requestContract.Value.receiver).AddContract(command.requestContract.Value);
             currentCommandState = CommandType.Trade;
             newCommand = true;
         }
@@ -878,19 +894,19 @@ public class ShipAI {
                     return CommandResult.Stop;
                 }
             }
-            if (command.demandContract != null) {
-                if (ship.dockedStation != command.demandContract.Value.receiver) {
-                    ship.SetDockTarget((Station)command.demandContract.Value.receiver);
+            if (command.requestContract != null) {
+                if (ship.dockedStation != command.requestContract.Value.receiver) {
+                    ship.SetDockTarget((Station)command.requestContract.Value.receiver);
                     ship.SetMaxSpeed(command.maxSpeed);
                     currentCommandState = CommandType.Dock;
                     return CommandResult.Stop;
-                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.demandContract.Value)) {
-                    command.demandContract = null;
+                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.requestContract.Value)) {
+                    command.requestContract = null;
                 } else {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait)
-                        ((Station)command.demandContract.Value.receiver).contractShipsDocked.Add(
-                            command.demandContract.Value);
+                        ((Station)command.requestContract.Value.receiver).contractShipsDocked.Add(
+                            command.requestContract.Value);
                     currentCommandState = CommandType.Wait;
                     return CommandResult.Stop;
                 }
@@ -1084,8 +1100,8 @@ public class ShipAI {
             } else if (command.commandType == CommandType.Trade) {
                 if (command.supplierContract != null)
                     positions.Add(command.supplierContract.Value.provider.position);
-                if (command.demandContract != null)
-                    positions.Add(command.demandContract.Value.receiver.position);
+                if (command.requestContract != null)
+                    positions.Add(command.requestContract.Value.receiver.position);
             } else {
                 if (command.targetPosition == null) continue;
                 positions.Add(command.targetPosition);

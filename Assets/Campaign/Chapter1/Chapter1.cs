@@ -324,10 +324,6 @@ public class Chapter1 : CampaingController {
                             AddResearchQuestLine();
                             AddWarEscalationEventLine();
                             battleManager.GetLocalPlayer().SetLockedUnits(false);
-                            playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                                .AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-                            playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                                .AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
                         });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -501,10 +497,6 @@ public class Chapter1 : CampaingController {
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
                 () => {
                     AddStationTutorial();
-                    playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                        .AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-                    playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                        .AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
                 });
         })();
     }
