@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: HeavyTransportMkI
   m_EditorClassIdentifier: 
-  cost: 16876
+  cost: 17116
   resourceTypes: 0100000002000000
-  resourceCosts: 2c110000000000005603000000000000
+  resourceCosts: 5c110000000000008603000000000000
   prefabPath: Prefabs/ShipPrefabs/HeavyTransport
   prefab: {fileID: 4268936986182817265, guid: 72731ae285ebb60409b19c7447cf20bf, type: 3}
   unitName: Heavy Transport
@@ -38,12 +38,12 @@ MonoBehaviour:
     moduleCount: 1
   - name: MainThruster
     type: 4
-    component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
+    component: {fileID: 11400000, guid: a33a08d6956c46847aec3fa8de0f0be1, type: 2}
     moduleSize: 0
     moduleCount: 1
   - name: SubThrusters
     type: 4
-    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+    component: {fileID: 11400000, guid: c0ec4a137cddba946b65a204f849f966, type: 2}
     moduleSize: 0
     moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
@@ -53,4 +53,5 @@ MonoBehaviour:
   shipType: 1
   turnSpeed: 30
   combatRotation: 0
-  baseSpeed: 9.541285
+  baseMass: 1635
+  baseSpeed: 14.923548

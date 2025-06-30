@@ -8,6 +8,8 @@ public class ShipScriptableObject : UnitScriptableObject {
     public ShipType shipType;
     public float turnSpeed;
     public float combatRotation;
+    [Tooltip("Not used in game, this exists purely to visualise the ship's mass")]
+    public float baseMass;
     [Tooltip("Not used in game, this exists purely to visualise the ship's speed")]
     public float baseSpeed;
 
@@ -15,8 +17,8 @@ public class ShipScriptableObject : UnitScriptableObject {
         base.OnValidate();
         float thrustSpeed = systems.Where(s => s.component != null && s.component is ThrusterScriptableObject)
             .Sum(s => ((ThrusterScriptableObject)s.component).thrustSpeed * s.moduleCount);
-        float mass = Calculator.GetSpriteSizeFromBounds(spriteBounds, baseScale) * 100;
-        baseSpeed = thrustSpeed / mass;
+        baseMass = Calculator.GetSpriteSizeFromBounds(spriteBounds, baseScale) * 100;
+        baseSpeed = thrustSpeed / baseMass;
     }
 
 }

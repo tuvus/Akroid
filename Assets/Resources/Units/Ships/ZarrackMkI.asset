@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ZarrackMkI
   m_EditorClassIdentifier: 
-  cost: 9071
+  cost: 9723
   resourceTypes: 0100000002000000
-  resourceCosts: e1050000000000001202000000000000
+  resourceCosts: 55060000000000008202000000000000
   prefabPath: Prefabs/ShipPrefabs/Zarrack
+  prefab: {fileID: 5023812487943957023, guid: ecca5209414585644a82cedba9893789, type: 3}
   unitName: Zarrack
   maxHealth: 650
   sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
@@ -24,24 +25,33 @@ MonoBehaviour:
     type: 3
     component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
     moduleSize: 0
+    moduleCount: 4
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: bff627ab4b0122543bfcc1aa044257ad, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThrusters
     type: 4
     component: {fileID: 11400000, guid: 090aafee90222144cba69e8a9be04edf, type: 2}
     moduleSize: 0
+    moduleCount: 2
   - name: SubThrusters
     type: 4
-    component: {fileID: 11400000, guid: e37e5e57fe3ea274ea40ce3ba2896f5b, type: 2}
+    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
     moduleSize: 0
+    moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 8.48, y: 15.58}
   shipClass: 6
   shipType: 3
   turnSpeed: 25
   combatRotation: 0
+  baseMass: 779
+  baseSpeed: 32.400513
