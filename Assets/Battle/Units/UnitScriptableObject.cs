@@ -23,7 +23,7 @@ public class UnitScriptableObject : ScriptableObject {
     [field: SerializeField] public Vector2 spriteBounds { get; private set; }
     [SerializeField] protected IModule[] modules;
 
-    public void OnValidate() {
+    public virtual void OnValidate() {
         if (systems == null) {
             systems = Array.Empty<ModuleSystem.System>();
         }
@@ -83,25 +83,6 @@ public class UnitScriptableObject : ScriptableObject {
         }
 
         resourceCosts[metalIndex] += cost;
-    }
-
-
-    [ContextMenu("ConvertUnitComponents")]
-    public void ConvertUnitComponents() {
-        // Unit unit = Resources.Load<Unit>(prefabPath);
-        // ModuleSystem moduleSystem = unit.moduleSystem;
-        // List<ModuleSystem.System > oldSystems = new List<ModuleSystem.System>(moduleSystem.systems);
-        // moduleSystem.systems.Clear();
-        // List<SystemData> newSystems = new List<SystemData>();
-        // for (int i = 0; i < components.Length;) {
-        //     moduleSystem.AddSystem(GenerateName(components[i].name), oldSystems[moduleSystem.modules[i].system].type);
-        //     newSystems.Add(new SystemData(moduleSystem.systems.Last().name, -1, components[i].component));
-        //     do {
-        //         moduleSystem.modules[i].SetSystem(moduleSystem.systems.Count - 1);
-        //         i++;
-        //     } while (i < components.Length && components[i].component == newSystems.Last().component);
-        // }
-        // systems = newSystems.ToArray();
     }
 
     public List<ModuleSystem.System> GetSystems() {

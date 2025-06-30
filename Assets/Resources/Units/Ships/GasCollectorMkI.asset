@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: GasCollectorMkI
   m_EditorClassIdentifier: 
-  cost: 7569
+  cost: 8457
   resourceTypes: 0100000002000000
-  resourceCosts: 5305000000000000be01000000000000
+  resourceCosts: f7050000000000005e02000000000000
   prefabPath: Prefabs/ShipPrefabs/GasCollector
+  prefab: {fileID: 5023812487943957023, guid: 8ce14274c0874f446849e1a2a8301acd, type: 3}
   unitName: GasCollector
   maxHealth: 560
   sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
@@ -24,25 +25,32 @@ MonoBehaviour:
     type: 3
     component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
     moduleSize: 0
+    moduleCount: 4
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: e38e059c39986f04c81366ab1f6fdeeb, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 7353c4549b3029f4bafe064928171027, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThrusters
     type: 4
     component: {fileID: 11400000, guid: c0ec4a137cddba946b65a204f849f966, type: 2}
     moduleSize: 0
+    moduleCount: 2
   - name: SubThrusters
     type: 4
     component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
     moduleSize: 0
+    moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 0.5, y: 0.5}
+  <spriteBounds>k__BackingField: {x: 8.48, y: 15.58}
   shipClass: 6
   shipType: 8
   turnSpeed: 40
   combatRotation: 0
+  baseSpeed: 30.038511

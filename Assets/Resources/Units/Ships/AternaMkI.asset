@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AternaMkI
   m_EditorClassIdentifier: 
-  cost: 43640
+  cost: 45240
   resourceTypes: 0100000002000000
-  resourceCosts: ee1b000000000000c60b000000000000
+  resourceCosts: 2e1d000000000000060d000000000000
   prefabPath: Prefabs/ShipPrefabs/Aterna
   prefab: {fileID: 8328976631515970221, guid: 230a9a6ed5c173a4398e983da8509c10, type: 3}
   unitName: Aterna
@@ -25,30 +25,37 @@ MonoBehaviour:
     type: 3
     component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: SideTurrets
     type: 3
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
     moduleSize: 0
+    moduleCount: 6
   - name: MissileLaunchers
     type: 2
     component: {fileID: 11400000, guid: 5db735c1674eb8b4ba96b1edbe0cc39b, type: 2}
     moduleSize: 0
+    moduleCount: 2
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: fb74cab9fca85664493e46d62dcf0b2a, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: d80c11f117c4d344d9a1ec6aa2cff43b, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThrusters
     type: 4
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
     moduleSize: 0
+    moduleCount: 2
   - name: SubThrusters
     type: 4
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
     moduleSize: 0
+    moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 11.142858, y: 29.185715}
@@ -56,3 +63,4 @@ MonoBehaviour:
   shipType: 7
   turnSpeed: 45
   combatRotation: 90
+  baseSpeed: 14.870288
