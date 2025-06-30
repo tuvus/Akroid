@@ -16,6 +16,11 @@ public class Player {
     public void SetFaction(Faction faction) {
         if (faction == this.faction) return;
         ownedUnits.Clear();
+        if (this.faction != null) {
+            this.faction.OnUnitAdded -= AddOwnedUnit;
+            this.faction.OnUnitRemoved -= RemoveOwnedUnit;
+        }
+
         this.faction = faction;
 
         if (lockedOwnedUnits || faction == null) return;
