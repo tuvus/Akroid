@@ -317,12 +317,6 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             hangarBayButton.onClick.RemoveAllListeners();
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.RemoveAllListeners();
             Ship ship = shipsInHangar[i];
-            // if (!uiBattleManager.units.ContainsKey(ship)) {
-            //     // The ship was just created, and we haven't created the UI for it yet
-            //     hangarList.GetChild(i).gameObject.SetActive(false);
-            //     continue;
-            // }
-
             ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             int f = i;
 
