@@ -66,10 +66,10 @@ public abstract class Unit : BattleObject {
             return;
         }
 
-        if (IsSpawned()) {
-            moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
-            moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
-        }
+        if (!IsSpawned()) return;
+
+        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
+        moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
     }
 
     public virtual void FindEnemies() {

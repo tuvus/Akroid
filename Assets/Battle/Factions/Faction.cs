@@ -671,33 +671,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     }
 
     /// <summary>
-    ///     Gets the closest mining station that wants transports to the position
-    /// </summary>
-    /// <param name="position"> The given position </param>
-    /// <returns> The closest mining station </returns>
-    public MiningStation GetClosestMiningStationWantingTransport(Vector2 position) {
-        MiningStation miningStation = null;
-        float distance = 0;
-        int wantedTransportShips = int.MinValue;
-        foreach (MiningStation targetMiningStation in activeMiningStations) {
-            if (!targetMiningStation.IsSpawned() || !targetMiningStation.activelyMining)
-                continue;
-            float targetDistance = Vector2.Distance(position, targetMiningStation.GetPosition());
-            int? targetWantedTransportShips = targetMiningStation.GetMiningStationAI().GetWantedTransportShips();
-            if (!targetWantedTransportShips.HasValue)
-                continue;
-            if (targetWantedTransportShips > 0 && (targetDistance < distance || wantedTransportShips <= 0) ||
-                targetWantedTransportShips <= 0 && targetWantedTransportShips > wantedTransportShips) {
-                miningStation = targetMiningStation;
-                distance = targetDistance;
-                wantedTransportShips = targetWantedTransportShips.Value;
-            }
-        }
-
-        return miningStation;
-    }
-
-    /// <summary>
     ///     Gets the total wanted transports of all the factions mining stations
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>

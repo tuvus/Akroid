@@ -136,22 +136,24 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     public override void UpdateUnit(float deltaTime) {
-        if (built && IsSpawned()) {
-            base.UpdateUnit(deltaTime);
-            if (enemyUnitsInRange.Count == 0)
-                repairTime -= deltaTime;
-            SetRotation(rotation + rotationSpeed * deltaTime);
-            stationAI.UpdateAI(deltaTime);
-            if (repairTime <= 0) {
-                repairTime += stationScriptableObject.repairSpeed;
-            }
+        if (!built || !IsSpawned()) return;
 
-            foreach (FactionTrade.Contract contract in contractShipsDocked.ToList()) {
-                if (contract.provider == this) {
-                    LoadContractToShip(200, contract);
-                } else {
-                    UnloadContractFromShip(200, contract);
-                }
+        base.UpdateUnit(deltaTime);
+        if (Destroyed()) return;
+
+        if (enemyUnitsInRange.Count == 0)
+            repairTime -= deltaTime;
+        SetRotation(rotation + rotationSpeed * deltaTime);
+        stationAI.UpdateAI(deltaTime);
+        if (repairTime <= 0) {
+            repairTime += stationScriptableObject.repairSpeed;
+        }
+
+        foreach (FactionTrade.Contract contract in contractShipsDocked.ToList()) {
+            if (contract.provider == this) {
+                LoadContractToShip(200, contract);
+            } else {
+                UnloadContractFromShip(200, contract);
             }
         }
     }
@@ -244,6 +246,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public void UndockShip(Ship ship) {
         moduleSystem.Get<Hangar>().First(h => h.ships.Contains(ship)).RemoveShip(ship);
+        contractShipsDocked.RemoveWhere(c => c.provider == ship);
     }
 
     public int RepairUnit(Unit unit, int amount) {
@@ -411,8 +414,6 @@ public class Station : Unit, IPositionConfirmer {
         Assert.AreEqual(contract.receiver, this);
         Assert.IsTrue(contract.provider.IsShip());
         Assert.AreEqual(((Ship)contract.provider).dockedStation, this);
-        if (((Ship)contract.provider).dockedStation != this)
-            Debug.Log("asdfsadfsf");
         long cargoToMove = amount;
 
         foreach (var offer in contract.cargo.Values.ToList()) {

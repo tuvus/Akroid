@@ -145,12 +145,11 @@ public class Ship : Unit {
 
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
-        if (IsSpawned()) {
-            // Profiler.BeginSample("ShipAction");
-            UpdateMovement(deltaTime);
-            // Profiler.EndSample();
-            shipAI.UpdateAI(deltaTime);
-        }
+        if (!IsSpawned()) return;
+        // Profiler.BeginSample("ShipAction");
+        UpdateMovement(deltaTime);
+        // Profiler.EndSample();
+        shipAI.UpdateAI(deltaTime);
     }
 
     public override void FindEnemies() {

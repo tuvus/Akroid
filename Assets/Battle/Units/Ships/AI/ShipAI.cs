@@ -842,7 +842,13 @@ public class ShipAI {
                             factionTrade.GetOurBuyValueOfOffer(f.faction, offer.Value) *
                             math.min(ship.GetAvailableCargoSpace(c), offer.Value.amount), offer.Key,
                             offer.Value)))));
-            CargoBay.allCargoTypes.ForEach(c => providedContracts[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
+            CargoBay.allCargoTypes.ForEach(c => providedContracts[c]
+                .Sort((a, b) => {
+                    int comparison = b.Item1.CompareTo(a.Item1);
+                    if (comparison != 0) return comparison;
+                    return math.distancesq(ship.position, a.Item2.position)
+                        .CompareTo(math.distancesq(ship.position, b.Item2.position));
+                }));
 
             Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>>
                 requestedContracts = new();
@@ -858,12 +864,16 @@ public class ShipAI {
                             math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount), wanted.Key,
                             wanted.Value)
                     ))));
-            CargoBay.allCargoTypes.ForEach(c => requestedContracts[c].Sort((a, b) => a.Item1.CompareTo(b.Item1)));
 
             var possibleContracts = new List<Tuple<float, FactionTrade.Contract, FactionTrade.Contract>>();
             CargoBay.allCargoTypes.ForEach(c => {
                 foreach (var wanted in requestedContracts[c]) {
-                    var provided = providedContracts[c].FirstOrDefault();
+                    Tuple<float, Unit, FactionTrade.Offer>? provided = null;
+                    if (command.destinationStation != null && command.destinationStation != wanted.Item2)
+                        provided = providedContracts[c].FirstOrDefault(p => p.Item2 == command.destinationStation);
+                    else if (command.destinationStation == null || command.destinationStation == wanted.Item2)
+                        provided = providedContracts[c].FirstOrDefault();
+
                     if (provided == null) continue;
                     if (factionTrade.GetOurBuyValueOfOffer(wanted.Item2.faction, wanted.Item3) >=
                         factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3)) break;
@@ -879,7 +889,12 @@ public class ShipAI {
                     ));
                 }
             });
-            possibleContracts.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+            possibleContracts.Sort((a, b) => {
+                int comparison = b.Item1.CompareTo(a.Item1);
+                if (comparison != 0) return comparison;
+                return math.distancesq(a.Item2.provider.position, b.Item3.receiver.position)
+                    .CompareTo(math.distancesq(b.Item2.provider.position, b.Item3.receiver.position));
+            });
 
             if (possibleContracts.Count == 0) return CommandResult.Stop;
             var chosenContract = possibleContracts.First();
