@@ -628,29 +628,49 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
-        if (newCommand) {
-            if (ship.moduleSystem.Get<GasCollector>().Any(g => g.WantsMoreGas())) {
-                command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
-                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
-                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
-                ship.SetMovePosition(command.targetPosition, 2);
-                currentCommandState = CommandType.Move;
-            } else {
-                ship.SetDockTarget(command.destinationStation);
-                currentCommandState = CommandType.Dock;
-            }
+        if (newCommand || command.supplierContract == null) {
+            FactionTrade factionTrade = ship.faction.factionTrade;
+            var gasRequests = new List<Tuple<float, Unit, FactionTrade.Offer>>();
+            factionTrade.resourcesRequested[CargoBay.CargoTypes.Gas]
+                .ToList().ForEach(r => {
+                    long amount = math.min(ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas) +
+                        ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas), r.Value.amount);
+                    if (amount == 0) return;
+                    var offer = new FactionTrade.Offer(r.Value, amount);
+                    gasRequests.Add(new Tuple<float, Unit, FactionTrade.Offer>(
+                        amount * factionTrade.GetOurSellValueOfOffer(r.Key.faction, offer), r.Key, offer));
+                });
+            gasRequests.Sort((a, b) => a.Item1.CompareTo(b.Item2));
+            var chosenRequest = gasRequests.FirstOrDefault();
+            if (chosenRequest == null) return CommandResult.Stop;
+            command.supplierContract = new FactionTrade.Contract(ship, chosenRequest.Item2, chosenRequest.Item3);
+            ((Station)chosenRequest.Item2).AddContract(command.supplierContract.Value);
 
+            currentCommandState = CommandType.Idle;
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
-        if (ship.shipAction == Ship.ShipAction.Idle) {
-            if (currentCommandState == CommandType.Move) {
-                currentCommandState = CommandType.CollectGas;
-                return CommandResult.Stop;
-            }
-            if (currentCommandState == CommandType.CollectGas) {
-                if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
+        if (ship.shipAction != Ship.ShipAction.Idle) return CommandResult.Stop;
+
+        if (currentCommandState == CommandType.Move) {
+            // We must be at the gas cloud, start collecting gas
+            currentCommandState = CommandType.CollectGas;
+        }
+        if (currentCommandState == CommandType.Dock) {
+            // We must be at the receiver station, start unloading
+            currentCommandState = CommandType.Wait;
+            ((Station)command.supplierContract.Value.receiver).contractShipsDocked
+                .Add(command.supplierContract.Value);
+            return CommandResult.Stop;
+        }
+        if (currentCommandState == CommandType.Wait) {
+            if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value))
+                command.supplierContract = null;
+            return CommandResult.Stop;
+        }
+        if (currentCommandState == CommandType.CollectGas) {
+            if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
                         return CommandResult.Stop;
@@ -660,30 +680,26 @@ public class ShipAI {
                 ship.SetDockTarget(command.destinationStation);
                 currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
+            } else {
+                command.targetGasCloud = ship.faction.GetClosestGasCloud(ship.GetPosition());
+                if (command.targetGasCloud == null)
+                    return CommandResult.StopRemove;
+                // Move to a new gas cloud or go to the station early
+                currentCommandState = CommandType.Idle;
             }
-            if (currentCommandState == CommandType.Dock) {
-                currentCommandState = CommandType.Wait;
-                return CommandResult.Stop;
-            }
-            if (currentCommandState == CommandType.Wait) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
-                    if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
-                    command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
-                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
-                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
-                    ship.SetMovePosition(command.targetPosition, 2);
-                    currentCommandState = CommandType.Move;
-                    return CommandResult.Stop;
-                }
+        }
 
-                //TODO: Create a more robust cargo transfer system
-                long cargoTransferSpeed = 400;
-                command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, CargoBay.CargoTypes.Gas, ship);
-                currentCommandState = CommandType.Wait;
-                return CommandResult.Stop;
-            }
-            if (currentCommandState == CommandType.Idle) {
-                newCommand = true;
+        if (currentCommandState == CommandType.Idle) {
+            if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
+                command.supplierContract.Value.cargo[CargoBay.CargoTypes.Gas].amount) {
+                command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
+                ship.SetMovePosition(command.targetPosition, 2);
+                currentCommandState = CommandType.Move;
+            } else {
+                ship.SetDockTarget((Station)command.supplierContract.Value.receiver);
+                currentCommandState = CommandType.Dock;
             }
         }
 

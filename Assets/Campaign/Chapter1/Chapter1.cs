@@ -146,7 +146,7 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
 
-        playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
+        playerMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
@@ -166,7 +166,7 @@ public class Chapter1 : CampaingController {
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
-        otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
+        otherMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
             .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBeginning);
 
