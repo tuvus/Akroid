@@ -105,4 +105,31 @@ public class CargoBayTests {
         Assert.AreEqual(300, cargoBay2.GetAllCargo(CargoBay.CargoTypes.Metal));
         Assert.AreEqual(100, cargoBay2.GetAllCargo(CargoBay.CargoTypes.Gas));
     }
+
+        [Explicit] [Category("Unit Tests")]
+    [Test]
+    public void TestAvailableCargoSpace() {
+        var module = new Mock<IModule>();
+        module.Setup(e => e.GetPosition()).Returns(Vector2.zero);
+        module.Setup(e => e.GetRotation()).Returns(0);
+        var unit = new Mock<Unit>();
+        CargoBayScriptableObject cargoBayScriptableObject = ScriptableObject.CreateInstance<CargoBayScriptableObject>();
+        cargoBayScriptableObject.cargoBaySize = 100;
+        cargoBayScriptableObject.maxCargoBays = 6;
+        var battleManager = new Mock<BattleManager>();
+        battleManager.Setup(e => e.GetRandomSeed()).Returns(1);
+        CargoBay cargoBay = new CargoBay(battleManager.Object, module.Object, unit.Object, cargoBayScriptableObject);
+        Assert.AreEqual(0, cargoBay.LoadCargo(100, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(500, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.LoadCargo(50, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(450, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.LoadCargo(149, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(301, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.UseCargo(149, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(450, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.LoadCargo(450, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(0, cargoBay.UseCargo(600, CargoBay.CargoTypes.Metal));
+        Assert.AreEqual(600, cargoBay.GetOpenCargoCapacityOfType(CargoBay.CargoTypes.Metal));
+    }
 }

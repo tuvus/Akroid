@@ -328,7 +328,7 @@ public class SimulationFactionAI : FactionAI {
         bool wantTransport = faction.GetTotalWantedTransports() > transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
             faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 5;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 5 + 3;
 
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
             if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {

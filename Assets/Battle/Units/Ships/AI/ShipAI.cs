@@ -628,7 +628,8 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
-        if (newCommand || command.supplierContract == null) {
+        if (newCommand || (command.supplierContract == null && currentCommandState != CommandType.Move &&
+            currentCommandState != CommandType.CollectGas)) {
             FactionTrade factionTrade = ship.faction.factionTrade;
             var gasRequests = new List<Tuple<float, Unit, FactionTrade.Offer>>();
             factionTrade.resourcesRequested[CargoBay.CargoTypes.Gas]
@@ -642,11 +643,12 @@ public class ShipAI {
                 });
             gasRequests.Sort((a, b) => a.Item1.CompareTo(b.Item2));
             var chosenRequest = gasRequests.FirstOrDefault();
-            if (chosenRequest == null) return CommandResult.Stop;
-            command.supplierContract = new FactionTrade.Contract(ship, chosenRequest.Item2, chosenRequest.Item3);
-            ((Station)chosenRequest.Item2).AddContract(command.supplierContract.Value);
-
+            if (chosenRequest != null) {
+                command.supplierContract = new FactionTrade.Contract(ship, chosenRequest.Item2, chosenRequest.Item3);
+                ((Station)chosenRequest.Item2).AddContract(command.supplierContract.Value);
+            }
             currentCommandState = CommandType.Idle;
+
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
@@ -665,8 +667,10 @@ public class ShipAI {
             return CommandResult.Stop;
         }
         if (currentCommandState == CommandType.Wait) {
-            if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value))
+            if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
                 command.supplierContract = null;
+                currentCommandState = CommandType.Idle;
+            }
             return CommandResult.Stop;
         }
         if (currentCommandState == CommandType.CollectGas) {
@@ -690,16 +694,21 @@ public class ShipAI {
         }
 
         if (currentCommandState == CommandType.Idle) {
-            if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
-                command.supplierContract.Value.cargo[CargoBay.CargoTypes.Gas].amount) {
+            if ((command.supplierContract == null &&
+                    ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) < ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas))
+                || (command.supplierContract != null && ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
+                    command.supplierContract.Value.cargo[CargoBay.CargoTypes.Gas].amount)) {
                 command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
                 ship.SetMovePosition(command.targetPosition, 2);
                 currentCommandState = CommandType.Move;
-            } else {
+            } else if (command.supplierContract != null) {
                 ship.SetDockTarget((Station)command.supplierContract.Value.receiver);
                 currentCommandState = CommandType.Dock;
+            } else if (ship.dockedStation != ship.faction.GetFleetCommand() && ship.faction.GetFleetCommand() != null &&
+                ship.shipAction == Ship.ShipAction.Idle) {
+                ship.SetDockTarget(ship.faction.GetFleetCommand());
             }
         }
 

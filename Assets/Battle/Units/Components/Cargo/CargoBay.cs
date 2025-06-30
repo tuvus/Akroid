@@ -85,9 +85,6 @@ public class CargoBay : ModuleComponent {
         int newCargoBaysInUse = GetCargoBaysUsedByType(cargoType);
         cargoBaysInUse -= previousCargoBaysInUse - newCargoBaysInUse;
 
-        if (cargoBays[cargoType] < 0)
-            throw new Exception("afasfd");
-
         return cargoAmount - cargoToUse;
     }
 
@@ -114,10 +111,12 @@ public class CargoBay : ModuleComponent {
     }
 
     public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
-        long openSpaceFromUsedCargoBays = 0;
-        if (cargoType != CargoTypes.All)
-            openSpaceFromUsedCargoBays = cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
-        return openSpaceFromUsedCargoBays + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
+        long openSpaceFromUsedCargoBay = 0;
+        if (cargoType != CargoTypes.All) {
+            openSpaceFromUsedCargoBay = cargoBayScriptableObject.cargoBaySize - cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
+            if (openSpaceFromUsedCargoBay == cargoBayScriptableObject.cargoBaySize) openSpaceFromUsedCargoBay = 0;
+        }
+        return openSpaceFromUsedCargoBay + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
     }
 
     public bool IsCargoFullOfType(CargoTypes cargoTypes) {
