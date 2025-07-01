@@ -32,6 +32,7 @@ public class Chapter1 : CampaingController {
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
     public Planet moon { get; private set; }
+    public Planet gasPlanet { get; private set; }
     public Shipyard tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
@@ -102,6 +103,11 @@ public class Chapter1 : CampaingController {
                     new PositionGiver(planetFaction.GetPosition(), 500, 500000, 100, 1000, 5),
                     Random.Range(0, 360), new Vector2(8, 8), planetFaction), 0, 0.02f, 0.98f),
             Resources.Load<PlanetScriptableObject>("Moon"));
+        gasPlanet = battleManager.CreateNewPlanet(new Planet.PlanetData(
+                new BattleObject.BattleObjectData("Jupiter",
+                    new PositionGiver(Vector2.zero, 20000, 100000, 100, 1000, 4),
+                    Random.Range(0, 360), new Vector2(18, 18), planetFaction), 0, 0, 0),
+            Resources.Load<PlanetScriptableObject>("GasPlanet"));
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
                 new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0,
@@ -140,7 +146,8 @@ public class Chapter1 : CampaingController {
 
         researchFaction = battleManager.CreateNewFaction(
             new FactionData("Frontier Research", "FRO", colorPicker.PickColor(), 3000, 36, 0, 0),
-            new PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
+            new PositionGiver(Vector2.MoveTowards(gasPlanet.position, Vector2.zero, gasPlanet.size + 100),
+                40, 1000, 10, 100, 2), 100);
         researchStation = battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()),
                 Random.Range(0, 360),

@@ -6803,11 +6803,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7383295267834622128, guid: 67b5d68487ba27a49bde8f9afcc90435,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.29803923
-      objectReference: {fileID: 0}
     - target: {fileID: 8510063807659905575, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_IsActive

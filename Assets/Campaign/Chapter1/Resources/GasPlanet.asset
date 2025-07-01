@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3fe7fa68e10b67428d779f41aee61fa, type: 3}
-  m_Name: EarthPlanet
+  m_Name: GasPlanet
   m_EditorClassIdentifier: 
-  sprite: {fileID: 2428085640049759568, guid: 72604d6619f76a762b3397ee3edc4040, type: 3}
-  hasAtmosphere: 1
-  rotationSpeed: 0.2
-  <spriteBounds>k__BackingField: {x: 38.51, y: 38.58}
+  sprite: {fileID: 6546520991920318022, guid: 86d1885080937bcc19be0cb90ee44297, type: 3}
+  hasAtmosphere: 0
+  rotationSpeed: 0.5
+  <spriteBounds>k__BackingField: {x: 38.208, y: 38.208}
   prefab: {fileID: 6480528276499720429, guid: 67b5d68487ba27a49bde8f9afcc90435, type: 3}
