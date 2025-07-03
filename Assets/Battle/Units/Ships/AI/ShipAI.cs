@@ -888,13 +888,13 @@ public class ShipAI {
                         factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3)) break;
                     long amount = math.min(math.min(ship.GetAvailableCargoSpace(c), wanted.Item3.amount),
                         provided.Item3.amount);
-                    var providedOffer = new FactionTrade.Offer(provided.Item3, amount);
-                    var reqiested = new FactionTrade.Offer(wanted.Item3, amount);
+                    var providedOffer = new FactionTrade.Offer(c, amount, provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                    var requested = new FactionTrade.Offer(c, amount, wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
                     possibleContracts.Add(new Tuple<float, FactionTrade.Contract, FactionTrade.Contract>(
                         (factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, providedOffer) +
-                            factionTrade.GetOurSellValueOfOffer(provided.Item2.faction, reqiested)) * amount,
+                            factionTrade.GetOurSellValueOfOffer(provided.Item2.faction, requested)) * amount,
                         new FactionTrade.Contract(provided.Item2, ship, providedOffer),
-                        new FactionTrade.Contract(ship, wanted.Item2, reqiested)
+                        new FactionTrade.Contract(ship, wanted.Item2, requested)
                     ));
                 }
             });

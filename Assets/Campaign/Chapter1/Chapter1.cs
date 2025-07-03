@@ -54,7 +54,7 @@ public class Chapter1 : CampaingController {
             { CargoBay.CargoTypes.Metal, 1.6f },
             { CargoBay.CargoTypes.Gas, 7.9f }
         };
-        battleManager.CreateNewStar("Sun");
+        battleManager.CreateNewStar("Sun", new PositionGiver(Vector2.zero));
         colorPicker = new ColorPicker();
         playerFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(),
@@ -72,22 +72,6 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewAsteroidField(new PositionGiver(Vector2.zero, 14000, 100000, 1000, 100, 4),
                 Random.Range(8, 10), 10);
         }
-
-        MiningStationScriptableObject miningStationScriptableObject =
-            Resources.Load<MiningStationScriptableObject>("MiningStation");
-
-        playerMiningStation = battleManager.CreateNewMiningStation(
-            new BattleObject.BattleObjectData("Mining Station",
-                new PositionGiver(playerFaction.position, 0, 1000, 100, 10, 4),
-                Random.Range(0, 360), playerFaction), miningStationScriptableObject, false);
-
-        otherMiningStation = battleManager.CreateNewMiningStation(
-            new BattleObject.BattleObjectData("Mining Station",
-                new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
-                Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
-        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
-        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
-
 
         planetFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0,
@@ -108,6 +92,23 @@ public class Chapter1 : CampaingController {
                     new PositionGiver(Vector2.zero, 20000, 100000, 100, 1000, 4),
                     Random.Range(0, 360), new Vector2(18, 18), planetFaction), 0, 0, 0),
             Resources.Load<PlanetScriptableObject>("GasPlanet"));
+
+        MiningStationScriptableObject miningStationScriptableObject =
+            Resources.Load<MiningStationScriptableObject>("MiningStation");
+
+        playerMiningStation = battleManager.CreateNewMiningStation(
+            new BattleObject.BattleObjectData("Mining Station",
+                new PositionGiver(planetFaction.position, 0, 1000, 100, 10, 4),
+                Random.Range(0, 360), playerFaction), miningStationScriptableObject, false);
+
+        otherMiningStation = battleManager.CreateNewMiningStation(
+            new BattleObject.BattleObjectData("Mining Station",
+                new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
+                Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
+        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
+        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
+
+
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
                 new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0,

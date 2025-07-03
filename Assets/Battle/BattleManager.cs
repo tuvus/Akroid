@@ -352,11 +352,12 @@ public class BattleManager {
         return newStation;
     }
 
-    public Star CreateNewStar(string name) {
+    public Star CreateNewStar(string name, PositionGiver? positionGiver = null) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, random.NextFloat(0, 360),
-                new Vector2(10, 10) * random.NextFloat(1f, 2.4f)), this,
+                new Vector2(15, 15) * random.NextFloat(1f, 2.4f)), this,
             starBlueprints[random.NextInt(0, starBlueprints.Count)]);
-        newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
+        var newPositionGiver = positionGiver ?? new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4);
+        newStar.SetupPosition(newPositionGiver);
         stars.Add(newStar);
         AddBattleObject(newStar);
         return newStar;
