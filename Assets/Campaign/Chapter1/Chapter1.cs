@@ -111,7 +111,7 @@ public class Chapter1 : CampaingController {
 
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
-                new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0,
+                new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, -planet.GetSize() - 180), 30,
                     1000, 50, 200, 5),
                 Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>("TradeStation"),
             true);

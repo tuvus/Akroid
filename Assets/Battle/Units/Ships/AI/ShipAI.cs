@@ -695,7 +695,8 @@ public class ShipAI {
 
         if (currentCommandState == CommandType.Idle) {
             if ((command.supplierContract == null &&
-                    ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) < ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas))
+                    ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
+                    ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas))
                 || (command.supplierContract != null && ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
                     command.supplierContract.Value.cargo[CargoBay.CargoTypes.Gas].amount)) {
                 command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
@@ -886,10 +887,15 @@ public class ShipAI {
                     if (provided == null) continue;
                     if (factionTrade.GetOurBuyValueOfOffer(wanted.Item2.faction, wanted.Item3) >=
                         factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3)) break;
+                    long providedAmount = provided.Item3.amount;
+                    if (provided.Item2 is MiningStation && c == CargoBay.CargoTypes.Metal)
+                        providedAmount += provided.Item2.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal);
                     long amount = math.min(math.min(ship.GetAvailableCargoSpace(c), wanted.Item3.amount),
-                        provided.Item3.amount);
-                    var providedOffer = new FactionTrade.Offer(c, amount, provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
-                    var requested = new FactionTrade.Offer(c, amount, wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                        providedAmount);
+                    var providedOffer = new FactionTrade.Offer(c, amount,
+                        provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                    var requested = new FactionTrade.Offer(c, amount,
+                        wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
                     possibleContracts.Add(new Tuple<float, FactionTrade.Contract, FactionTrade.Contract>(
                         (factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, providedOffer) +
                             factionTrade.GetOurSellValueOfOffer(provided.Item2.faction, requested)) * amount,
@@ -909,7 +915,9 @@ public class ShipAI {
             var chosenContract = possibleContracts.First();
             command.supplierContract = chosenContract.Item2;
             command.requestContract = chosenContract.Item3;
-            ((Station)command.supplierContract.Value.provider).AddContract(command.supplierContract.Value);
+            ((Station)command.supplierContract.Value.provider).AddContract(command.supplierContract.Value,
+                !chosenContract.Item2.cargo.ContainsKey(CargoBay.CargoTypes.Metal) ||
+                command.supplierContract.Value.provider is not MiningStation);
             ((Station)command.requestContract.Value.receiver).AddContract(command.requestContract.Value);
             currentCommandState = CommandType.Trade;
             newCommand = true;
@@ -1087,18 +1095,16 @@ public class ShipAI {
                     positions.Add(command.targetPosition);
                 }
             } else if (command.commandType == CommandType.CollectGas) {
-                if (currentCommandState == CommandType.Dock) {
-                    if (command.destinationStation == null) continue;
-                    positions.Add(command.destinationStation.GetPosition());
-                } else {
+                if (currentCommandState == CommandType.Move)
                     positions.Add(command.targetPosition);
-                }
+                if (command.supplierContract != null && command.supplierContract.Value.receiver == null) continue;
+                positions.Add(command.supplierContract.Value.receiver.GetPosition());
             } else if (command.commandType == CommandType.Colonize) {
                 if (command.targetPlanet == null) continue;
                 positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetPlanet.GetPosition(),
                     Vector2.Distance(ship.GetPosition(), command.targetPlanet.GetPosition()) -
                     (ship.GetSize() + command.targetPlanet.GetSize() + 100)));
-            } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
+            } else if (command.commandType is CommandType.Idle or CommandType.Wait
                 || command.commandType == CommandType.TurnToRotation ||
                 command.commandType == CommandType.TurnToPosition) { } else if
                 (command.commandType == CommandType.Protect) {
