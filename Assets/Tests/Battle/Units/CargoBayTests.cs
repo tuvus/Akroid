@@ -22,8 +22,7 @@ public class CargoBayTests {
         Assert.AreEqual(100, cargoBay.GetCargoBayCapacity());
         Assert.AreEqual(6, cargoBay.GetMaxCargoBays());
 
-        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes))
-            .Cast<CargoBay.CargoTypes>()) {
+        foreach (CargoBay.CargoTypes cargoType in CargoBay.allCargoTypes) {
             Assert.AreEqual(0, cargoBay.GetAllCargo(cargoType));
             Assert.AreEqual(600, cargoBay.GetOpenCargoCapacityOfType(cargoType));
         }

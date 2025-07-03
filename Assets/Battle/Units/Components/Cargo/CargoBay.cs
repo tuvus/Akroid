@@ -29,10 +29,8 @@ public class CargoBay : ModuleComponent {
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
-        foreach (CargoTypes cargoType in Enum.GetValues(typeof(CargoTypes)).Cast<CargoTypes>()) {
-            if (cargoType != CargoTypes.All) {
-                cargoBays.Add(cargoType, 0);
-            }
+        foreach (CargoTypes cargoType in allCargoTypes) {
+            cargoBays.Add(cargoType, 0);
         }
     }
 

@@ -34,8 +34,7 @@ public class FactionTradeTests {
     public void TestFactionTradeSetup() {
         SetupTradeTests();
         FactionTrade factionTrade = testFaction.factionTrade;
-        foreach (CargoBay.CargoTypes cargoType in Enum.GetValues(typeof(CargoBay.CargoTypes))
-            .Cast<CargoBay.CargoTypes>()) {
+        foreach (CargoBay.CargoTypes cargoType in CargoBay.allCargoTypes) {
             Assert.True(factionTrade.resourcesOffered.ContainsKey(cargoType));
             Assert.AreEqual(0, factionTrade.resourcesOffered[cargoType].Count);
             Assert.True(factionTrade.resourcesRequested.ContainsKey(cargoType));
