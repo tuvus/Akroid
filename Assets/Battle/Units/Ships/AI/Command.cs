@@ -270,11 +270,9 @@ public class Command {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
         } else if (commandType == CommandType.Trade) {
-            if (supplierContract != null &&
-                ((Station)supplierContract.Value.provider).contractShipsDocked.Contains(supplierContract.Value))
+            if (supplierContract != null && supplierContract.Value.provider != null)
                 ((Station)supplierContract.Value.provider).RemoveContract(supplierContract.Value);
-            if (requestContract != null &&
-                ((Station)requestContract.Value.receiver).contractShipsDocked.Contains(requestContract.Value))
+            if (requestContract != null && requestContract.Value.receiver != null)
                 ((Station)requestContract.Value.receiver).RemoveContract(requestContract.Value);
 
         }
