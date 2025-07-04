@@ -1097,7 +1097,7 @@ public class ShipAI {
             } else if (command.commandType == CommandType.CollectGas) {
                 if (currentCommandState == CommandType.Move)
                     positions.Add(command.targetPosition);
-                if (command.supplierContract != null && command.supplierContract.Value.receiver == null) continue;
+                if (command.supplierContract == null || command.supplierContract.Value.receiver == null) continue;
                 positions.Add(command.supplierContract.Value.receiver.GetPosition());
             } else if (command.commandType == CommandType.Colonize) {
                 if (command.targetPlanet == null) continue;

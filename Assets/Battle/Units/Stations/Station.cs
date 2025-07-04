@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.PlayerLoop;
 using static Ship;
 using Random = Unity.Mathematics.Random;
 
@@ -31,6 +32,7 @@ public class Station : Unit, IPositionConfirmer {
     public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> contractedCargo = new();
     public Dictionary<CargoBay.CargoTypes, (long minWanted, long maxWanted, long has)> freeCargo = new();
     public HashSet<FactionTrade.Contract> contractShipsDocked;
+    public Dictionary<CargoBay.CargoTypes, long> pendingContractResources = new();
 
     [Serializable]
     public class StationBlueprint {
@@ -64,6 +66,7 @@ public class Station : Unit, IPositionConfirmer {
         : base(battleObjectData, battleManager, stationScriptableObject) {
         this.stationScriptableObject = stationScriptableObject;
         contractShipsDocked = new HashSet<FactionTrade.Contract>();
+        CargoBay.allCargoTypes.ForEach(c => pendingContractResources.TryAdd(c, 0));
         switch (stationScriptableObject.stationType) {
             case StationType.MiningStation:
                 stationAI = new MiningStationAI(this);
@@ -295,16 +298,9 @@ public class Station : Unit, IPositionConfirmer {
         if (reservedCargoUsed != 0) {
             reservedCargo[cargoType] =
                 (reservedCargo[cargoType].wanted, reservedCargo[cargoType].has - reservedCargoUsed);
-            if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-                faction.factionTrade.resourcesRequested[cargoType][this] =
-                    new FactionTrade.Offer(faction.factionTrade.resourcesRequested[cargoType][this],
-                        faction.factionTrade.resourcesRequested[cargoType][this].amount + reservedCargoUsed);
-            } else {
-                faction.factionTrade.resourcesRequested[cargoType][this] =
-                    new FactionTrade.Offer(cargoType, reservedCargoUsed, 1.2f);
-            }
         }
 
+        UpdateCargoTrade(cargoType);
         // Now update the actual cargo
         return base.UseCargo(cargoUsed + reservedCargoUsed, cargoType);
     }
@@ -321,21 +317,13 @@ public class Station : Unit, IPositionConfirmer {
             if (toAdd > 0) {
                 reservedCargo[cargoType] = (reservedCargo[cargoType].wanted,
                     reservedCargo[cargoType].has + math.min(toStore, toAdd));
-
-                if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this) &&
-                    updateRequestedOfferedResources) {
-                    // Remove the cargo request from the faction level
-                    if (faction.factionTrade.resourcesRequested[cargoType][this].amount == toAdd) {
-                        faction.factionTrade.resourcesRequested[cargoType].Remove(this);
-                    } else {
-                        faction.factionTrade.resourcesRequested[cargoType][this] =
-                            new FactionTrade.Offer(faction.factionTrade.resourcesRequested[cargoType][this],
-                                faction.factionTrade.resourcesRequested[cargoType][this].amount - toAdd);
-                    }
-                }
             }
             toStore -= toAdd;
-            if (toStore <= 0) return leftover;
+            if (toStore <= 0) {
+                if (contract == null)
+                    UpdateCargoTrade(cargoType);
+                return leftover;
+            }
         }
 
         if (contractedCargo.ContainsKey(cargoType) && updateRequestedOfferedResources) {
@@ -345,7 +333,11 @@ public class Station : Unit, IPositionConfirmer {
                 contractedCargo[cargoType] = (contractedCargo[cargoType].wanted,
                     contractedCargo[cargoType].has + math.min(toStore, toAdd));
             toStore -= toAdd;
-            if (toStore <= 0) return leftover;
+            if (toStore <= 0) {
+                if (contract == null)
+                    UpdateCargoTrade(cargoType);
+                return leftover;
+            }
         }
 
         // Finally, all the rest should be added to free cargo
@@ -357,6 +349,10 @@ public class Station : Unit, IPositionConfirmer {
                     freeCargo[cargoType].has + amount);
             else freeCargo[cargoType] = (0, 0, amount);
         }
+
+
+        if (contract == null)
+            UpdateCargoTrade(cargoType);
         return leftover;
     }
 
@@ -374,6 +370,7 @@ public class Station : Unit, IPositionConfirmer {
                 long initialAmount = offer.amount - RemoveFreeCargo(offer.amount, offer.cargoType);
                 var current = contractedCargo.GetValueOrDefault(offer.cargoType, (0, 0));
                 contractedCargo[offer.cargoType] = (current.wanted + offer.amount, current.has + initialAmount);
+                UpdateCargoTrade(offer.cargoType);
             }
         } else {
             foreach (var offer in contract.cargo.Values) {
@@ -381,17 +378,14 @@ public class Station : Unit, IPositionConfirmer {
                         offer.amount > faction.factionTrade.resourcesRequested[offer.cargoType][this].amount)
                     && mustHaveImmediateResources)
                     throw new Exception("Trying to create a contract without demanded resources!");
-                if (!faction.factionTrade.resourcesRequested[offer.cargoType].ContainsKey(this)) continue;
-                long amount = faction.factionTrade.resourcesRequested[offer.cargoType][this].amount;
-                if (offer.amount == amount) {
-                    faction.factionTrade.resourcesRequested[offer.cargoType].Remove(this);
-                } else {
-                    faction.factionTrade.resourcesRequested[offer.cargoType][this] = new FactionTrade.Offer(
-                        offer.cargoType, amount - offer.amount,
-                        faction.factionTrade.resourcesRequested[offer.cargoType][this].price);
-                }
+
+                if (pendingContractResources.ContainsKey(offer.cargoType))
+                    pendingContractResources[offer.cargoType] += offer.amount;
+                else pendingContractResources.Add(offer.cargoType, offer.amount);
+                UpdateCargoTrade(offer.cargoType);
             }
         }
+
         contract.provider.faction.factionTrade.activeContracts.Add(contract);
         contract.receiver.faction.factionTrade.activeContracts.Add(contract);
     }
@@ -405,6 +399,7 @@ public class Station : Unit, IPositionConfirmer {
                 if (contractedCargo[request.cargoType].wanted - request.amount == 0)
                     contractedCargo.Remove(request.cargoType);
                 else contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
+                pendingContractResources[request.cargoType] -= request.amount;
                 if (extra > 0) LoadCargo(extra, request.cargoType);
             }
         }
@@ -431,7 +426,9 @@ public class Station : Unit, IPositionConfirmer {
             contract.cargo[offer.cargoType] =
                 new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
             faction.TransferCredits((long)(toMove * offer.price), contract.provider.faction);
+            pendingContractResources[offer.cargoType] -= toMove;
             if (contract.cargo[offer.cargoType].amount == 0) contract.cargo.Remove(offer.cargoType);
+            UpdateCargoTrade(offer.cargoType);
             if (cargoToMove == 0) break;
         }
 
@@ -469,8 +466,6 @@ public class Station : Unit, IPositionConfirmer {
             } else {
                 contractedCargo[offer.cargoType] = (contractedCargo[offer.cargoType].wanted - toMove,
                     contractedCargo[offer.cargoType].has - toMove);
-                if (contractedCargo[offer.cargoType].has < 0)
-                    Debug.Log("asdfasfasfdsf");
             }
             contract.receiver.faction.TransferCredits((long)(toMove * offer.price), faction);
             cargoToMove -= toMove;
@@ -516,16 +511,7 @@ public class Station : Unit, IPositionConfirmer {
             reservedCargo[cargoType] = (amount, initialAmount);
         }
 
-        if (amount == initialAmount) return;
-        // Request more resources at the faction level
-        if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-            faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
-                faction.factionTrade.resourcesRequested[cargoType][this].amount + amount - initialAmount,
-                GetRequestPriceForCargoType(cargoType));
-        } else {
-            faction.factionTrade.resourcesRequested[cargoType]
-                .Add(this, new FactionTrade.Offer(cargoType, amount - initialAmount, 1.2f));
-        }
+        UpdateCargoTrade(cargoType);
     }
 
     public void UnReserveCargo(long amount, CargoBay.CargoTypes cargoType) {
@@ -537,18 +523,10 @@ public class Station : Unit, IPositionConfirmer {
             reservedCargo.Remove(cargoType);
         }
 
-        if (extra == amount) return;
-        // Remove requested resources at the faction level
-        if (amount - extra == faction.factionTrade.resourcesRequested[cargoType][this].amount) {
-            faction.factionTrade.resourcesRequested[cargoType].Remove(this);
-        } else {
-            faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
-                faction.factionTrade.resourcesRequested[cargoType][this].amount - (amount - extra),
-                GetRequestPriceForCargoType(cargoType));
-        }
+        UpdateCargoTrade(cargoType);
     }
 
-    /// <returns>The amount of cargo not removed. Does not modify the cargo bay.</returns>
+    /// <returns>The amount of cargo not removed. Does not modify the cargo bay or resources offered.</returns>
     private long RemoveFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
         if (!freeCargo.ContainsKey(cargoType)) return amount;
         var previousCargo = freeCargo[cargoType];
@@ -563,66 +541,12 @@ public class Station : Unit, IPositionConfirmer {
                 freeCargo[cargoType].has - amountUsed);
         }
 
-        // Recalculate the resources offered
-        long offeredAmountUsed = math.min(amountUsed, previousCargo.has - previousCargo.maxWanted);
-        if (offeredAmountUsed > 0 && faction.factionTrade.resourcesOffered[cargoType].ContainsKey(this)) {
-            if (offeredAmountUsed == faction.factionTrade.resourcesOffered[cargoType][this].amount) {
-                faction.factionTrade.resourcesOffered[cargoType].Remove(this);
-            } else {
-                faction.factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(cargoType,
-                    faction.factionTrade.resourcesOffered[cargoType][this].amount - offeredAmountUsed,
-                    GetOfferPriceForCargoType(cargoType));
-            }
-        }
-
-        // Recalculate the resources requested
-        long requestedAmountUsed = math.min(amountUsed, previousCargo.minWanted - previousCargo.has + amountUsed);
-        if (requestedAmountUsed > 0) {
-            if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-                faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
-                    faction.factionTrade.resourcesRequested[cargoType][this].amount + requestedAmountUsed,
-                    GetRequestPriceForCargoType(cargoType));
-            } else {
-                faction.factionTrade.resourcesRequested[cargoType]
-                    .Add(this, new FactionTrade.Offer(cargoType, requestedAmountUsed, 1.2f));
-            }
-        }
-
         return amount - amountUsed;
     }
 
-    /// <summary>
-    /// Adds the free cargo, does not modify the cargo bay or check if it is over capacity.
-    /// </summary>
+    /// <summary> Adds the free cargo, does not modify the cargo bay, check if it is over capacity or update resources offered. </summary>
     private void AddFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
         if (amount == 0) return;
-
-        var amountFree = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
-
-        // Recalculate the resources offered
-        long offerAmountAdded = math.min(amount, amountFree.has - amountFree.maxWanted + amount);
-        if (offerAmountAdded > 0) {
-            if (!faction.factionTrade.resourcesOffered[cargoType].ContainsKey(this)) {
-                faction.factionTrade.resourcesOffered[cargoType]
-                    .Add(this, new FactionTrade.Offer(cargoType, offerAmountAdded, 1.2f));
-            } else {
-                faction.factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(
-                    cargoType, faction.factionTrade.resourcesOffered[cargoType][this].amount + offerAmountAdded,
-                    GetOfferPriceForCargoType(cargoType));
-            }
-        }
-
-        // Recalculate the resources requested
-        long requestedAmountAdded = math.min(amount, amountFree.minWanted - amountFree.has);
-        if (requestedAmountAdded > 0 && faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-            if (faction.factionTrade.resourcesRequested[cargoType][this].amount == requestedAmountAdded) {
-                faction.factionTrade.resourcesRequested[cargoType].Remove(this);
-            } else {
-                faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(
-                    cargoType, faction.factionTrade.resourcesRequested[cargoType][this].amount - requestedAmountAdded,
-                    GetOfferPriceForCargoType(cargoType));
-            }
-        }
 
         if (freeCargo.ContainsKey(cargoType))
             freeCargo[cargoType] = (freeCargo[cargoType].minWanted, freeCargo[cargoType].maxWanted,
@@ -636,60 +560,41 @@ public class Station : Unit, IPositionConfirmer {
         if (minWanted > maxWanted)
             throw new Exception("Illegal arguments given: minWanted must be lower than maxWanted!");
 
-        long minWantedDifference = previousCargo.minWanted - minWanted;
-        if (minWantedDifference > 0) {
-            // We want to store less of this resource
-            long change = math.min(minWantedDifference, previousCargo.minWanted - previousCargo.has);
-            if (change > 0 && faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-                if (change == faction.factionTrade.resourcesRequested[cargoType][this].amount) {
-                    faction.factionTrade.resourcesRequested[cargoType].Remove(this);
-                } else {
-                    faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(
-                        cargoType, faction.factionTrade.resourcesRequested[cargoType][this].amount - change,
-                        GetRequestPriceForCargoType(cargoType));
-                }
-            }
-        } else if (minWantedDifference < 0) {
-            // We want to store more of this resource
-            long change = math.min(-minWantedDifference, minWanted - previousCargo.has);
-            if (change > 0) {
-                if (faction.factionTrade.resourcesRequested[cargoType].ContainsKey(this)) {
-                    faction.factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(
-                        cargoType, faction.factionTrade.resourcesRequested[cargoType][this].amount + change,
-                        GetRequestPriceForCargoType(cargoType));
-                } else {
-                    faction.factionTrade.resourcesRequested[cargoType]
-                        .Add(this, new FactionTrade.Offer(cargoType, change, 1.2f));
-                }
-            }
-        }
+        UpdateCargoTrade(cargoType);
+    }
 
-        long maxWantedDifference = previousCargo.maxWanted - maxWanted;
-        if (maxWantedDifference > 0) {
-            // We want to store less of this resource
-            long change = math.min(maxWantedDifference, previousCargo.has - maxWanted);
-            if (change > 0) {
-                if (faction.factionTrade.resourcesOffered[cargoType].ContainsKey(this)) {
-                    faction.factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(cargoType,
-                        faction.factionTrade.resourcesOffered[cargoType][this].amount + change,
-                        GetOfferPriceForCargoType(cargoType));
-                } else {
-                    faction.factionTrade.resourcesOffered[cargoType]
-                        .Add(this, new FactionTrade.Offer(cargoType, change, 1.2f));
-                }
+    /// <summary>
+    /// Recalculates and modifies the resources requested an offered at the faction level.
+    /// </summary>
+    public void UpdateCargoTrade(CargoBay.CargoTypes cargoType) {
+        var reserved = reservedCargo.GetValueOrDefault(cargoType, (0, 0));
+        var free = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
+        pendingContractResources.TryAdd(cargoType, 0);
+        var factionTrade = faction.factionTrade;
+        long cargoRequested = reserved.wanted - reserved.has + free.maxWanted - free.has -
+            pendingContractResources[cargoType];
+        if (cargoRequested > 0) {
+            float price = GetRequestPriceForCargoType(cargoType);
+            if (price > 0) {
+                factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
+                    cargoRequested, price);
+            } else {
+                factionTrade.resourcesOffered[cargoType].Remove(this);
             }
-        } else if (maxWantedDifference < 0) {
-            // We want to store more of this resource
-            long change = math.min(-maxWantedDifference, previousCargo.has - previousCargo.maxWanted);
-            if (change > 0 && faction.factionTrade.resourcesOffered[cargoType].ContainsKey(this)) {
-                if (faction.factionTrade.resourcesOffered[cargoType][this].amount == change) {
-                    faction.factionTrade.resourcesOffered[cargoType].Remove(this);
-                } else {
-                    faction.factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(
-                        cargoType, faction.factionTrade.resourcesOffered[cargoType][this].amount - change,
-                        GetOfferPriceForCargoType(cargoType));
-                }
+        } else {
+            factionTrade.resourcesRequested[cargoType].Remove(this);
+        }
+        long cargoOffered = free.has - free.minWanted;
+        if (cargoOffered > 0) {
+            float price = GetOfferPriceForCargoType(cargoType);
+            if (price < 100) {
+                factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(cargoType,
+                    cargoOffered, price);
+            } else {
+                factionTrade.resourcesOffered[cargoType].Remove(this);
             }
+        } else {
+            factionTrade.resourcesOffered[cargoType].Remove(this);
         }
     }
 
@@ -699,40 +604,40 @@ public class Station : Unit, IPositionConfirmer {
         float priceModifier = 1f;
         // If we are a mining station then we can produce our own resources
         if (cargoType == CargoBay.CargoTypes.Metal && this is MiningStation) priceModifier = .7f;
-        long reservedDiff = reserved.wanted - reserved.has;
+        long reservedDiff = reserved.wanted - reserved.has - pendingContractResources[cargoType];
         if (reservedDiff > 0) {
             // We desperately want more cargo for our more essential station functions
             int c = 500;
             priceModifier *= math.pow((reservedDiff + c) / (float)c, 1.1f) / ((reservedDiff + c) / (float)c) + .1f;
-            // We might want more non-reserved cargo so slightly modify it further
+            // We might want more free cargo so slightly modify it further
             c = 5000;
             return priceModifier * (math.pow((free.minWanted + c) / (float)c, 1.1f)
                 / ((free.minWanted + c) / (float)c) + .1f);
         } else if (free.minWanted > free.has) {
             // We would like to store extra cargo
             const int c = 1000;
-            long freeDiff = free.minWanted - free.has;
+            long freeDiff = free.minWanted - free.has - pendingContractResources[cargoType];
             return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.1f) / ((freeDiff + c) / (float)c) + .1f);
         } else if (free.maxWanted > free.has) {
-            // We would buy cargo at a decent price
+            // We would buy cargo if it were at a decent price
             const int c = 2000;
-            long freeDiff = free.maxWanted - free.has;
+            long freeDiff = free.maxWanted - free.has - pendingContractResources[cargoType];
             return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.1f) / ((freeDiff + c) / (float)c) + .1f);
         } else {
             // We have too much cargo
-            return 0;
+            return -100;
         }
     }
 
     float GetOfferPriceForCargoType(CargoBay.CargoTypes cargoType) {
         var free = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
         // We have too little cargo to sell
-        if (free.has <= free.minWanted) return 1000;
+        if (free.has <= free.minWanted) return 1000000;
         float priceModifier = 1f;
         // Mining stations can sell cargo for cheaper
         if (cargoType == CargoBay.CargoTypes.Metal && this is MiningStation) priceModifier = .7f;
         long freeWantDiff = free.maxWanted - free.has;
-        if (free.maxWanted > free.has) {
+        if (freeWantDiff > 0) {
             // We have a little extra cargo that we can sell
             int c = 1500;
             return priceModifier * math.pow((freeWantDiff + c) / (float)c, .9f) / ((freeWantDiff + c) / (float)c);
@@ -742,6 +647,7 @@ public class Station : Unit, IPositionConfirmer {
             long freeDiff = free.has - free.maxWanted;
             priceModifier *= math.pow((freeDiff + c) / (float)c, .9f) / ((freeDiff + c) / (float)c);
             // We would also like to sell our other cargo
+            freeWantDiff = free.maxWanted - free.minWanted;
             c = 5000;
             return priceModifier * math.pow((freeWantDiff + c) / (float)c, .9f) / ((freeWantDiff + c) / (float)c);
         }
