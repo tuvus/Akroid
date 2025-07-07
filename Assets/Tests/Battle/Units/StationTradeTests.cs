@@ -123,7 +123,7 @@ public class StationTradeTests {
         FactionTrade.Contract contract = new FactionTrade.Contract(testStation, testShip,
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
-        testStation.AddContract(contract, false);
+        testFaction.factionTrade.AddContract(contract, false);
         Assert.AreEqual(1, testStation.contractedCargo.Count);
         Assert.True(testStation.contractedCargo.ContainsKey(CargoTypes.Metal));
         Assert.AreEqual(400, testStation.contractedCargo[CargoTypes.Metal].wanted);
@@ -193,7 +193,7 @@ public class StationTradeTests {
         FactionTrade.Contract contract = new FactionTrade.Contract(testShip, testStation,
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
-        testStation.AddContract(contract, false);
+        testFaction.factionTrade.AddContract(contract, false);
         Assert.Zero(testShip.LoadCargo(200, CargoTypes.Metal));
         Assert.AreEqual(0, testStation.contractedCargo.Count);
         Assert.AreEqual(400, contract.cargo[CargoTypes.Metal].amount);
@@ -230,11 +230,11 @@ public class StationTradeTests {
             new FactionTrade.Offer(CargoTypes.Metal, 400, 1.2f));
         Assert.AreEqual(0,testStation.contractedCargo.Count);
 
-        testStation.AddContract(contract, false);
+        testFaction.factionTrade.AddContract(contract, false);
         Assert.AreEqual(1, testStation.contractedCargo.Count);
         Assert.AreEqual(400, testStation.contractedCargo[CargoTypes.Metal].wanted);
 
-        testStation.RemoveContract(contract);
+        testFaction.factionTrade.RemoveContract(contract);
         Assert.AreEqual(0, testStation.contractedCargo.Count);
     }
 }

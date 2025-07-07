@@ -645,7 +645,7 @@ public class ShipAI {
             var chosenRequest = gasRequests.FirstOrDefault();
             if (chosenRequest != null) {
                 command.supplierContract = new FactionTrade.Contract(ship, chosenRequest.Item2, chosenRequest.Item3);
-                ((Station)chosenRequest.Item2).AddContract(command.supplierContract.Value);
+                factionTrade.AddContract(command.supplierContract.Value);
             }
             currentCommandState = CommandType.Idle;
 
@@ -839,8 +839,28 @@ public class ShipAI {
     }
 
     private CommandResult DoTradeCommand(Command command, float deltaTime) {
+        FactionTrade factionTrade = ship.faction.factionTrade;
+
+        // Check to make sure that the contracts are still valid
+        if ((command.supplierContract != null &&
+            !factionTrade.activeContracts.Contains(command.supplierContract.Value) &&
+            command.supplierContract.Value.cargo.Count != 0) || (command.requestContract != null &&
+            !factionTrade.activeContracts.Contains(command.requestContract.Value) &&
+            command.requestContract.Value.cargo.Count != 0)) {
+            if (command.supplierContract != null &&
+                factionTrade.activeContracts.Contains(command.supplierContract.Value))
+                factionTrade.RemoveContract(command.supplierContract.Value);
+            if (factionTrade.activeContracts.Contains(command.requestContract.Value))
+                factionTrade.RemoveContract(command.requestContract.Value);
+
+            command.supplierContract = null;
+            command.requestContract = null;
+            currentCommandState = CommandType.Idle;
+        }
+
         if (command.supplierContract == null && command.requestContract == null) {
-            FactionTrade factionTrade = ship.faction.factionTrade;
+            // Try and find a new trade route
+            // Find what cargo is being offered for the best price
             Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> providedContracts = new();
             CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
                 .ToList().ForEach(c =>
@@ -860,9 +880,9 @@ public class ShipAI {
                         .CompareTo(math.distancesq(ship.position, b.Item2.position));
                 }));
 
+            // Find what cargo is being requested for the best value
             Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>>
                 requestedContracts = new();
-
             CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
                 .ToList().ForEach(c =>
                     requestedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
@@ -871,10 +891,12 @@ public class ShipAI {
                     f.resourcesRequested[c].Select(wanted =>
                         new Tuple<float, Unit, FactionTrade.Offer>(
                             factionTrade.GetOurSellValueOfOffer(wanted.Key.faction, wanted.Value) *
-                            math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount), wanted.Key,
+                            math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount),
+                            wanted.Key,
                             wanted.Value)
                     ))));
 
+            // Find the best combination of contracts for the best profit
             var possibleContracts = new List<Tuple<float, FactionTrade.Contract, FactionTrade.Contract>>();
             CargoBay.allCargoTypes.ForEach(c => {
                 foreach (var wanted in requestedContracts[c]) {
@@ -907,6 +929,9 @@ public class ShipAI {
                     ));
                 }
             });
+
+            if (possibleContracts.Count == 0) return CommandResult.Stop;
+
             possibleContracts.Sort((a, b) => {
                 int comparison = b.Item1.CompareTo(a.Item1);
                 if (comparison != 0) return comparison;
@@ -914,14 +939,14 @@ public class ShipAI {
                     .CompareTo(math.distancesq(b.Item2.provider.position, b.Item3.receiver.position));
             });
 
-            if (possibleContracts.Count == 0) return CommandResult.Stop;
+            // Sign the contracts
             var chosenContract = possibleContracts.First();
             command.supplierContract = chosenContract.Item2;
             command.requestContract = chosenContract.Item3;
-            ((Station)command.supplierContract.Value.provider).AddContract(command.supplierContract.Value,
+            factionTrade.AddContract(command.supplierContract.Value,
                 !chosenContract.Item2.cargo.ContainsKey(CargoBay.CargoTypes.Metal) ||
                 command.supplierContract.Value.provider is not MiningStation);
-            ((Station)command.requestContract.Value.receiver).AddContract(command.requestContract.Value);
+            factionTrade.AddContract(command.requestContract.Value);
             currentCommandState = CommandType.Trade;
             newCommand = true;
         }
@@ -929,12 +954,13 @@ public class ShipAI {
         if (ship.shipAction == Ship.ShipAction.Idle || newCommand) {
             newCommand = false;
             if (command.supplierContract != null) {
+                // Collect the cargo
                 if (ship.dockedStation != command.supplierContract.Value.provider) {
                     ship.SetDockTarget((Station)command.supplierContract.Value.provider);
                     ship.SetMaxSpeed(command.maxSpeed);
                     currentCommandState = CommandType.Dock;
                     return CommandResult.Stop;
-                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
+                } else if (!factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
                     command.supplierContract = null;
                     currentCommandState = CommandType.Idle;
                 } else {
@@ -947,12 +973,13 @@ public class ShipAI {
                 }
             }
             if (command.requestContract != null) {
+                // Deliver the cargo
                 if (ship.dockedStation != command.requestContract.Value.receiver) {
                     ship.SetDockTarget((Station)command.requestContract.Value.receiver);
                     ship.SetMaxSpeed(command.maxSpeed);
                     currentCommandState = CommandType.Dock;
                     return CommandResult.Stop;
-                } else if (!ship.faction.factionTrade.activeContracts.Contains(command.requestContract.Value)) {
+                } else if (!factionTrade.activeContracts.Contains(command.requestContract.Value)) {
                     command.requestContract = null;
                     currentCommandState = CommandType.Idle;
                 } else {

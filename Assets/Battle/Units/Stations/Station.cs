@@ -242,6 +242,7 @@ public class Station : Unit, IPositionConfirmer {
 
     public override void Explode() {
         if (!built) Spawn();
+        RemoveAllContracts();
         base.Explode();
     }
 
@@ -356,11 +357,14 @@ public class Station : Unit, IPositionConfirmer {
         return leftover;
     }
 
-    public void AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
+    public override bool AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
         // Validate that the receiver can buy from the provider
         if (contract.provider.faction != contract.receiver.faction &&
             !contract.provider.faction.factionTrade.tradeSellAgreements.ContainsKey(contract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
+
+        base.AddContract(contract, mustHaveImmediateResources);
+
         if (contract.provider == this) {
             foreach (var offer in contract.cargo.Values) {
                 if ((!faction.factionTrade.resourcesOffered[offer.cargoType].ContainsKey(this) ||
@@ -386,11 +390,11 @@ public class Station : Unit, IPositionConfirmer {
             }
         }
 
-        contract.provider.faction.factionTrade.activeContracts.Add(contract);
-        contract.receiver.faction.factionTrade.activeContracts.Add(contract);
+        return true;
     }
 
-    public void RemoveContract(FactionTrade.Contract contract) {
+    public override void RemoveContract(FactionTrade.Contract contract) {
+        base.RemoveContract(contract);
         if (contract.provider == this) {
             foreach (var request in contract.cargo.Values) {
                 long extra = contractedCargo[request.cargoType].has - contractedCargo[request.cargoType].wanted +
@@ -399,12 +403,13 @@ public class Station : Unit, IPositionConfirmer {
                 if (contractedCargo[request.cargoType].wanted - request.amount == 0)
                     contractedCargo.Remove(request.cargoType);
                 else contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
-                pendingContractResources[request.cargoType] -= request.amount;
                 if (extra > 0) LoadCargo(extra, request.cargoType);
             }
+        } else if (contract.receiver == this) {
+            foreach (var request in contract.cargo.Values) {
+                pendingContractResources[request.cargoType] -= request.amount;
+            }
         }
-        contract.provider.faction.factionTrade.activeContracts.Remove(contract);
-        contract.receiver.faction.factionTrade.activeContracts.Remove(contract);
         contractShipsDocked.Remove(contract);
     }
 
@@ -433,7 +438,7 @@ public class Station : Unit, IPositionConfirmer {
         }
 
         if (contract.cargo.Any()) return false;
-        RemoveContract(contract);
+        faction.factionTrade.RemoveContract(contract);
         return true;
     }
 
@@ -474,7 +479,7 @@ public class Station : Unit, IPositionConfirmer {
         }
 
         if (contract.cargo.Any()) return false;
-        RemoveContract(contract);
+        faction.factionTrade.RemoveContract(contract);
         return true;
     }
 

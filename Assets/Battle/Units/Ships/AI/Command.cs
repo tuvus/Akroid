@@ -271,9 +271,9 @@ public class Command {
             destinationStation.Explode();
         } else if (commandType == CommandType.Trade) {
             if (supplierContract != null && supplierContract.Value.provider != null)
-                ((Station)supplierContract.Value.provider).RemoveContract(supplierContract.Value);
+                supplierContract.Value.provider.faction.factionTrade.RemoveContract(supplierContract.Value);
             if (requestContract != null && requestContract.Value.receiver != null)
-                ((Station)requestContract.Value.receiver).RemoveContract(requestContract.Value);
+                requestContract.Value.provider.faction.factionTrade.RemoveContract(requestContract.Value);
 
         }
     }

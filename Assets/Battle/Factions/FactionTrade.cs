@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Components.DictionaryAdapter.Xml;
 
 public class FactionTrade {
     public Faction faction { get; private set; }
@@ -71,6 +72,7 @@ public class FactionTrade {
         activeContracts = new();
     }
 
+
     public void MakeSellTradeAgreement(Faction tradePartner, float markupPrice = 1.2f) {
         if (!tradeSellAgreements.TryAdd(tradePartner, markupPrice) || !tradePartner.factionTrade.tradeBuyAgreements.TryAdd(faction, markupPrice))
             throw new Exception("Trying to start a trade agreement that already exists with " + tradePartner.name +
@@ -81,6 +83,29 @@ public class FactionTrade {
         if (!tradeSellAgreements.Remove(tradePartner) || !tradePartner.factionTrade.tradeBuyAgreements.Remove(faction))
             throw new Exception("Trying to remove a trade agreement with " + tradePartner.name +
                 " but the agreement doesn't exist!");
+    }
+
+    public bool AddContract(Contract contract, bool mustHaveImmediateResources = true) {
+        if (!contract.provider.AddContract(contract, mustHaveImmediateResources)) return false;
+        if (!contract.receiver.AddContract(contract, mustHaveImmediateResources)) {
+            contract.provider.RemoveContract(contract);
+            return false;
+        }
+        activeContracts.Add(contract);
+        Faction otherFaction = contract.provider.faction;
+        if (otherFaction == faction) otherFaction = contract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(contract);
+        return true;
+    }
+
+    public void RemoveContract(Contract contract) {
+        if (!activeContracts.Contains(contract)) return;
+        contract.provider.RemoveContract(contract);
+        contract.receiver.RemoveContract(contract);
+        activeContracts.Remove(contract);
+        Faction otherFaction = contract.provider.faction;
+        if (otherFaction == faction) otherFaction = contract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(contract);
     }
 
     public float GetBuyCostOfOffer(Faction otherFaction, Offer offer) {

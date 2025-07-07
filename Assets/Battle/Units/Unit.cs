@@ -21,7 +21,7 @@ public abstract class Unit : BattleObject {
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
-
+    public HashSet<FactionTrade.Contract> contracts { get; private set; }
     public Unit() { }
 
     public Unit(BattleObjectData battleObjectData, BattleManager battleManager,
@@ -37,6 +37,7 @@ public abstract class Unit : BattleObject {
         scale = unitScriptableObject.baseScale * scale;
         turretsHibernating = false;
         hasWeapons = moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
+        contracts = new HashSet<FactionTrade.Contract>();
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
@@ -167,6 +168,19 @@ public abstract class Unit : BattleObject {
     #endregion
 
     #region HelperMethods
+
+    public virtual bool AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
+        contracts.Add(contract);
+        return true;
+    }
+
+    public virtual void RemoveContract(FactionTrade.Contract contract) {
+        contracts.Remove(contract);
+    }
+
+    public void RemoveAllContracts() {
+        contracts.ToList().ForEach(c => faction.factionTrade.RemoveContract(c));
+    }
 
     public void SetGroup(UnitGroup newGroup) {
         if (group != null) {

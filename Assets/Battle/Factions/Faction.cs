@@ -321,6 +321,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         foreach (Player player in battleManager.players.Where(p => p.faction == this && p.ownedUnits.Contains(unit))) {
             player.RemoveOwnedUnit(unit);
         }
+        unit.RemoveAllContracts();
 
         if (unit.IsShip()) {
             // Make sure to remove all commands and clear any active contracts
