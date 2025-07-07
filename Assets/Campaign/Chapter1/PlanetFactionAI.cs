@@ -8,7 +8,7 @@ public class PlanetFactionAI : FactionAI {
     private List<Ship> civilianShips;
     private List<Station> friendlyStations;
     private Planet planet;
-    private float sellResourcesToPlanetTime;
+    private float tradeWithPlanetTime;
     private Shipyard shipyard;
     private ShipyardFactionAI shipyardFactionAI;
     private Shipyard tradeStation;
@@ -49,7 +49,7 @@ public class PlanetFactionAI : FactionAI {
     public override void UpdateFactionAI(float deltaTime) {
         base.UpdateFactionAI(deltaTime);
         updateTime -= deltaTime;
-        sellResourcesToPlanetTime -= deltaTime;
+        tradeWithPlanetTime -= deltaTime;
         if (updateTime <= 0) {
             updateTime += 10;
             faction.AddCredits(planet.GetPopulation() / 100000000);
@@ -60,16 +60,25 @@ public class PlanetFactionAI : FactionAI {
     }
 
     private void UpdateTradeStation() {
-        if (sellResourcesToPlanetTime <= 0) {
+        if (tradeWithPlanetTime <= 0) {
             foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
-                long amount = math.min(math.max(100, tradeStation.GetAllCargoOfType(type) / 6),
-                    tradeStation.GetAllCargoOfType(type) - 4800);
-                if (amount <= 0) continue;
-                tradeStation.UseCargo(amount, type);
-                faction.AddCredits((long)(amount * chapter1.resourceCosts[type]));
+                long cargo = tradeStation.GetAllCargoOfType(type);
+                if (cargo < tradeStation.freeCargo[type].minWanted + 400) {
+                    // We have too little cargo, buy some at an expensive price from the planet
+                    long amount = math.min(200, tradeStation.freeCargo[type].minWanted + 400 - cargo);
+                    if (amount <= 0) continue;
+                    tradeStation.LoadCargo(amount, type);
+                    faction.UseCredits((long)(amount * battleManager.baseResourcePrice[type] * 2));
+                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2) {
+                    // We have too much cargo, sell some to the planet
+                    long amount = math.min(200, cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
+                    if (amount <= 0) continue;
+                    tradeStation.UseCargo(amount, type);
+                    faction.AddCredits((long)(amount * chapter1.resourceCosts[type] * 1.4f));
+                }
             }
 
-            sellResourcesToPlanetTime += 5;
+            tradeWithPlanetTime += 5;
         }
 
         ManageIdleShips();

@@ -1,16 +1,7 @@
-using System.Linq;
 
 public class ShipyardAI : StationAI {
-    public bool autoCollectCargo;
 
     public ShipyardAI(Station station) : base(station) {
-        autoCollectCargo = true;
-        station.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Metal, 1200 * 6, 1200 * 18);
-        station.SetDesiredFreeCargoRange(CargoBay.CargoTypes.Gas, 1200 * 4, 1200 * 12);
-    }
-
-    public override void UpdateAI(float deltaTime) {
-        base.UpdateAI(deltaTime);
     }
 
     protected override void ManageStationRepair() {

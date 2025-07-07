@@ -81,7 +81,7 @@ public class Station : Unit, IPositionConfirmer {
                 });
                 spaceAvailable /= CargoBay.allCargoTypes.Count;
                 CargoBay.allCargoTypes.ForEach(c => {
-                    SetDesiredFreeCargoRange(c, 0, (long)(spaceAvailable * .7f));
+                    SetDesiredFreeCargoRange(c, 0, (long)(spaceAvailable * .8f));
                 });
                 break;
             default:
@@ -584,7 +584,7 @@ public class Station : Unit, IPositionConfirmer {
                 factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
                     cargoRequested, price);
             } else {
-                factionTrade.resourcesOffered[cargoType].Remove(this);
+                factionTrade.resourcesRequested[cargoType].Remove(this);
             }
         } else {
             factionTrade.resourcesRequested[cargoType].Remove(this);
@@ -612,22 +612,22 @@ public class Station : Unit, IPositionConfirmer {
         long reservedDiff = reserved.wanted - reserved.has - pendingContractResources[cargoType];
         if (reservedDiff > 0) {
             // We desperately want more cargo for our more essential station functions
-            int c = 500;
-            priceModifier *= math.pow((reservedDiff + c) / (float)c, 1.1f) / ((reservedDiff + c) / (float)c) + .1f;
+            int c = 2000;
+            priceModifier *= math.pow((reservedDiff + c) / (float)c, 1.2f) / ((reservedDiff + c) / (float)c);
             // We might want more free cargo so slightly modify it further
             c = 5000;
-            return priceModifier * (math.pow((free.minWanted + c) / (float)c, 1.1f)
-                / ((free.minWanted + c) / (float)c) + .1f);
+            return priceModifier * (math.pow((free.minWanted + c) / (float)c, 1.2f)
+                / ((free.minWanted + c) / (float)c));
         } else if (free.minWanted > free.has) {
             // We would like to store extra cargo
-            const int c = 1000;
+            const int c = 5000;
             long freeDiff = free.minWanted - free.has - pendingContractResources[cargoType];
-            return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.1f) / ((freeDiff + c) / (float)c) + .1f);
+            return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.2f) / ((freeDiff + c) / (float)c));
         } else if (free.maxWanted > free.has) {
             // We would buy cargo if it were at a decent price
-            const int c = 2000;
+            const int c = 10000;
             long freeDiff = free.maxWanted - free.has - pendingContractResources[cargoType];
-            return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.1f) / ((freeDiff + c) / (float)c) + .1f);
+            return priceModifier * (math.pow((freeDiff + c) / (float)c, 1.2f) / ((freeDiff + c) / (float)c));
         } else {
             // We have too much cargo
             return -100;
@@ -644,17 +644,17 @@ public class Station : Unit, IPositionConfirmer {
         long freeWantDiff = free.maxWanted - free.has;
         if (freeWantDiff > 0) {
             // We have a little extra cargo that we can sell
-            int c = 1500;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, .9f) / ((freeWantDiff + c) / (float)c);
+            int c = 1000;
+            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) + .1f;
         } else {
             // We have too much cargo and would like to sell it
-            int c = 500;
+            int c = 1000;
             long freeDiff = free.has - free.maxWanted;
-            priceModifier *= math.pow((freeDiff + c) / (float)c, .9f) / ((freeDiff + c) / (float)c);
+            priceModifier *= math.pow((freeDiff + c) / (float)c, 1.2f) / ((freeDiff + c) / (float)c) + .1f;
             // We would also like to sell our other cargo
             freeWantDiff = free.maxWanted - free.minWanted;
             c = 5000;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, .9f) / ((freeWantDiff + c) / (float)c);
+            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) + .1f;
         }
     }
 
