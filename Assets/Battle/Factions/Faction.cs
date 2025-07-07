@@ -332,13 +332,13 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             factionTrade.RemoveStationOffersAndRequests((Station)unit);
             RemoveStation((Station)unit);
             to.AddStation((Station)unit);
-            CargoBay.allCargoTypes.ForEach(c => ((Station)unit).UpdateCargoTrade(c));
         } else {
             RemoveUnit(unit);
             to.RemoveUnit(unit);
         }
 
         unit.SetFaction(to);
+        if (unit is Station station) CargoBay.allCargoTypes.ForEach(c => station.UpdateCargoTrade(c));
         foreach (Player player in battleManager.players.Where(p => p.faction == to && !p.lockedOwnedUnits)) {
             player.AddOwnedUnit(unit);
         }
