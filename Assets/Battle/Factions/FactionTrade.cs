@@ -144,4 +144,11 @@ public class FactionTrade {
     public IEnumerable<FactionTrade> GetFactionsWeCanSellTo() {
         return tradeSellAgreements.Select(t => t.Key.factionTrade).Append(this);
     }
+
+    public void RemoveStationOffersAndRequests(Station station) {
+        foreach (CargoBay.CargoTypes c in CargoBay.allCargoTypes) {
+            resourcesOffered[c].Remove(station);
+            resourcesRequested[c].Remove(station);
+        }
+    }
 }

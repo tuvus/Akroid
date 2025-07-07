@@ -329,8 +329,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             RemoveShip((Ship)unit);
             to.AddShip((Ship)unit);
         } else if (unit.IsStation()) {
+            factionTrade.RemoveStationOffersAndRequests((Station)unit);
             RemoveStation((Station)unit);
             to.AddStation((Station)unit);
+            CargoBay.allCargoTypes.ForEach(c => ((Station)unit).UpdateCargoTrade(c));
         } else {
             RemoveUnit(unit);
             to.RemoveUnit(unit);

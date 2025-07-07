@@ -632,7 +632,7 @@ public class ShipAI {
             currentCommandState != CommandType.CollectGas)) {
             FactionTrade factionTrade = ship.faction.factionTrade;
             var gasRequests = new List<Tuple<float, Unit, FactionTrade.Offer>>();
-            factionTrade.resourcesRequested[CargoBay.CargoTypes.Gas]
+            factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f => f.resourcesRequested[CargoBay.CargoTypes.Gas]
                 .ToList().ForEach(r => {
                     long amount = math.min(ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas) +
                         ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas), r.Value.amount);
@@ -640,7 +640,7 @@ public class ShipAI {
                     var offer = new FactionTrade.Offer(r.Value, amount);
                     gasRequests.Add(new Tuple<float, Unit, FactionTrade.Offer>(
                         amount * factionTrade.GetOurSellValueOfOffer(r.Key.faction, offer), r.Key, offer));
-                });
+                }));
             gasRequests.Sort((a, b) => a.Item1.CompareTo(b.Item2));
             var chosenRequest = gasRequests.FirstOrDefault();
             if (chosenRequest != null) {
@@ -843,10 +843,10 @@ public class ShipAI {
 
         // Check to make sure that the contracts are still valid
         if ((command.supplierContract != null &&
-            !factionTrade.activeContracts.Contains(command.supplierContract.Value) &&
-            command.supplierContract.Value.cargo.Count != 0) || (command.requestContract != null &&
-            !factionTrade.activeContracts.Contains(command.requestContract.Value) &&
-            command.requestContract.Value.cargo.Count != 0)) {
+                !factionTrade.activeContracts.Contains(command.supplierContract.Value) &&
+                command.supplierContract.Value.cargo.Count != 0) || (command.requestContract != null &&
+                !factionTrade.activeContracts.Contains(command.requestContract.Value) &&
+                command.requestContract.Value.cargo.Count != 0)) {
             if (command.supplierContract != null &&
                 factionTrade.activeContracts.Contains(command.supplierContract.Value))
                 factionTrade.RemoveContract(command.supplierContract.Value);
@@ -871,7 +871,7 @@ public class ShipAI {
                         new Tuple<float, Unit, FactionTrade.Offer>(
                             factionTrade.GetOurBuyValueOfOffer(f.faction, offer.Value) *
                             math.min(ship.GetAvailableCargoSpace(c), offer.Value.amount), offer.Key,
-                            offer.Value)))));
+                            offer.Value)).Where(o => o.Item3.amount > 0))));
             CargoBay.allCargoTypes.ForEach(c => providedContracts[c]
                 .Sort((a, b) => {
                     int comparison = a.Item1.CompareTo(b.Item1);
@@ -894,7 +894,7 @@ public class ShipAI {
                             math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount),
                             wanted.Key,
                             wanted.Value)
-                    ))));
+                    ).Where(o => o.Item3.amount > 0))));
 
             // Find the best combination of contracts for the best profit
             var possibleContracts = new List<Tuple<float, FactionTrade.Contract, FactionTrade.Contract>>();
