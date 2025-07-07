@@ -628,6 +628,11 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
+        if (command.supplierContract.HasValue &&
+            !ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value))
+            command.supplierContract = null;
+
+        // Find a new contract if we don't have one and aren't currently going to collect gas
         if (newCommand || (command.supplierContract == null && currentCommandState != CommandType.Move &&
             currentCommandState != CommandType.CollectGas)) {
             FactionTrade factionTrade = ship.faction.factionTrade;
@@ -658,21 +663,21 @@ public class ShipAI {
         if (currentCommandState == CommandType.Move) {
             // We must be at the gas cloud, start collecting gas
             currentCommandState = CommandType.CollectGas;
-        }
-        if (currentCommandState == CommandType.Dock) {
+        } else if (currentCommandState == CommandType.Dock) {
             // We must be at the receiver station, start unloading
             currentCommandState = CommandType.Wait;
             ((Station)command.supplierContract.Value.receiver).contractShipsDocked
                 .Add(command.supplierContract.Value);
             return CommandResult.Stop;
-        }
-        if (currentCommandState == CommandType.Wait) {
+        } else if (currentCommandState == CommandType.Wait) {
             if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
+                // We have unloaded all the cargo or the contract has been canceled
                 command.supplierContract = null;
                 currentCommandState = CommandType.Idle;
             }
             return CommandResult.Stop;
         }
+
         if (currentCommandState == CommandType.CollectGas) {
             if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
@@ -681,9 +686,10 @@ public class ShipAI {
                     }
                 }
 
-                ship.SetDockTarget(command.destinationStation);
-                currentCommandState = CommandType.Dock;
-                return CommandResult.Stop;
+                currentCommandState = CommandType.Idle;
+                // If we don't have a contract stop and try to find a new one before going back to the fleet command.
+                if (!command.supplierContract.HasValue)
+                    return CommandResult.Stop;
             } else {
                 command.targetGasCloud = ship.faction.GetClosestGasCloud(ship.GetPosition());
                 if (command.targetGasCloud == null)
@@ -707,8 +713,8 @@ public class ShipAI {
             } else if (command.supplierContract != null) {
                 ship.SetDockTarget((Station)command.supplierContract.Value.receiver);
                 currentCommandState = CommandType.Dock;
-            } else if (ship.dockedStation != ship.faction.GetFleetCommand() && ship.faction.GetFleetCommand() != null &&
-                ship.shipAction == Ship.ShipAction.Idle) {
+            } else if (ship.dockedStation != ship.faction.GetFleetCommand() && ship.faction.GetFleetCommand() != null) {
+                // We have enough cargo and no contracts
                 ship.SetDockTarget(ship.faction.GetFleetCommand());
             }
         }
