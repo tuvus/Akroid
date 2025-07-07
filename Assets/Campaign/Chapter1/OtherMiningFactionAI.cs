@@ -35,7 +35,7 @@ public class OtherMiningFactionAI : FactionAI {
             long metalToUse =
                 shipBlueprint.shipScriptableObject.resourceCosts[
                     shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
-            long metalCost = (long)(metalToUse * chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2f);
+            long metalCost = (long)(metalToUse * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 1.2f);
             long transportCost = shipBlueprint.shipScriptableObject.cost + metalCost;
             long transportCount =
                 faction.ships.Count +

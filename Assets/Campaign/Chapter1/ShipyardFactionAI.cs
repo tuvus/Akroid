@@ -103,10 +103,6 @@ public class ShipyardFactionAI : FactionAI {
         }
     }
 
-    public override double GetSellCostOfMetal() {
-        return chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2;
-    }
-
     public int GetOrderCount(Ship.ShipClass shipClass, Faction faction) {
         return shipyard.GetConstructionBay().GetNumberOfShipsOfClassFaction(shipClass, faction);
     }

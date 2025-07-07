@@ -104,8 +104,11 @@ public class ConstructionBay : ModuleComponent {
         }
         if (faction != null) {
             // Other factions need to pay us for the metal
-            return ship.cost + (long)(ship.resourceCosts[ship.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)] *
-                faction.GetFactionAI().GetSellCostOfMetal());
+            long resourceCost = 0;
+            for (int i = 0; i < ship.resourceTypes.Count; i++) {
+                resourceCost += (long)(ship.resourceCosts[i] * battleManager.baseResourcePrice[ship.resourceTypes[i]]);
+            }
+            return (long)((ship.cost + resourceCost) * 1.3f);
         }
         return ship.cost;
     }
