@@ -323,6 +323,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
 
         if (unit.IsShip()) {
+            // Make sure to remove all commands and clear any active contracts
+            ((Ship)unit).SetIdle();
             RemoveShip((Ship)unit);
             to.AddShip((Ship)unit);
         } else if (unit.IsStation()) {

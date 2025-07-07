@@ -99,9 +99,9 @@ public class FactionTrade {
 
     public float GetOurBuyValueOfOffer(Faction otherFaction, Offer offer) {
         if (otherFaction == faction) {
-            return 1.3f / offer.price;
+            return 0.7f * offer.price;
         }
-        return 1 / offer.price;
+        return offer.price;
     }
 
     public float GetOurSellValueOfOffer(Faction otherFaction, Offer offer) {

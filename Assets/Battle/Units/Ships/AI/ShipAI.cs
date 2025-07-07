@@ -854,7 +854,7 @@ public class ShipAI {
                             offer.Value)))));
             CargoBay.allCargoTypes.ForEach(c => providedContracts[c]
                 .Sort((a, b) => {
-                    int comparison = b.Item1.CompareTo(a.Item1);
+                    int comparison = a.Item1.CompareTo(b.Item1);
                     if (comparison != 0) return comparison;
                     return math.distancesq(ship.position, a.Item2.position)
                         .CompareTo(math.distancesq(ship.position, b.Item2.position));
@@ -871,7 +871,7 @@ public class ShipAI {
                     f.resourcesRequested[c].Select(wanted =>
                         new Tuple<float, Unit, FactionTrade.Offer>(
                             factionTrade.GetOurSellValueOfOffer(wanted.Key.faction, wanted.Value) *
-                            math.min(ship.GetAvailableCargoSpace(c), wanted.Value.amount), wanted.Key,
+                            math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount), wanted.Key,
                             wanted.Value)
                     ))));
 
@@ -885,8 +885,10 @@ public class ShipAI {
                         provided = providedContracts[c].FirstOrDefault();
 
                     if (provided == null) continue;
-                    if (factionTrade.GetOurBuyValueOfOffer(wanted.Item2.faction, wanted.Item3) >=
-                        factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3)) break;
+                    float buyValue = factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, provided.Item3);
+                    float sellValue = factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3);
+                    // Check if the trade run is worth it
+                    if (sellValue <= buyValue) break;
                     long providedAmount = provided.Item3.amount;
                     if (provided.Item2 is MiningStation && c == CargoBay.CargoTypes.Metal)
                         providedAmount += provided.Item2.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal);
@@ -894,11 +896,12 @@ public class ShipAI {
                         providedAmount);
                     var providedOffer = new FactionTrade.Offer(c, amount,
                         provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                    // Add cargo we might already have stored
+                    amount = math.min(amount + ship.GetAllCargoOfType(c), wanted.Item3.amount);
                     var requested = new FactionTrade.Offer(c, amount,
                         wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
                     possibleContracts.Add(new Tuple<float, FactionTrade.Contract, FactionTrade.Contract>(
-                        (factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, providedOffer) +
-                            factionTrade.GetOurSellValueOfOffer(provided.Item2.faction, requested)) * amount,
+                        (sellValue - buyValue) * amount,
                         new FactionTrade.Contract(provided.Item2, ship, providedOffer),
                         new FactionTrade.Contract(ship, wanted.Item2, requested)
                     ));
@@ -933,6 +936,7 @@ public class ShipAI {
                     return CommandResult.Stop;
                 } else if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
                     command.supplierContract = null;
+                    currentCommandState = CommandType.Idle;
                 } else {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait)
@@ -950,12 +954,14 @@ public class ShipAI {
                     return CommandResult.Stop;
                 } else if (!ship.faction.factionTrade.activeContracts.Contains(command.requestContract.Value)) {
                     command.requestContract = null;
+                    currentCommandState = CommandType.Idle;
                 } else {
                     //Add Contract to station to transfer cargo
-                    if (currentCommandState != CommandType.Wait)
+                    if (currentCommandState != CommandType.Wait) {
                         ((Station)command.requestContract.Value.receiver).contractShipsDocked.Add(
                             command.requestContract.Value);
-                    currentCommandState = CommandType.Wait;
+                        currentCommandState = CommandType.Wait;
+                    }
                     return CommandResult.Stop;
                 }
             }

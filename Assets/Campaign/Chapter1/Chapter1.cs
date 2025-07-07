@@ -116,7 +116,7 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>("TradeStation"),
             true);
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
-        tradeStation.LoadCargo(2400, CargoBay.CargoTypes.Gas);
+        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Gas);
         ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
         tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
             planetFaction,
