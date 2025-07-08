@@ -13,3 +13,7 @@ MonoBehaviour:
   m_Name: Moon
   m_EditorClassIdentifier: 
   sprite: {fileID: -1971278699, guid: 6c284eb7109938f469e1e176e8472c13, type: 3}
+  hasAtmosphere: 0
+  rotationSpeed: 0.4
+  <spriteBounds>k__BackingField: {x: 18, y: 18}
+  prefab: {fileID: 6480528276499720429, guid: 67b5d68487ba27a49bde8f9afcc90435, type: 3}

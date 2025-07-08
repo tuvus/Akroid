@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AriaMkI
   m_EditorClassIdentifier: 
-  cost: 3626
+  cost: 3824
   resourceTypes: 0100000002000000
-  resourceCosts: 56020000000000003901000000000000
+  resourceCosts: 7e020000000000006101000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Aria
@@ -25,22 +25,27 @@ MonoBehaviour:
     type: 3
     component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: BottomTurret
     type: 3
     component: {fileID: 11400000, guid: ec6a3048831b21043a7fc7e77996cd7e, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 81f96ee7b7c5cbd419b20a0fc2f20f04, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThruster
     type: 4
-    component: {fileID: 11400000, guid: d0d103e1c95d1cb48b7a4c5f35688b5d, type: 2}
+    component: {fileID: 11400000, guid: 9adc7edf38b82f64d8f46d391895671f, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: SubThrusters
     type: 4
-    component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
+    component: {fileID: 11400000, guid: 998cafad1cfed9545bfb57b568021db3, type: 2}
     moduleSize: 0
+    moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 2.64, y: 7.565}
@@ -48,3 +53,5 @@ MonoBehaviour:
   shipType: 4
   turnSpeed: 60
   combatRotation: 0
+  baseMass: 378.25
+  baseSpeed: 34.686054

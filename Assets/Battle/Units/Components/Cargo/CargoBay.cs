@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEngine.Assertions;
 
 /// <summary>
 ///     Handles storing resources in multiple cargo bays.
@@ -18,34 +19,18 @@ public class CargoBay : ModuleComponent {
         Gas = 2
     }
 
-    public static List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
+    public static readonly List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
 
     private CargoBayScriptableObject cargoBayScriptableObject;
     private int cargoBaysInUse;
     public Dictionary<CargoTypes, long> cargoBays { get; } = new Dictionary<CargoTypes, long>();
 
-    /// <summary>
-    ///     How many cargo bays are reserved for each type of cargo.
-    ///     Does not change when the amount of cargo bays used by the type changes.
-    ///     The All type should not be put in here.
-    /// </summary>
-    private readonly Dictionary<CargoTypes, int> reservedBaysType = new Dictionary<CargoTypes, int>();
-
-    /// <summary>
-    ///     The number of empty cargo bays that are reserved.
-    ///     The sum of every entry in reservedBaysType.
-    /// </summary>
-    private int reservedCargoBays;
-
     public CargoBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
-        foreach (CargoTypes cargoType in Enum.GetValues(typeof(CargoTypes)).Cast<CargoTypes>()) {
-            if (cargoType != CargoTypes.All) {
-                cargoBays.Add(cargoType, 0);
-                reservedBaysType.Add(cargoType, 0);
-            }
+        foreach (CargoTypes cargoType in allCargoTypes) {
+            cargoBays.Add(cargoType, 0);
         }
     }
 
@@ -75,11 +60,6 @@ public class CargoBay : ModuleComponent {
         cargoBays[cargoType] += actualCargoToLoad;
         cargoBaysInUse += cargoBaysToLoad;
 
-        // Calculate if we loaded cargo into any reserved cargo bays
-        int previousCargoBaysInUse = GetCargoBaysUsedByType(cargoType) - cargoBaysToLoad;
-        // If we hadn't filled all of the reserved cargo bays then account for the new reserved cargo bays in use
-        if (previousCargoBaysInUse < reservedBaysType[cargoType])
-            reservedCargoBays -= math.min(cargoBaysToLoad, reservedBaysType[cargoType] - previousCargoBaysInUse);
         return cargoToLoad - actualCargoToLoad;
     }
 
@@ -97,15 +77,11 @@ public class CargoBay : ModuleComponent {
 
         long cargoToUse = math.min(cargoAmount, cargoBays[cargoType]);
 
+
         int previousCargoBaysInUse = GetCargoBaysUsedByType(cargoType);
         cargoBays[cargoType] -= cargoToUse;
         int newCargoBaysInUse = GetCargoBaysUsedByType(cargoType);
         cargoBaysInUse -= previousCargoBaysInUse - newCargoBaysInUse;
-
-        // Check if we have freed any reserved cargo bays that should remain reserved
-        if (newCargoBaysInUse < reservedBaysType[cargoType])
-            reservedCargoBays += math.min(reservedBaysType[cargoType] - newCargoBaysInUse,
-                previousCargoBaysInUse - newCargoBaysInUse);
 
         return cargoAmount - cargoToUse;
     }
@@ -129,15 +105,16 @@ public class CargoBay : ModuleComponent {
     /// <returns> The amount of empty cargo bays that can be used for this cargo type. </returns>
     private int GetOpenCargoBays(CargoTypes cargoType) {
         if (cargoType == CargoTypes.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
-        return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse - reservedCargoBays +
-            math.max(0, reservedBaysType[cargoType] - GetCargoBaysUsedByType(cargoType));
+        return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
     }
 
     public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
-        long openSpaceFromUsedCargoBays = 0;
-        if (cargoType != CargoTypes.All)
-            openSpaceFromUsedCargoBays = cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
-        return openSpaceFromUsedCargoBays + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
+        long openSpaceFromUsedCargoBay = 0;
+        if (cargoType != CargoTypes.All) {
+            openSpaceFromUsedCargoBay = cargoBayScriptableObject.cargoBaySize - cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
+            if (openSpaceFromUsedCargoBay == cargoBayScriptableObject.cargoBaySize) openSpaceFromUsedCargoBay = 0;
+        }
+        return openSpaceFromUsedCargoBay + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
     }
 
     public bool IsCargoFullOfType(CargoTypes cargoTypes) {
@@ -169,15 +146,5 @@ public class CargoBay : ModuleComponent {
 
     public long GetCargoBayCapacity() {
         return cargoBayScriptableObject.cargoBaySize;
-    }
-
-    public void AddReservedCargoBays(CargoTypes cargoType, int amount) {
-        int oldReservedBays = reservedBaysType[cargoType];
-        reservedBaysType[cargoType] += amount;
-        reservedCargoBays += amount;
-        int cargoBaysUsed = GetCargoBaysUsedByType(cargoType);
-        if (cargoBaysUsed > oldReservedBays) {
-            reservedCargoBays -= math.min(amount, cargoBaysUsed - oldReservedBays);
-        }
     }
 }

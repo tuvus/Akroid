@@ -2,9 +2,7 @@ using System;
 using UnityEngine;
 
 public class StationAI {
-    [SerializeField] protected float cargoSpeed;
     protected Station station;
-    [SerializeField] protected float waitSpeed;
     protected float waitTime;
 
     public StationAI(Station station) {
@@ -12,7 +10,7 @@ public class StationAI {
     }
     public event Action<Ship> OnBuildShip = delegate { };
 
-    public virtual void UpdateAI(float deltaTime) {
+    public void UpdateAI(float deltaTime) {
         waitTime = Mathf.Max(waitTime - deltaTime, 0);
         if (station.repairTime <= 0) {
             ManageStationRepair();

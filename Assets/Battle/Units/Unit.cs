@@ -15,6 +15,13 @@ public abstract class Unit : BattleObject {
     private bool turretsHibernating;
     protected Vector2 velocity;
 
+    public UnitScriptableObject unitScriptableObject { get; }
+    public ComponentModuleSystem moduleSystem { get; }
+    public bool hasWeapons { get; }
+
+    [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
+    [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
+    public HashSet<FactionTrade.Contract> contracts { get; private set; }
     public Unit() { }
 
     public Unit(BattleObjectData battleObjectData, BattleManager battleManager,
@@ -30,16 +37,11 @@ public abstract class Unit : BattleObject {
         scale = unitScriptableObject.baseScale * scale;
         turretsHibernating = false;
         hasWeapons = moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
+        contracts = new HashSet<FactionTrade.Contract>();
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
     }
-    public UnitScriptableObject unitScriptableObject { get; }
-    [field: SerializeField] public ComponentModuleSystem moduleSystem { get; }
-    public bool hasWeapons { get; }
-
-    [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
-    [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
 
     public void SetupWeaponRanges() {
         foreach (Turret turret in moduleSystem.Get<Turret>()) {
@@ -65,10 +67,10 @@ public abstract class Unit : BattleObject {
             return;
         }
 
-        if (IsSpawned()) {
-            moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
-            moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
-        }
+        if (!IsSpawned()) return;
+
+        moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
+        moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
     }
 
     public virtual void FindEnemies() {
@@ -167,6 +169,19 @@ public abstract class Unit : BattleObject {
 
     #region HelperMethods
 
+    public virtual bool AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
+        contracts.Add(contract);
+        return true;
+    }
+
+    public virtual void RemoveContract(FactionTrade.Contract contract) {
+        contracts.Remove(contract);
+    }
+
+    public void RemoveAllContracts() {
+        contracts.ToList().ForEach(c => faction.factionTrade.RemoveContract(c));
+    }
+
     public void SetGroup(UnitGroup newGroup) {
         if (group != null) {
             UnitGroup oldGroup = group;
@@ -199,11 +214,11 @@ public abstract class Unit : BattleObject {
     ///     Tries and uses up to the amount cargo from all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be used, or 0 if all of it was used</returns>
-    public long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public virtual long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
         long totalCargoToUse = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
-            if (totalCargoToUse <= 0) return 0;
+            if (totalCargoToUse == 0) return 0;
         }
 
         return totalCargoToUse;
@@ -213,7 +228,7 @@ public abstract class Unit : BattleObject {
     ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
-    public long LoadCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public virtual long LoadCargo(long amount, CargoBay.CargoTypes cargoType, FactionTrade.Contract? contract = null) {
         long totalCargoToLoad = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
@@ -224,10 +239,11 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    ///     Tries to load up to the amount in cargo from the unit given to this unit
+    ///     Tries to load up to the amount in cargo from the unit given to this unit.
+    ///     Does not take contracts into account.
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
-    public long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit) {
+    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit, FactionTrade.Contract? contract = null) {
         if (cargoType == CargoBay.CargoTypes.All) {
             foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);
@@ -240,34 +256,16 @@ public abstract class Unit : BattleObject {
         long cargoToLoad = Math.Min(amount,
             Math.Min(unit.GetAllCargoOfType(cargoType), GetAvailableCargoSpace(cargoType)));
         unit.UseCargo(cargoToLoad, cargoType);
-        LoadCargo(cargoToLoad, cargoType);
+        LoadCargo(cargoToLoad, cargoType, contract);
         return amount - cargoToLoad;
     }
 
-    public long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
-        long reserved = 0;
-        if (includeReserved) {
-            if (cargoType == CargoBay.CargoTypes.All) {
-                reserved = CargoBay.allCargoTypes.Sum(t => GetReservedCargoSpace().GetValueOrDefault(t, 0));
-            } else {
-                reserved = GetReservedCargoSpace().GetValueOrDefault(cargoType, 0);
-            }
-        }
-
-        return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetAllCargo(cargoType) - reserved);
+    public virtual long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
+        return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetAllCargo(cargoType));
     }
 
     public long GetAvailableCargoSpace(CargoBay.CargoTypes cargoType) {
         return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
-    }
-
-    public Dictionary<CargoBay.CargoTypes, long> GetReservedCargoSpace() {
-        if (IsStation() && ((Station)this).GetStationType() == Station.StationType.Shipyard ||
-            ((Station)this).GetStationType() == Station.StationType.FleetCommand) {
-            return ((Shipyard)this).GetConstructionBay().GetReservedResources();
-        }
-
-        return new Dictionary<CargoBay.CargoTypes, long>();
     }
 
     public string GetUnitName() {
@@ -335,7 +333,7 @@ public abstract class Unit : BattleObject {
     }
 
     public List<Ship> GetAllDockedShips() {
-        List<Ship> dockedShips = new List<Ship>();
+        var dockedShips = new List<Ship>();
         moduleSystem.Get<Hangar>().ForEach(h => dockedShips.AddRange(h.ships));
         return dockedShips;
     }
@@ -373,7 +371,7 @@ public abstract class Unit : BattleObject {
     }
 
     /// <summary>
-    /// Finds if a point is in the unit
+    ///     Finds if a point is in the unit
     /// </summary>
     /// <param name="worldPosition">The position to test in world coordinates</param>
     /// <returns>True if the point is inside the unit's sprite box, false otherwise</returns>

@@ -16,9 +16,14 @@ public class Planet : BattleObject, IPositionConfirmer {
     [SerializeField] private float timeSinceStart;
     private readonly PlanetFaction unclaimedTerritory;
 
+    public PlanetScriptableObject planetScriptableObject { get; }
+    [field: SerializeField] public long totalArea { get; protected set; }
+    [field: SerializeField] public PlanetTerritory areas { get; protected set; }
+
     public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) :
         base(planetData.battleObjectData, battleManager) {
         this.planetScriptableObject = planetScriptableObject;
+        rotationSpeed = planetScriptableObject.rotationSpeed;
         rotationSpeed *= random.NextFloat(.5f, 1.5f);
         if (random.NextFloat(-1, 1) < 0) {
             rotationSpeed *= -1;
@@ -37,9 +42,6 @@ public class Planet : BattleObject, IPositionConfirmer {
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), 0, 0,
             "This territory is open to claim.");
     }
-    public PlanetScriptableObject planetScriptableObject { get; }
-    [field: SerializeField] public long totalArea { get; protected set; }
-    [field: SerializeField] public PlanetTerritory areas { get; protected set; }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
         foreach (Star star in battleManager.stars) {

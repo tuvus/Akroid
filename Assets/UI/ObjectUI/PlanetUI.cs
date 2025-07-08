@@ -9,5 +9,6 @@ public class PlanetUI : BattleObjectUI {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
         }
+        uIManager.uiBattleManager.objectsToUpdate.Add(this);
     }
 }

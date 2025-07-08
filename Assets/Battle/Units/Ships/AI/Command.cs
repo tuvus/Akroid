@@ -5,7 +5,7 @@ using Random = Unity.Mathematics.Random;
 [Serializable]
 public class Command {
     public enum CommandAction {
-        AddToBegining = -1,
+        AddToBeginning = -1,
         Replace = 0,
         AddToEnd = 1
     }
@@ -27,6 +27,7 @@ public class Command {
         UndockCommand,
         Transport,
         TransportDelay,
+        Trade,
         Research,
         CollectGas,
         DisbandFleet,
@@ -53,6 +54,8 @@ public class Command {
     public Planet targetPlanet;
     public Star targetStar;
     public Unit targetUnit;
+    public FactionTrade.Contract? supplierContract;
+    public FactionTrade.Contract? requestContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -200,6 +203,14 @@ public class Command {
         };
     }
 
+    public static Command CreateTradeCommand(Station mustTradeWith = null,
+        CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All) {
+        return new Command(CommandType.Trade) {
+            cargoType = cargoTypeToTrade,
+            destinationStation = mustTradeWith
+        };
+    }
+
     public static Command CreateResearchCommand(Star targetStar, Station returnStation) {
         return new Command(CommandType.Research) {
             destinationStation = returnStation,
@@ -258,6 +269,12 @@ public class Command {
         } else if (commandType == CommandType.BuildStation && !destinationStation.IsBuilt()) {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
+        } else if (commandType == CommandType.Trade) {
+            if (supplierContract != null && supplierContract.Value.provider != null)
+                supplierContract.Value.provider.faction.factionTrade.RemoveContract(supplierContract.Value);
+            if (requestContract != null && requestContract.Value.receiver != null)
+                requestContract.Value.provider.faction.factionTrade.RemoveContract(requestContract.Value);
+
         }
     }
 

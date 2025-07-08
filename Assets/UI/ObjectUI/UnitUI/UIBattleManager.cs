@@ -7,7 +7,7 @@ using UnityEngine;
 ///     The UIBattleManager to UIBattleObjects as the BattleManager is to BattleObjects.
 ///     It manages any world space UI objects (So everything but the player GUI).
 ///     Only some objects need to update their state every frame,
-///     those objects will subscribe to the objectstoupdate HashSet.
+///     those objects will subscribe to the objectsToUpdate HashSet.
 ///     The UIBattleManager subscribes to the BattleManager's OnObjectCreated and OnObjectRemoved events
 ///     in order to figure out what UI objects need to be created and removed.
 ///     Note that the UIBattleManager does not do any major work during these calls.
@@ -16,7 +16,7 @@ using UnityEngine;
 ///     An object can be in only one of these sets at a time.
 ///     The UIBattleManager then goes through these sets during the UIUpdate and creates or removes them.
 ///     Most objects are destroyed when they are removed,
-///     however projectiles and missiles are simpily hidden
+///     however projectiles and missiles are simply hidden
 ///     since they will likely be needed again soon.
 /// </summary>
 public class UIBattleManager : MonoBehaviour {
@@ -94,8 +94,7 @@ public class UIBattleManager : MonoBehaviour {
             }
             if (iObject is Fleet fleet) {
                 FactionUI factionUI = factionUIs[fleet.faction];
-                FleetUI fleetUI = Instantiate(fleetPrefab,
-                    factionUI.GetFleetTransform()).GetComponent<FleetUI>();
+                FleetUI fleetUI = Instantiate(fleetPrefab, factionUI.GetFleetTransform()).GetComponent<FleetUI>();
                 fleetUI.Setup(fleet, this);
                 fleetUIs.Add(fleet, fleetUI);
                 objects.Add(fleet, fleetUI);

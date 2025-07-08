@@ -21,7 +21,8 @@ using Random = Unity.Mathematics.Random;
 ///     however the events OnBattleEnd, OnObjectCreated, OnObjectRemoved will send information to the UI if the UI
 ///     subscribed to them.
 /// </summary>
-public class BattleManager : MonoBehaviour {
+[Serializable]
+public class BattleManager {
     public enum BattleState {
         SettingUp,
         Setup,
@@ -29,107 +30,54 @@ public class BattleManager : MonoBehaviour {
         Ended
     }
 
-    [field: SerializeField] public float researchModifier { get; private set; }
-    [field: SerializeField] public float systemSizeModifier { get; private set; }
+    [field: SerializeField] public float researchModifier { get; protected set; }
+    [field: SerializeField] public float systemSizeModifier { get; protected set; }
     public List<ShipBlueprint> shipBlueprints;
     public List<StationBlueprint> stationBlueprints;
     public List<AsteroidScriptableObject> asteroidBlueprints;
     public List<GasCloudScriptableObject> gasCloudBlueprints;
     public List<StarScriptableObject> starBlueprints;
 
-    [SerializeField] private bool threaded = true;
+    [SerializeField] protected bool threaded = true;
     public bool instantHit;
     public float timeScale;
-    [field: SerializeField] public BattleState battleState { get; private set; } = BattleState.SettingUp;
-    private CampaingController campaignController;
-    private Random random;
-    private double simulationTime;
+    [field: SerializeField] public BattleState battleState { get; protected set; } = BattleState.SettingUp;
+    protected CampaingController campaignController;
+    protected Random random;
+    protected double simulationTime;
 
-    private float startOfSimulation;
-    public EventManager eventManager { get; private set; }
+    protected float startOfSimulation;
+    public EventManager eventManager { get; protected set; }
 
-    public HashSet<Faction> factions { get; private set; }
-    public HashSet<BattleObject> battleObjects { get; private set; }
-    public HashSet<Unit> units { get; private set; }
-    public HashSet<Ship> ships { get; private set; }
-    public HashSet<Station> stations { get; private set; }
-    public HashSet<Station> stationsInProgress { get; private set; }
-    public HashSet<Projectile> projectiles { get; private set; }
-    public HashSet<Missile> missiles { get; private set; }
-    public HashSet<Star> stars { get; private set; }
-    public HashSet<Planet> planets { get; private set; }
-    public HashSet<AsteroidField> asteroidFields { get; private set; }
-    public HashSet<GasCloud> gasClouds { get; private set; }
+    public Dictionary<CargoBay.CargoTypes, float> baseResourcePrice;
 
-    public HashSet<Unit> destroyedUnits { get; private set; }
-    public HashSet<Projectile> usedProjectiles { get; private set; }
-    public HashSet<Projectile> unusedProjectiles { get; private set; }
-    public HashSet<Missile> usedMissiles { get; private set; }
-    public HashSet<Missile> unusedMissiles { get; private set; }
-    public HashSet<Player> players { get; private set; }
+    public HashSet<Faction> factions { get; protected set; }
+    public HashSet<BattleObject> battleObjects { get; protected set; }
+    public HashSet<Unit> units { get; protected set; }
+    public HashSet<Ship> ships { get; protected set; }
+    public HashSet<Station> stations { get; protected set; }
+    public HashSet<Station> stationsInProgress { get; protected set; }
+    public HashSet<Projectile> projectiles { get; protected set; }
+    public HashSet<Missile> missiles { get; protected set; }
+    public HashSet<Star> stars { get; protected set; }
+    public HashSet<Planet> planets { get; protected set; }
+    public HashSet<AsteroidField> asteroidFields { get; protected set; }
+    public HashSet<GasCloud> gasClouds { get; protected set; }
 
-    /// <summary>
-    ///     Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
-    ///     Also has profiling for most method calls.
-    /// </summary>
-    public virtual void FixedUpdate() {
-        if (battleState == BattleState.SettingUp || battleState == BattleState.Setup) return;
-        float deltaTime = Time.fixedDeltaTime * timeScale;
-        simulationTime += deltaTime;
-
-        if (Application.platform == RuntimePlatform.WebGLPlayer) {
-            threaded = false;
-        } else if (PlayerPrefs.HasKey("Threading")) {
-            threaded = PlayerPrefs.GetInt("Threading") == 1;
-        }
-
-        UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
-        UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
-        UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
-        UpdateCollection(factions.SelectMany(f => f.fleets), f => f.FindEnemies(), "FleetsFindingEnemies");
-        UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
-        UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(),
-            "UnitsFindingEnemies");
-        UpdateCollection(units.ToList(), u => {
-            Profiler.BeginSample(u.GetUnitName());
-            u.UpdateUnit(deltaTime);
-            Profiler.EndSample();
-        }, "UnitsUpdate", false);
-        UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
-        UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
-        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate");
-        UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
-        UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
-        UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
-
-        eventManager.UpdateEvents(deltaTime);
-    }
+    public HashSet<Unit> destroyedUnits { get; protected set; }
+    public HashSet<Projectile> usedProjectiles { get; protected set; }
+    public HashSet<Projectile> unusedProjectiles { get; protected set; }
+    public HashSet<Missile> usedMissiles { get; protected set; }
+    public HashSet<Missile> unusedMissiles { get; protected set; }
+    public HashSet<Player> players { get; protected set; }
 
     // Here are events that the UI can subscribe to
     // However the UI should not do any computationally heavy work in them
-    // since they may be called syncronized on a different thread
+    // since they may be called synchronized on a different thread
     // Instead it should wait for the next UI update
     public event Action<Faction> OnBattleEnd = delegate { };
     public event Action<IObject> OnObjectCreated = delegate { };
     public event Action<IObject> OnObjectRemoved = delegate { };
-
-    /// <summary>
-    ///     Handles apply an action to a collection of objects in parallel or serial depending on the input
-    ///     and if the player want to use multithreading.
-    /// </summary>
-    public void UpdateCollection<T>(IEnumerable<T> collection, Action<T> action, string profileName,
-        bool parallel = true) {
-        Profiler.BeginSample(profileName);
-        if (threaded && parallel) {
-            Parallel.ForEach(collection, c => action.Invoke(c));
-        } else {
-            foreach (T c in collection) {
-                action.Invoke(c);
-            }
-        }
-
-        Profiler.EndSample();
-    }
 
     public struct PositionGiver {
         public Vector2 position;
@@ -206,6 +154,9 @@ public class BattleManager : MonoBehaviour {
         usedMissiles = new HashSet<Missile>(100);
         unusedMissiles = new HashSet<Missile>(100);
         players = new HashSet<Player>();
+        baseResourcePrice = new Dictionary<CargoBay.CargoTypes, float>();
+        baseResourcePrice.Add(CargoBay.CargoTypes.Metal, 8.4f);
+        baseResourcePrice.Add(CargoBay.CargoTypes.Gas, 19.5f);
 
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
@@ -248,7 +199,8 @@ public class BattleManager : MonoBehaviour {
         }
 
         foreach (Faction faction in factions) {
-            faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
+            if (faction.GetFleetCommand() != null)
+                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
             foreach (Faction faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);
@@ -348,7 +300,8 @@ public class BattleManager : MonoBehaviour {
 
     public Ship CreateNewShip(BattleObject.BattleObjectData battleObjectData,
         ShipScriptableObject shipScriptableObject) {
-        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject, Random.CreateFromIndex(random.NextUInt()));
+        Ship newShip = new Ship(battleObjectData, this, shipScriptableObject,
+            Random.CreateFromIndex(random.NextUInt()));
         newShip.SetupPosition(battleObjectData.positionGiver);
         units.Add(newShip);
         ships.Add(newShip);
@@ -399,11 +352,12 @@ public class BattleManager : MonoBehaviour {
         return newStation;
     }
 
-    public Star CreateNewStar(string name) {
+    public Star CreateNewStar(string name, PositionGiver? positionGiver = null) {
         Star newStar = new Star(new BattleObject.BattleObjectData(name, Vector2.zero, random.NextFloat(0, 360),
-                new Vector2(10, 10) * random.NextFloat(1f, 2.4f)), this,
+                new Vector2(15, 15) * random.NextFloat(1f, 2.4f)), this,
             starBlueprints[random.NextInt(0, starBlueprints.Count)]);
-        newStar.SetupPosition(new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4));
+        var newPositionGiver = positionGiver ?? new PositionGiver(Vector2.zero, 1000, 100000, 100, 5000, 4);
+        newStar.SetupPosition(newPositionGiver);
         stars.Add(newStar);
         AddBattleObject(newStar);
         return newStar;
@@ -462,6 +416,61 @@ public class BattleManager : MonoBehaviour {
     }
 
     #endregion
+
+    /// <summary>
+    ///     Updates the faction AI, units, projectiles etc owned by this faction based on the time elapsed.
+    ///     Also has profiling for most method calls.
+    /// </summary>
+    public virtual void UpdateBattle() {
+        if (battleState == BattleState.SettingUp || battleState == BattleState.Setup) return;
+        float deltaTime = Time.fixedDeltaTime * timeScale;
+        simulationTime += deltaTime;
+
+        if (Application.platform == RuntimePlatform.WebGLPlayer) {
+            threaded = false;
+        } else if (PlayerPrefs.HasKey("Threading")) {
+            threaded = PlayerPrefs.GetInt("Threading") == 1;
+        }
+
+        UpdateCollection(factions, f => f.EarlyUpdateFaction(), "EarlyFactionsUpdate");
+        UpdateCollection(factions, f => f.UpdateNearbyEnemyUnits(), "FactionsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFaction(deltaTime), "FactionUpdate", false);
+        UpdateCollection(factions.SelectMany(f => f.fleets), f => f.FindEnemies(), "FleetsFindingEnemies");
+        UpdateCollection(factions, f => f.UpdateFleets(deltaTime), "FleetsUpdate", false);
+        UpdateCollection(units.Where(u => !u.IsShip() || ((Ship)u).fleet == null).ToList(), u => u.FindEnemies(),
+            "UnitsFindingEnemies");
+        UpdateCollection(units.ToList(), u => {
+            Profiler.BeginSample(u.GetUnitName());
+            u.UpdateUnit(deltaTime);
+            Profiler.EndSample();
+        }, "UnitsUpdate", false);
+        UpdateCollection(units, u => u.UpdateWeapons(deltaTime), "UnitWeaponsUpdate");
+        UpdateCollection(usedProjectiles.ToList(), p => p.UpdateProjectile(deltaTime), "ProjectilesUpdate");
+        UpdateCollection(usedMissiles.ToList(), m => m.UpdateMissile(deltaTime), "MissilesUpdate");
+        UpdateCollection(destroyedUnits.ToList(), u => u.UpdateDestroyedUnit(deltaTime), "DestroyedUnitsUpdate", false);
+        UpdateCollection(stars, s => s.UpdateStar(deltaTime), "StarsUpdate", false);
+        UpdateCollection(planets, p => p.UpdatePlanet(deltaTime), "PlanetsUpdate", false);
+
+        eventManager.UpdateEvents(deltaTime);
+    }
+
+    /// <summary>
+    ///     Handles apply an action to a collection of objects in parallel or serial depending on the input
+    ///     and if the player want to use multithreading.
+    /// </summary>
+    public void UpdateCollection<T>(IEnumerable<T> collection, Action<T> action, string profileName,
+        bool parallel = true) {
+        Profiler.BeginSample(profileName);
+        if (threaded && parallel) {
+            Parallel.ForEach(collection, c => action.Invoke(c));
+        } else {
+            foreach (T c in collection) {
+                action.Invoke(c);
+            }
+        }
+
+        Profiler.EndSample();
+    }
 
     #region ObjectLists
 

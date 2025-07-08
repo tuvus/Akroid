@@ -58,24 +58,6 @@ public class Ship : Unit {
     private float timeUntilCheckRotation;
     public Random random;
 
-    public Ship(BattleObjectData battleObjectData, BattleManager battleManager,
-        ShipScriptableObject shipScriptableObject, Random random) :
-        base(battleObjectData, battleManager, shipScriptableObject) {
-        this.shipScriptableObject = shipScriptableObject;
-        this.random = random;
-        faction.AddShip(this);
-        switch (shipScriptableObject.shipType) {
-            default:
-                shipAI = new ShipAI(this);
-                break;
-        }
-
-        mass = GetSize() * 100;
-        thrusting = false;
-        RecalculateThrust();
-        SetIdle();
-        visible = true;
-    }
     public ShipScriptableObject shipScriptableObject { get; }
 
     public ShipAI shipAI { get; }
@@ -115,8 +97,7 @@ public class Ship : Unit {
         public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
 
         public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(
-            faction,
-            shipBlueprint.shipScriptableObject, name) {
+            faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
             resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
             totalResourcesRequired = 0;
@@ -141,16 +122,34 @@ public class Ship : Unit {
         }
     }
 
+    public Ship(BattleObjectData battleObjectData, BattleManager battleManager,
+        ShipScriptableObject shipScriptableObject, Random random) :
+        base(battleObjectData, battleManager, shipScriptableObject) {
+        this.shipScriptableObject = shipScriptableObject;
+        this.random = random;
+        faction.AddShip(this);
+        switch (shipScriptableObject.shipType) {
+            default:
+                shipAI = new ShipAI(this);
+                break;
+        }
+
+        mass = GetSize() * 100;
+        thrusting = false;
+        RecalculateThrust();
+        SetIdle();
+        visible = true;
+    }
+
     #region Update
 
     public override void UpdateUnit(float deltaTime) {
         base.UpdateUnit(deltaTime);
-        if (IsSpawned()) {
-            // Profiler.BeginSample("ShipAction");
-            UpdateMovement(deltaTime);
-            // Profiler.EndSample();
-            shipAI.UpdateAI(deltaTime);
-        }
+        if (!IsSpawned()) return;
+        // Profiler.BeginSample("ShipAction");
+        UpdateMovement(deltaTime);
+        // Profiler.EndSample();
+        shipAI.UpdateAI(deltaTime);
     }
 
     public override void FindEnemies() {

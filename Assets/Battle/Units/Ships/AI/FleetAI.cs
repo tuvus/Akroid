@@ -25,7 +25,7 @@ public class FleetAI {
     public Fleet fleet { get; private set; }
 
     public void AddFleetAICommand(Command command, CommandAction commandAction = CommandAction.AddToEnd) {
-        if (commandAction == CommandAction.AddToBegining) {
+        if (commandAction == CommandAction.AddToBeginning) {
             newCommand = true;
             commands.Insert(0, command);
         } else if (commandAction == CommandAction.Replace) {

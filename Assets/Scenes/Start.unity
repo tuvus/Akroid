@@ -4097,6 +4097,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7909217567649435142, guid: e2a0da9254ff982408527889046e1441,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441,
         type: 3}
       propertyPath: m_Name
@@ -6761,22 +6766,22 @@ PrefabInstance:
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.88841707
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.45903715
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
@@ -6791,7 +6796,7 @@ PrefabInstance:
     - target: {fileID: 6480528276499720427, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -54.65
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6480528276499720429, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}
@@ -6802,11 +6807,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7383295267834622128, guid: 67b5d68487ba27a49bde8f9afcc90435,
-        type: 3}
-      propertyPath: m_Color.a
-      value: 0.29803923
       objectReference: {fileID: 0}
     - target: {fileID: 8510063807659905575, guid: 67b5d68487ba27a49bde8f9afcc90435,
         type: 3}

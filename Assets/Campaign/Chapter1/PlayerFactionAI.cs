@@ -7,10 +7,8 @@ public class PlayerFactionAI : FactionAI {
     private bool nextState;
     private int nextStationToSendTo;
     private MiningStation playerMiningStation;
-    private readonly List<Station> tradeRoutes;
 
     public PlayerFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) {
-        tradeRoutes = new List<Station>();
         nextStationToSendTo = 0;
         commManager = faction.GetFactionCommManager();
         autoResearch = false;
@@ -32,13 +30,7 @@ public class PlayerFactionAI : FactionAI {
 
     private void ManageIdleShips() {
         foreach (Ship ship in idleShips.Where(s => s.IsIdle() && s.IsTransportShip() && s.fleet == null)) {
-            if (tradeRoutes.Count == 0) break;
-            nextStationToSendTo++;
-            if (nextStationToSendTo >= tradeRoutes.Count)
-                nextStationToSendTo = 0;
-            ship.shipAI.AddUnitAICommand(
-                Command.CreateTransportCommand(playerMiningStation, tradeRoutes[nextStationToSendTo],
-                    CargoBay.CargoTypes.All, true, false));
+            ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand());
         }
     }
 
@@ -59,9 +51,6 @@ public class PlayerFactionAI : FactionAI {
         return false;
     }
 
-    public void AddTradeRouteToStation(Station station) {
-        tradeRoutes.Add(station);
-    }
 
     public override Station GetFleetCommand() {
         return playerMiningStation;

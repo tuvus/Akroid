@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using static Command;
 
@@ -24,7 +25,7 @@ public class ShipAI {
             return;
         }
 
-        if (commandAction == CommandAction.AddToBegining) {
+        if (commandAction == CommandAction.AddToBeginning) {
             newCommand = true;
             if (commands.Any()) commands.First().OnCommandNoLongerActive(ship);
             commands.Insert(0, command);
@@ -107,6 +108,7 @@ public class ShipAI {
             CommandType.UndockCommand => DoUndockCommand(command, deltaTime),
             CommandType.Transport => DoTransportCommand(command, deltaTime),
             CommandType.TransportDelay => DoTransportDelayCommand(command, deltaTime),
+            CommandType.Trade => DoTradeCommand(command, deltaTime),
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             CommandType.Colonize => DoColonizeCommand(command, deltaTime),
@@ -125,7 +127,8 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
+    /// <summary>
+    /// Waits for a certain amount of time, Stop until the time is up, ContinueRemove once finished.
     /// </summary>
     private CommandResult DoWaitCommand(Command command, float deltaTime) {
         if (newCommand) {
@@ -625,62 +628,94 @@ public class ShipAI {
             return CommandResult.StopRemove;
         }
 
-        if (newCommand) {
-            if (ship.moduleSystem.Get<GasCollector>().Any(g => g.WantsMoreGas())) {
-                command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
-                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
-                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
-                ship.SetMovePosition(command.targetPosition, 2);
-                currentCommandState = CommandType.Move;
-            } else {
-                ship.SetDockTarget(command.destinationStation);
-                currentCommandState = CommandType.Dock;
+        if (command.supplierContract.HasValue &&
+            !ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value))
+            command.supplierContract = null;
+
+        // Find a new contract if we don't have one and aren't currently going to collect gas
+        if (newCommand || (command.supplierContract == null && currentCommandState != CommandType.Move &&
+            currentCommandState != CommandType.CollectGas)) {
+            FactionTrade factionTrade = ship.faction.factionTrade;
+            var gasRequests = new List<Tuple<float, Unit, FactionTrade.Offer>>();
+            factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f => f.resourcesRequested[CargoBay.CargoTypes.Gas]
+                .ToList().ForEach(r => {
+                    long amount = math.min(ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas) +
+                        ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas), r.Value.amount);
+                    if (amount == 0) return;
+                    var offer = new FactionTrade.Offer(r.Value, amount);
+                    gasRequests.Add(new Tuple<float, Unit, FactionTrade.Offer>(
+                        amount * factionTrade.GetOurSellValueOfOffer(r.Key.faction, offer), r.Key, offer));
+                }));
+            gasRequests.Sort((a, b) => a.Item1.CompareTo(b.Item2));
+            var chosenRequest = gasRequests.FirstOrDefault();
+            if (chosenRequest != null) {
+                command.supplierContract = new FactionTrade.Contract(ship, chosenRequest.Item2, chosenRequest.Item3);
+                factionTrade.AddContract(command.supplierContract.Value);
             }
+            currentCommandState = CommandType.Idle;
 
             ship.SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
-        if (ship.shipAction == Ship.ShipAction.Idle) {
-            if (currentCommandState == CommandType.Move) {
-                currentCommandState = CommandType.CollectGas;
-                return CommandResult.Stop;
+        if (ship.shipAction != Ship.ShipAction.Idle) return CommandResult.Stop;
+
+        if (currentCommandState == CommandType.Move) {
+            // We must be at the gas cloud, start collecting gas
+            currentCommandState = CommandType.CollectGas;
+        } else if (currentCommandState == CommandType.Dock) {
+            // We must be at the receiver station, start unloading
+            currentCommandState = CommandType.Wait;
+            ((Station)command.supplierContract.Value.receiver).contractShipsDocked
+                .Add(command.supplierContract.Value);
+            return CommandResult.Stop;
+        } else if (currentCommandState == CommandType.Wait) {
+            if (!ship.faction.factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
+                // We have unloaded all the cargo or the contract has been canceled
+                command.supplierContract = null;
+                currentCommandState = CommandType.Idle;
             }
-            if (currentCommandState == CommandType.CollectGas) {
-                if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
+            return CommandResult.Stop;
+        }
+
+        if (currentCommandState == CommandType.CollectGas) {
+            if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
                         return CommandResult.Stop;
                     }
                 }
 
-                ship.SetDockTarget(command.destinationStation);
-                currentCommandState = CommandType.Dock;
-                return CommandResult.Stop;
-            }
-            if (currentCommandState == CommandType.Dock) {
-                currentCommandState = CommandType.Wait;
-                return CommandResult.Stop;
-            }
-            if (currentCommandState == CommandType.Wait) {
-                if (ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <= 0) {
-                    if (!command.targetGasCloud.HasResources()) return CommandResult.StopRemove;
-                    command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
-                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
-                        ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
-                    ship.SetMovePosition(command.targetPosition, 2);
-                    currentCommandState = CommandType.Move;
+                currentCommandState = CommandType.Idle;
+                // If we don't have a contract stop and try to find a new one before going back to the fleet command.
+                if (!command.supplierContract.HasValue)
                     return CommandResult.Stop;
-                }
-
-                //TODO: Create a more robust cargo transfer system
-                long cargoTransferSpeed = 400;
-                command.destinationStation.LoadCargoFromUnit(cargoTransferSpeed, CargoBay.CargoTypes.Gas, ship);
-                currentCommandState = CommandType.Wait;
-                return CommandResult.Stop;
+            } else {
+                command.targetGasCloud = ship.faction.GetClosestGasCloud(ship.GetPosition());
+                if (command.targetGasCloud == null)
+                    return CommandResult.StopRemove;
+                // Move to a new gas cloud or go to the station early
+                currentCommandState = CommandType.Idle;
             }
-            if (currentCommandState == CommandType.Idle) {
-                newCommand = true;
+        }
+
+        if (currentCommandState == CommandType.Idle) {
+            if ((command.supplierContract == null &&
+                    ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
+                    ship.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas))
+                || (command.supplierContract != null && ship.GetAllCargoOfType(CargoBay.CargoTypes.Gas) <
+                    command.supplierContract.Value.cargo[CargoBay.CargoTypes.Gas].amount)) {
+                command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
+                    ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
+                ship.SetMovePosition(command.targetPosition, 2);
+                currentCommandState = CommandType.Move;
+            } else if (command.supplierContract != null) {
+                ship.SetDockTarget((Station)command.supplierContract.Value.receiver);
+                currentCommandState = CommandType.Dock;
+            } else if (ship.dockedStation != ship.faction.GetFleetCommand() && ship.faction.GetFleetCommand() != null) {
+                // We have enough cargo and no contracts
+                ship.SetDockTarget(ship.faction.GetFleetCommand());
             }
         }
 
@@ -808,6 +843,166 @@ public class ShipAI {
 
         return CommandResult.Stop;
     }
+
+    private CommandResult DoTradeCommand(Command command, float deltaTime) {
+        FactionTrade factionTrade = ship.faction.factionTrade;
+
+        // Check to make sure that the contracts are still valid
+        if ((command.supplierContract != null &&
+                !factionTrade.activeContracts.Contains(command.supplierContract.Value) &&
+                command.supplierContract.Value.cargo.Count != 0) || (command.requestContract != null &&
+                !factionTrade.activeContracts.Contains(command.requestContract.Value) &&
+                command.requestContract.Value.cargo.Count != 0)) {
+            if (command.supplierContract != null &&
+                factionTrade.activeContracts.Contains(command.supplierContract.Value))
+                factionTrade.RemoveContract(command.supplierContract.Value);
+            if (factionTrade.activeContracts.Contains(command.requestContract.Value))
+                factionTrade.RemoveContract(command.requestContract.Value);
+
+            command.supplierContract = null;
+            command.requestContract = null;
+            currentCommandState = CommandType.Idle;
+        }
+
+        if (command.supplierContract == null && command.requestContract == null) {
+            // Try and find a new trade route
+            // Find what cargo is being offered for the best price
+            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>> providedContracts = new();
+            CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
+                .ToList().ForEach(c =>
+                    providedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+            factionTrade.GetFactionsWeCanBuyFrom().ToList().ForEach(f =>
+                providedContracts.Keys.ToList().ForEach(c =>
+                    providedContracts[c].AddRange(f.resourcesOffered[c].Select(offer =>
+                        new Tuple<float, Unit, FactionTrade.Offer>(
+                            factionTrade.GetOurBuyValueOfOffer(f.faction, offer.Value) *
+                            math.min(ship.GetAvailableCargoSpace(c), offer.Value.amount), offer.Key,
+                            offer.Value)).Where(o => o.Item3.amount > 0))));
+            CargoBay.allCargoTypes.ForEach(c => providedContracts[c]
+                .Sort((a, b) => {
+                    int comparison = a.Item1.CompareTo(b.Item1);
+                    if (comparison != 0) return comparison;
+                    return math.distancesq(ship.position, a.Item2.position)
+                        .CompareTo(math.distancesq(ship.position, b.Item2.position));
+                }));
+
+            // Find what cargo is being requested for the best value
+            Dictionary<CargoBay.CargoTypes, List<Tuple<float, Unit, FactionTrade.Offer>>>
+                requestedContracts = new();
+            CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoTypes.All || c == command.cargoType)
+                .ToList().ForEach(c =>
+                    requestedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+            factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f =>
+                requestedContracts.Keys.ToList().ForEach(c => requestedContracts[c].AddRange(
+                    f.resourcesRequested[c].Select(wanted =>
+                        new Tuple<float, Unit, FactionTrade.Offer>(
+                            factionTrade.GetOurSellValueOfOffer(wanted.Key.faction, wanted.Value) *
+                            math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount),
+                            wanted.Key,
+                            wanted.Value)
+                    ).Where(o => o.Item3.amount > 0))));
+
+            // Find the best combination of contracts for the best profit
+            var possibleContracts = new List<Tuple<float, FactionTrade.Contract, FactionTrade.Contract>>();
+            CargoBay.allCargoTypes.ForEach(c => {
+                foreach (var wanted in requestedContracts[c]) {
+                    Tuple<float, Unit, FactionTrade.Offer>? provided = null;
+                    if (command.destinationStation != null && command.destinationStation != wanted.Item2)
+                        provided = providedContracts[c].FirstOrDefault(p => p.Item2 == command.destinationStation);
+                    else if (command.destinationStation == null || command.destinationStation == wanted.Item2)
+                        provided = providedContracts[c].FirstOrDefault();
+
+                    if (provided == null) continue;
+                    float buyValue = factionTrade.GetOurBuyValueOfOffer(provided.Item2.faction, provided.Item3);
+                    float sellValue = factionTrade.GetOurSellValueOfOffer(wanted.Item2.faction, wanted.Item3);
+                    // Check if the trade run is worth it
+                    if (sellValue <= buyValue) break;
+                    long providedAmount = provided.Item3.amount;
+                    if (provided.Item2 is MiningStation && c == CargoBay.CargoTypes.Metal)
+                        providedAmount += provided.Item2.GetAvailableCargoSpace(CargoBay.CargoTypes.Metal);
+                    long amount = math.min(math.min(ship.GetAvailableCargoSpace(c), wanted.Item3.amount),
+                        providedAmount);
+                    var providedOffer = new FactionTrade.Offer(c, amount,
+                        provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                    // Add cargo we might already have stored
+                    amount = math.min(amount + ship.GetAllCargoOfType(c), wanted.Item3.amount);
+                    var requested = new FactionTrade.Offer(c, amount,
+                        wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
+                    possibleContracts.Add(new Tuple<float, FactionTrade.Contract, FactionTrade.Contract>(
+                        (sellValue - buyValue) * amount,
+                        new FactionTrade.Contract(provided.Item2, ship, providedOffer),
+                        new FactionTrade.Contract(ship, wanted.Item2, requested)
+                    ));
+                }
+            });
+
+            if (possibleContracts.Count == 0) return CommandResult.Stop;
+
+            possibleContracts.Sort((a, b) => {
+                int comparison = b.Item1.CompareTo(a.Item1);
+                if (comparison != 0) return comparison;
+                return math.distancesq(a.Item2.provider.position, b.Item3.receiver.position)
+                    .CompareTo(math.distancesq(b.Item2.provider.position, b.Item3.receiver.position));
+            });
+
+            // Sign the contracts
+            var chosenContract = possibleContracts.First();
+            command.supplierContract = chosenContract.Item2;
+            command.requestContract = chosenContract.Item3;
+            factionTrade.AddContract(command.supplierContract.Value,
+                !chosenContract.Item2.cargo.ContainsKey(CargoBay.CargoTypes.Metal) ||
+                command.supplierContract.Value.provider is not MiningStation);
+            factionTrade.AddContract(command.requestContract.Value);
+            currentCommandState = CommandType.Trade;
+            newCommand = true;
+        }
+
+        if (ship.shipAction == Ship.ShipAction.Idle || newCommand) {
+            newCommand = false;
+            if (command.supplierContract != null) {
+                // Collect the cargo
+                if (ship.dockedStation != command.supplierContract.Value.provider) {
+                    ship.SetDockTarget((Station)command.supplierContract.Value.provider);
+                    ship.SetMaxSpeed(command.maxSpeed);
+                    currentCommandState = CommandType.Dock;
+                    return CommandResult.Stop;
+                } else if (!factionTrade.activeContracts.Contains(command.supplierContract.Value)) {
+                    command.supplierContract = null;
+                    currentCommandState = CommandType.Idle;
+                } else {
+                    //Add Contract to station to transfer cargo
+                    if (currentCommandState != CommandType.Wait)
+                        ((Station)command.supplierContract.Value.provider).contractShipsDocked.Add(
+                            command.supplierContract.Value);
+                    currentCommandState = CommandType.Wait;
+                    return CommandResult.Stop;
+                }
+            }
+            if (command.requestContract != null) {
+                // Deliver the cargo
+                if (ship.dockedStation != command.requestContract.Value.receiver) {
+                    ship.SetDockTarget((Station)command.requestContract.Value.receiver);
+                    ship.SetMaxSpeed(command.maxSpeed);
+                    currentCommandState = CommandType.Dock;
+                    return CommandResult.Stop;
+                } else if (!factionTrade.activeContracts.Contains(command.requestContract.Value)) {
+                    command.requestContract = null;
+                    currentCommandState = CommandType.Idle;
+                } else {
+                    //Add Contract to station to transfer cargo
+                    if (currentCommandState != CommandType.Wait) {
+                        ((Station)command.requestContract.Value.receiver).contractShipsDocked.Add(
+                            command.requestContract.Value);
+                        currentCommandState = CommandType.Wait;
+                    }
+                    return CommandResult.Stop;
+                }
+            }
+        }
+
+        return CommandResult.Stop;
+    }
+
 
     /// <summary> Moves the ship to the planet to colonize, then initiates colonization of the planet. </summary>
     private CommandResult DoColonizeCommand(Command command, float deltaTime) {
@@ -939,18 +1134,16 @@ public class ShipAI {
                     positions.Add(command.targetPosition);
                 }
             } else if (command.commandType == CommandType.CollectGas) {
-                if (currentCommandState == CommandType.Dock) {
-                    if (command.destinationStation == null) continue;
-                    positions.Add(command.destinationStation.GetPosition());
-                } else {
+                if (currentCommandState == CommandType.Move)
                     positions.Add(command.targetPosition);
-                }
+                if (command.supplierContract == null || command.supplierContract.Value.receiver == null) continue;
+                positions.Add(command.supplierContract.Value.receiver.GetPosition());
             } else if (command.commandType == CommandType.Colonize) {
                 if (command.targetPlanet == null) continue;
                 positions.Add(Vector2.MoveTowards(ship.GetPosition(), command.targetPlanet.GetPosition(),
                     Vector2.Distance(ship.GetPosition(), command.targetPlanet.GetPosition()) -
                     (ship.GetSize() + command.targetPlanet.GetSize() + 100)));
-            } else if (command.commandType == CommandType.Idle || command.commandType == CommandType.Wait
+            } else if (command.commandType is CommandType.Idle or CommandType.Wait
                 || command.commandType == CommandType.TurnToRotation ||
                 command.commandType == CommandType.TurnToPosition) { } else if
                 (command.commandType == CommandType.Protect) {
@@ -989,6 +1182,11 @@ public class ShipAI {
                     if (command.destinationStation != null)
                         positions.Add(command.destinationStation.GetPosition());
                 }
+            } else if (command.commandType == CommandType.Trade) {
+                if (command.supplierContract != null)
+                    positions.Add(command.supplierContract.Value.provider.position);
+                if (command.requestContract != null)
+                    positions.Add(command.requestContract.Value.receiver.position);
             } else {
                 if (command.targetPosition == null) continue;
                 positions.Add(command.targetPosition);

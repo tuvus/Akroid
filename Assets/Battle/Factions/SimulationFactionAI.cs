@@ -257,22 +257,23 @@ public class SimulationFactionAI : FactionAI {
                             Command.CommandAction.Replace);
                     }
                 } else if (idleShip.IsTransportShip()) {
-                    Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
-                    if (miningStation != null) {
-                        ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
-                    } else if (idleShip.dockedStation != fleetCommand) {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
-                            Command.CommandAction.Replace);
-                    }
+                    // Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
+                    // if (miningStation != null) {
+                        // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
+                    // } else if (idleShip.dockedStation != fleetCommand) {
+                        // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
+                            // Command.CommandAction.Replace);
+                    // }
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand(), Command.CommandAction.Replace);
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),
                         Command.CommandAction.Replace);
                 } else if (idleShip.IsGasCollectorShip()) {
-                    idleShip.shipAI.AddUnitAICommand(
-                        Command.CreateCollectGasCommand(faction.GetClosestGasCloud(idleShip.GetPosition()),
-                            fleetCommand),
-                        Command.CommandAction.Replace);
+                    var gasCloud = faction.GetClosestGasCloud(idleShip.GetPosition());
+                    if (gasCloud != null)
+                        idleShip.shipAI.AddUnitAICommand(
+                            Command.CreateCollectGasCommand(gasCloud, fleetCommand), Command.CommandAction.Replace);
                 } else if (idleShip.IsConstructionShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateBuildStationCommand(idleShip.faction, Station.StationType.MiningStation,
@@ -327,7 +328,7 @@ public class SimulationFactionAI : FactionAI {
         bool wantTransport = faction.GetTotalWantedTransports() > transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
             faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 5;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 5 + 5;
 
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
             if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {

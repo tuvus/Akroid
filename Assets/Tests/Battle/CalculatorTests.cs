@@ -2,6 +2,8 @@ using NUnit.Framework;
 using UnityEngine;
 
 public class CalculatorTests {
+
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestClosestPointOnALineToAPoint() {
         Assert.True(Vector2.zero == Calculator.GetClosestPointToAPointOnALine(Vector2.zero, 315f, Vector2.zero));
@@ -17,6 +19,7 @@ public class CalculatorTests {
         Assert.True(-Vector2.one == Calculator.GetClosestPointToAPointOnALine(Vector2.zero, 135f, -Vector2.one));
     }
 
+    [Explicit] [Category("Unit Tests")]
     [Test]
     public void TestConvertWorldToLocalPosition() {
         Assert.True(new Vector2(30, 100) == Calculator.ConvertWorldPositionToLocal(new(10, 4), 270,

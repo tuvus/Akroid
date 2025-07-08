@@ -22,7 +22,7 @@ public class PlayerPlanetUI : PlayerUIMenu<PlanetUI> {
     }
 
     protected override bool ShouldShowLeftPanel() {
-        return displayedObject != null;
+        return displayedObject != null && displayedObject.planet.areas.GetTotalAreas() != 0;
     }
 
     protected override void RefreshMiddlePanel() {

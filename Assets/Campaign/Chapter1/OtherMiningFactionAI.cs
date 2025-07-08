@@ -35,7 +35,7 @@ public class OtherMiningFactionAI : FactionAI {
             long metalToUse =
                 shipBlueprint.shipScriptableObject.resourceCosts[
                     shipBlueprint.shipScriptableObject.resourceTypes.IndexOf(CargoBay.CargoTypes.Metal)];
-            long metalCost = (long)(metalToUse * chapter1.resourceCosts[CargoBay.CargoTypes.Metal] * 1.2f);
+            long metalCost = (long)(metalToUse * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 1.2f);
             long transportCost = shipBlueprint.shipScriptableObject.cost + metalCost;
             long transportCount =
                 faction.ships.Count +
@@ -51,8 +51,7 @@ public class OtherMiningFactionAI : FactionAI {
     private void ManageIdleShips() {
         foreach (Ship idleShip in idleShips) {
             if (idleShip.IsTransportShip()) {
-                idleShip.shipAI.AddUnitAICommand(
-                    Command.CreateTransportCommand(otherMiningStation, tradeStation, CargoBay.CargoTypes.Metal, false, false));
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand(otherMiningStation));
             }
         }
     }

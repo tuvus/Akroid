@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
-  cost: 19098
+  cost: 20398
   resourceTypes: 0100000002000000
-  resourceCosts: 7e0f0000000000008201000000000000
+  resourceCosts: 82100000000000008602000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   prefab: {fileID: 8113073670915643603, guid: 8a77ee138cd670442a6334ab455d3fe6, type: 3}
-  unitName: Heavy Transport
+  unitName: Station Builder
   maxHealth: 1650
   sprite: {fileID: -990215070, guid: 2af62a375a8f1e74481182a65dad00d4, type: 3}
   systems:
@@ -25,14 +25,17 @@ MonoBehaviour:
     type: 1
     component: {fileID: 11400000, guid: 5e2601f20f399754c93fef5990ff8038, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: MainThruster
     type: 4
     component: {fileID: 11400000, guid: 52448b939cd5fbd48b857dfdbc9668e7, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: SubThruster
     type: 4
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
     moduleSize: 0
+    moduleCount: 2
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 10.82, y: 32.7}
@@ -40,3 +43,4 @@ MonoBehaviour:
   shipType: 2
   turnSpeed: 30
   combatRotation: 0
+  baseSpeed: 13.272171

@@ -74,7 +74,7 @@ public class Fleet : ShipGroup {
             fleet.AddShip(ship);
         }
 
-        fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+        fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBeginning);
     }
 
     public void UpdateFleet(float deltaTime) {

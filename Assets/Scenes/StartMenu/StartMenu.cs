@@ -59,6 +59,7 @@ public class StartMenu : MonoBehaviour {
         buttonClickSound.Play();
         state = StartMenuState.SimulationSetupMenu;
         simulationSetup.ShowSimulationSetup();
+        simulationSetup.AddFaction();
     }
 
     public void ExitGame() {

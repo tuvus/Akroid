@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3fe7fa68e10b67428d779f41aee61fa, type: 3}
   m_Name: EarthPlanet
   m_EditorClassIdentifier: 
-  sprite: {fileID: -947529837, guid: 1df60e8981cb5034eb9692bc08014a92, type: 3}
+  sprite: {fileID: 2428085640049759568, guid: 72604d6619f76a762b3397ee3edc4040, type: 3}
   hasAtmosphere: 1
+  rotationSpeed: 0.2
+  <spriteBounds>k__BackingField: {x: 38.51, y: 38.58}
+  prefab: {fileID: 6480528276499720429, guid: 67b5d68487ba27a49bde8f9afcc90435, type: 3}

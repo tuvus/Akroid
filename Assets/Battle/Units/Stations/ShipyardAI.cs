@@ -1,17 +1,7 @@
-using System.Linq;
 
 public class ShipyardAI : StationAI {
-    public bool autoCollectCargo;
 
     public ShipyardAI(Station station) : base(station) {
-        autoCollectCargo = true;
-        CargoBay cargoBay = station.moduleSystem.Get<CargoBay>().First();
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Metal, 4);
-        cargoBay.AddReservedCargoBays(CargoBay.CargoTypes.Gas, 4);
-    }
-
-    public override void UpdateAI(float deltaTime) {
-        base.UpdateAI(deltaTime);
     }
 
     protected override void ManageStationRepair() {

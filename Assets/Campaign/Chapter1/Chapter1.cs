@@ -24,7 +24,6 @@ public class Chapter1 : CampaingController {
     private Faction planetEmpire;
     private Faction planetFaction;
     private Faction planetOligarchy;
-    public Dictionary<CargoBay.CargoTypes, double> resourceCosts;
     public Faction playerFaction { get; private set; }
     public PlayerFactionAI playerFactionAI { get; private set; }
     public MiningStation playerMiningStation { get; private set; }
@@ -32,6 +31,7 @@ public class Chapter1 : CampaingController {
     public PlanetFactionAI planetFactionAI { get; private set; }
     public Planet planet { get; private set; }
     public Planet moon { get; private set; }
+    public Planet gasPlanet { get; private set; }
     public Shipyard tradeStation { get; private set; }
     public Faction shipyardFaction { get; private set; }
     public ShipyardFactionAI shipyardFactionAI { get; private set; }
@@ -49,11 +49,10 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle(BattleManager battleManager) {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
-        resourceCosts = new Dictionary<CargoBay.CargoTypes, double>(10) {
-            { CargoBay.CargoTypes.Metal, 1.6f },
-            { CargoBay.CargoTypes.Gas, 7.9f }
-        };
-        battleManager.CreateNewStar("Sun");
+        battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] = 2f;
+        battleManager.baseResourcePrice[CargoBay.CargoTypes.Gas] = 7f;
+
+        battleManager.CreateNewStar("Sun", new PositionGiver(Vector2.zero));
         colorPicker = new ColorPicker();
         playerFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(),
@@ -63,7 +62,7 @@ public class Chapter1 : CampaingController {
         otherMiningFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(OtherMiningFactionAI), "Off-World Metal Industries", "OWM", colorPicker.PickColor(),
                 1000, 0, 0, 0),
-            new PositionGiver(-playerFaction.position, 0, 4000, 500, 200, 10), 100);
+            new PositionGiver(-playerFaction.position, 0, 4000, 1000, 200, 4), 100);
         otherMiningFactionAI = (OtherMiningFactionAI)otherMiningFaction.GetFactionAI();
 
         int asteroidFieldCount = Random.Range(80, 100);
@@ -71,22 +70,6 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewAsteroidField(new PositionGiver(Vector2.zero, 14000, 100000, 1000, 100, 4),
                 Random.Range(8, 10), 10);
         }
-
-        MiningStationScriptableObject miningStationScriptableObject =
-            Resources.Load<MiningStationScriptableObject>("MiningStation");
-
-        playerMiningStation = battleManager.CreateNewMiningStation(
-            new BattleObject.BattleObjectData("Mining Station",
-                new PositionGiver(playerFaction.position, 0, 1000, 100, 10, 4),
-                Random.Range(0, 360), playerFaction), miningStationScriptableObject, false);
-
-        otherMiningStation = battleManager.CreateNewMiningStation(
-            new BattleObject.BattleObjectData("Mining Station",
-                new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
-                Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
-        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
-        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
-
 
         planetFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0,
@@ -102,15 +85,39 @@ public class Chapter1 : CampaingController {
                     new PositionGiver(planetFaction.GetPosition(), 500, 500000, 100, 1000, 5),
                     Random.Range(0, 360), new Vector2(8, 8), planetFaction), 0, 0.02f, 0.98f),
             Resources.Load<PlanetScriptableObject>("Moon"));
+        gasPlanet = battleManager.CreateNewPlanet(new Planet.PlanetData(
+                new BattleObject.BattleObjectData("Jupiter",
+                    new PositionGiver(Vector2.zero, 20000, 100000, 100, 1000, 4),
+                    Random.Range(0, 360), new Vector2(18, 18), planetFaction), 0, 0, 0),
+            Resources.Load<PlanetScriptableObject>("GasPlanet"));
+
+        MiningStationScriptableObject miningStationScriptableObject =
+            Resources.Load<MiningStationScriptableObject>("MiningStation");
+
+        playerMiningStation = battleManager.CreateNewMiningStation(
+            new BattleObject.BattleObjectData("Mining Station",
+                new PositionGiver(planetFaction.position, 0, 1000, 100, 10, 4),
+                Random.Range(0, 360), playerFaction), miningStationScriptableObject, false);
+
+        otherMiningStation = battleManager.CreateNewMiningStation(
+            new BattleObject.BattleObjectData("Mining Station",
+                new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
+                Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
+        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
+        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
+
+
         tradeStation = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Trade Station",
-                new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, planet.GetSize() + 180), 0,
+                new PositionGiver(Vector2.MoveTowards(planet.GetPosition(), Vector2.zero, -planet.GetSize() - 180), 30,
                     1000, 50, 200, 5),
                 Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>("TradeStation"),
             true);
-        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Metal);
-        tradeStation.LoadCargo(2400, CargoBay.CargoTypes.Gas);
-        ((ShipyardAI)tradeStation.stationAI).autoCollectCargo = false;
+        CargoBay.allCargoTypes.ForEach(c =>
+            tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
+                tradeStation.freeCargo[c].maxWanted));
+        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoTypes.Metal);
+        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Gas);
         tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
             planetFaction,
             battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
@@ -122,7 +129,7 @@ public class Chapter1 : CampaingController {
 
         shipyardFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(),
-                (long)(2400 * resourceCosts[CargoBay.CargoTypes.Metal] * 20), 0, 0, 0),
+                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 40), 0, 0, 0),
             new PositionGiver(Vector2.zero, 4000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
@@ -140,13 +147,14 @@ public class Chapter1 : CampaingController {
 
         researchFaction = battleManager.CreateNewFaction(
             new FactionData("Frontier Research", "FRO", colorPicker.PickColor(), 3000, 36, 0, 0),
-            new PositionGiver(Vector2.zero, 10000, 50000, 500, 5000, 2), 100);
+            new PositionGiver(Vector2.MoveTowards(gasPlanet.position, Vector2.zero, gasPlanet.size + 100),
+                40, 1000, 10, 100, 2), 100);
         researchStation = battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()),
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
 
-        playerMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
+        playerMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
@@ -166,9 +174,9 @@ public class Chapter1 : CampaingController {
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
-        otherMiningStation.GetMiningStationAI().SetupWantedTrasports(tradeStation.GetPosition());
+        otherMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
-            .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBegining);
+            .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBeginning);
 
         var civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(0, 2); i++) {
@@ -234,6 +242,16 @@ public class Chapter1 : CampaingController {
                 b.shipScriptableObject.shipType == Ship.ShipType.Cruiser ||
                 b.shipScriptableObject.shipType == Ship.ShipType.Dreadnaught).ToList()
             .ForEach(b => battleManager.shipBlueprints.Remove(b));
+
+        planetFaction.factionTrade.MakeSellTradeAgreement(playerFaction);
+        otherMiningFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(otherMiningFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(shipyardFaction);
+        planetFaction.factionTrade.MakeSellTradeAgreement(researchFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(otherMiningFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(playerFaction);
+        shipyardFaction.factionTrade.MakeSellTradeAgreement(researchFaction);
 
         StartTutorial();
         AddMoonQuestLine();
@@ -308,16 +326,12 @@ public class Chapter1 : CampaingController {
                                 battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
                             }
 
-                            playerFactionAI.AddTradeRouteToStation(tradeStation);
+                            playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
                             // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
                             AddWarEscalationEventLine();
                             battleManager.GetLocalPlayer().SetLockedUnits(false);
-                            playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                                .AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-                            playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                                .AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
                         });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -491,10 +505,6 @@ public class Chapter1 : CampaingController {
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
                 () => {
                     AddStationTutorial();
-                    playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                        .AddReservedCargoBays(CargoBay.CargoTypes.Metal, 2);
-                    playerMiningStation.moduleSystem.Get<CargoBay>().First()
-                        .AddReservedCargoBays(CargoBay.CargoTypes.Gas, 2);
                 });
         })();
     }
@@ -514,7 +524,7 @@ public class Chapter1 : CampaingController {
                     communicationEvent => {
                         if (!communicationEvent.isActive)
                             return false;
-                        playerFactionAI.AddTradeRouteToStation(tradeStation);
+                        playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
                         communicationEvent.DeactivateEvent();
                         shipyardFaction.GetFactionCommManager().SendCommunication(playerFaction,
                             "Good to see that you are set up and everything is going well. " +
@@ -1072,7 +1082,7 @@ public class Chapter1 : CampaingController {
             pirateFaction.StartWar(playerFaction);
             pirateFaction.StartWar(shipyardFaction);
             pirateFaction.StartWar(otherMiningFaction);
-            resourceCosts[CargoBay.CargoTypes.Metal] *= 1.25;
+            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.25f;
         });
         pirateChain.AddCommEvent(planetCommManager, playerFaction,
             $"Pirates have seized the {otherMiningFaction.name}'s mining station!\n" +
@@ -1150,6 +1160,7 @@ public class Chapter1 : CampaingController {
             planetOligarchy.GetFactionAI().attackStrength = .05f;
             planetDemocracy.GetFactionAI().attackSpeed = 7f;
             planetDemocracy.GetFactionAI().attackStrength = .04f;
+            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
@@ -1195,6 +1206,7 @@ public class Chapter1 : CampaingController {
         // Uprising Occurs
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"A robot uprising has begun within the {planetOligarchy.name}");
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(100));
         planetEscalationChain.AddAction(() =>
             planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
@@ -1277,6 +1289,7 @@ public class Chapter1 : CampaingController {
                     planet.RemoveFaction(minorFactions);
                 });
         });
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
         planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));

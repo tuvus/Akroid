@@ -3,30 +3,28 @@ using System.Linq;
 using UnityEngine;
 
 public class MiningStationAI : StationAI {
-    public List<Ship> transportShips;
     [SerializeField] private int wantedTransports;
 
     public MiningStationAI(Station station) : base(station) {
-        transportShips = new List<Ship>(10);
         wantedTransports = 0;
     }
 
     public void SetupMiningStation() {
         if (station.faction.GetFleetCommand() != null) {
-            SetupWantedTrasports(station.faction.GetFleetCommand().GetPosition());
+            SetupWantedTransports(station.faction.GetFleetCommand().GetPosition());
         } else if (station.faction.stations.Any(s =>
             s.GetStationType() == Station.StationType.Shipyard ||
             s.GetStationType() == Station.StationType.FleetCommand)) {
-            SetupWantedTrasports(station.faction.stations
+            SetupWantedTransports(station.faction.stations
                 .First(s => s.GetStationType() == Station.StationType.Shipyard ||
                     s.GetStationType() == Station.StationType.FleetCommand)
                 .GetPosition());
         } else {
-            SetupWantedTrasports(station.faction.GetPosition());
+            SetupWantedTransports(station.faction.GetPosition());
         }
     }
 
-    public void SetupWantedTrasports(Vector2 targetPosition) {
+    public void SetupWantedTransports(Vector2 targetPosition) {
         float distance = Vector2.Distance(station.GetPosition(), targetPosition) * 2;
         float miningAmount = GetMiningStation().GetMiningAmount() / GetMiningStation().GetMiningSpeed();
         float cargoPerTransport = 4800;
@@ -34,49 +32,10 @@ public class MiningStationAI : StationAI {
         wantedTransports = Mathf.CeilToInt(miningAmount / (transportSpeed * cargoPerTransport / distance));
     }
 
-    public override void UpdateAI(float deltaTime) {
-        base.UpdateAI(deltaTime);
-        UpdateMiningStation();
-    }
-
-    private void UpdateMiningStation() {
-        if (!GetMiningStation().activelyMining && !GetMiningStation().activelyMining && transportShips.Count > 0) {
-            for (int i = transportShips.Count - 1; i >= 0; i--) {
-                transportShips[i].shipAI.AddUnitAICommand(Command.CreateIdleCommand(), Command.CommandAction.Replace);
-                transportShips.RemoveAt(i);
-            }
-        }
-    }
-
-    public void AddTransportShip(Ship ship) {
-        if (!GetMiningStation().activelyMining)
-            Debug.LogError("Trying to add to an inactive station");
-        for (int i = 0; i < transportShips.Count; i++) {
-            if (transportShips[i] == null) {
-                transportShips.RemoveAt(i);
-                i--;
-            }
-        }
-
-        if (!transportShips.Contains(ship)) {
-            transportShips.Add(ship);
-        }
-
-        ship.shipAI.AddUnitAICommand(
-            Command.CreateTransportCommand(station, station.faction.GetFleetCommand(), CargoBay.CargoTypes.Metal),
-            Command.CommandAction.Replace);
-    }
-
     public int? GetWantedTransportShips() {
-        for (int i = transportShips.Count - 1; i >= 0; i--) {
-            if (transportShips[i] == null) {
-                transportShips.RemoveAt(i);
-            }
-        }
-
         if (!station.IsBuilt() || !GetMiningStation().activelyMining)
             return null;
-        return wantedTransports - transportShips.Count;
+        return wantedTransports;
     }
 
     public MiningStation GetMiningStation() {

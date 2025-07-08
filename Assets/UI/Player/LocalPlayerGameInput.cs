@@ -357,27 +357,13 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
     }
 
     private void GenerateTransportCommand() {
-        Vector2 mousePos = GetMouseWorldPosition();
-        Station closestProductionStation = null;
-        float closestStationDistance = 0;
-        foreach (Station station in localPlayer.GetFaction().stations) {
-            float newStationDistance = Vector2.Distance(mousePos, station.position);
-            if (closestProductionStation == null || newStationDistance < closestStationDistance) {
-                closestProductionStation = station;
-                closestStationDistance = newStationDistance;
-            }
-        }
-
-        if (closestProductionStation == null) return;
+        Station station = null;
+        if (mouseOverBattleObject is StationUI stationUI) station = stationUI.station;
 
         List<ShipUI> allShips = selectedUnits.GetAllShips();
         for (int i = 0; i < allShips.Count; i++) {
             if (allShips[i].ship.IsTransportShip()) {
-                allShips[i].ship.shipAI
-                    .AddUnitAICommand(
-                        Command.CreateTransportCommand(closestProductionStation,
-                            localPlayer.GetFaction().GetFleetCommand(),
-                            CargoBay.CargoTypes.Metal), GetCommandAction());
+                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand(station), GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
             }
         }
@@ -424,7 +410,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
             } else if (AdditiveButtonPressed) {
                 selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToEnd);
             } else if (AltButtonPressed) {
-                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBegining);
+                selectedUnits.fleet.fleet.fleetAI.AddFormationCommand(Command.CommandAction.AddToBeginning);
             } else {
                 selectedUnits.fleet.fleet.fleetAI.AddFormationCommand();
             }
@@ -446,7 +432,7 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
     protected Command.CommandAction GetCommandAction() {
         if (AltButtonPressed)
-            return Command.CommandAction.AddToBegining;
+            return Command.CommandAction.AddToBeginning;
         if (AdditiveButtonPressed)
             return Command.CommandAction.AddToEnd;
         return Command.CommandAction.Replace;

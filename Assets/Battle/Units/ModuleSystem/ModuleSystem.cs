@@ -80,7 +80,7 @@ public class ModuleSystem {
             moduleSize = prefabSystem.moduleSize;
             this.component = component;
         }
-        public int moduleCount { get; private set; }
+        public int moduleCount;
     }
 
     #region SystemUpgrades
@@ -99,7 +99,7 @@ public class ModuleSystem {
                 long currentAmount = 0;
                 int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
                 if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
-                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i]) < upgrade.resourceCosts[i] - currentAmount) {
+                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i], true) < upgrade.resourceCosts[i] - currentAmount) {
                     return false;
                 }
             }

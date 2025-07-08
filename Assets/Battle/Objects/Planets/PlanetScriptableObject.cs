@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlanetScriptableObject : ScriptableObject {
     public Sprite sprite;
     public bool hasAtmosphere;
+    public float rotationSpeed;
     [field: SerializeField] public Vector2 spriteBounds { get; private set; }
     public GameObject prefab;
 
