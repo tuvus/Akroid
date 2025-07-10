@@ -26,6 +26,7 @@ MonoBehaviour:
   maxAmmo: 3
   baseScale: {x: 0.6, y: 0.6}
   turretFire: {fileID: 0}
+  turretFirePitch: 1
   laserDamagePerSecond: 180
   fireDuration: 0.1
   fadeDuration: 0.05

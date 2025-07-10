@@ -49,7 +49,7 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         }
         base.UpdateObject();
         if (projectile.hit && !hit && localPlayerInput.ShouldShowCloseUpGraphics() &&
-            localPlayerInput.IsObjectInViewingField(this)) {
+            localPlayerInput.IsObjectInViewingField(this, 120)) {
             hit = true;
             if (uIManager.GetParticlesShown()) particleSystem.Play();
             highlight.enabled = false;
@@ -57,7 +57,7 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         }
         if (hit) {
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .3f;
+            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .2f;
             explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
             explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }

@@ -12,27 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: ResearchStation
   m_EditorClassIdentifier: 
-  cost: 23544
+  cost: 23616
   resourceTypes: 0100000002000000
-  resourceCosts: b10d0000000000004c00000000000000
+  resourceCosts: ba0d0000000000005200000000000000
   prefabPath: Prefabs/StationPrefabs/DefenceStation
+  prefab: {fileID: 7158030276076730609, guid: b137e15685cd8db4d9bf16a386fb2a68, type: 3}
   unitName: ResearchStation
   maxHealth: 2300
   sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: Turrets
     type: 3
     component: {fileID: 11400000, guid: a2eea8f8a4dd0004cbcbb21361989fd8, type: 2}
     moduleSize: 0
+    moduleCount: 3
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: fc665174bc39dad4e8de902bcd11e947, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
     moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
+  baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 92.3, y: 90.3}
   stationType: 2
   repairAmount: 200
   repairSpeed: 5

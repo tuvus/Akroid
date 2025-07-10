@@ -16,7 +16,7 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: 7401000000000000
   upgrade: {fileID: 11400000, guid: e8fd8fdbbbc3f6f43a5c2ff7f18bf59d, type: 2}
-  DPS: 46.545452
+  DPS: 46.545456
   turretSprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
   range: 640
   rotateSpeed: 42
@@ -26,6 +26,7 @@ MonoBehaviour:
   maxAmmo: 4
   baseScale: {x: 1.2, y: 1.2}
   turretFire: {fileID: 0}
+  turretFirePitch: 1
   laserDamagePerSecond: 160
   fireDuration: 0.7
   fadeDuration: 0.2

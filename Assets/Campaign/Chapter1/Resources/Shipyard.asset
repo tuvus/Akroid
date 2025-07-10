@@ -16,36 +16,45 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: 9240000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
+  prefab: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441, type: 3}
   unitName: Shipyard
   maxHealth: 9000
   sprite: {fileID: 48152505, guid: a0a783ed409c02147832d0f5edb5d4d5, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: LowerTurrets
     type: 3
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
+    moduleCount: 3
   - name: UpperTurrets
     type: 3
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
+    moduleCount: 3
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
     moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 135.4, y: 129.3}
   stationType: 4
   repairAmount: 500
   repairSpeed: 5

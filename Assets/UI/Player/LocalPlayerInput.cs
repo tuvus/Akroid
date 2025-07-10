@@ -360,12 +360,12 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     /// <returns> True if the object is visible by the camera, false otherwise. </returns>
-    public bool IsObjectInViewingField(ObjectUI objectUI) {
+    public bool IsObjectInViewingField(ObjectUI objectUI, float distance = 0f) {
         Vector2 position = mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition());
         // We can find the object screen size of the object by taking a point [size] distance away and getting its screen position
         float objectScreenSize = position.x -
             mainCamera.WorldToScreenPoint(objectUI.iObject.GetPosition() - new Vector2(objectUI.iObject.GetSize(), 0))
-                .x;
+                .x + distance;
         // Check if the position is within all four bounds of the screen
         return position.y >= -objectScreenSize && position.y - objectScreenSize <= Screen.height &&
             position.x >= -objectScreenSize && position.x - objectScreenSize <= Screen.width;

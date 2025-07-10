@@ -59,7 +59,7 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     public void Explode(DestroyEffect destroyEffect) {
         this.destroyEffect = destroyEffect;
         if (uIManager.GetParticlesShown() &&
-            uIManager.localPlayer.GetInputManager().IsObjectInViewingField(battleObjectUI)) {
+            uIManager.localPlayer.GetInputManager().IsObjectInViewingField(battleObjectUI, 120)) {
             explosion.Play(false);
             fragments.Play(false);
         }

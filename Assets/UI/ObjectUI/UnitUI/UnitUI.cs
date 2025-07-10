@@ -86,17 +86,15 @@ public abstract class UnitUI : BattleObjectUI {
                 unitIconUI.ShowUnitIconUI(false);
                 UnselectObject();
                 explosionAudioSource.Play();
-                float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-                explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
-                explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
-                explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
             }
-        } else {
+        }
+
+        if (destroyed) {
             destroyEffectUI.UpdateExplosion();
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
-            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
+            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(1200 / cameraZoom, .25) - 1));
+            explosionAudioSource.minDistance = 10 + 5 * cameraZoom / 10;
+            explosionAudioSource.maxDistance = 60 + 5 * cameraZoom / 10;
         }
     }
 

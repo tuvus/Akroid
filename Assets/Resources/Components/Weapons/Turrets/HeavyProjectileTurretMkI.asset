@@ -38,3 +38,5 @@ MonoBehaviour:
   flashPrefab: {fileID: 4044898265301780897, guid: 671b2ad4233e47c45b6febc11094884c,
     type: 3}
   flashSpeed: 0.5
+  projectileExplosionSound: {fileID: 8300000, guid: 6c318740b84a8231384971a27b755ee8,
+    type: 3}
