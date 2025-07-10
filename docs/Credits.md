@@ -4,3 +4,4 @@
 - Assets/Resources/Audio/ProjectileFire.wav - humanoide9000 [Freesound](https://freesound.org/people/humanoide9000/sounds/422440/) CC BY 4, Edited
 - Assets/Resources/Audio/MissileExplosion.wav - klangfabrik [Freesound](https://freesound.org/people/klangfabrik/sounds/211666/) CC 0
 - Assets/Resources/Audio/UnitExplosion.wav - newlocknew [Freesound](https://freesound.org/people/newlocknew/sounds/674560/) CC BY 4 NC
+- Assets/Resources/Audio/ProjectileExplosion.wav - sandyrb [Freesound](https://freesound.org/people/sandyrb/sounds/35643/) CC BY

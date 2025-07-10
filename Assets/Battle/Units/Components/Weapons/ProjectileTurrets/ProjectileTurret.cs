@@ -32,7 +32,8 @@ public class ProjectileTurret : Turret {
                 projectileTurretScriptableObject.projectileRange *
                 unit.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileRange), GetTurretOffSet(),
                 scale.y * 2,
-                projectileTurretScriptableObject.projectilePrefab);
+                projectileTurretScriptableObject.projectilePrefab,
+                projectileTurretScriptableObject.projectileExplosionSound);
         } else {
             targetUnit.TakeDamage(Mathf.RoundToInt(
                 random.NextFloat(projectileTurretScriptableObject.minDamage,

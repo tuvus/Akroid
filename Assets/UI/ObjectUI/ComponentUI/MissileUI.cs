@@ -39,7 +39,7 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         explosionAudioSource.maxDistance = 120;
         explosionAudioSource.pitch = missile.missileScriptableObject.explosionPitch;
         explosionAudioSource.dopplerLevel = 0;
-        explosionAudioSource.volume = .2f;
+        explosionAudioSource.volume = .1f;
     }
 
     public override void UpdateObject() {
@@ -52,25 +52,22 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
             highlight.enabled = false;
 
             explosionAudioSource.Play();
-            destroyEffectUI.UpdateExplosion();
-            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
-            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
-        } else if (missile.hit) {
-            destroyEffectUI.UpdateExplosion();
-            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
-            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         } else if (missile.expired && !expired) {
             expired = true;
             ParticleSystem.EmissionModule emission = thrust.emission;
             emission.enabled = false;
             highlight.enabled = false;
-        } else {
+        } else if (!hit) {
             highlight.enabled = uIManager.GetEffectsShown();
             if (thrust.isPlaying && !uIManager.GetParticlesShown()) thrust.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+
+        if (hit) {
+            destroyEffectUI.UpdateExplosion();
+            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .25f;
+            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
+            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Projectile : BattleObject {
     private int damage;
@@ -8,14 +9,14 @@ public class Projectile : BattleObject {
     private float projectileRange;
     private Vector2 shipVelocity;
     private float speed;
+    public AudioResource explosionSound { get; private set; }
 
     public Projectile(BattleManager battleManager) : base(new BattleObjectData("Projectile"), battleManager) { }
     public float particleTime { get; private set; }
     public bool hit { get; private set; }
 
     public void SetProjectile(Faction faction, Vector2 position, float rotation, Vector2 shipVelocity, float speed,
-        int damage,
-        float projectileRange, float offset, float projectileScale, GameObject prefab) {
+        int damage, float projectileRange, float offset, float projectileScale, GameObject prefab, AudioResource explosionSound) {
         this.faction = faction;
         this.position = position;
         this.rotation = rotation;
@@ -25,6 +26,7 @@ public class Projectile : BattleObject {
         this.damage = damage;
         this.projectileRange = projectileRange;
         this.prefab = prefab;
+        this.explosionSound = explosionSound;
         distance = 0;
         hit = false;
         scale = new Vector2(projectileScale, projectileScale) / 2;

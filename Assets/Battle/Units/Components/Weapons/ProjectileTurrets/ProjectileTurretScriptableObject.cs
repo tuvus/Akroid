@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Audio;
 using static Turret;
 
 [CreateAssetMenu(fileName = "Resources/Components/ProjectileTurretScriptableObject",
@@ -14,6 +15,7 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     public GameObject projectilePrefab;
     public GameObject flashPrefab;
     public float flashSpeed = 0.5f;
+    public AudioResource projectileExplosionSound;
 
     public override void Awake() {
         base.Awake();
