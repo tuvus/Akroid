@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Aterna
   maxHealth: 3400
   sprite: {fileID: -1913859534, guid: 70aef500846276d47b1c2fbc712ca58a, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: CenterTurret
     type: 3
@@ -63,4 +64,5 @@ MonoBehaviour:
   shipType: 7
   turnSpeed: 45
   combatRotation: 90
-  baseSpeed: 14.870288
+  baseMass: 1459.2858
+  baseSpeed: 29.740576

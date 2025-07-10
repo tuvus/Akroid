@@ -20,6 +20,8 @@ MonoBehaviour:
   retarget: 1
   sprite: {fileID: -795279756, guid: d178ef83e7ad40642b1295bc0c068466, type: 3}
   destroyEffect: {fileID: 11400000, guid: 1ecd3ef65dc4109a88eaffd73765f81d, type: 2}
+  explosionSound: {fileID: 8300000, guid: a636a29c8ccde44888b07233acc1c514, type: 3}
+  explosionPitch: 0.4
   timeAfterExpire: 1
   missilePrefab: {fileID: 6973132868627845797, guid: 7245374dc6feef641ac35d2bd70e1c22,
     type: 3}

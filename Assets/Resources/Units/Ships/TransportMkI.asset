@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Transport
   maxHealth: 762
   sprite: {fileID: 1826089200, guid: 30f8a29478335c54fba956678ccdea15, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: Utility
     type: 1

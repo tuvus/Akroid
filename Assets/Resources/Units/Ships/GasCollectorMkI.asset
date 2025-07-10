@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: GasCollector
   maxHealth: 180
   sprite: {fileID: 1652558456, guid: 4410c3bb636a69648b2f8dea4395572e, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: Turrets
     type: 3

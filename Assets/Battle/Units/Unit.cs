@@ -136,7 +136,7 @@ public abstract class Unit : BattleObject {
     public virtual void TakeDamage(int damage) {
         if (!IsSpawned())
             Debug.LogWarning("Unit not spawned is taking damage" + objectName + " position:" + GetPosition());
-        // health -= damage;
+        health -= damage;
     }
 
     protected override void Despawn(bool removeImmediately) {

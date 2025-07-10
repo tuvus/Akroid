@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Colonizer
   maxHealth: 850
   sprite: {fileID: 2143475390, guid: 9256f3aff4adf1346aae1320292696a2, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: SecondaryTurrets
     type: 3
@@ -58,4 +59,5 @@ MonoBehaviour:
   shipType: 9
   turnSpeed: 30
   combatRotation: 0
-  baseSpeed: 11.383928
+  baseMass: 896
+  baseSpeed: 34.151787

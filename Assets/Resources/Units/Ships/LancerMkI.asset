@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Lancer
   maxHealth: 580
   sprite: {fileID: -603366875, guid: 5a11f1cbb331c0a419e3f6fe5d003231, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: CenterTurret
     type: 3

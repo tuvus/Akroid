@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Aria
   maxHealth: 224
   sprite: {fileID: 2014477746, guid: dafc31837f98a4b4687f98ecfb498daa, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: TopTurret
     type: 3

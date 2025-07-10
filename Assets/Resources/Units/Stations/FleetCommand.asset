@@ -12,40 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: FleetCommand
   m_EditorClassIdentifier: 
-  cost: 138282
+  cost: 139443
   resourceTypes: 0100000002000000
-  resourceCosts: 18590000000000006f01000000000000
+  resourceCosts: c45b000000000000d402000000000000
   prefabPath: Prefabs/StationPrefabs/FleetCommand
+  prefab: {fileID: 8198535041992587762, guid: e804d706e62697043b88a6a2535373d5, type: 3}
   unitName: FleetCommand
   maxHealth: 13000
   sprite: {fileID: 48152505, guid: a0a783ed409c02147832d0f5edb5d4d5, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: LowerTurrets
     type: 3
     component: {fileID: 11400000, guid: 5fb088c3246e302458a370e585112df5, type: 2}
     moduleSize: 0
+    moduleCount: 3
   - name: UpperTurrets
     type: 3
     component: {fileID: 11400000, guid: 46f6fd3aacf3c164eb85d896f7cb2ce4, type: 2}
     moduleSize: 0
+    moduleCount: 3
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 231a092250db6484489f0cd41b86fd4e, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 695aca80ee60ada4289853ca0a90f674, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: 16f7bc753b3ffe6429c0c0571c9ecdd7, type: 2}
     moduleSize: 0
+    moduleCount: 1
   - name: Utility
     type: 1
     component: {fileID: 11400000, guid: c894325743034634288ca3b5d5112419, type: 2}
     moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
+  <spriteBounds>k__BackingField: {x: 135.4, y: 129.3}
   stationType: 1
   repairAmount: 1000
   repairSpeed: 10

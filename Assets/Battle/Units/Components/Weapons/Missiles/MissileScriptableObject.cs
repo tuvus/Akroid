@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 [CreateAssetMenu(fileName = "Missile", menuName = "Components/Missile", order = 4)]
 public class MissileScriptableObject : ScriptableObject {
@@ -10,6 +11,8 @@ public class MissileScriptableObject : ScriptableObject {
     public bool retarget;
     public Sprite sprite;
     public DestroyEffectScriptableObject destroyEffect;
+    public AudioResource explosionSound;
+    public float explosionPitch;
     public float timeAfterExpire;
     public GameObject missilePrefab;
     public Vector2 spriteBounds { get; private set; }

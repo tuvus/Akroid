@@ -20,6 +20,7 @@ MonoBehaviour:
   unitName: Heavy Transport
   maxHealth: 1200
   sprite: {fileID: -990215070, guid: 2af62a375a8f1e74481182a65dad00d4, type: 3}
+  explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: MainTurrets
     type: 3

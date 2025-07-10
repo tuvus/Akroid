@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Audio;
 using static CargoBay;
 
 public class UnitScriptableObject : ScriptableObject {
@@ -14,6 +15,7 @@ public class UnitScriptableObject : ScriptableObject {
     public string unitName;
     public int maxHealth;
     public Sprite sprite;
+    public AudioResource explosionSound;
 
     [SerializeField] protected ModuleSystem.System[] systems;
     public DestroyEffectScriptableObject destroyEffect;

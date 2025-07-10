@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public abstract class UnitUI : BattleObjectUI {
@@ -8,6 +9,7 @@ public abstract class UnitUI : BattleObjectUI {
     public UnitIconUI unitIconUI { get; private set; }
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
     public List<ComponentUI> components { get; private set; }
+    private AudioSource explosionAudioSource;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
@@ -51,6 +53,15 @@ public abstract class UnitUI : BattleObjectUI {
                 shieldGeneratorUI.Setup(moduleComponent, uIManager, this);
             }
         }
+        explosionAudioSource = gameObject.AddComponent<AudioSource>();
+        explosionAudioSource.resource = unit.unitScriptableObject.explosionSound;
+        explosionAudioSource.playOnAwake = false;
+        explosionAudioSource.spatialBlend = 1;
+        explosionAudioSource.rolloffMode = AudioRolloffMode.Linear;
+        explosionAudioSource.minDistance = 20;
+        explosionAudioSource.maxDistance = 120;
+        explosionAudioSource.dopplerLevel = 0;
+        explosionAudioSource.volume = .4f;
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
     }
 
@@ -74,9 +85,18 @@ public abstract class UnitUI : BattleObjectUI {
                 destroyEffectUI.Explode(unit.GetDestroyEffect());
                 unitIconUI.ShowUnitIconUI(false);
                 UnselectObject();
+                explosionAudioSource.Play();
+                float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+                explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
+                explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
+                explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
             }
         } else {
             destroyEffectUI.UpdateExplosion();
+            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .5f;
+            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
+            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }
     }
 
@@ -100,5 +120,6 @@ public abstract class UnitUI : BattleObjectUI {
         base.OnBattleObjectRemoved();
         destroyEffectUI.OnBattleObjectRemoved();
         components.ForEach(c => c.OnUnitRemoved());
+        explosionAudioSource.Stop();
     }
 }
