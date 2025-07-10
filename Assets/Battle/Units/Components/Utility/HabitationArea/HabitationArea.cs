@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public class Population {
+    public long population;
+    public long crew;
+    public long marine;
+}
+
 public class HabitationArea : ModuleComponent {
     private HabitationAreaScriptableObject habitationAreaScriptableObject;
     [field: SerializeField] public long population { get; private set; }
