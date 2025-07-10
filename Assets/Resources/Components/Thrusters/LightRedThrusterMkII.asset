@@ -22,4 +22,4 @@ MonoBehaviour:
   endThrustColor: {r: 1, g: 0.9372549, b: 0.3647059, a: 0}
   thrustEffect: {fileID: 6870540569906507293, guid: 607a5d926b03a1f41b8c0535257293cd,
     type: 3}
-  thrustSound: {fileID: 8300000, guid: db5e90ecb516421cd9f10fa302f3a9fa, type: 3}
+  thrustSound: {fileID: 8300000, guid: 6d9b599f850b3ddb4b3921fe2327aada, type: 3}

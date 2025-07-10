@@ -18,6 +18,7 @@ public class TurretUI : ComponentUI {
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.minDistance = 20;
         audioSource.maxDistance = 120;
+        audioSource.pitch = turret.turretScriptableObject.turretFirePitch;
         audioSource.dopplerLevel = 0;
         audioSource.volume = .2f;
         turret.OnFire += () => fire = true;

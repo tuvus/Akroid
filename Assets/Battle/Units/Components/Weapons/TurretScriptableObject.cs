@@ -14,6 +14,7 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public int maxAmmo;
     public Vector2 baseScale = Vector2.one;
     public AudioResource turretFire;
+    public float turretFirePitch;
     private float findNewTargetUpdateSpeed;
     public Vector2 spriteBounds { get; private set; }
     public float turretOffset { get; private set; }

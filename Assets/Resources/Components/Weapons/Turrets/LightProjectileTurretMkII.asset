@@ -25,7 +25,8 @@ MonoBehaviour:
   reloadSpeed: 4
   maxAmmo: 3
   baseScale: {x: 0.9, y: 0.9}
-  turretFire: {fileID: 8300000, guid: 0cef757858b3bf01bb9c5ae8c7649282, type: 3}
+  turretFire: {fileID: 8300000, guid: 09c0f722f967fb5b19ae801c04dbb5a3, type: 3}
+  turretFirePitch: 1
   fireVelocity: 76
   fireAccuracy: 2.2
   minDamage: 5

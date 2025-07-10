@@ -36,6 +36,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         audioSource.spatialBlend = 1;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.dopplerLevel = 0;
+        audioSource.pitch = .2f;
         audioSource.loop = true;
         thrusting = false;
         uIManager.uiBattleManager.particleHolders.Add(this);
