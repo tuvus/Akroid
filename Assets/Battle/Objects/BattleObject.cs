@@ -31,7 +31,7 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
     [field: SerializeField] public Faction faction { get; protected set; }
     public bool spawned { get; protected set; }
     public bool visible { get; protected set; }
-    protected Random random { get; private set; }
+    protected Random random;
 
     public virtual Vector2 GetPosition() {
         return position;

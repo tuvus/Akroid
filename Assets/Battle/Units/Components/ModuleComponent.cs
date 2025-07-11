@@ -22,7 +22,7 @@ public abstract class ModuleComponent : BattleObject {
     }
 
     public Vector2 GetWorldPosition() {
-        return Calculator.ConvertLocalPositionToWorld(unit.position, unit.rotation, position);
+        return Calculator.ConvertLocalPositionToWorld(unit.position, unit.rotation, position * unit.scale);
     }
 
     public float GetWorldRotation() {

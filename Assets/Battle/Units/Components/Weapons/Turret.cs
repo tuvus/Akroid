@@ -15,7 +15,6 @@ public abstract class Turret : ModuleComponent {
     private bool aimed;
     private readonly float findNewTargetUpdateSpeed = .2f;
     private float findNewTargetUpdateTime;
-    private Random random;
 
     protected ReloadController reloadController;
 
@@ -35,7 +34,6 @@ public abstract class Turret : ModuleComponent {
         SetSize(GetSpriteSize());
         reloadController = new ReloadController(turretScriptableObject.fireSpeed, turretScriptableObject.reloadSpeed,
             turretScriptableObject.maxAmmo);
-        random = new Random((uint)battleManager.units.Count + 1);
         findNewTargetUpdateTime = random.NextFloat(0, 0.2f);
         visible = true;
         turretOffset = turretScriptableObject.turretOffset * scale.y;

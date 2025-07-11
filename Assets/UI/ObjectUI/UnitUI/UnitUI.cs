@@ -94,7 +94,7 @@ public abstract class UnitUI : BattleObjectUI {
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
             explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(1200 / cameraZoom, .25) - 1));
             explosionAudioSource.minDistance = 10 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 60 + 5 * cameraZoom / 10;
+            explosionAudioSource.maxDistance = 50 + 5 * cameraZoom / 10;
         }
     }
 

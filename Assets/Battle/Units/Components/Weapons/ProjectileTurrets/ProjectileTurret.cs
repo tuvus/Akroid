@@ -18,7 +18,6 @@ public class ProjectileTurret : Turret {
 
     public override bool Fire() {
         base.Fire();
-        Random random = new Random((uint)battleManager.units.Count + 1);
         if (!battleManager.instantHit) {
             Projectile projectile = battleManager.GetNewProjectile();
             projectile.SetProjectile(unit.faction,
@@ -46,9 +45,8 @@ public class ProjectileTurret : Turret {
     }
 
     public override Vector2 GetTargetPosition(Unit target) {
-        return Calculator.GetTargetPositionAfterTimeAndVelocity(unit.GetPosition(), target.GetPosition(),
-            unit.GetVelocity(),
-            target.GetVelocity(), projectileTurretScriptableObject.fireVelocity, GetTurretOffSet());
+        return Calculator.GetTargetPositionAfterTimeAndVelocity(GetWorldPosition(), target.GetPosition(),
+            unit.GetVelocity(), target.GetVelocity(), projectileTurretScriptableObject.fireVelocity, GetTurretOffSet());
     }
 
     public override float GetRange() {

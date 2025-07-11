@@ -69,7 +69,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
             }
 
             float cameraZoom = localPlayerInput.mainCamera.orthographicSize;
-            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .2f;
+            audioSource.volume = (float)math.max(0, math.min(1, math.pow(200 / cameraZoom, .15) - 1)) * .2f;
             audioSource.minDistance = 1 + 5 * cameraZoom / 10;
             audioSource.maxDistance = 15 + 5 * cameraZoom / 10;
         }
