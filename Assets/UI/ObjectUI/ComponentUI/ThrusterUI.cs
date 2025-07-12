@@ -9,6 +9,7 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
     private Thruster thruster;
     private LensFlare thrusterFlare;
     private bool thrusting;
+    private float volumeDropoff;
 
     public void ShowEffects(bool shown) {
         thrusterFlare.enabled = shown;
@@ -52,8 +53,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         } else if (thrusting && (!IsVisible() || !shipUI.ship.thrusting)) {
             thrusting = false;
             EndThrust();
-            audioSource.Stop();
         }
+
 
         if (thrusting) {
             // Only show the thrust effects if the ship is being looked at
@@ -67,11 +68,19 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
                 EndThrust();
                 thrusterFlare.enabled = false;
             }
+        }
 
+        if (thrusting || volumeDropoff > 0) {
             float cameraZoom = localPlayerInput.mainCamera.orthographicSize;
             audioSource.volume = (float)math.max(0, math.min(1, math.pow(200 / cameraZoom, .15) - 1)) * .2f;
             audioSource.minDistance = 1 + 5 * cameraZoom / 10;
             audioSource.maxDistance = 15 + 5 * cameraZoom / 10;
+            if (thrusting)
+                volumeDropoff = math.min(1, volumeDropoff + Time.deltaTime * thruster.battleManager.timeScale * 3);
+            else volumeDropoff = math.max(0, volumeDropoff - Time.deltaTime * thruster.battleManager.timeScale * 3);
+            audioSource.volume *= volumeDropoff;
+            if (volumeDropoff == 0)
+                audioSource.Stop();
         }
     }
 
