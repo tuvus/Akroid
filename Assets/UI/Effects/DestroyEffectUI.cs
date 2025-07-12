@@ -1,5 +1,7 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Audio;
 using FlareState = DestroyEffect.FlareState;
 
 public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
@@ -10,6 +12,9 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     private DestroyEffect destroyEffect;
     private DestroyEffectScriptableObject destroyEffectScriptableObject;
     private UIManager uIManager;
+    private AudioSource explosionAudioSource;
+    private float volumeBaseMod;
+    private float volumeDistanceMod;
 
     public void ShowEffects(bool shown) {
         flare.enabled = shown;
@@ -23,11 +28,13 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     }
 
     public void SetupDestroyEffect(BattleObjectUI battleObjectUI,
-        DestroyEffectScriptableObject destroyEffectScriptableObject,
-        UIManager uIManager, SpriteRenderer targetRenderer) {
+        DestroyEffectScriptableObject destroyEffectScriptableObject, UIManager uIManager, SpriteRenderer targetRenderer,
+        AudioResource audioResource, float volumeBaseMod, float volumeDistanceMod, float explosionPitch) {
         this.battleObjectUI = battleObjectUI;
         this.uIManager = uIManager;
         this.destroyEffectScriptableObject = destroyEffectScriptableObject;
+        this.volumeBaseMod = volumeBaseMod;
+        this.volumeDistanceMod = volumeDistanceMod;
         float newScale = this.battleObjectUI.battleObject.GetSpriteSize() * battleObjectUI.transform.localScale.x;
         transform.localScale = new Vector2(newScale, newScale);
         explosion.transform.localScale = transform.localScale;
@@ -54,6 +61,10 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
         flare.enabled = false;
         flare.brightness = 0;
+
+        explosionAudioSource = gameObject.GetComponent<AudioSource>();
+        explosionAudioSource.resource = audioResource;
+        explosionAudioSource.pitch = explosionPitch;
     }
 
     public void Explode(DestroyEffect destroyEffect) {
@@ -62,6 +73,7 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
             uIManager.localPlayer.GetInputManager().IsObjectInViewingField(battleObjectUI, 120)) {
             explosion.Play(false);
             fragments.Play(false);
+            explosionAudioSource.Play();
         }
 
         if (uIManager.GetEffectsShown())
@@ -76,6 +88,12 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
         } else if (!uIManager.GetParticlesShown()) {
             ShowParticles(false);
         }
+
+        float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
+        explosionAudioSource.volume =
+            (float)math.max(0, math.min(1, math.pow(600 * volumeDistanceMod / cameraZoom, .25) - 1)) * volumeBaseMod;
+        explosionAudioSource.minDistance = 10 + 5 * cameraZoom / 10;
+        explosionAudioSource.maxDistance = 30 * volumeDistanceMod + 5 * cameraZoom / 10;
 
         switch (destroyEffect.flareState) {
             case FlareState.FlaringUp:
@@ -94,18 +112,22 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
                 flare.brightness = GetBaseFlareSize();
                 break;
             case FlareState.Fade:
-                flare.brightness = GetBaseFlareSize() *
+                float size =
                     (float)(1 - Math.Pow(destroyEffect.flareTime / destroyEffectScriptableObject.flareFadeSpeed, 2));
+                flare.brightness = GetBaseFlareSize() * size;
+                explosionAudioSource.volume *= size;
                 break;
             case FlareState.End:
                 flare.brightness = 0;
                 flare.enabled = false;
+                explosionAudioSource.Stop();
                 break;
         }
     }
 
     public void OnBattleObjectRemoved() {
         uIManager.uiBattleManager.particleHolders.Remove(this);
+        explosionAudioSource.Stop();
     }
 
     public void ShowParticles(bool shown) {

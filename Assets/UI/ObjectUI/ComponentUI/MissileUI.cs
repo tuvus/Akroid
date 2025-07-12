@@ -5,7 +5,6 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private ParticleSystem thrust;
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private DestroyEffectUI destroyEffectUI;
-    private AudioSource explosionAudioSource;
     private bool expired;
     private bool hit;
 
@@ -27,19 +26,10 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         ParticleSystem.MainModule main = thrust.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
         destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager,
-            spriteRenderer);
+            spriteRenderer, missile.missileScriptableObject.explosionSound, .25f, 1,
+            missile.missileScriptableObject.explosionPitch);
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
         uIManager.uiBattleManager.particleHolders.Add(this);
-        explosionAudioSource = gameObject.AddComponent<AudioSource>();
-        explosionAudioSource.resource = missile.missileScriptableObject.explosionSound;
-        explosionAudioSource.playOnAwake = false;
-        explosionAudioSource.spatialBlend = 1;
-        explosionAudioSource.rolloffMode = AudioRolloffMode.Linear;
-        explosionAudioSource.minDistance = 20;
-        explosionAudioSource.maxDistance = 120;
-        explosionAudioSource.pitch = missile.missileScriptableObject.explosionPitch;
-        explosionAudioSource.dopplerLevel = 0;
-        explosionAudioSource.volume = .1f;
     }
 
     public override void UpdateObject() {
@@ -50,24 +40,17 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
             ParticleSystem.EmissionModule emmission = thrust.emission;
             emmission.enabled = false;
             highlight.enabled = false;
-
-            explosionAudioSource.Play();
         } else if (missile.expired && !expired) {
             expired = true;
             ParticleSystem.EmissionModule emission = thrust.emission;
             emission.enabled = false;
             highlight.enabled = false;
-        } else if (!hit) {
-            highlight.enabled = uIManager.GetEffectsShown();
-            if (thrust.isPlaying && !uIManager.GetParticlesShown()) thrust.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
-        }
-
-        if (hit) {
+        } else if (hit) {
             destroyEffectUI.UpdateExplosion();
-            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .25f;
-            explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
+        } else {
+            highlight.enabled = uIManager.GetEffectsShown();
+            if (thrust.isPlaying && !uIManager.GetParticlesShown())
+                thrust.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 

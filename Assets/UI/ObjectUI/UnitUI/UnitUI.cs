@@ -9,7 +9,6 @@ public abstract class UnitUI : BattleObjectUI {
     public UnitIconUI unitIconUI { get; private set; }
     public PrefabModuleSystem prefabModuleSystem { get; private set; }
     public List<ComponentUI> components { get; private set; }
-    private AudioSource explosionAudioSource;
 
     public override void Setup(BattleObject battleObject, UIManager uIManager) {
         base.Setup(battleObject, uIManager);
@@ -21,7 +20,8 @@ public abstract class UnitUI : BattleObjectUI {
         components = new List<ComponentUI>();
         prefabModuleSystem = GetComponent<PrefabModuleSystem>();
         destroyEffectUI = transform.GetChild(1).GetComponent<DestroyEffectUI>();
-        destroyEffectUI.SetupDestroyEffect(this, unit.unitScriptableObject.destroyEffect, uIManager, spriteRenderer);
+        destroyEffectUI.SetupDestroyEffect(this, unit.unitScriptableObject.destroyEffect, uIManager, spriteRenderer,
+            unit.unitScriptableObject.explosionSound, 1, 2, 1);
         destroyed = false;
         for (int i = 0; i < prefabModuleSystem.modules.Count; i++) {
             ModuleComponent moduleComponent = unit.moduleSystem.modules[i];
@@ -53,15 +53,6 @@ public abstract class UnitUI : BattleObjectUI {
                 shieldGeneratorUI.Setup(moduleComponent, uIManager, this);
             }
         }
-        explosionAudioSource = gameObject.AddComponent<AudioSource>();
-        explosionAudioSource.resource = unit.unitScriptableObject.explosionSound;
-        explosionAudioSource.playOnAwake = false;
-        explosionAudioSource.spatialBlend = 1;
-        explosionAudioSource.rolloffMode = AudioRolloffMode.Linear;
-        explosionAudioSource.minDistance = 20;
-        explosionAudioSource.maxDistance = 120;
-        explosionAudioSource.dopplerLevel = 0;
-        explosionAudioSource.volume = .4f;
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
     }
 
@@ -85,16 +76,11 @@ public abstract class UnitUI : BattleObjectUI {
                 destroyEffectUI.Explode(unit.GetDestroyEffect());
                 unitIconUI.ShowUnitIconUI(false);
                 UnselectObject();
-                explosionAudioSource.Play();
             }
         }
 
         if (destroyed) {
             destroyEffectUI.UpdateExplosion();
-            float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(1200 / cameraZoom, .25) - 1));
-            explosionAudioSource.minDistance = 10 + 5 * cameraZoom / 10;
-            explosionAudioSource.maxDistance = 50 + 5 * cameraZoom / 10;
         }
     }
 
@@ -118,6 +104,5 @@ public abstract class UnitUI : BattleObjectUI {
         base.OnBattleObjectRemoved();
         destroyEffectUI.OnBattleObjectRemoved();
         components.ForEach(c => c.OnUnitRemoved());
-        explosionAudioSource.Stop();
     }
 }
