@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   damage: 110
-  thrust: 110
+  thrust: 130
   turnSpeed: 60
   fuelRange: 1800
   retarget: 1
