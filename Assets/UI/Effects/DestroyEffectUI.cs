@@ -103,6 +103,8 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
             case FlareState.FadeToNormal:
                 flare.brightness = GetBaseFlareSize() + (GetFlareUpSize() - GetBaseFlareSize()) *
                     (float)(1 - Math.Pow(destroyEffect.flareTime / destroyEffectScriptableObject.flareUpFadeSpeed, 2));
+                explosionAudioSource.volume *= (float)(0.5 +
+                    (1 - Math.Pow(destroyEffect.flareTime / destroyEffectScriptableObject.flareUpFadeSpeed, 2)) / 2);
                 break;
             case FlareState.KeepNormal:
                 ParticleSystem.EmissionModule explosionEmission = explosion.emission;
@@ -110,12 +112,13 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
                 ParticleSystem.EmissionModule fragmentEmission = fragments.emission;
                 fragmentEmission.enabled = false;
                 flare.brightness = GetBaseFlareSize();
+                explosionAudioSource.volume *= .5f;
                 break;
             case FlareState.Fade:
                 float size =
                     (float)(1 - Math.Pow(destroyEffect.flareTime / destroyEffectScriptableObject.flareFadeSpeed, 2));
                 flare.brightness = GetBaseFlareSize() * size;
-                explosionAudioSource.volume *= size;
+                explosionAudioSource.volume *= size * .5f;
                 break;
             case FlareState.End:
                 flare.brightness = 0;
