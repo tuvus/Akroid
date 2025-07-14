@@ -21,12 +21,14 @@ public class MissileUI : BattleObjectUI, IParticleHolder {
         base.Setup(battleObject, uIManager);
         missile = (Missile)battleObject;
         spriteRenderer.enabled = true;
+        hit = false;
+        expired = false;
         if (uIManager.GetEffectsShown()) highlight.enabled = true;
         if (uIManager.GetParticlesShown()) thrust.Play();
         ParticleSystem.MainModule main = thrust.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
         destroyEffectUI.SetupDestroyEffect(this, missile.missileScriptableObject.destroyEffect, uIManager,
-            spriteRenderer, missile.missileScriptableObject.explosionSound, .25f, 1,
+            spriteRenderer, missile.missileScriptableObject.explosionSound, .20f, .8f,
             missile.missileScriptableObject.explosionPitch);
         uIManager.uiBattleManager.objectsToUpdate.Add(this);
         uIManager.uiBattleManager.particleHolders.Add(this);

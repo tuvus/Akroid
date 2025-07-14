@@ -38,7 +38,7 @@ public class Projectile : BattleObject {
     public void UpdateProjectile(float deltaTime) {
         if (hit) {
             particleTime += deltaTime;
-            if (particleTime >= 3) {
+            if (particleTime >= 5) {
                 RemoveProjectile();
             } else {
                 position += shipVelocity * deltaTime;

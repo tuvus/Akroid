@@ -5073,11 +5073,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ec7ba581c985b84b85cd6ba34e1052d, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   explosion: {fileID: 3316298032335789725}
   fragments: {fileID: 5626107184251421489}
   flare: {fileID: 1482487795117946562}
+  explosionAudioSource: {fileID: 421976922877932780}
 --- !u!82 &421976922877932780
 AudioSource:
   m_ObjectHideFlags: 0

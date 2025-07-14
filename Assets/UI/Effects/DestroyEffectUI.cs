@@ -8,11 +8,11 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
     [SerializeField] private ParticleSystem explosion;
     [SerializeField] private ParticleSystem fragments;
     [SerializeField] private LensFlare flare;
+    [SerializeField] private AudioSource explosionAudioSource;
     private BattleObjectUI battleObjectUI;
     private DestroyEffect destroyEffect;
     private DestroyEffectScriptableObject destroyEffectScriptableObject;
     private UIManager uIManager;
-    private AudioSource explosionAudioSource;
     private float volumeBaseMod;
     private float volumeDistanceMod;
 
@@ -62,7 +62,6 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
         flare.enabled = false;
         flare.brightness = 0;
 
-        explosionAudioSource = gameObject.GetComponent<AudioSource>();
         explosionAudioSource.resource = audioResource;
         explosionAudioSource.pitch = explosionPitch;
     }
@@ -130,6 +129,9 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
     public void OnBattleObjectRemoved() {
         uIManager.uiBattleManager.particleHolders.Remove(this);
+        flare.enabled = false;
+        explosion.Stop();
+        fragments.Stop();
         explosionAudioSource.Stop();
     }
 

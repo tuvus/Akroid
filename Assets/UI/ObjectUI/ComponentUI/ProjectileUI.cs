@@ -4,7 +4,7 @@ using UnityEngine;
 public class ProjectileUI : BattleObjectUI, IParticleHolder {
     [SerializeField] private SpriteRenderer highlight;
     [SerializeField] private new ParticleSystem particleSystem;
-    private AudioSource explosionAudioSource;
+    [SerializeField] private AudioSource explosionAudioSource;
     private bool hit;
     private LocalPlayerInput localPlayerInput;
 
@@ -28,7 +28,6 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         uIManager.uiBattleManager.particleHolders.Add(this);
         ParticleSystem.MainModule main = particleSystem.main;
         main.simulationSpeed = uIManager.GetParticleSpeed();
-        explosionAudioSource = gameObject.AddComponent<AudioSource>();
         explosionAudioSource.resource = projectile.explosionSound;
         explosionAudioSource.playOnAwake = false;
         explosionAudioSource.spatialBlend = 1;
