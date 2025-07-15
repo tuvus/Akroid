@@ -129,7 +129,7 @@ public class Chapter1 : CampaingController {
 
         shipyardFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(),
-                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 40), 0, 0, 0),
+                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 4), 0, 0, 0),
             new PositionGiver(Vector2.zero, 4000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
@@ -697,11 +697,11 @@ public class Chapter1 : CampaingController {
             10 * GetTimeScale());
         researchChain.AddCommEvent(playerComm, playerFaction,
             "Select our gas collector ship in the shipyard, close the station menu and press E to select the gas collection command. " +
-            "Then click on a gas cloud near our mining station to issue a command.", 25 * GetTimeScale());
+            "Then click on a gas cloud nearby to issue the command.", 25 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateLateCondition(() =>
             eventManager.CreateCommandShipToCollectGas(gasCollector, null, null, true)));
         researchChain.AddCommEvent(playerComm, playerFaction,
-            "Great job! Our transport ships will automatically take the gas collected from our mining station to sell at the trade station.",
+            "Great job! Our gas collection ship will automatically sell the gas at the trade station.",
             3 * GetTimeScale());
         researchChain.AddCondition(eventManager.CreateWaitCondition(300 * GetTimeScale()));
         researchChain.AddCommEvent(researchCommManager, playerFaction,
@@ -833,7 +833,6 @@ public class Chapter1 : CampaingController {
             "Thanks! Hopefully you can make good use of it!", GetTimeScale() * 3);
         keepChain.AddAction(() => {
             researchFaction.TransferUnitTo(researchShip, playerFaction);
-            battleManager.GetLocalPlayer().AddOwnedUnit(researchShip);
         });
         return keepChain.Build(eventManager, () => EscapeShipQuestLine(false));
     }

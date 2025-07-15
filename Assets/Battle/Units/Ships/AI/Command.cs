@@ -220,10 +220,12 @@ public class Command {
     }
 
     public static Command CreateCollectGasCommand(GasCloud targetGasCloud, Station returnStation) {
+        Vector2 targetPos = Vector2.zero;
+        if (targetGasCloud != null) targetPos = targetGasCloud.GetPosition();
         return new Command(CommandType.CollectGas) {
             destinationStation = returnStation,
             targetGasCloud = targetGasCloud,
-            targetPosition = targetGasCloud.GetPosition()
+            targetPosition = targetPos
         };
     }
 

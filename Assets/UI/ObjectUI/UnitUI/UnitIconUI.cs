@@ -141,6 +141,7 @@ public class UnitIconUI : MonoBehaviour {
     }
 
     public Color GetColor() {
+        if (!unitUI.unit.visible) UpdateFactionColor();
         return spriteRenderer.color;
     }
 }
