@@ -90,7 +90,8 @@ public class DestroyEffectUI : MonoBehaviour, IParticleHolder {
 
         float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
         explosionAudioSource.volume =
-            (float)math.max(0, math.min(1, math.pow(600 * volumeDistanceMod / cameraZoom, .25) - 1)) * volumeBaseMod;
+            (float)math.max(0, math.min(1, math.pow(600 * volumeDistanceMod / cameraZoom, .25) - 1)) * volumeBaseMod *
+            uIManager.playerUI.soundEffectsVolume;
         explosionAudioSource.minDistance = 10 + 5 * cameraZoom / 10;
         explosionAudioSource.maxDistance = 30 * volumeDistanceMod + 5 * cameraZoom / 10;
 

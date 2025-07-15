@@ -6,19 +6,7 @@ public class UIManager : MonoBehaviour {
     public LocalPlayer localPlayer { get; private set; }
     public UIBattleManager uiBattleManager { get; private set; }
     public UIEventManager uIEventManager { get; private set; }
-
-    public void LateUpdate() {
-        if (battleManager == null || battleManager.battleState == BattleManager.BattleState.SettingUp ||
-            battleManager.battleState == BattleManager.BattleState.Setup)
-            return;
-
-        Profiler.BeginSample("Update UI Objects");
-        uiBattleManager.UIUpdate();
-        Profiler.EndSample();
-        localPlayer.GetLocalPlayerInput().UpdatePlayer();
-        localPlayer.UpdatePlayer();
-        uIEventManager.UpdateUIEvents();
-    }
+    public PlayerUI playerUI { get; private set; }
 
     /// <summary>
     ///     Subscription to BattleManager events needs to occur before the system is created.
@@ -31,6 +19,7 @@ public class UIManager : MonoBehaviour {
         uiBattleManager.SetupUnitSpriteManager(battleManager, this);
         localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
         localPlayer.PreBattleManagerSetup(battleManager, this);
+        playerUI = localPlayer.playerUI;
         uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(),
             uiBattleManager);
         battleManager.SetEventManager(uIEventManager);
@@ -41,6 +30,19 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void SetupUIManager() {
         localPlayer.SetUpPlayer();
+    }
+
+    public void LateUpdate() {
+        if (battleManager == null || battleManager.battleState == BattleManager.BattleState.SettingUp ||
+            battleManager.battleState == BattleManager.BattleState.Setup)
+            return;
+
+        Profiler.BeginSample("Update UI Objects");
+        uiBattleManager.UIUpdate();
+        Profiler.EndSample();
+        localPlayer.GetLocalPlayerInput().UpdatePlayer();
+        localPlayer.UpdatePlayer();
+        uIEventManager.UpdateUIEvents();
     }
 
     public bool GetEffectsShown() {

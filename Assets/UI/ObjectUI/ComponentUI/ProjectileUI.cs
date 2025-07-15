@@ -56,7 +56,8 @@ public class ProjectileUI : BattleObjectUI, IParticleHolder {
         }
         if (hit) {
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(200 / cameraZoom, .15) - 1)) * .2f;
+            explosionAudioSource.volume = (float)math.max(0, math.min(1, math.pow(200 / cameraZoom, .15) - 1)) * .2f *
+                uIManager.playerUI.soundEffectsVolume;
             explosionAudioSource.minDistance = 5 + 5 * cameraZoom / 10;
             explosionAudioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }

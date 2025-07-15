@@ -5,6 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerMenueUI : MonoBehaviour {
+    [SerializeField] private TMP_Text musicVolumeText;
+    [SerializeField] private Slider musicVolumeScale;
+    [SerializeField] private TMP_Text soundEffectVolumeText;
+    [SerializeField] private Slider soundEffectVolumeScale;
     [SerializeField] private Toggle menueUIMultiThreading;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
@@ -35,12 +39,16 @@ public class PlayerMenueUI : MonoBehaviour {
             factionNames.Add(faction.name);
         }
 
-        if (!PlayerPrefs.HasKey("Threading")) {
-            PlayerPrefs.SetInt("Threading", 0);
+        if (!PlayerPrefs.HasKey(PlayerUI.threadingPrefs)) {
+            PlayerPrefs.SetInt(PlayerUI.threadingPrefs, 0);
             PlayerPrefs.Save();
         }
 
-        menueUIMultiThreading.SetIsOnWithoutNotify(PlayerPrefs.GetInt("Threading") == 1);
+        musicVolumeText.text = "Music: " + (int)(playerUI.musicVolume * 100) + "%";
+        musicVolumeScale.SetValueWithoutNotify(playerUI.musicVolume);
+        soundEffectVolumeText.text = "Sound Effects: " + (int)(playerUI.soundEffectsVolume * 100) + "%";
+        soundEffectVolumeScale.SetValueWithoutNotify(playerUI.soundEffectsVolume);
+        menueUIMultiThreading.SetIsOnWithoutNotify(PlayerPrefs.GetInt(PlayerUI.threadingPrefs) == 1);
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.SetIsOnWithoutNotify(playerUI.showUnitCombatIndicators);
@@ -58,8 +66,22 @@ public class PlayerMenueUI : MonoBehaviour {
         menueUITimeScale.SetValueWithoutNotify((int)(battleManager.timeScale * 10));
     }
 
+    public void UpdateMusicVolume() {
+        PlayerPrefs.SetFloat(PlayerUI.musicVolumePrefs, musicVolumeScale.value);
+        PlayerPrefs.Save();
+        playerUI.musicVolume = musicVolumeScale.value;
+        musicVolumeText.text = "Music: " + (int)(playerUI.musicVolume * 100) + "%";
+    }
+
+    public void UpdateSoundEffectsVolume() {
+        PlayerPrefs.SetFloat(PlayerUI.soundEffectsPrefs, soundEffectVolumeScale.value);
+        PlayerPrefs.Save();
+        playerUI.soundEffectsVolume = soundEffectVolumeScale.value;
+        soundEffectVolumeText.text = "Sound Effects: " + (int)(playerUI.soundEffectsVolume * 100) + "%";
+    }
+
     public void SetMultiThreading() {
-        PlayerPrefs.SetInt("Threading", menueUIMultiThreading.isOn ? 1 : 0);
+        PlayerPrefs.SetInt(PlayerUI.threadingPrefs, menueUIMultiThreading.isOn ? 1 : 0);
         PlayerPrefs.Save();
     }
 

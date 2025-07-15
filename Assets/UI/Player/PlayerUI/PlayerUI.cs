@@ -50,12 +50,18 @@ public class PlayerUI : MonoBehaviour {
     public bool particles;
     public bool commandRendererShown;
     public bool factionColoring;
+    public float musicVolume;
+    public float soundEffectsVolume;
     private BattleManager battleManager;
     private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
     private UIBattleManager uiBattleManager;
     public Dictionary<Type, IPlayerUIMenu> uIMenus;
     public static PlayerUI Instance { get; protected set; }
+
+    public static readonly string threadingPrefs = "Threading";
+    public static readonly string musicVolumePrefs = "MusicVolume";
+    public static readonly string soundEffectsPrefs = "SoundEffects";
 
     public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer,
         UIManager uIManager) {
@@ -74,6 +80,10 @@ public class PlayerUI : MonoBehaviour {
         commandRendererShown = true;
         factionColoring = false;
         playerCommsManager.SetupPlayerCommsManager(this);
+        if (!PlayerPrefs.HasKey(musicVolumePrefs)) PlayerPrefs.SetFloat(musicVolumePrefs, 1f);
+        musicVolume = PlayerPrefs.GetFloat(musicVolumePrefs);
+        if (!PlayerPrefs.HasKey(soundEffectsPrefs)) PlayerPrefs.SetFloat(soundEffectsPrefs, 1f);
+        soundEffectsVolume = PlayerPrefs.GetFloat(soundEffectsPrefs);
         uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uIManager, .2f));
         playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();

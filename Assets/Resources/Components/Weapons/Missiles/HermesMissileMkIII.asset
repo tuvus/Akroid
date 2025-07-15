@@ -16,7 +16,7 @@ MonoBehaviour:
   damage: 110
   thrust: 130
   turnSpeed: 60
-  fuelRange: 1800
+  fuelRange: 1200
   retarget: 1
   sprite: {fileID: -795279756, guid: d178ef83e7ad40642b1295bc0c068466, type: 3}
   destroyEffect: {fileID: 11400000, guid: 1ecd3ef65dc4109a88eaffd73765f81d, type: 2}

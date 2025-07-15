@@ -30,7 +30,8 @@ public class TurretUI : ComponentUI {
             audioSource.Play();
             fire = false;
             float cameraZoom = uIManager.localPlayer.GetLocalPlayerInput().mainCamera.orthographicSize;
-            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .3f;
+            audioSource.volume = (float)math.max(0, math.min(1, math.pow(600 / cameraZoom, .15) - 1)) * .3f *
+                uIManager.playerUI.soundEffectsVolume;
             audioSource.minDistance = 5 + 5 * cameraZoom / 10;
             audioSource.maxDistance = 30 + 5 * cameraZoom / 10;
         }
