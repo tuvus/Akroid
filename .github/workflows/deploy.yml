@@ -39,4 +39,5 @@ jobs:
           git add Build/
           git commit -m "Test deploy"
           echo "Pushing to master"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/tuvus/tuvus.github.io.git
           git push
