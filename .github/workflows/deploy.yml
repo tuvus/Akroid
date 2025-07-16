@@ -31,7 +31,6 @@ jobs:
       - name: push build
         run: |
           git clone https://github.com/tuvus/tuvus.github.io.git
-          ls -la build
           ls -la build/WebGL
           cd tuvus.github.io
           git config user.name "WebGLDeployer"
