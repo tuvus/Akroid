@@ -17,7 +17,7 @@ jobs:
         with:
           name: Build-WebGL
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
+#          run-id: ${{ github.event.workflow_run.id }}
           path: build/WebGL
       - name: push build
         run: |
