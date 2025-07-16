@@ -13,10 +13,9 @@ jobs:
     name: Deploy to WebGL
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p build/WebGL
       - uses: actions/download-artifact@v4
         with:
-          name: build/Build-WebGL
+          name: Build-WebGL
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           path: build/WebGL
