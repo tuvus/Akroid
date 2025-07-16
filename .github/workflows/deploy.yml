@@ -37,6 +37,7 @@ jobs:
           path: version.txt
       - name: push build
         run: |
+          ls -l
           LATEST_VERSION=cat version.txt
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
