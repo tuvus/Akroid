@@ -39,14 +39,15 @@ jobs:
         run: |
           ls -l
           LATEST_VERSION=`cat version.txt`
+          echo "Version: ${LATEST_VERSION}"
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
           git config user.name "Oskar Niesen"
           git config user.email "oskarniesen1@gmail.com"
           rm -rf Build/
           cp -r ../build/WebGL/WebGL/Build Build/
-          sed -i 's/<!--versionstart-->.*<!--vesionend-->/<!--vesionend-->v${LATEST_VERSION}<!--vesionend-->/' index.html
-          git add Build/
+          sed -i 's/<!--versionstart-->.*<!--vesionend-->/<!--versionstart-->v${LATEST_VERSION}<!--vesionend-->/' index.html
+          git add .
           git commit -m "Deploy version ${LATEST_VERSION}"
           echo "Pushing to master version ${LATEST_VERSION}"
           git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/tuvus/tuvus.github.io.git
