@@ -28,8 +28,16 @@ jobs:
           run-id: ${{ steps.get-run-id.outputs.run-id }}
           repository: ${{ github.repository }}
           path: build/WebGL
+      - uses: actions/download-artifact@v4
+        with:
+          name: LatestVersion
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.get-run-id.outputs.run-id }}
+          repository: ${{ github.repository }}
+          path: version.txt
       - name: push build
         run: |
+          LATEST_VERSION=cat version.txt
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
           git config user.name "Oskar Niesen"
@@ -37,7 +45,7 @@ jobs:
           rm -rf Build/
           cp -r ../build/WebGL/WebGL/Build Build/
           git add Build/
-          git commit -m "Test deploy"
-          echo "Pushing to master"
+          git commit -m "Deploy version ${LATEST_VERSION}"
+          echo "Pushing to master version ${LATEST_VERSION}"
           git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/tuvus/tuvus.github.io.git
           git push
