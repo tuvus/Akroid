@@ -33,6 +33,7 @@ jobs:
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
           git config user.name "WebGLDeployer"
+          git config user.email "noemail@example.com"
           rm -rf Build/
           cp -r ../build/WebGL/WebGL/Build Build/
           git add Build/
