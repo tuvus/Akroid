@@ -1,7 +1,6 @@
 name: Deploy
 
 on:
-  push:
   workflow_run:
     workflows: [ Build and Test ]
     branches: [ main ]
@@ -39,6 +38,5 @@ jobs:
           cp -r ../build/WebGL/WebGL/Build Build/
           git add Build/
           git commit -m "Test deploy"
-#          git config --unset-all http.https://github.com/.extraheader
           echo "Pushing to master"
           git push
