@@ -32,11 +32,12 @@ jobs:
         run: |
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
-          git config user.name "WebGLDeployer"
-          git config user.email "noemail@example.com"
+          git config user.name "Oskar Niesen"
+          git config user.email "oskarniesen1@gmail.com"
           rm -rf Build/
           cp -r ../build/WebGL/WebGL/Build Build/
           git add Build/
           git commit -m "Test deploy"
+          git config --unset-all http.https://github.com/.extraheader
           echo "Pushing to master"
           git push
