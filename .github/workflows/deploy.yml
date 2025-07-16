@@ -31,11 +31,10 @@ jobs:
       - name: push build
         run: |
           git clone https://github.com/tuvus/tuvus.github.io.git
-          ls -la build/WebGL/WebGL
           cd tuvus.github.io
           git config user.name "WebGLDeployer"
           rm -rf Build/
-          cp -r ../build/WebGL/Build Build/
+          cp -r ../build/WebGL/WebGL/Build Build/
           git add Build/
           git commit -m "Test deploy"
           git config --unset-all http.https://github.com/.extraheader
