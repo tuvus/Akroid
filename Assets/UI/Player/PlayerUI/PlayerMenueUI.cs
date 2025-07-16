@@ -9,6 +9,8 @@ public class PlayerMenueUI : MonoBehaviour {
     [SerializeField] private Slider musicVolumeScale;
     [SerializeField] private TMP_Text soundEffectVolumeText;
     [SerializeField] private Slider soundEffectVolumeScale;
+    [SerializeField] private TMP_Text scrollSpeedText;
+    [SerializeField] private Slider scrollSpeedScale;
     [SerializeField] private Toggle menueUIMultiThreading;
     [SerializeField] private Toggle menueUIZoomIndicators;
     [SerializeField] private Toggle menueUIUnitCombatIndicators;
@@ -48,6 +50,8 @@ public class PlayerMenueUI : MonoBehaviour {
         musicVolumeScale.SetValueWithoutNotify(playerUI.musicVolume);
         soundEffectVolumeText.text = "Sound Effects: " + (int)(playerUI.soundEffectsVolume * 100) + "%";
         soundEffectVolumeScale.SetValueWithoutNotify(playerUI.soundEffectsVolume);
+        scrollSpeedText.text = "Sound Effects: " + ((int)(playerUI.scrollSpeed * 10) / 10);
+        scrollSpeedScale.SetValueWithoutNotify(playerUI.scrollSpeed);
         menueUIMultiThreading.SetIsOnWithoutNotify(PlayerPrefs.GetInt(PlayerUI.threadingPrefs) == 1);
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);
         menueUIUnitCombatIndicators.transform.parent.gameObject.SetActive(playerUI.showUnitZoomIndicators);
@@ -78,6 +82,13 @@ public class PlayerMenueUI : MonoBehaviour {
         PlayerPrefs.Save();
         playerUI.soundEffectsVolume = soundEffectVolumeScale.value;
         soundEffectVolumeText.text = "Sound Effects: " + (int)(playerUI.soundEffectsVolume * 100) + "%";
+    }
+
+    public void UpdateScrollSpeed() {
+        PlayerPrefs.SetFloat(PlayerUI.scrollSpeedPrefs, scrollSpeedScale.value);
+        PlayerPrefs.Save();
+        playerUI.scrollSpeed = scrollSpeedScale.value;
+        scrollSpeedText.text = "Sound Effects: " + ((int)(playerUI.scrollSpeed * 10) / 10);
     }
 
     public void SetMultiThreading() {

@@ -43,6 +43,9 @@ public class PlayerUI : MonoBehaviour {
 
     [SerializeField] private List<IPlayerUIMenu> uIMenusInput;
 
+    public float musicVolume;
+    public float soundEffectsVolume;
+    public float scrollSpeed;
     public bool showUnitZoomIndicators;
     public bool showUnitCombatIndicators;
     public bool updateUnitZoomIndicators;
@@ -50,8 +53,6 @@ public class PlayerUI : MonoBehaviour {
     public bool particles;
     public bool commandRendererShown;
     public bool factionColoring;
-    public float musicVolume;
-    public float soundEffectsVolume;
     private BattleManager battleManager;
     private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
@@ -62,6 +63,7 @@ public class PlayerUI : MonoBehaviour {
     public static readonly string threadingPrefs = "Threading";
     public static readonly string musicVolumePrefs = "MusicVolume";
     public static readonly string soundEffectsPrefs = "SoundEffects";
+    public static readonly string scrollSpeedPrefs = "ScrollSpeed";
 
     public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer,
         UIManager uIManager) {
@@ -84,6 +86,8 @@ public class PlayerUI : MonoBehaviour {
         musicVolume = PlayerPrefs.GetFloat(musicVolumePrefs);
         if (!PlayerPrefs.HasKey(soundEffectsPrefs)) PlayerPrefs.SetFloat(soundEffectsPrefs, 1f);
         soundEffectsVolume = PlayerPrefs.GetFloat(soundEffectsPrefs);
+        if (!PlayerPrefs.HasKey(scrollSpeedPrefs)) PlayerPrefs.SetFloat(scrollSpeedPrefs, 1f);
+        scrollSpeed = PlayerPrefs.GetFloat(scrollSpeedPrefs);
         uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uIManager, .2f));
         playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
         uIMenus = new Dictionary<Type, IPlayerUIMenu>();

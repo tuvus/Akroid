@@ -24,9 +24,6 @@ public class LocalPlayerInput : MonoBehaviour {
 
     [SerializeField] protected ActionType actionType;
 
-    [Tooltip("Player input on how fast scrolling should be.")]
-    public float scrollModifyer;
-
     public float scrollFactor = 1;
     private Background background;
     protected BattleManager battleManager;
@@ -127,10 +124,10 @@ public class LocalPlayerInput : MonoBehaviour {
     private void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
-        float platformModifier = 50;
-        if (Application.platform == RuntimePlatform.WebGLPlayer) platformModifier = .4f;
+        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer? 20 : 10f;
         float targetSize = Mathf.Min(50000,
-            Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollModifyer * scrollFactor * platformModifier));
+            Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollFactor * platformModifier *
+                localPlayer.playerUI.scrollSpeed));
 
         // Zoom to the mouse position
         if (!AltButtonPressed) {
