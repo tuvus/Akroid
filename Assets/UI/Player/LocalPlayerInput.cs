@@ -124,7 +124,7 @@ public class LocalPlayerInput : MonoBehaviour {
     private void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
-        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer? 20 : 10f;
+        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer? 1 : 20f;
         float targetSize = Mathf.Min(50000,
             Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollFactor * platformModifier *
                 localPlayer.playerUI.scrollSpeed));
