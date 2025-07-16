@@ -82,8 +82,9 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - run: |
-        cat  ProjectSettings/ProjectSettings.asset | grep "bundleVersion" | sed "s/  bundleVersion: //" >> version.txt
+      - name: get version
+        run: |
+          cat  ProjectSettings/ProjectSettings.asset | grep "bundleVersion" | sed "s/  bundleVersion: //" >> version.txt
       - uses: actions/upload-artifact@v4
         with:
           name: LatestVersion
