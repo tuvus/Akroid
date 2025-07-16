@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: Build my project
+    name: Test the project
     runs-on: ubuntu-latest
     steps:
       # Checkout
@@ -49,6 +49,15 @@ jobs:
           - StandaloneLinux64 # Build a Linux 64-bit standalone.
           - WebGL # WebGL.
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: Library-
       # Build
       - uses: game-ci/unity-builder@v4
         env:
