@@ -46,7 +46,7 @@ jobs:
           git config user.email "oskarniesen1@gmail.com"
           rm -rf Build/
           cp -r ../build/WebGL/WebGL/Build Build/
-          sed -i 's/<!--versionstart-->.*<!--vesionend-->/<!--versionstart-->v${LATEST_VERSION}<!--vesionend-->/' index.html
+          sed -i "s/<\!--versionstart-->.*<\!--vesionend-->/<\!--versionstart-->v${LATEST_VERSION}<\!--vesionend-->/" index.html
           git add .
           git commit -m "Deploy version ${LATEST_VERSION}"
           echo "Pushing to master version ${LATEST_VERSION}"
