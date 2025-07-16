@@ -34,7 +34,7 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ steps.get-run-id.outputs.run-id }}
           repository: ${{ github.repository }}
-          path: version.txt
+          path: .
       - name: push build
         run: |
           ls -l
