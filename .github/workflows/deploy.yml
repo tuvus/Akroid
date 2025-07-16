@@ -16,7 +16,7 @@ jobs:
       - name: Get Run ID
         id: get-run-id
         run: |
-          RUN_ID=`gh run list --workflow buildandtest --json databaseId --jq .[0].databaseId`
+          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow buildandtest --json databaseId --jq .[0].databaseId`
           echo "Detected latest run id of ${RUN_ID} for workflow buildandtest"
           echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
         env:
