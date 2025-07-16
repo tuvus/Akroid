@@ -30,15 +30,16 @@ jobs:
           path: build/WebGL
       - name: push build
         run: |
-          ls -la
           git clone https://github.com/tuvus/tuvus.github.io.git
+          ls -l
           cd tuvus.github.io
-          git config --unset-all http.https://github.com/.extraheader
           git config user.name "WebGLDeployer"
           git checkout -b "deployversion"
           rm -rf Build/
           cp ../build/WebGL/Build Build/
           git add Build/
-          git remote -v
-          git push --set-upstream origin deployversion
+          git config --unset-all http.https://github.com/.extraheader
+          git push --set-upstream origin main
+          git add .
+          git commit -m "Test deploy"
           git push
