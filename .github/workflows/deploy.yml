@@ -2,49 +2,31 @@ name: Actions
 
 on:
   workflow_run:
-    workflows: [Build and Test]
-    branches: [main]
+    workflows: [ Build and Test ]
+    branches: [ main ]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   none:
-    name: deploy
+    name: Deploy to WebGL
     runs-on: ubuntu-latest
-#  buildForAllSupportedPlatforms:
-#    name: De ${{ matrix.targetPlatform }}
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        targetPlatform:
-#          - StandaloneWindows64 # Build a Windows 64-bit standalone.
-#          - StandaloneLinux64 # Build a Linux 64-bit standalone.
-#          - WebGL # WebGL.
-#    steps:
-#      - uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#          lfs: true
-#      - uses: actions/cache@v3
-#        with:
-#          path: Library
-#          key: Library-${{ matrix.targetPlatform }}
-#          restore-keys: Library-
-#      # Build
-#      - uses: game-ci/unity-builder@v4
-#        env:
-#          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-#          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-#          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-#        with:
-#          targetPlatform: ${{ matrix.targetPlatform }}
-#          allowDirtyBuild: true
-#          unityVersion: 6000.1.10f1
-#
-#      # Output
-#      - uses: actions/upload-artifact@v4
-#        with:
-#          name: Build-${{ matrix.targetPlatform }}
-#          path: build/${{ matrix.targetPlatform }}
-
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Build-WebGL
+          path: build/WebGL
+      - name: push build
+        run: |
+          git clone https://github.com/tuvus/tuvus.github.io.git
+          cd tuvus.github.io
+          git config --unset-all http.https://github.com/.extraheader
+          git config user.name "WebGLDeployer"
+          git checkout -b "deployversion"
+          rm -rf Build/
+          cp ../build/WebGL/Build Build/
+          git add Build/
+          git remote -v
+          git push --set-upstream origin deployversion
+          git push
