@@ -39,4 +39,5 @@ jobs:
           git add Build/
           git commit -m "Test deploy"
           git config --unset-all http.https://github.com/.extraheader
+          echo "Pushing to master"
           git push
