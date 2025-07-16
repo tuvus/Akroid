@@ -13,15 +13,21 @@ jobs:
     name: Deploy to WebGL
     runs-on: ubuntu-latest
     steps:
+      - name: Get Run ID
+        id: get-run-id
+        run: |
+          RUN_ID=`gh run list --workflow buildandtest --json databaseId --jq .[0].databaseId`
+          echo "Detected latest run id of ${RUN_ID} for workflow buildandtest"
+          echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           name: Build-WebGL
           github-token: ${{ github.token }}
-#          run-id: ${{ github.event.workflow_run.id }}
-          run-id: 16326265425
+          run-id: ${{ steps.get-run-id.outputs.run-id }}
           path: build/WebGL
       - name: push build
         run: |
+          ls -la
           git clone https://github.com/tuvus/tuvus.github.io.git
           cd tuvus.github.io
           git config --unset-all http.https://github.com/.extraheader
