@@ -1,6 +1,7 @@
 name: Deploy
 
 on:
+  push:
   workflow_run:
     workflows: [ Build and Test ]
     branches: [ main ]
