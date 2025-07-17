@@ -6,8 +6,6 @@
 Alternatively you can go to [github](https://github.com/tuvus/Akroid#) and download the zip file by pressing on the green code button and extracting it.
 4. Open the directory as a project in UnityHub. UnityHub will recommend installing the UnityEditor with a version corresponding to the project, install it.
 5. After the editor has been installed you can open the project.
-6. Pressing the play button will start the project, however the TextMeshPro essentials needs to be downloaded before the text will appear.
-To fix this go to `Window -> TextMeshPro -> Import TMP Essential Resources` and confirm. Now the project should run as expected.
 
 ### Using Jetbrains Rider IDE on linux
 If you have a Jetbrains license or are a student you can use the Rider IDE.
