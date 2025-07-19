@@ -1,9 +1,10 @@
 using UnityEngine;
 
 public class Population {
-    public long population;
-    public long crew;
-    public long marine;
+    public long civilians;
+    public long pilots;
+    public long engineers;
+    public long marines;
 }
 
 public class HabitationArea : ModuleComponent {

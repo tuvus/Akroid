@@ -1,11 +1,9 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Resources/Components/BridgeAreaScriptableObject",
-    menuName = "Components/BridgeArea", order = 26)]
+[CreateAssetMenu(fileName = "Resources/Components/BridgeScriptableObject", menuName = "Components/Bridge", order = 26)]
 public class BridgeScriptableObject : ComponentScriptableObject {
     public long populationSpace;
-    public long minCrew;
 
     public override Type GetComponentType() {
         return typeof(BridgeScriptableObject);
@@ -13,7 +11,7 @@ public class BridgeScriptableObject : ComponentScriptableObject {
 
     protected override void UpdateCosts() {
         base.UpdateCosts();
-        cost += populationSpace;
-        AddResourceCost(CargoBay.CargoTypes.Metal, populationSpace / 10);
+        cost += populationSpace * 10;
+        AddResourceCost(CargoBay.CargoTypes.Metal, populationSpace);
     }
 }

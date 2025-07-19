@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
-  cost: 20398
+  cost: 20558
   resourceTypes: 0100000002000000
-  resourceCosts: 82100000000000008602000000000000
+  resourceCosts: 8d100000000000008602000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   prefab: {fileID: 8113073670915643603, guid: 8a77ee138cd670442a6334ab455d3fe6, type: 3}
   unitName: Station Builder
@@ -37,6 +37,11 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 191b69d7fd862e941b391bd0b8eaf574, type: 2}
     moduleSize: 0
     moduleCount: 2
+  - name: Bridge
+    type: 5
+    component: {fileID: 11400000, guid: 67725b610704fe7668fa46b1c127d0e2, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 10.82, y: 32.7}

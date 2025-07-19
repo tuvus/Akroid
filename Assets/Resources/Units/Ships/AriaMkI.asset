@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: AriaMkI
   m_EditorClassIdentifier: 
-  cost: 3824
+  cost: 3854
   resourceTypes: 0100000002000000
-  resourceCosts: 7e020000000000006101000000000000
+  resourceCosts: 88020000000000006101000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Aria
@@ -47,6 +47,11 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 998cafad1cfed9545bfb57b568021db3, type: 2}
     moduleSize: 0
     moduleCount: 2
+  - name: Bridge
+    type: 5
+    component: {fileID: 11400000, guid: 6490f3345a3e8a299807baec53a6259b, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 2.64, y: 7.565}

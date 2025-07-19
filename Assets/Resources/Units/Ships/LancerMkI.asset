@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: LancerMkI
   m_EditorClassIdentifier: 
-  cost: 10237
+  cost: 10357
   resourceTypes: 0100000002000000
-  resourceCosts: 8c080000000000003204000000000000
+  resourceCosts: 97080000000000003204000000000000
   prefabPath: Prefabs/ShipPrefabs/Lancer
   prefab: {fileID: 4870678752167284642, guid: a9e61fb73f7b72743b3543d2c589e17b, type: 3}
   unitName: Lancer
@@ -57,6 +57,11 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 9adc7edf38b82f64d8f46d391895671f, type: 2}
     moduleSize: 0
     moduleCount: 2
+  - name: Bridge
+    type: 5
+    component: {fileID: 11400000, guid: d37efbf08f5aeebcda90ffd3d51935e9, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 5.1, y: 14.5875}

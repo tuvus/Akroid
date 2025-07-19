@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class Bridge : ModuleComponent {
     public BridgeScriptableObject bridgeScriptableObject;
     public Population population { get; private set; }

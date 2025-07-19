@@ -88,13 +88,14 @@ public class UnitScriptableObject : ScriptableObject {
     }
 
     public List<ModuleSystem.System> GetSystems() {
+        if (systems.Length != prefab.GetComponent<PrefabModuleSystem>().systems.Count) OnValidate();
         return systems.ToList();
     }
 
     public List<IModule> GetModules() {
         // In some cases the modules is properly setup in the editor but not in the build.
         // This provides a backup to create the list on the fly.
-        if (modules == null) OnValidate();
+        if (modules == null || modules.Length != prefab.GetComponent<PrefabModuleSystem>().modules.Count) OnValidate();
         return modules.ToList();
     }
 

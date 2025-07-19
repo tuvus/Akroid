@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 214c87819f435ed709b35f226ef4b069, type: 3}
+  m_Name: MediumBridgeMkII
+  m_EditorClassIdentifier: 
+  cost: 12
+  resourceTypes: 01000000
+  resourceCosts: 0100000000000000
+  upgrade: {fileID: 11400000, guid: 67725b610704fe7668fa46b1c127d0e2, type: 2}
+  populationSpace: 12
