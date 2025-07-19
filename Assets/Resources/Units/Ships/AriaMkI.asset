@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 3854
   resourceTypes: 0100000002000000
-  resourceCosts: 88020000000000006101000000000000
+  resourceCosts: 8b020000000000006101000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Aria
@@ -59,5 +59,10 @@ MonoBehaviour:
   shipType: 4
   turnSpeed: 60
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 1
+    engineers: 0
+    marines: 0
   baseMass: 378.25
   baseSpeed: 34.686054

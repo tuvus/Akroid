@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 10357
   resourceTypes: 0100000002000000
-  resourceCosts: 97080000000000003204000000000000
+  resourceCosts: a2080000000000003204000000000000
   prefabPath: Prefabs/ShipPrefabs/Lancer
   prefab: {fileID: 4870678752167284642, guid: a9e61fb73f7b72743b3543d2c589e17b, type: 3}
   unitName: Lancer
@@ -69,5 +69,10 @@ MonoBehaviour:
   shipType: 4
   turnSpeed: 40
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 5
+    engineers: 4
+    marines: 0
   baseMass: 729.375
   baseSpeed: 31.808054

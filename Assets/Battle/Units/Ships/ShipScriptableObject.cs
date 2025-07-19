@@ -8,6 +8,7 @@ public class ShipScriptableObject : UnitScriptableObject {
     public ShipType shipType;
     public float turnSpeed;
     public float combatRotation;
+    public Population crewNeeded;
     [Tooltip("Not used in game, this exists purely to visualise the ship's mass")]
     public float baseMass;
     [Tooltip("Not used in game, this exists purely to visualise the ship's speed")]

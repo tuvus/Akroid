@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 45700
   resourceTypes: 0100000002000000
-  resourceCosts: 3c1d000000000000060d000000000000
+  resourceCosts: 661d000000000000060d000000000000
   prefabPath: Prefabs/ShipPrefabs/Aterna
   prefab: {fileID: 8328976631515970221, guid: 230a9a6ed5c173a4398e983da8509c10, type: 3}
   unitName: Aterna
@@ -69,5 +69,10 @@ MonoBehaviour:
   shipType: 7
   turnSpeed: 45
   combatRotation: 90
+  crewNeeded:
+    civilians: 0
+    pilots: 16
+    engineers: 22
+    marines: 0
   baseMass: 1459.2858
   baseSpeed: 29.740576

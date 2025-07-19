@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 20558
   resourceTypes: 0100000002000000
-  resourceCosts: 8d100000000000008602000000000000
+  resourceCosts: 9c100000000000008602000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   prefab: {fileID: 8113073670915643603, guid: 8a77ee138cd670442a6334ab455d3fe6, type: 3}
   unitName: Station Builder
@@ -49,5 +49,10 @@ MonoBehaviour:
   shipType: 2
   turnSpeed: 30
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 4
+    engineers: 12
+    marines: 0
   baseMass: 1635
   baseSpeed: 19.14373

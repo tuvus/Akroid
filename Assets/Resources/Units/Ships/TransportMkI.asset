@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 9078
   resourceTypes: 0100000002000000
-  resourceCosts: 18050000000000001a01000000000000
+  resourceCosts: 1d050000000000001a01000000000000
   prefabPath: Prefabs/ShipPrefabs/Transport
   prefab: {fileID: 9215602423523637135, guid: ca496db1332dd3d4c8785fd2ca34d0b7, type: 3}
   unitName: Transport
@@ -49,5 +49,10 @@ MonoBehaviour:
   shipType: 1
   turnSpeed: 40
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 2
+    engineers: 2
+    marines: 0
   baseMass: 645.5
   baseSpeed: 20.325329
