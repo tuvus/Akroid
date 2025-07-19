@@ -146,7 +146,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
                         .stationScriptableObject, true);
                 if (shipCount > 0) {
-                    newStation.BuildShip(Ship.ShipClass.Transport);
+                    newStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
                     shipCount--;
                 }
             }

@@ -13,4 +13,9 @@ public class Bridge : ModuleComponent {
         base.Upgrade(componentScriptableObject);
         bridgeScriptableObject = (BridgeScriptableObject)componentScriptableObject;
     }
+
+    public long GetFreeSpace() {
+        return bridgeScriptableObject.populationSpace - population.civilians - population.pilots -
+            population.engineers - population.marines;
+    }
 }

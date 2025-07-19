@@ -103,7 +103,7 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Mining Station",
                 new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
                 Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
-        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
+        otherMiningStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
 
 
@@ -136,7 +136,7 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
         shipyard.LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
-        Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport);
+        Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
         shipyard.stationAI.OnBuildShip += ship => {
@@ -157,10 +157,10 @@ public class Chapter1 : CampaingController {
         playerMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder),
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
-                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle")
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle").FillRequiredCrew()
             });
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
             Command.CommandAction.Replace);
@@ -181,7 +181,8 @@ public class Chapter1 : CampaingController {
         var civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(0, 2); i++) {
             civilianShips.Add(tradeStation.BuildShip(planetFaction,
-                battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian"));
+                    battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian")
+                .FillRequiredCrew());
         }
 
         playerFactionAI.Setup(this, playerMiningStation);

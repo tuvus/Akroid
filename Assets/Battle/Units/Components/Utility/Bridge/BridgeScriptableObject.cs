@@ -6,7 +6,7 @@ public class BridgeScriptableObject : ComponentScriptableObject {
     public long populationSpace;
 
     public override Type GetComponentType() {
-        return typeof(BridgeScriptableObject);
+        return typeof(Bridge);
     }
 
     protected override void UpdateCosts() {

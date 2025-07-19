@@ -424,6 +424,16 @@ public class Ship : Unit {
         thrusting = false;
     }
 
+    public Ship FillRequiredCrew() {
+        var populationRequired = new Population(shipScriptableObject.crewNeeded);
+        moduleSystem.Get<Bridge>().ForEach(b => populationRequired.SubtractPopulation(b.population));
+        foreach (Bridge bridge in moduleSystem.Get<Bridge>()) {
+            populationRequired.MovePopulationTo(bridge.population, bridge.GetFreeSpace());
+            if (populationRequired.TotalPopulation() == 0) break;
+        }
+        return this;
+    }
+
     #endregion
 
     #region GetMethods
