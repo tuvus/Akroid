@@ -1226,13 +1226,13 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackSpeed = 4f;
             robotFaction.GetFactionAI().attackStrength = .05f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetOligarchy].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetOligarchy].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetOligarchy].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetOligarchy].force);
-                    planet.planetFactions[planetFaction]
-                        .AddPopulation(planet.planetFactions[planetOligarchy].population);
+                    planet.planetFactions[planetOligarchy].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetOligarchy].territory
                         .SubtractFrom(planet.planetFactions[planetOligarchy].territory);
                     planet.RemoveFaction(planetOligarchy);
@@ -1244,13 +1244,13 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(planetDemocracy);
             robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetDemocracy].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetDemocracy].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetDemocracy].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetDemocracy].force);
-                    planet.planetFactions[planetFaction]
-                        .AddPopulation(planet.planetFactions[planetDemocracy].population);
+                    planet.planetFactions[planetDemocracy].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetDemocracy].territory
                         .SubtractFrom(planet.planetFactions[planetDemocracy].territory);
                     planet.RemoveFaction(planetDemocracy);
@@ -1262,11 +1262,12 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(planetEmpire);
             robotFaction.GetFactionAI().attackStrength = .09f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetEmpire].force < 1000000), () => {
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetEmpire].population.marines < 1000000), () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetEmpire].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetEmpire].force);
-                    planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[planetEmpire].population);
+                    planet.planetFactions[planetEmpire].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetEmpire].territory
                         .SubtractFrom(planet.planetFactions[planetEmpire].territory);
                     planet.RemoveFaction(planetEmpire);
@@ -1278,12 +1279,13 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(minorFactions);
             robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[minorFactions].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[minorFactions].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[minorFactions].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[minorFactions].force);
-                    planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[minorFactions].population);
+                    planet.planetFactions[minorFactions].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[minorFactions].territory
                         .SubtractFrom(planet.planetFactions[minorFactions].territory);
                     planet.RemoveFaction(minorFactions);
@@ -1301,13 +1303,13 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCondition(eventManager.CreatePredicateCondition(_ => {
             long alliedForce = 0;
             if (planet.planetFactions.ContainsKey(planetDemocracy))
-                alliedForce += planet.planetFactions[planetDemocracy].force;
+                alliedForce += planet.planetFactions[planetDemocracy].population.marines;
             if (planet.planetFactions.ContainsKey(planetOligarchy))
-                alliedForce += planet.planetFactions[planetOligarchy].force;
+                alliedForce += planet.planetFactions[planetOligarchy].population.marines;
             if (planet.planetFactions.ContainsKey(planetEmpire))
-                alliedForce += planet.planetFactions[planetEmpire].force;
+                alliedForce += planet.planetFactions[planetEmpire].population.marines;
             if (planet.planetFactions.ContainsKey(minorFactions))
-                alliedForce += planet.planetFactions[minorFactions].force;
+                alliedForce += planet.planetFactions[minorFactions].population.marines;
             return alliedForce < 6000000000L;
         }));
         planetEscalationChain.AddAction(() => {

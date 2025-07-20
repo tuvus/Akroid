@@ -1,4 +1,5 @@
 using System;
+using Castle.Components.DictionaryAdapter.Xml;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -9,11 +10,11 @@ public class Population {
     public long engineers;
     public long marines;
 
-    public Population() {
-        civilians = 0;
-        pilots = 0;
-        engineers = 0;
-        marines = 0;
+    public Population(long civilians = 0, long pilots = 0, long engineers = 0, long marines = 0) {
+        this.civilians = civilians;
+        this.pilots = pilots;
+        this.engineers = engineers;
+        this.marines = marines;
     }
 
     public Population(Population population) {
@@ -34,7 +35,7 @@ public class Population {
     /// Move some of this population to the other population until the other population is full.
     /// Returns the leftover population
     /// </summary>
-    public long MovePopulationTo(Population pop, long otherPopFreeSpace) {
+    public long MovePopulationTo(Population pop, long otherPopFreeSpace = long.MaxValue) {
         long popToMove = math.min(civilians, otherPopFreeSpace);
         pop.civilians += popToMove;
         civilians -= popToMove;
@@ -61,15 +62,13 @@ public class Population {
 
 public class HabitationArea : ModuleComponent {
     private HabitationAreaScriptableObject habitationAreaScriptableObject;
-    [field: SerializeField] public long population { get; private set; }
-
+    public Population population { get; private set; }
 
     public HabitationArea(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         habitationAreaScriptableObject = (HabitationAreaScriptableObject)componentScriptableObject;
-
-        population = habitationAreaScriptableObject.populationSpace;
+        population = new Population();
     }
 
     public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
@@ -79,8 +78,7 @@ public class HabitationArea : ModuleComponent {
 
     public void ColonizePlanet(Planet planet) {
         if (planet.planetFactions.ContainsKey(faction)) {
-            planet.planetFactions[faction].AddPopulation(population);
-            population = 0;
+            population.MovePopulationTo(planet.planetFactions[faction].population);
         } else {
             planet.AddColony(faction, population, "Colony");
         }

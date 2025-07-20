@@ -10,21 +10,19 @@ public class PlanetFaction {
     private double populationGainFraction;
     private double territoryExpansionProgress;
 
-    public PlanetFaction(Planet planet, Faction faction, PlanetTerritory territory, long population, long force,
+    public PlanetFaction(Planet planet, Faction faction, PlanetTerritory territory, Population population,
         string special) {
         this.planet = planet;
         this.faction = faction;
         this.territory = territory;
         this.population = population;
-        this.force = force;
         this.special = special;
     }
 
     // If faction is null then this PlanetFaction represents unclaimed territory
     public Faction faction { get; }
     public PlanetTerritory territory { get; }
-    public long population { get; private set; }
-    public long force { get; private set; }
+    public Population population { get; private set; }
     public string special { get; private set; }
 
 
@@ -38,18 +36,14 @@ public class PlanetFaction {
 
 
     private void UpdateForce(float deltaTime) {
-        if (force > population) {
-            force = population;
-            return;
-        }
-
-        long desiredForce = population / 200;
-        if (desiredForce > force) {
-            long forceDifference = desiredForce - force;
+        long desiredForce = population.civilians / 200;
+        if (desiredForce > population.marines) {
+            long forceDifference = desiredForce - population.marines;
             int factionsAtWarWith = 1 + planet.planetFactions.ToList().Count(f => faction.IsAtWarWithFaction(f.Key));
             double forceRecruited = math.min(forceDifference,
-                population * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
-            force += (long)forceRecruited;
+                population.civilians * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
+            population.marines += (long)forceRecruited;
+            population.civilians -= (long)forceRecruited;
             forceGainFraction = forceRecruited - (long)forceRecruited;
         }
     }
@@ -58,23 +52,23 @@ public class PlanetFaction {
         long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
         double populationCapacityRatio = 0;
         double populationGrowthPercent = 0;
-        if (populationCapacity >= population) {
-            populationCapacityRatio = populationCapacity * 50 / (population + 1);
+        if (populationCapacity >= population.TotalPopulation()) {
+            populationCapacityRatio = populationCapacity * 50f / (population.TotalPopulation() + 1);
             populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 200);
         } else {
-            populationCapacityRatio = -population * 50 / (populationCapacity + 1);
+            populationCapacityRatio = -population.TotalPopulation() * 50f / (populationCapacity + 1);
             populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
         }
 
-        double populationGained = populationGrowthPercent * population * deltaTime / 200000 + populationGainFraction;
-        population = math.max(0, population + (long)populationGained);
+        double populationGained = populationGrowthPercent * population.TotalPopulation() * deltaTime / 200000 + populationGainFraction;
+        population.civilians = math.max(0, population.civilians + (long)populationGained);
         populationGainFraction = populationGained - (long)populationGained;
     }
 
 
     private void UpdateExpansion(float deltaTime) {
         if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
-            territoryExpansionProgress += force * deltaTime / 500;
+            territoryExpansionProgress += population.marines * deltaTime / 500;
             if (territoryExpansionProgress >= 4) {
                 float randomValue = Random.Range(0, 100);
                 if (randomValue <= 50 && planet.GetUnclaimedFaction().territory.highQualityArea > 0) {
@@ -116,12 +110,12 @@ public class PlanetFaction {
     /// </param>
     public void FightFactionForTerritory(PlanetFaction defender, float forceToAttackWith, float deltaTime) {
         // Don't include garisons in the attack forces
-        long forcesDedicatedToAttack = math.max(force / 6, force - territory.GetTerritoryValue() * 10);
+        long forcesDedicatedToAttack = math.max(population.marines / 6, population.marines - territory.GetTerritoryValue() * 10);
         long attackingForce = (long)(forcesDedicatedToAttack * forceToAttackWith);
         PlanetTerritory warZone = CreateWarZone(defender, attackingForce);
         // Defense force is based on the forces stationed in the territory being attacked which includes some forces dedecated to attack as well.
         long defenseForce = math.max(0,
-            defender.force * warZone.GetTerritoryValue() / defender.territory.GetTerritoryValue());
+            defender.population.marines * warZone.GetTerritoryValue() / defender.territory.GetTerritoryValue());
 
         // Random factor of the fight, a higher value means the attackers are doing better
         float bias = Random.Range(-.3f, .3f);
@@ -138,13 +132,13 @@ public class PlanetFaction {
             defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
             + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
             defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
-        // Attackers get to attack with more force but defenders will loose less per force
+        // Attackers get to attack with more force but defenders will lose less per force
         long attackersKilled = math.min(attackingForce,
             (long)(defenseForce * defenderModifiers * (1 + math.min(-bias, 0)) / 20));
         long defendersKilled = math.min(defenseForce,
             (long)(attackingForce * attackerModifiers * (1 + math.min(bias, 0)) / 50));
-        force -= attackersKilled;
-        defender.force -= defendersKilled;
+        population.marines -= attackersKilled;
+        defender.population.marines -= defendersKilled;
 
         PlanetTerritory territoryTaken;
         if (defenseForce - defendersKilled <= 0) {
@@ -166,8 +160,8 @@ public class PlanetFaction {
         }
 
         // War is bad for everyone
-        population -= (long)(attackersKilled * 10 * (1 + math.abs(bias) * 2));
-        defender.population -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
+        population.civilians -= (long)(attackersKilled * 10 * (1 + math.abs(bias) * 2));
+        defender.population.civilians -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
     }
 
     /// <summary>
@@ -210,17 +204,16 @@ public class PlanetFaction {
     }
 
     public void AddForce(long force) {
-        population += force;
-        this.force += force;
+        population.marines += force;
     }
 
     public long RemoveForce(long force) {
-        force = math.min(this.force, force);
-        this.force -= force;
+        force = math.min(population.marines, force);
+        population.marines -= force;
         return force;
     }
 
     public void AddPopulation(long population) {
-        this.population += population;
+        this.population.civilians += population;
     }
 }
