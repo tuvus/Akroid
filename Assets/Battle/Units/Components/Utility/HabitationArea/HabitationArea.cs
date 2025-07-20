@@ -83,4 +83,9 @@ public class HabitationArea : ModuleComponent {
             planet.AddColony(faction, population, "Colony");
         }
     }
+
+    public long GetFreeSpace() {
+        return habitationAreaScriptableObject.populationSpace - population.civilians - population.pilots -
+            population.engineers - population.marines;
+    }
 }
