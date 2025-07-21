@@ -372,7 +372,7 @@ public class SimulationFactionAI : FactionAI {
     }
 
     private void ManageStationUpgrades() {
-        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 10000) {
+        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoType.Metal) > 10000) {
             for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
                 if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
                     fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);

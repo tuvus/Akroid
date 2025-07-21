@@ -49,7 +49,7 @@ public class BattleManager {
     protected float startOfSimulation;
     public EventManager eventManager { get; protected set; }
 
-    public Dictionary<CargoBay.CargoTypes, float> baseResourcePrice;
+    public Dictionary<CargoBay.CargoType, float> baseResourcePrice;
 
     public HashSet<Faction> factions { get; protected set; }
     public HashSet<BattleObject> battleObjects { get; protected set; }
@@ -154,9 +154,9 @@ public class BattleManager {
         usedMissiles = new HashSet<Missile>(100);
         unusedMissiles = new HashSet<Missile>(100);
         players = new HashSet<Player>();
-        baseResourcePrice = new Dictionary<CargoBay.CargoTypes, float>();
-        baseResourcePrice.Add(CargoBay.CargoTypes.Metal, 8.4f);
-        baseResourcePrice.Add(CargoBay.CargoTypes.Gas, 19.5f);
+        baseResourcePrice = new Dictionary<CargoBay.CargoType, float>();
+        baseResourcePrice.Add(CargoBay.CargoType.Metal, 8.4f);
+        baseResourcePrice.Add(CargoBay.CargoType.Gas, 19.5f);
 
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
@@ -200,7 +200,7 @@ public class BattleManager {
 
         foreach (Faction faction in factions) {
             if (faction.GetFleetCommand() != null)
-                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
+                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoType.Gas);
             foreach (Faction faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);

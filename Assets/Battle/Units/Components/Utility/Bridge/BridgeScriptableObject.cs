@@ -11,6 +11,6 @@ public class BridgeScriptableObject : HabitationAreaScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += populationSpace * 2;
-        AddResourceCost(CargoBay.CargoTypes.Metal, populationSpace);
+        AddResourceCost(CargoBay.CargoType.Metal, populationSpace);
     }
 }

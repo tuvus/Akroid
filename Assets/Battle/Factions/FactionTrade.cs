@@ -7,11 +7,11 @@ public class FactionTrade {
     public Faction faction { get; private set; }
 
     public struct Offer {
-        public CargoBay.CargoTypes cargoType;
+        public CargoBay.CargoType cargoType;
         public long amount;
         public float price;
 
-        public Offer(CargoBay.CargoTypes cargoType, long amount, float price) {
+        public Offer(CargoBay.CargoType cargoType, long amount, float price) {
             this.cargoType = cargoType;
             this.amount = amount;
             this.price = price;
@@ -27,12 +27,12 @@ public class FactionTrade {
     public struct Contract {
         public Unit provider;
         public Unit receiver;
-        public Dictionary<CargoBay.CargoTypes, Offer> cargo;
+        public Dictionary<CargoBay.CargoType, Offer> cargo;
 
         public Contract(Unit provider, Unit reciever, params Offer[] offers) {
             this.provider = provider;
             this.receiver = reciever;
-            cargo = new Dictionary<CargoBay.CargoTypes, Offer>();
+            cargo = new Dictionary<CargoBay.CargoType, Offer>();
             foreach (Offer offer in offers) {
                 cargo.Add(offer.cargoType, offer);
             }
@@ -42,12 +42,12 @@ public class FactionTrade {
     /// <summary>
     /// The resources being offered by each station in the faction.
     /// </summary>
-    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesOffered;
+    public Dictionary<CargoBay.CargoType, Dictionary<Unit, Offer>> resourcesOffered;
 
     /// <summary>
     /// The resources being requested by each station in the faction.
     /// </summary>
-    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesRequested;
+    public Dictionary<CargoBay.CargoType, Dictionary<Unit, Offer>> resourcesRequested;
 
     /// <summary>
     /// The factions that we can sell to and how much of a markup we have.
@@ -63,7 +63,7 @@ public class FactionTrade {
         this.faction = faction;
         resourcesOffered = new();
         resourcesRequested = new();
-        foreach (CargoBay.CargoTypes cargoType in CargoBay.allCargoTypes) {
+        foreach (CargoBay.CargoType cargoType in CargoBay.allCargoTypes) {
             resourcesOffered.Add(cargoType, new());
             resourcesRequested.Add(cargoType, new());
         }
@@ -146,7 +146,7 @@ public class FactionTrade {
     }
 
     public void RemoveStationOffersAndRequests(Station station) {
-        foreach (CargoBay.CargoTypes c in CargoBay.allCargoTypes) {
+        foreach (CargoBay.CargoType c in CargoBay.allCargoTypes) {
             resourcesOffered[c].Remove(station);
             resourcesRequested[c].Remove(station);
         }

@@ -16,8 +16,8 @@ public class ConstructionBay : ModuleComponent {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
 
         if (unit.IsStation()) {
-            ((Station)unit).ReserveCargo(1200 * 12, CargoBay.CargoTypes.Metal);
-            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoTypes.Gas);
+            ((Station)unit).ReserveCargo(1200 * 12, CargoBay.CargoType.Metal);
+            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoType.Gas);
         }
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
@@ -62,7 +62,7 @@ public class ConstructionBay : ModuleComponent {
         int availableConstructionBays = constructionBayScriptableObject.constructionBays;
         long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
         if (buildAmount <= 0) return;
-        Dictionary<CargoBay.CargoTypes, long> cargoReserved = new Dictionary<CargoBay.CargoTypes, long>();
+        Dictionary<CargoBay.CargoType, long> cargoReserved = new Dictionary<CargoBay.CargoType, long>();
 
         foreach (ShipConstructionBlueprint shipBlueprint in buildQueue.ToList()) {
             if (availableConstructionBays == 0) return;
@@ -70,7 +70,7 @@ public class ConstructionBay : ModuleComponent {
             availableConstructionBays--;
 
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
-            foreach (KeyValuePair<CargoBay.CargoTypes, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
+            foreach (KeyValuePair<CargoBay.CargoType, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
                 long availableCargo = math.max(0,
                     unit.GetAllCargoOfType(resourceCost.Key, true) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));

@@ -94,12 +94,12 @@ public class Ship : Unit {
         ///     The amount of resources to be put into the blueprint before it can be constructed.
         ///     This value may be reduced throughout construction.
         /// </summary>
-        public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
+        public Dictionary<CargoBay.CargoType, long> resourceCosts;
 
         public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(
             faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
-            resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
+            resourceCosts = new Dictionary<CargoBay.CargoType, long>();
             totalResourcesRequired = 0;
             for (int i = 0; i < shipScriptableObject.resourceTypes.Count; i++) {
                 resourceCosts.Add(shipScriptableObject.resourceTypes[i], shipScriptableObject.resourceCosts[i]);

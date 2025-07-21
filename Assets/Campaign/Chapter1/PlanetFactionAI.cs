@@ -61,7 +61,7 @@ public class PlanetFactionAI : FactionAI {
 
     private void UpdateTradeStation() {
         if (tradeWithPlanetTime <= 0) {
-            foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
+            foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 long cargo = tradeStation.GetAllCargoOfType(type);
                 if (cargo < tradeStation.freeCargo[type].minWanted + 400) {
                     // We have too little cargo, buy some at an expensive price from the planet

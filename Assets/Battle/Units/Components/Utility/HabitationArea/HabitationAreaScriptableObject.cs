@@ -13,6 +13,6 @@ public class HabitationAreaScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += populationSpace * 3;
-        AddResourceCost(CargoBay.CargoTypes.Metal, populationSpace);
+        AddResourceCost(CargoBay.CargoType.Metal, populationSpace);
     }
 }

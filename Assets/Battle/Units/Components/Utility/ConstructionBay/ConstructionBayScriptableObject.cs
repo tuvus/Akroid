@@ -15,6 +15,6 @@ public class ConstructionBayScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(constructionBays / constructionSpeed * constructionAmount * 10);
-        AddResourceCost(CargoBay.CargoTypes.Metal, constructionBays * 300);
+        AddResourceCost(CargoBay.CargoType.Metal, constructionBays * 300);
     }
 }

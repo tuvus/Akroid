@@ -61,7 +61,7 @@ public class MiningStation : Station {
                 miningTime += GetMiningSpeed();
             }
 
-            if (nearbyAsteroids.Count == 0 && GetAllCargoOfType(CargoBay.CargoTypes.Metal) <= 0) {
+            if (nearbyAsteroids.Count == 0 && GetAllCargoOfType(CargoBay.CargoType.Metal) <= 0) {
                 activelyMining = false;
                 faction.RemoveMiningStation(this);
             }
@@ -78,8 +78,8 @@ public class MiningStation : Station {
         if (nearbyAsteroids.Count > 0) {
             LoadCargo(
                 nearbyAsteroids[0]
-                    .MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoTypes.Metal), GetMiningAmount())),
-                CargoBay.CargoTypes.Metal);
+                    .MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoType.Metal), GetMiningAmount())),
+                CargoBay.CargoType.Metal);
             if (!nearbyAsteroids[0].HasResources()) {
                 nearbyAsteroids.RemoveAt(0);
             }

@@ -12,6 +12,6 @@ public class HangarScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += maxDockSpace * 10;
-        AddResourceCost(CargoBay.CargoTypes.Metal, maxDockSpace * 30);
+        AddResourceCost(CargoBay.CargoType.Metal, maxDockSpace * 30);
     }
 }

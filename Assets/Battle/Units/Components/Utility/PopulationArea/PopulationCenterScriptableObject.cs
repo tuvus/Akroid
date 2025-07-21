@@ -11,7 +11,7 @@ public class PopulationCenterScriptableObject : HabitationAreaScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += populationSpace * 10;
-        AddResourceCost(CargoBay.CargoTypes.Metal, populationSpace * 4);
-        AddResourceCost(CargoBay.CargoTypes.Gas, populationSpace);
+        AddResourceCost(CargoBay.CargoType.Metal, populationSpace * 4);
+        AddResourceCost(CargoBay.CargoType.Gas, populationSpace);
     }
 }

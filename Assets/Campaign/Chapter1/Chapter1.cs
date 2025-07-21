@@ -49,8 +49,8 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle(BattleManager battleManager) {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
-        battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] = 2f;
-        battleManager.baseResourcePrice[CargoBay.CargoTypes.Gas] = 7f;
+        battleManager.baseResourcePrice[CargoBay.CargoType.Metal] = 2f;
+        battleManager.baseResourcePrice[CargoBay.CargoType.Gas] = 7f;
 
         battleManager.CreateNewStar("Sun", new PositionGiver(Vector2.zero));
         colorPicker = new ColorPicker();
@@ -104,7 +104,7 @@ public class Chapter1 : CampaingController {
                 new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
                 Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
         otherMiningStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
-        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
+        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoType.Metal);
 
 
         tradeStation = (Shipyard)battleManager.CreateNewStation(
@@ -116,8 +116,8 @@ public class Chapter1 : CampaingController {
         CargoBay.allCargoTypes.ForEach(c =>
             tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
                 tradeStation.freeCargo[c].maxWanted));
-        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoTypes.Metal);
-        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Gas);
+        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Metal);
+        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoType.Gas);
         tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
             planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
         tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
@@ -130,15 +130,15 @@ public class Chapter1 : CampaingController {
 
         shipyardFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(),
-                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 4), 0, 0, 0),
+                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoType.Metal] * 4), 0, 0, 0),
             new PositionGiver(Vector2.zero, 4000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
-        shipyard.LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
+        shipyard.LoadCargo(2400 * 4, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
-        shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
+        shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
         shipyard.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -1073,7 +1073,7 @@ public class Chapter1 : CampaingController {
             pirateFaction.StartWar(playerFaction);
             pirateFaction.StartWar(shipyardFaction);
             pirateFaction.StartWar(otherMiningFaction);
-            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.25f;
+            battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.25f;
         });
         pirateChain.AddCommEvent(planetCommManager, playerFaction,
             $"Pirates have seized the {otherMiningFaction.name}'s mining station!\n" +
@@ -1151,7 +1151,7 @@ public class Chapter1 : CampaingController {
             planetOligarchy.GetFactionAI().attackStrength = .05f;
             planetDemocracy.GetFactionAI().attackSpeed = 7f;
             planetDemocracy.GetFactionAI().attackStrength = .04f;
-            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f;
+            battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
@@ -1196,7 +1196,7 @@ public class Chapter1 : CampaingController {
         // Uprising Occurs
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"A robot uprising has begun within the {planetOligarchy.name}");
-        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(100));
         planetEscalationChain.AddAction(() =>
             planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
@@ -1281,7 +1281,7 @@ public class Chapter1 : CampaingController {
                     planet.RemoveFaction(minorFactions);
                 });
         });
-        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
         planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));

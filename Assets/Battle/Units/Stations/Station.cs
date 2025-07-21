@@ -28,18 +28,18 @@ public class Station : Unit, IPositionConfirmer {
     public StationAI stationAI { get; protected set; }
     public float repairTime { get; protected set; }
 
-    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> reservedCargo = new();
-    public Dictionary<CargoBay.CargoTypes, (long wanted, long has)> contractedCargo = new();
-    public Dictionary<CargoBay.CargoTypes, (long minWanted, long maxWanted, long has)> freeCargo = new();
+    public Dictionary<CargoBay.CargoType, (long wanted, long has)> reservedCargo = new();
+    public Dictionary<CargoBay.CargoType, (long wanted, long has)> contractedCargo = new();
+    public Dictionary<CargoBay.CargoType, (long minWanted, long maxWanted, long has)> freeCargo = new();
     public HashSet<FactionTrade.Contract> contractShipsDocked;
-    public Dictionary<CargoBay.CargoTypes, long> pendingContractResources = new();
+    public Dictionary<CargoBay.CargoType, long> pendingContractResources = new();
 
     [Serializable]
     public class StationBlueprint {
         public string name;
         public StationScriptableObject stationScriptableObject;
         public long stationCost;
-        public List<CargoBay.CargoTypes> resourcesTypes;
+        public List<CargoBay.CargoType> resourcesTypes;
         public List<long> resources;
         public long totalResourcesRequired;
 
@@ -47,7 +47,7 @@ public class Station : Unit, IPositionConfirmer {
             this.stationScriptableObject = stationScriptableObject;
             this.name = name;
             stationCost = stationScriptableObject.cost;
-            resourcesTypes = new List<CargoBay.CargoTypes>(stationScriptableObject.resourceTypes);
+            resourcesTypes = new List<CargoBay.CargoType>(stationScriptableObject.resourceTypes);
             resources = new List<long>(stationScriptableObject.resourceCosts);
             for (int i = 0; i < resources.Count; i++) {
                 totalResourcesRequired += resources[i];
@@ -75,7 +75,7 @@ public class Station : Unit, IPositionConfirmer {
             case StationType.FleetCommand:
             case StationType.TradeStation:
                 stationAI = new ShipyardAI(this);
-                long spaceAvailable = GetAvailableCargoSpace(CargoBay.CargoTypes.All);
+                long spaceAvailable = GetAvailableCargoSpace(CargoBay.CargoType.All);
                 CargoBay.allCargoTypes.ForEach(c => {
                     if (reservedCargo.ContainsKey(c)) spaceAvailable -= reservedCargo[c].wanted;
                 });
@@ -290,7 +290,7 @@ public class Station : Unit, IPositionConfirmer {
     /// <summary>
     /// Always uses reserved cargo last
     /// </summary>
-    public override long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public override long UseCargo(long amount, CargoBay.CargoType cargoType) {
         // Use up free cargo first
         long cargoUsed = amount - RemoveFreeCargo(amount, cargoType);
 
@@ -306,7 +306,7 @@ public class Station : Unit, IPositionConfirmer {
         return base.UseCargo(cargoUsed + reservedCargoUsed, cargoType);
     }
 
-    public override long LoadCargo(long amount, CargoBay.CargoTypes cargoType, FactionTrade.Contract? contract = null) {
+    public override long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.Contract? contract = null) {
         long leftover = base.LoadCargo(amount, cargoType);
         long toStore = amount - leftover;
         long toAdd = 0;
@@ -483,31 +483,31 @@ public class Station : Unit, IPositionConfirmer {
         return true;
     }
 
-    public override long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
+    public override long GetAllCargoOfType(CargoBay.CargoType cargoType, bool includeReserved = false) {
         long cargo = 0;
         if (includeReserved) {
-            if (cargoType == CargoBay.CargoTypes.All)
+            if (cargoType == CargoBay.CargoType.All)
                 cargo = reservedCargo.Sum(c => c.Value.has);
             else cargo = !reservedCargo.TryGetValue(cargoType, out (long wanted, long has) value) ? 0 : value.has;
         }
-        if (cargoType == CargoBay.CargoTypes.All)
+        if (cargoType == CargoBay.CargoType.All)
             return cargo + freeCargo.Sum(c => c.Value.has);
         return !freeCargo.TryGetValue(cargoType, out (long minWanted, long maxWanted, long has) value2)
             ? cargo
             : cargo + value2.has;
     }
 
-    public long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved, bool includeContract) {
+    public long GetAllCargoOfType(CargoBay.CargoType cargoType, bool includeReserved, bool includeContract) {
         long cargo = 0;
         if (includeContract) {
-            if (cargoType == CargoBay.CargoTypes.All)
+            if (cargoType == CargoBay.CargoType.All)
                 cargo += contractedCargo.Sum(c => c.Value.has);
             else cargo += !contractedCargo.TryGetValue(cargoType, out (long wanted, long has) value) ? 0 : value.has;
         }
         return cargo + GetAllCargoOfType(cargoType, includeReserved);
     }
 
-    public void ReserveCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public void ReserveCargo(long amount, CargoBay.CargoType cargoType) {
         long initialAmount = amount - RemoveFreeCargo(amount, cargoType);
         if (reservedCargo.ContainsKey(cargoType)) {
             reservedCargo[cargoType] = (reservedCargo[cargoType].wanted + amount,
@@ -519,7 +519,7 @@ public class Station : Unit, IPositionConfirmer {
         UpdateCargoTrade(cargoType);
     }
 
-    public void UnReserveCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public void UnReserveCargo(long amount, CargoBay.CargoType cargoType) {
         long extra = math.max(reservedCargo[cargoType].has - reservedCargo[cargoType].wanted + amount, 0);
         AddFreeCargo(extra, cargoType);
         if (reservedCargo[cargoType].wanted > amount) {
@@ -532,7 +532,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     /// <returns>The amount of cargo not removed. Does not modify the cargo bay or resources offered.</returns>
-    private long RemoveFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
+    private long RemoveFreeCargo(long amount, CargoBay.CargoType cargoType) {
         if (!freeCargo.ContainsKey(cargoType)) return amount;
         var previousCargo = freeCargo[cargoType];
         long amountUsed = math.min(amount, previousCargo.has);
@@ -550,7 +550,7 @@ public class Station : Unit, IPositionConfirmer {
     }
 
     /// <summary> Adds the free cargo, does not modify the cargo bay, check if it is over capacity or update resources offered. </summary>
-    private void AddFreeCargo(long amount, CargoBay.CargoTypes cargoType) {
+    private void AddFreeCargo(long amount, CargoBay.CargoType cargoType) {
         if (amount == 0) return;
 
         if (freeCargo.ContainsKey(cargoType))
@@ -559,7 +559,7 @@ public class Station : Unit, IPositionConfirmer {
         else freeCargo[cargoType] = (0, 0, amount);
     }
 
-    public void SetDesiredFreeCargoRange(CargoBay.CargoTypes cargoType, long minWanted, long maxWanted) {
+    public void SetDesiredFreeCargoRange(CargoBay.CargoType cargoType, long minWanted, long maxWanted) {
         var previousCargo = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
         freeCargo[cargoType] = (minWanted, maxWanted, previousCargo.has);
         if (minWanted > maxWanted)
@@ -571,7 +571,7 @@ public class Station : Unit, IPositionConfirmer {
     /// <summary>
     /// Recalculates and modifies the resources requested an offered at the faction level.
     /// </summary>
-    public void UpdateCargoTrade(CargoBay.CargoTypes cargoType) {
+    public void UpdateCargoTrade(CargoBay.CargoType cargoType) {
         var reserved = reservedCargo.GetValueOrDefault(cargoType, (0, 0));
         var free = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
         pendingContractResources.TryAdd(cargoType, 0);
@@ -603,12 +603,12 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-    float GetRequestPriceForCargoType(CargoBay.CargoTypes cargoType) {
+    float GetRequestPriceForCargoType(CargoBay.CargoType cargoType) {
         var reserved = reservedCargo.GetValueOrDefault(cargoType, (0, 0));
         var free = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
         float priceModifier = 1f;
         // If we are a mining station then we can produce our own resources
-        if (cargoType == CargoBay.CargoTypes.Metal && this is MiningStation) priceModifier = .7f;
+        if (cargoType == CargoBay.CargoType.Metal && this is MiningStation) priceModifier = .7f;
         long reservedDiff = reserved.wanted - reserved.has - pendingContractResources[cargoType];
         if (reservedDiff > 0) {
             // We desperately want more cargo for our more essential station functions
@@ -634,13 +634,13 @@ public class Station : Unit, IPositionConfirmer {
         }
     }
 
-    float GetOfferPriceForCargoType(CargoBay.CargoTypes cargoType) {
+    float GetOfferPriceForCargoType(CargoBay.CargoType cargoType) {
         var free = freeCargo.GetValueOrDefault(cargoType, (0, 0, 0));
         // We have too little cargo to sell
         if (free.has <= free.minWanted) return 1000000;
         float priceModifier = 1f;
         // Mining stations can sell cargo for cheaper
-        if (cargoType == CargoBay.CargoTypes.Metal && this is MiningStation) priceModifier = .7f;
+        if (cargoType == CargoBay.CargoType.Metal && this is MiningStation) priceModifier = .7f;
         long freeWantDiff = free.maxWanted - free.has;
         if (freeWantDiff > 0) {
             // We have a little extra cargo that we can sell

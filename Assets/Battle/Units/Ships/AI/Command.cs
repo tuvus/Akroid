@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = Unity.Mathematics.Random;
 
 [Serializable]
@@ -41,7 +42,7 @@ public class Command {
     public float targetRotation;
     public Vector2 targetPosition;
     public bool useAlternateCommandOnceDone;
-    public CargoBay.CargoTypes cargoType;
+    [FormerlySerializedAs("cargoType")] public CargoBay.CargoType cargoType;
     public bool autoUnload;
 
     public float maxSpeed;
@@ -181,7 +182,7 @@ public class Command {
     }
 
     public static Command CreateTransportCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType, bool oneTrip = false, bool autoUnload = true) {
+        CargoBay.CargoType cargoType, bool oneTrip = false, bool autoUnload = true) {
         return new Command(CommandType.Transport) {
             destinationStation = destinationStation,
             productionStation = productionStation,
@@ -192,7 +193,7 @@ public class Command {
     }
 
     public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType, float delay, bool autoUnload = true) {
+        CargoBay.CargoType cargoType, float delay, bool autoUnload = true) {
         return new Command(CommandType.TransportDelay) {
             destinationStation = destinationStation,
             productionStation = productionStation,
@@ -204,7 +205,7 @@ public class Command {
     }
 
     public static Command CreateTradeCommand(Station mustTradeWith = null,
-        CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All) {
+        CargoBay.CargoType cargoTypeToTrade = CargoBay.CargoType.All) {
         return new Command(CommandType.Trade) {
             cargoType = cargoTypeToTrade,
             destinationStation = mustTradeWith

@@ -7,7 +7,7 @@ using static CargoBay;
 
 public class UnitScriptableObject : ScriptableObject {
     public long cost;
-    public List<CargoTypes> resourceTypes;
+    public List<CargoType> resourceTypes;
     public List<long> resourceCosts;
 
     public string prefabPath;
@@ -60,7 +60,7 @@ public class UnitScriptableObject : ScriptableObject {
         cost = maxHealth * 10;
         resourceTypes.Clear();
         resourceCosts.Clear();
-        AddResourceCost(CargoTypes.Metal, maxHealth);
+        AddResourceCost(CargoType.Metal, maxHealth);
         foreach (ModuleSystem.System system in systems.ToList()) {
             if (system == null || system.component == null) {
                 Debug.Log("Null Component " + unitName);
@@ -76,7 +76,7 @@ public class UnitScriptableObject : ScriptableObject {
         }
     }
 
-    protected void AddResourceCost(CargoTypes type, long cost) {
+    protected void AddResourceCost(CargoType type, long cost) {
         int metalIndex = resourceTypes.IndexOf(type);
         if (metalIndex == -1) {
             resourceTypes.Add(type);
