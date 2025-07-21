@@ -17,11 +17,26 @@ public class Population {
         this.marines = marines;
     }
 
+    public Population SetBasicPopulation(long amount) {
+        pilots = (long)(amount * PopulationCenter.pilotRatio);
+        engineers = (long)(amount * PopulationCenter.engineerRatio);
+        marines = (long)(amount * PopulationCenter.marineRatio);
+        civilians = amount - pilots - engineers - marines;
+        return this;
+    }
+
     public Population(Population population) {
         civilians = population.civilians;
         pilots = population.pilots;
         engineers = population.engineers;
         marines = population.marines;
+    }
+
+    public void AddPopulation(Population pop) {
+        civilians += pop.civilians;
+        pilots += pop.pilots;
+        engineers += pop.engineers;
+        marines += pop.marines;
     }
 
     public void SubtractPopulation(Population pop) {

@@ -103,7 +103,10 @@ public class Planet : BattleObject, IPositionConfirmer {
             (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
         long force = (long)(population * forceFraction);
         population -= force;
-        AddFaction(faction, territory, new Population((long)(population * .799), (long)(population * .001), (long)(population * .2), force), special);
+        AddFaction(faction, territory,
+            new Population((long)(population * (1 - PopulationCenter.pilotRatio - PopulationCenter.engineerRatio)),
+                (long)(population * PopulationCenter.pilotRatio), (long)(population * PopulationCenter.engineerRatio),
+                force), special);
     }
 
     public void AddFaction(Faction faction, double territoryFactor, long population, double forceFraction,

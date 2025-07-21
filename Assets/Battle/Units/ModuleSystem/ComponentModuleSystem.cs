@@ -11,7 +11,7 @@ public class ComponentModuleSystem : ModuleSystem {
         typeof(Turret), typeof(LaserTurret), typeof(ProjectileTurret), typeof(MissileLauncher),
         typeof(ShieldGenerator), typeof(Thruster), typeof(Generator), typeof(CargoBay), typeof(Hangar),
         typeof(ConstructionBay), typeof(HabitationArea), typeof(ResearchEquipment), typeof(GasCollector),
-        typeof(EmptyComponent)
+        typeof(Bridge), typeof(PopulationCenter), typeof(EmptyComponent)
     };
     private readonly Dictionary<Type, List<ModuleComponent>> components;
 
