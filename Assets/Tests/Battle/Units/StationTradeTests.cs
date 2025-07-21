@@ -120,7 +120,7 @@ public class StationTradeTests {
         SetupTradeTests();
         testFaction.factionTrade.MakeSellTradeAgreement(testFaction2);
         FactionTrade.TradeContract tradeContract = new FactionTrade.TradeContract(testStation, testShip,
-            new FactionTrade.Offer(CargoBay.CargoType.Metal, 400, 1.2f));
+            new FactionTrade.TradeOffer(CargoBay.CargoType.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
         testFaction.factionTrade.AddContract(tradeContract, false);
         Assert.AreEqual(1, testStation.contractedCargo.Count);
@@ -190,7 +190,7 @@ public class StationTradeTests {
         SetupTradeTests();
         testFaction2.factionTrade.MakeSellTradeAgreement(testFaction);
         FactionTrade.TradeContract tradeContract = new FactionTrade.TradeContract(testShip, testStation,
-            new FactionTrade.Offer(CargoBay.CargoType.Metal, 400, 1.2f));
+            new FactionTrade.TradeOffer(CargoBay.CargoType.Metal, 400, 1.2f));
         testFaction2.AddCredits(10000000);
         testFaction.factionTrade.AddContract(tradeContract, false);
         Assert.Zero(testShip.LoadCargo(200, CargoBay.CargoType.Metal));
@@ -226,7 +226,7 @@ public class StationTradeTests {
         SetupTradeTests();
         testFaction.factionTrade.MakeSellTradeAgreement(testFaction2);
         FactionTrade.TradeContract tradeContract = new FactionTrade.TradeContract(testStation, testShip,
-            new FactionTrade.Offer(CargoBay.CargoType.Metal, 400, 1.2f));
+            new FactionTrade.TradeOffer(CargoBay.CargoType.Metal, 400, 1.2f));
         Assert.AreEqual(0,testStation.contractedCargo.Count);
 
         testFaction.factionTrade.AddContract(tradeContract, false);

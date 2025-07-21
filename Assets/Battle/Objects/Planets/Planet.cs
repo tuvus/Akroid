@@ -104,7 +104,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         long force = (long)(population * forceFraction);
         population -= force;
         AddFaction(faction, territory,
-            new Population((long)(population * (1 - PopulationCenter.pilotRatio - PopulationCenter.engineerRatio)),
+            new Population((long)(population * (PopulationCenter.civilianRatio + PopulationCenter.marineRatio)),
                 (long)(population * PopulationCenter.pilotRatio), (long)(population * PopulationCenter.engineerRatio),
                 force), special);
     }

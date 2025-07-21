@@ -636,14 +636,14 @@ public class ShipAI {
         if (newCommand || (command.supplierContract == null && currentCommandState != CommandType.Move &&
             currentCommandState != CommandType.CollectGas)) {
             FactionTrade factionTrade = ship.faction.factionTrade;
-            var gasRequests = new List<Tuple<float, Unit, FactionTrade.Offer>>();
+            var gasRequests = new List<Tuple<float, Unit, FactionTrade.TradeOffer>>();
             factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f => f.resourcesRequested[CargoBay.CargoType.Gas]
                 .ToList().ForEach(r => {
                     long amount = math.min(ship.GetAvailableCargoSpace(CargoBay.CargoType.Gas) +
                         ship.GetAllCargoOfType(CargoBay.CargoType.Gas), r.Value.amount);
                     if (amount == 0) return;
-                    var offer = new FactionTrade.Offer(r.Value, amount);
-                    gasRequests.Add(new Tuple<float, Unit, FactionTrade.Offer>(
+                    var offer = new FactionTrade.TradeOffer(r.Value, amount);
+                    gasRequests.Add(new Tuple<float, Unit, FactionTrade.TradeOffer>(
                         amount * factionTrade.GetOurSellValueOfOffer(r.Key.faction, offer), r.Key, offer));
                 }));
             gasRequests.Sort((a, b) => a.Item1.CompareTo(b.Item2));
@@ -867,14 +867,14 @@ public class ShipAI {
         if (command.supplierContract == null && command.requestContract == null) {
             // Try and find a new trade route
             // Find what cargo is being offered for the best price
-            Dictionary<CargoBay.CargoType, List<Tuple<float, Unit, FactionTrade.Offer>>> providedContracts = new();
+            Dictionary<CargoBay.CargoType, List<Tuple<float, Unit, FactionTrade.TradeOffer>>> providedContracts = new();
             CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoType.All || c == command.cargoType)
                 .ToList().ForEach(c =>
-                    providedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+                    providedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.TradeOffer>>()));
             factionTrade.GetFactionsWeCanBuyFrom().ToList().ForEach(f =>
                 providedContracts.Keys.ToList().ForEach(c =>
                     providedContracts[c].AddRange(f.resourcesOffered[c].Select(offer =>
-                        new Tuple<float, Unit, FactionTrade.Offer>(
+                        new Tuple<float, Unit, FactionTrade.TradeOffer>(
                             factionTrade.GetOurBuyValueOfOffer(f.faction, offer.Value) *
                             math.min(ship.GetAvailableCargoSpace(c), offer.Value.amount), offer.Key,
                             offer.Value)).Where(o => o.Item3.amount > 0))));
@@ -887,15 +887,15 @@ public class ShipAI {
                 }));
 
             // Find what cargo is being requested for the best value
-            Dictionary<CargoBay.CargoType, List<Tuple<float, Unit, FactionTrade.Offer>>>
+            Dictionary<CargoBay.CargoType, List<Tuple<float, Unit, FactionTrade.TradeOffer>>>
                 requestedContracts = new();
             CargoBay.allCargoTypes.Where(c => command.cargoType == CargoBay.CargoType.All || c == command.cargoType)
                 .ToList().ForEach(c =>
-                    requestedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.Offer>>()));
+                    requestedContracts.Add(c, new List<Tuple<float, Unit, FactionTrade.TradeOffer>>()));
             factionTrade.GetFactionsWeCanSellTo().ToList().ForEach(f =>
                 requestedContracts.Keys.ToList().ForEach(c => requestedContracts[c].AddRange(
                     f.resourcesRequested[c].Select(wanted =>
-                        new Tuple<float, Unit, FactionTrade.Offer>(
+                        new Tuple<float, Unit, FactionTrade.TradeOffer>(
                             factionTrade.GetOurSellValueOfOffer(wanted.Key.faction, wanted.Value) *
                             math.min(ship.GetAvailableCargoSpace(c) * ship.GetAllCargoOfType(c), wanted.Value.amount),
                             wanted.Key,
@@ -906,7 +906,7 @@ public class ShipAI {
             var possibleContracts = new List<Tuple<float, FactionTrade.TradeContract, FactionTrade.TradeContract>>();
             CargoBay.allCargoTypes.ForEach(c => {
                 foreach (var wanted in requestedContracts[c]) {
-                    Tuple<float, Unit, FactionTrade.Offer>? provided = null;
+                    Tuple<float, Unit, FactionTrade.TradeOffer> provided = null;
                     if (command.destinationStation != null && command.destinationStation != wanted.Item2)
                         provided = providedContracts[c].FirstOrDefault(p => p.Item2 == command.destinationStation);
                     else if (command.destinationStation == null || command.destinationStation == wanted.Item2)
@@ -922,11 +922,11 @@ public class ShipAI {
                         providedAmount += provided.Item2.GetAvailableCargoSpace(CargoBay.CargoType.Metal);
                     long amount = math.min(math.min(ship.GetAvailableCargoSpace(c), wanted.Item3.amount),
                         providedAmount);
-                    var providedOffer = new FactionTrade.Offer(c, amount,
+                    var providedOffer = new FactionTrade.TradeOffer(c, amount,
                         provided.Item3.price * ship.battleManager.baseResourcePrice[c]);
                     // Add cargo we might already have stored
                     amount = math.min(amount + ship.GetAllCargoOfType(c), wanted.Item3.amount);
-                    var requested = new FactionTrade.Offer(c, amount,
+                    var requested = new FactionTrade.TradeOffer(c, amount,
                         wanted.Item3.price * ship.battleManager.baseResourcePrice[c]);
                     possibleContracts.Add(new Tuple<float, FactionTrade.TradeContract, FactionTrade.TradeContract>(
                         (sellValue - buyValue) * amount,

@@ -75,6 +75,21 @@ public class Population {
     }
 }
 
+[Serializable]
+public class PopulationFloat {
+    public float civilians;
+    public float pilots;
+    public float engineers;
+    public float marines;
+
+    public PopulationFloat(float civilians = 0, float pilots = 0, float engineers = 0, float marines = 0) {
+        this.civilians = civilians;
+        this.pilots = pilots;
+        this.engineers = engineers;
+        this.marines = marines;
+    }
+}
+
 public class HabitationArea : ModuleComponent {
     private HabitationAreaScriptableObject habitationAreaScriptableObject;
     public Population population { get; private set; }
@@ -102,5 +117,9 @@ public class HabitationArea : ModuleComponent {
     public long GetFreeSpace() {
         return habitationAreaScriptableObject.populationSpace - population.civilians - population.pilots -
             population.engineers - population.marines;
+    }
+
+    public long GetCapacity() {
+        return habitationAreaScriptableObject.populationSpace;
     }
 }

@@ -33,6 +33,9 @@ public class Station : Unit, IPositionConfirmer {
     public Dictionary<CargoBay.CargoType, (long minWanted, long maxWanted, long has)> freeCargo = new();
     public HashSet<FactionTrade.TradeContract> contractShipsDocked;
     public Dictionary<CargoBay.CargoType, long> pendingContractResources = new();
+    public Population contractedPersonnel = new();
+    public Population pendingPersonnel = new();
+    public bool updatePopulation = false;
 
     [Serializable]
     public class StationBlueprint {
@@ -167,6 +170,11 @@ public class Station : Unit, IPositionConfirmer {
                 UnloadContractFromShip(200, contract);
             }
         }
+
+        if (updatePopulation) {
+            UpdateJobMarket();
+            updatePopulation = false;
+        }
     }
 
     #region StationControls
@@ -285,7 +293,7 @@ public class Station : Unit, IPositionConfirmer {
 
     #endregion
 
-    #region Cargo
+    #region CargoAndPersonnel
 
     /// <summary>
     /// Always uses reserved cargo last
@@ -306,7 +314,8 @@ public class Station : Unit, IPositionConfirmer {
         return base.UseCargo(cargoUsed + reservedCargoUsed, cargoType);
     }
 
-    public override long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.TradeContract? contract = null) {
+    public override long LoadCargo(long amount, CargoBay.CargoType cargoType,
+        FactionTrade.TradeContract? contract = null) {
         long leftover = base.LoadCargo(amount, cargoType);
         long toStore = amount - leftover;
         long toAdd = 0;
@@ -360,7 +369,8 @@ public class Station : Unit, IPositionConfirmer {
     public override bool AddContract(FactionTrade.TradeContract tradeContract, bool mustHaveImmediateResources = true) {
         // Validate that the receiver can buy from the provider
         if (tradeContract.provider.faction != tradeContract.receiver.faction &&
-            !tradeContract.provider.faction.factionTrade.tradeSellAgreements.ContainsKey(tradeContract.receiver.faction))
+            !tradeContract.provider.faction.factionTrade.tradeSellAgreements
+                .ContainsKey(tradeContract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
 
         base.AddContract(tradeContract, mustHaveImmediateResources);
@@ -429,7 +439,7 @@ public class Station : Unit, IPositionConfirmer {
             toMove -= LoadCargoFromUnit(toMove, offer.cargoType, tradeContract.provider, tradeContract);
             cargoToMove -= toMove;
             tradeContract.cargo[offer.cargoType] =
-                new FactionTrade.Offer(offer.cargoType, offer.amount - toMove, offer.price);
+                new FactionTrade.TradeOffer(offer.cargoType, offer.amount - toMove, offer.price);
             faction.TransferCredits((long)(toMove * offer.price), tradeContract.provider.faction);
             pendingContractResources[offer.cargoType] -= toMove;
             if (tradeContract.cargo[offer.cargoType].amount == 0) tradeContract.cargo.Remove(offer.cargoType);
@@ -463,7 +473,7 @@ public class Station : Unit, IPositionConfirmer {
             if (offer.amount - toMove == 0) {
                 tradeContract.cargo.Remove(offer.cargoType);
             } else {
-                tradeContract.cargo[offer.cargoType] = new FactionTrade.Offer(offer, offer.amount - toMove);
+                tradeContract.cargo[offer.cargoType] = new FactionTrade.TradeOffer(offer, offer.amount - toMove);
             }
 
             if (contractedCargo[offer.cargoType].wanted - toMove == 0) {
@@ -581,7 +591,7 @@ public class Station : Unit, IPositionConfirmer {
         if (cargoRequested > 0) {
             float price = GetRequestPriceForCargoType(cargoType);
             if (price > 0) {
-                factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.Offer(cargoType,
+                factionTrade.resourcesRequested[cargoType][this] = new FactionTrade.TradeOffer(cargoType,
                     cargoRequested, price);
             } else {
                 factionTrade.resourcesRequested[cargoType].Remove(this);
@@ -593,7 +603,7 @@ public class Station : Unit, IPositionConfirmer {
         if (cargoOffered > 0) {
             float price = GetOfferPriceForCargoType(cargoType);
             if (price < 100) {
-                factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.Offer(cargoType,
+                factionTrade.resourcesOffered[cargoType][this] = new FactionTrade.TradeOffer(cargoType,
                     cargoOffered, price);
             } else {
                 factionTrade.resourcesOffered[cargoType].Remove(this);
@@ -645,7 +655,8 @@ public class Station : Unit, IPositionConfirmer {
         if (freeWantDiff > 0) {
             // We have a little extra cargo that we can sell
             int c = 1000;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) + .1f;
+            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) +
+                .1f;
         } else {
             // We have too much cargo and would like to sell it
             int c = 1000;
@@ -654,8 +665,49 @@ public class Station : Unit, IPositionConfirmer {
             // We would also like to sell our other cargo
             freeWantDiff = free.maxWanted - free.minWanted;
             c = 5000;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) + .1f;
+            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) +
+                .1f;
         }
+    }
+
+    public void UpdateJobMarket() {
+        PopulationFloat hireCost = new PopulationFloat(4, 40, 12, 25);
+        Population totalPopulation = new Population();
+        moduleSystem.Get<HabitationArea>().ForEach(h => totalPopulation.AddPopulation(h.population));
+        moduleSystem.Get<PopulationCenter>().ForEach(pc => {
+            totalPopulation.AddPopulation(pc.population);
+            // Population centers should keep around half of the civilians that they want
+            totalPopulation.civilians -= (long)math.min(pc.population.civilians,
+                pc.GetCapacity() * PopulationCenter.civilianRatio / 2);
+        });
+        Population availablePop = new Population(totalPopulation);
+        availablePop.SubtractPopulation(contractedPersonnel);
+
+        FactionTrade factionTrade = faction.factionTrade;
+        if (availablePop.TotalPopulation() == 0) {
+            factionTrade.personnelToHire.Remove(this);
+        } else {
+            PopulationFloat hireCosts = new PopulationFloat(
+                GetHireCost(availablePop.civilians, hireCost.civilians, 300),
+                GetHireCost(availablePop.pilots, hireCost.pilots, 20),
+                GetHireCost(availablePop.engineers, hireCost.engineers, 80),
+                GetHireCost(availablePop.marines, hireCost.marines, 60));
+            if (factionTrade.personnelToHire.ContainsKey(this)) {
+                factionTrade.personnelToHire[this].clients = availablePop;
+                factionTrade.personnelToHire[this].payment = hireCosts;
+            } else {
+                factionTrade.personnelToHire.Add(this, new FactionTrade.TransportOffer(availablePop, hireCosts));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds the hire cost of the personnel.
+    /// The value goes from baseCost to baseCost/2 as personnel is increased.
+    /// The value will equal baseCost * .75 when personnel equals modifier.
+    /// </summary>
+    private float GetHireCost(long personnel, float baseCost, long modifier) {
+        return (baseCost / 2) / ((personnel / (float)modifier) + 1) + baseCost / 2;
     }
 
     #endregion
