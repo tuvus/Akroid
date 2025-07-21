@@ -71,18 +71,18 @@ public class FactionTradeTests {
 
         Assert.Zero(testStation.LoadCargo(400, CargoBay.CargoType.Gas));
         factionTrade.MakeSellTradeAgreement(testFaction2);
-        FactionTrade.Contract contract = new FactionTrade.Contract(testStation, testShip,
+        FactionTrade.TradeContract tradeContract = new FactionTrade.TradeContract(testStation, testShip,
             new FactionTrade.Offer(CargoBay.CargoType.Gas, 300, 1.4f));
-        factionTrade.AddContract(contract);
+        factionTrade.AddContract(tradeContract);
         Assert.AreEqual(300, factionTrade.resourcesOffered[CargoBay.CargoType.Gas][testStation].amount);
 
-        FactionTrade.Contract contract2 = new FactionTrade.Contract(testStation, testShip,
+        FactionTrade.TradeContract contract2 = new FactionTrade.TradeContract(testStation, testShip,
             new FactionTrade.Offer(CargoBay.CargoType.Gas, 200, 1.4f));
         factionTrade.AddContract(contract2);
 
         Assert.AreEqual(100, factionTrade.resourcesOffered[CargoBay.CargoType.Gas][testStation].amount);
 
-        factionTrade.RemoveContract(contract);
+        factionTrade.RemoveContract(tradeContract);
         Assert.AreEqual(400, factionTrade.resourcesOffered[CargoBay.CargoType.Gas][testStation].amount);
 
         factionTrade.RemoveContract(contract2);
@@ -189,18 +189,18 @@ public class FactionTradeTests {
 
         testShip.LoadCargo(200, CargoBay.CargoType.Gas);
         testStation.ReserveCargo(200, CargoBay.CargoType.Gas);
-        FactionTrade.Contract contract = new FactionTrade.Contract(testShip, testStation,
+        FactionTrade.TradeContract tradeContract = new FactionTrade.TradeContract(testShip, testStation,
             new FactionTrade.Offer(CargoBay.CargoType.Gas, 200, 1.2f));
-        factionTrade.AddContract(contract);
+        factionTrade.AddContract(tradeContract);
         Assert.AreEqual(1, factionTrade.activeContracts.Count);
-        Assert.True(testStation.UnloadContractFromShip(400, contract));
+        Assert.True(testStation.UnloadContractFromShip(400, tradeContract));
         Assert.AreEqual(200, testStation.reservedCargo[CargoBay.CargoType.Gas].has);
         Assert.Zero(factionTrade.activeContracts.Count);
 
         testStation.UnReserveCargo(200, CargoBay.CargoType.Gas);
         Assert.AreEqual(200, factionTrade.resourcesOffered[CargoBay.CargoType.Gas][testStation].amount);
 
-        FactionTrade.Contract contract2 = new FactionTrade.Contract(testStation, testShip,
+        FactionTrade.TradeContract contract2 = new FactionTrade.TradeContract(testStation, testShip,
             new FactionTrade.Offer(CargoBay.CargoType.Gas, 200, 1.2f));
         factionTrade.AddContract(contract2);
         Assert.AreEqual(1, factionTrade.activeContracts.Count);

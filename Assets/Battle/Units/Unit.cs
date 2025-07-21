@@ -21,7 +21,7 @@ public abstract class Unit : BattleObject {
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
-    public HashSet<FactionTrade.Contract> contracts { get; private set; }
+    public HashSet<FactionTrade.TradeContract> contracts { get; private set; }
     public Unit() { }
 
     public Unit(BattleObjectData battleObjectData, BattleManager battleManager,
@@ -37,7 +37,7 @@ public abstract class Unit : BattleObject {
         scale = unitScriptableObject.baseScale * scale;
         turretsHibernating = false;
         hasWeapons = moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
-        contracts = new HashSet<FactionTrade.Contract>();
+        contracts = new HashSet<FactionTrade.TradeContract>();
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
@@ -170,13 +170,13 @@ public abstract class Unit : BattleObject {
 
     #region HelperMethods
 
-    public virtual bool AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
-        contracts.Add(contract);
+    public virtual bool AddContract(FactionTrade.TradeContract tradeContract, bool mustHaveImmediateResources = true) {
+        contracts.Add(tradeContract);
         return true;
     }
 
-    public virtual void RemoveContract(FactionTrade.Contract contract) {
-        contracts.Remove(contract);
+    public virtual void RemoveContract(FactionTrade.TradeContract tradeContract) {
+        contracts.Remove(tradeContract);
     }
 
     public void RemoveAllContracts() {
@@ -229,7 +229,7 @@ public abstract class Unit : BattleObject {
     ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
-    public virtual long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.Contract? contract = null) {
+    public virtual long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.TradeContract? contract = null) {
         long totalCargoToLoad = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
@@ -244,7 +244,7 @@ public abstract class Unit : BattleObject {
     ///     Does not take contracts into account.
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
-    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoType cargoType, Unit unit, FactionTrade.Contract? contract = null) {
+    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoType cargoType, Unit unit, FactionTrade.TradeContract? contract = null) {
         if (cargoType == CargoBay.CargoType.All) {
             foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);

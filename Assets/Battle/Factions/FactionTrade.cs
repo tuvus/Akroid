@@ -24,12 +24,12 @@ public class FactionTrade {
         }
     }
 
-    public struct Contract {
+    public class TradeContract {
         public Unit provider;
         public Unit receiver;
         public Dictionary<CargoBay.CargoType, Offer> cargo;
 
-        public Contract(Unit provider, Unit reciever, params Offer[] offers) {
+        public TradeContract(Unit provider, Unit reciever, params Offer[] offers) {
             this.provider = provider;
             this.receiver = reciever;
             cargo = new Dictionary<CargoBay.CargoType, Offer>();
@@ -57,7 +57,7 @@ public class FactionTrade {
     /// The factions that we can buy from and how much of a markup they have.
     /// </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
-    public HashSet<Contract> activeContracts;
+    public HashSet<TradeContract> activeContracts;
 
     public FactionTrade(Faction faction) {
         this.faction = faction;
@@ -85,27 +85,27 @@ public class FactionTrade {
                 " but the agreement doesn't exist!");
     }
 
-    public bool AddContract(Contract contract, bool mustHaveImmediateResources = true) {
-        if (!contract.provider.AddContract(contract, mustHaveImmediateResources)) return false;
-        if (!contract.receiver.AddContract(contract, mustHaveImmediateResources)) {
-            contract.provider.RemoveContract(contract);
+    public bool AddContract(TradeContract tradeContract, bool mustHaveImmediateResources = true) {
+        if (!tradeContract.provider.AddContract(tradeContract, mustHaveImmediateResources)) return false;
+        if (!tradeContract.receiver.AddContract(tradeContract, mustHaveImmediateResources)) {
+            tradeContract.provider.RemoveContract(tradeContract);
             return false;
         }
-        activeContracts.Add(contract);
-        Faction otherFaction = contract.provider.faction;
-        if (otherFaction == faction) otherFaction = contract.receiver.faction;
-        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(contract);
+        activeContracts.Add(tradeContract);
+        Faction otherFaction = tradeContract.provider.faction;
+        if (otherFaction == faction) otherFaction = tradeContract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(tradeContract);
         return true;
     }
 
-    public void RemoveContract(Contract contract) {
-        if (!activeContracts.Contains(contract)) return;
-        contract.provider.RemoveContract(contract);
-        contract.receiver.RemoveContract(contract);
-        activeContracts.Remove(contract);
-        Faction otherFaction = contract.provider.faction;
-        if (otherFaction == faction) otherFaction = contract.receiver.faction;
-        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(contract);
+    public void RemoveContract(TradeContract tradeContract) {
+        if (!activeContracts.Contains(tradeContract)) return;
+        tradeContract.provider.RemoveContract(tradeContract);
+        tradeContract.receiver.RemoveContract(tradeContract);
+        activeContracts.Remove(tradeContract);
+        Faction otherFaction = tradeContract.provider.faction;
+        if (otherFaction == faction) otherFaction = tradeContract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(tradeContract);
     }
 
     public float GetBuyCostOfOffer(Faction otherFaction, Offer offer) {

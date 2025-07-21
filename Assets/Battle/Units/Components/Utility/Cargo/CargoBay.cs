@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
-using UnityEngine.Assertions;
 
 /// <summary>
 ///     Handles storing resources in multiple cargo bays.

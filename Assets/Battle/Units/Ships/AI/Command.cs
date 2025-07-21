@@ -55,8 +55,8 @@ public class Command {
     public Planet targetPlanet;
     public Star targetStar;
     public Unit targetUnit;
-    public FactionTrade.Contract? supplierContract;
-    public FactionTrade.Contract? requestContract;
+    public FactionTrade.TradeContract supplierContract;
+    public FactionTrade.TradeContract requestContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -273,10 +273,10 @@ public class Command {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
         } else if (commandType == CommandType.Trade) {
-            if (supplierContract != null && supplierContract.Value.provider != null)
-                supplierContract.Value.provider.faction.factionTrade.RemoveContract(supplierContract.Value);
-            if (requestContract != null && requestContract.Value.receiver != null)
-                requestContract.Value.provider.faction.factionTrade.RemoveContract(requestContract.Value);
+            if (supplierContract != null && supplierContract.provider != null)
+                supplierContract.provider.faction.factionTrade.RemoveContract(supplierContract);
+            if (requestContract != null && requestContract.receiver != null)
+                requestContract.provider.faction.factionTrade.RemoveContract(requestContract);
 
         }
     }
