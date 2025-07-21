@@ -33,7 +33,7 @@ public class PopulationCenter : HabitationArea {
         bool hadChange = false;
 
         long civilianGrowth = math.min(populationCenterScriptableObject.populationSpace - population.TotalPopulation(),
-            (long) growth);
+            (long)growth);
         if (civilianGrowth > 0) {
             population.civilians += civilianGrowth;
             hadChange = true;
@@ -65,6 +65,17 @@ public class PopulationCenter : HabitationArea {
             hadChange = true;
         }
         marineFloat = marineGrowth - (long)marineGrowth;
+
+        long civilianRequested = (long)(GetCapacity() * civilianRatio / 2 - population.civilians);
+        if (civilianRequested > 0 && unit is Station station && !(station.populationRequests.ContainsKey(this) &&
+            station.populationRequests[this].civilians == civilianRequested)) {
+            hadChange = true;
+            if (station.populationRequests.ContainsKey(this)) {
+                station.populationRequests[this].civilians = civilianRequested;
+            } else {
+                station.populationRequests.Add(this, new Population(civilianRequested));
+            }
+        }
 
         if (hadChange && unit.IsStation()) {
             ((Station)unit).updatePopulation = true;

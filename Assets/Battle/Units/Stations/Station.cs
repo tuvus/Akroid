@@ -35,6 +35,7 @@ public class Station : Unit, IPositionConfirmer {
     public Dictionary<CargoBay.CargoType, long> pendingContractResources = new();
     public Population contractedPersonnel = new();
     public Population pendingPersonnel = new();
+    public Dictionary<ModuleComponent, Population> populationRequests = new();
     public bool updatePopulation = false;
 
     [Serializable]
@@ -110,6 +111,7 @@ public class Station : Unit, IPositionConfirmer {
         }
 
         visible = true;
+        updatePopulation = true;
     }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
@@ -672,32 +674,45 @@ public class Station : Unit, IPositionConfirmer {
 
     public void UpdateJobMarket() {
         PopulationFloat hireCost = new PopulationFloat(4, 40, 12, 25);
-        Population totalPopulation = new Population();
-        moduleSystem.Get<HabitationArea>().ForEach(h => totalPopulation.AddPopulation(h.population));
+        Population totalPop = new Population();
+        moduleSystem.Get<HabitationArea>().ForEach(h => totalPop.AddPopulation(h.population));
         moduleSystem.Get<PopulationCenter>().ForEach(pc => {
-            totalPopulation.AddPopulation(pc.population);
+            totalPop.AddPopulation(pc.population);
             // Population centers should keep around half of the civilians that they want
-            totalPopulation.civilians -= (long)math.min(pc.population.civilians,
+            totalPop.civilians -= (long)math.min(pc.population.civilians,
                 pc.GetCapacity() * PopulationCenter.civilianRatio / 2);
         });
-        Population availablePop = new Population(totalPopulation);
+        Population requestedPop = new Population();
+        populationRequests.Values.ToList().ForEach(r => requestedPop.AddPopulation(r));
+        Population availablePop = new Population(totalPop);
         availablePop.SubtractPopulation(contractedPersonnel);
+        availablePop.SubtractPopulation(requestedPop);
 
         FactionTrade factionTrade = faction.factionTrade;
         if (availablePop.TotalPopulation() == 0) {
             factionTrade.personnelToHire.Remove(this);
         } else {
             PopulationFloat hireCosts = new PopulationFloat(
-                GetHireCost(availablePop.civilians, hireCost.civilians, 300),
-                GetHireCost(availablePop.pilots, hireCost.pilots, 20),
-                GetHireCost(availablePop.engineers, hireCost.engineers, 80),
-                GetHireCost(availablePop.marines, hireCost.marines, 60));
+                GetHireOfferCost(availablePop.civilians, hireCost.civilians, 300),
+                GetHireOfferCost(availablePop.pilots, hireCost.pilots, 20),
+                GetHireOfferCost(availablePop.engineers, hireCost.engineers, 80),
+                GetHireOfferCost(availablePop.marines, hireCost.marines, 60));
             if (factionTrade.personnelToHire.ContainsKey(this)) {
                 factionTrade.personnelToHire[this].clients = availablePop;
                 factionTrade.personnelToHire[this].payment = hireCosts;
             } else {
                 factionTrade.personnelToHire.Add(this, new FactionTrade.TransportOffer(availablePop, hireCosts));
             }
+        }
+
+        if (requestedPop.TotalPopulation() == 0) {
+            factionTrade.personnelRequested.Remove(this);
+        } else {
+            factionTrade.personnelRequested.Add(this, new FactionTrade.TransportOffer(requestedPop, new PopulationFloat(
+                GetHireRequestCost(requestedPop.civilians, hireCost.civilians, 50),
+                GetHireRequestCost(requestedPop.pilots, hireCost.pilots, 2),
+                GetHireRequestCost(requestedPop.engineers, hireCost.engineers, 20),
+                GetHireRequestCost(requestedPop.marines, hireCost.marines, 15))));
         }
     }
 
@@ -706,8 +721,13 @@ public class Station : Unit, IPositionConfirmer {
     /// The value goes from baseCost to baseCost/2 as personnel is increased.
     /// The value will equal baseCost * .75 when personnel equals modifier.
     /// </summary>
-    private float GetHireCost(long personnel, float baseCost, long modifier) {
-        return (baseCost / 2) / ((personnel / (float)modifier) + 1) + baseCost / 2;
+    private float GetHireOfferCost(long personnel, float baseCost, long modifier) {
+        return baseCost * (.5f / ((personnel / (float)modifier) + 1) + .5f);
+    }
+
+    private float GetHireRequestCost(long personnelWanted, float baseCost, long modifier) {
+        return baseCost * (math.pow((personnelWanted + modifier) / (float)modifier, 1.2f) /
+            ((personnelWanted + modifier) / (float)modifier) + .1f);
     }
 
     #endregion
