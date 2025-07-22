@@ -29,7 +29,7 @@ public class OtherMiningFactionAI : FactionAI {
     }
 
     private void BuyMiningShips() {
-        if (otherMiningStation.GetMiningStationAI().GetWantedTransportShips() >
+        if (4 >
             shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             Ship.ShipBlueprint shipBlueprint = battleManager.GetShipBlueprint(Ship.ShipClass.Transport);
             long metalToUse =

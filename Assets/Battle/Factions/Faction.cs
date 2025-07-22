@@ -145,6 +145,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                         this),
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
                         .stationScriptableObject, true);
+                newStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees());
                 if (shipCount > 0) {
                     newStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
                     shipCount--;
@@ -680,9 +681,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
-        return activeMiningStations.Where(station => station.IsSpawned())
-                .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0))
-            - ships.Count(s => s.IsTransportShip());
+        return activeMiningStations.Count(station => station.IsSpawned()) * 3 - ships.Count(s => s.IsTransportShip());
     }
 
     /// <summary>

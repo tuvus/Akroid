@@ -72,9 +72,6 @@ public class Station : Unit, IPositionConfirmer {
         contractShipsDocked = new HashSet<FactionTrade.TradeContract>();
         CargoBay.allCargoTypes.ForEach(c => pendingContractResources.TryAdd(c, 0));
         switch (stationScriptableObject.stationType) {
-            case StationType.MiningStation:
-                stationAI = new MiningStationAI(this);
-                break;
             case StationType.Shipyard:
             case StationType.FleetCommand:
             case StationType.TradeStation:
@@ -88,6 +85,7 @@ public class Station : Unit, IPositionConfirmer {
                     SetDesiredFreeCargoRange(c, 0, (long)(spaceAvailable * .8f));
                 });
                 break;
+            case StationType.MiningStation:
             default:
                 stationAI = new StationAI(this);
                 break;

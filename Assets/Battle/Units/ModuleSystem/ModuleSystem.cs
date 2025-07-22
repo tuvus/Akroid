@@ -13,32 +13,6 @@ public class ModuleSystem {
 
     private Unit unit;
 
-    public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
-        this.unit = unit;
-        List<System> systemComponents = unitScriptableObject.GetSystems();
-        List<IModule> prefabModules = unitScriptableObject.GetModules();
-        systems = new List<System>(systemComponents.Count);
-        modules = new List<ModuleComponent>();
-        moduleToSystem = new Dictionary<ModuleComponent, System>();
-        foreach (System system in systemComponents) {
-            if (system == null) {
-                Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
-                continue;
-            }
-
-            System newSystem = new System(system);
-            systems.Add(newSystem);
-        }
-
-        foreach (IModule prefabModule in prefabModules) {
-            System system = systems[prefabModule.GetSystemIndex()];
-            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(
-                system.component.GetComponentType(),
-                battleManager, prefabModule, unit, system.component);
-            modules.Add(newComponent);
-            moduleToSystem.Add(newComponent, system);
-        }
-    }
     [field: SerializeField] public List<ModuleComponent> modules { get; private set; }
     public Dictionary<ModuleComponent, System> moduleToSystem { get; private set; }
 
@@ -81,6 +55,33 @@ public class ModuleSystem {
             this.component = component;
         }
         public int moduleCount;
+    }
+
+    public ModuleSystem(BattleManager battleManager, Unit unit, UnitScriptableObject unitScriptableObject) {
+        this.unit = unit;
+        List<System> systemComponents = unitScriptableObject.GetSystems();
+        List<IModule> prefabModules = unitScriptableObject.GetModules();
+        systems = new List<System>(systemComponents.Count);
+        modules = new List<ModuleComponent>();
+        moduleToSystem = new Dictionary<ModuleComponent, System>();
+        foreach (System system in systemComponents) {
+            if (system == null) {
+                Debug.Log($"{unit.GetUnitName()} has a null component at {systems.Count}");
+                continue;
+            }
+
+            System newSystem = new System(system);
+            systems.Add(newSystem);
+        }
+
+        foreach (IModule prefabModule in prefabModules) {
+            System system = systems[prefabModule.GetSystemIndex()];
+            ModuleComponent newComponent = (ModuleComponent)Activator.CreateInstance(
+                system.component.GetComponentType(),
+                battleManager, prefabModule, unit, system.component);
+            modules.Add(newComponent);
+            moduleToSystem.Add(newComponent, system);
+        }
     }
 
     #region SystemUpgrades

@@ -1,26 +1,19 @@
 ﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 public class MiningStation : Station {
-    public bool activelyMining;
-    private float miningTime;
-    public List<Asteroid> nearbyAsteroids;
+    public MiningStationScriptableObject miningStationScriptableObject { get; }
 
     public MiningStation(BattleObjectData battleObjectData, BattleManager battleManager,
         MiningStationScriptableObject miningStationScriptableObject,
         bool built) : base(battleObjectData, battleManager, miningStationScriptableObject, built) {
         this.miningStationScriptableObject = miningStationScriptableObject;
-        nearbyAsteroids = new List<Asteroid>(10);
-        UpdateMiningStationAsteroids();
-        activelyMining = true;
         faction.AddMiningStation(this);
         if (this.built) {
             SetGroup(faction.CreateNewUnitGroup("MiningGroup" + faction.stations.Count, true, new HashSet<Unit>(10)));
         }
     }
-    public MiningStationScriptableObject miningStationScriptableObject { get; }
 
     protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
         if (positionGiver.isExactPosition)
@@ -51,83 +44,7 @@ public class MiningStation : Station {
         return base.BuildStation();
     }
 
-    public override void UpdateUnit(float deltaTime) {
-        base.UpdateUnit(deltaTime);
-        if (activelyMining) {
-            Profiler.BeginSample("UpdateMining");
-            miningTime -= deltaTime;
-            if (miningTime <= 0) {
-                ManageStationMining();
-                miningTime += GetMiningSpeed();
-            }
-
-            if (nearbyAsteroids.Count == 0 && GetAllCargoOfType(CargoBay.CargoType.Metal) <= 0) {
-                activelyMining = false;
-                faction.RemoveMiningStation(this);
-            }
-
-            Profiler.EndSample();
-        }
-    }
-
-    public void ManageStationMining() {
-        if (nearbyAsteroids.Count == 0) {
-            UpdateMiningStationAsteroids();
-        }
-
-        if (nearbyAsteroids.Count > 0) {
-            LoadCargo(
-                nearbyAsteroids[0]
-                    .MineAsteroid(math.min(GetAvailableCargoSpace(CargoBay.CargoType.Metal), GetMiningAmount())),
-                CargoBay.CargoType.Metal);
-            if (!nearbyAsteroids[0].HasResources()) {
-                nearbyAsteroids.RemoveAt(0);
-            }
-        }
-    }
-
-    public void UpdateMiningStationAsteroids() {
-        var tempAsteroids = new List<Asteroid>(10);
-        foreach (AsteroidField asteroidField in battleManager.asteroidFields) {
-            if (asteroidField.totalResources <= 0)
-                continue;
-            float tempDistance = Vector2.Distance(position, asteroidField.GetPosition());
-            if (tempDistance <= GetMiningRange() + asteroidField.GetSize()) {
-                foreach (Asteroid asteroid in asteroidField.battleObjects) {
-                    tempAsteroids.Add(asteroid);
-                }
-            }
-        }
-
-        while (tempAsteroids.Count > 0) {
-            Asteroid closest = null;
-            float closestDist = 0;
-            for (int i = 0; i < tempAsteroids.Count; i++) {
-                float tempDist = Vector2.Distance(position, tempAsteroids[i].GetPosition());
-                if (closest == null || tempDist < closestDist) {
-                    closest = tempAsteroids[i];
-                    closestDist = tempDist;
-                }
-            }
-
-            nearbyAsteroids.Add(closest);
-            tempAsteroids.Remove(closest);
-        }
-    }
-
-    public int GetMiningAmount() {
-        return miningStationScriptableObject.miningAmount;
-    }
-
-    public float GetMiningSpeed() {
-        return miningStationScriptableObject.miningSpeed;
-    }
-
     public int GetMiningRange() {
         return (int)(miningStationScriptableObject.miningRange * battleManager.systemSizeModifier);
-    }
-
-    public MiningStationAI GetMiningStationAI() {
-        return (MiningStationAI)stationAI;
     }
 }

@@ -103,6 +103,7 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Mining Station",
                 new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
                 Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
+        otherMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f));
         otherMiningStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoType.Metal);
 
@@ -155,7 +156,6 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
 
-        playerMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
@@ -175,7 +175,6 @@ public class Chapter1 : CampaingController {
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
-        otherMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
             .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBeginning);
 
@@ -319,11 +318,12 @@ public class Chapter1 : CampaingController {
                             }
 
                             playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
-                            // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
                             AddWarEscalationEventLine();
                             battleManager.GetLocalPlayer().SetLockedUnits(false);
+                            eventManager.AddEvent(new PredicateCondition(e => playerMiningStation.IsBuilt()),
+                                () => playerMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f)));
                         });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -496,6 +496,7 @@ public class Chapter1 : CampaingController {
                 15 * GetTimeScale());
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
                 () => {
+                    playerMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f));
                     AddStationTutorial();
                 });
         })();

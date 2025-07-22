@@ -43,8 +43,7 @@ public class PlayerFactionAI : FactionAI {
     }
 
     public bool WantMoreTransportShips() {
-        if (playerMiningStation.GetMiningStationAI().GetWantedTransportShips() >
-            faction.GetShipCountOfType(Ship.ShipType.Transport) +
+        if (4 > faction.GetShipCountOfType(Ship.ShipType.Transport) +
             chapter1.shipyardFactionAI.GetOrderCount(Ship.ShipClass.Transport, faction)) {
             return true;
         }

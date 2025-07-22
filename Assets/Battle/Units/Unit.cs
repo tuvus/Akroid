@@ -72,6 +72,7 @@ public abstract class Unit : BattleObject {
         moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
         moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
         moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.UpdatePopulationCenter(deltaTime));
+        moduleSystem.Get<MiningBay>().ForEach(m => m.UpdateMiningBay(deltaTime));
     }
 
     public virtual void FindEnemies() {

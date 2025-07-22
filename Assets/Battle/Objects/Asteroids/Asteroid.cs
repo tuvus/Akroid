@@ -57,6 +57,10 @@ public class Asteroid : BattleObject, IPositionConfirmer {
         return resources > 0;
     }
 
+    public CargoBay.CargoType GetAsteroidType() {
+        return asteroidScriptableObject.type;
+    }
+
     public void AdjustPosition(Vector2 position) {
         this.position += position;
     }

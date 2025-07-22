@@ -1045,6 +1045,7 @@ public class ShipAI {
             ship.size + command.destinationStation.size + 4) {
             if (!command.destinationStation.BuildStation())
                 throw new InvalidProgramException("Trying to build an already built station!");
+            command.destinationStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees());
             ship.Explode();
             return CommandResult.Stop;
         }
