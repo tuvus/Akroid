@@ -35,7 +35,7 @@ public class Station : Unit, IPositionConfirmer {
     public Dictionary<CargoBay.CargoType, long> pendingContractResources = new();
     public Population contractedPersonnel = new();
     public Population pendingPersonnel = new();
-    public Dictionary<ModuleComponent, Population> populationRequests = new();
+    public Dictionary<HabitationArea, Population> personnelRequests = new();
     public bool updatePopulation = false;
 
     [Serializable]
@@ -173,7 +173,7 @@ public class Station : Unit, IPositionConfirmer {
                 if (contract is FactionTrade.TradeContract tradeContract)
                     UnloadContractFromShip(200, tradeContract);
                 else if (contract is FactionTrade.TransportContract transportContract)
-                    UnloadPersnonelFromShip(transportContract);
+                    UnloadPersonnelFromShip(transportContract);
 
             }
         }
@@ -417,12 +417,16 @@ public class Station : Unit, IPositionConfirmer {
                 .ContainsKey(transportContract.receiver.faction))
             throw new Exception("Trying to buy without a trade agreement!");
 
+        if (transportContract.transportOffer.personnel.TotalPopulation() == 0)
+            throw new Exception("Tyring to sign a contract that doesn't include any population!");
+
         base.AddContract(transportContract);
         if (transportContract.provider == this) {
             if (!faction.factionTrade.personnelToHire.ContainsKey(this))
                 throw new Exception("Trying to hire personnel that aren't being offered!");
             Population offered = faction.factionTrade.personnelToHire[this].personnel;
-            if (HabitationArea.allOccupations.Any(o => offered.Get(o) < transportContract.transportOffer.personnel.Get(o)))
+            if (HabitationArea.allOccupations.Any(o =>
+                offered.Get(o) < transportContract.transportOffer.personnel.Get(o)))
                 throw new Exception("Trying to hire personnel that don't exist.");
             HabitationArea.allOccupations.ForEach(o =>
                 contractedPersonnel.Add(o, transportContract.transportOffer.personnel.Get(o)));
@@ -430,7 +434,8 @@ public class Station : Unit, IPositionConfirmer {
             if (!faction.factionTrade.personnelRequested.ContainsKey(this))
                 throw new Exception("Trying to offer personnel that aren't being requested!");
             Population requested = faction.factionTrade.personnelRequested[this].personnel;
-            if (HabitationArea.allOccupations.Any(o => requested.Get(o) < transportContract.transportOffer.personnel.Get(o)))
+            if (HabitationArea.allOccupations.Any(o =>
+                requested.Get(o) < transportContract.transportOffer.personnel.Get(o)))
                 throw new Exception("Trying to provide a personnel that isn't requested.");
             HabitationArea.allOccupations.ForEach(o =>
                 pendingPersonnel.Add(o, transportContract.transportOffer.personnel.Get(o)));
@@ -722,7 +727,8 @@ public class Station : Unit, IPositionConfirmer {
         Assert.IsTrue(transportContract.receiver.IsShip());
         Assert.AreEqual(((Ship)transportContract.receiver).dockedStation, this);
 
-        foreach (HabitationArea habitationArea in moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
+        foreach (HabitationArea habitationArea in
+            moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
             Population toTransfer = new Population(habitationArea.population);
             toTransfer.Min(transportContract.transportOffer.personnel);
             toTransfer.SubtractPopulation(transportContract.receiver.LoadPopulation(toTransfer));
@@ -738,7 +744,7 @@ public class Station : Unit, IPositionConfirmer {
         updatePopulation = true;
     }
 
-    public void UnloadPersnonelFromShip(FactionTrade.TransportContract transportContract) {
+    public void UnloadPersonnelFromShip(FactionTrade.TransportContract transportContract) {
         Assert.AreEqual(transportContract.receiver, this);
         Assert.IsTrue(transportContract.provider.IsShip());
         Assert.AreEqual(((Ship)transportContract.provider).dockedStation, this);
@@ -747,11 +753,21 @@ public class Station : Unit, IPositionConfirmer {
             .Where(h => h.IsTransferHabitat())) {
             Population toTransfer = new Population(habitationArea.population);
             toTransfer.Min(transportContract.transportOffer.personnel);
-            toTransfer.SubtractPopulation(LoadPopulation(toTransfer));
-            habitationArea.population.SubtractPopulation(toTransfer);
-            transportContract.transportOffer.personnel.SubtractPopulation(toTransfer);
-            transportContract.receiver.faction.TransferCredits(
-                transportContract.transportOffer.payment.GetTotalValue(toTransfer), transportContract.provider.faction);
+            foreach (var request in personnelRequests.ToList()) {
+                Population amountTransferred = new Population(toTransfer);
+                toTransfer.MovePopulationTo(request.Key.population, request.Value);
+                amountTransferred.SubtractPopulation(toTransfer);
+                habitationArea.population.SubtractPopulation(amountTransferred);
+                transportContract.transportOffer.personnel.SubtractPopulation(amountTransferred);
+                request.Value.SubtractPopulation(amountTransferred);
+                if (request.Value.TotalPopulation() == 0) personnelRequests.Remove(request.Key);
+                transportContract.receiver.faction.TransferCredits(
+                    transportContract.transportOffer.payment.GetTotalValue(amountTransferred),
+                    transportContract.provider.faction);
+                if (transportContract.transportOffer.personnel.TotalPopulation() == 0) {
+                    break;
+                }
+            }
             if (transportContract.transportOffer.personnel.TotalPopulation() == 0) {
                 faction.factionTrade.RemoveContract(transportContract);
                 break;
@@ -772,7 +788,7 @@ public class Station : Unit, IPositionConfirmer {
                 pc.GetCapacity() * PopulationCenter.civilianRatio / 2);
         });
         Population requestedPop = new Population();
-        populationRequests.Values.ToList().ForEach(r => requestedPop.AddPopulation(r));
+        personnelRequests.Values.ToList().ForEach(r => requestedPop.AddPopulation(r));
         Population availablePop = new Population(totalPop);
         availablePop.SubtractPopulation(contractedPersonnel);
         availablePop.SubtractPopulation(requestedPop);

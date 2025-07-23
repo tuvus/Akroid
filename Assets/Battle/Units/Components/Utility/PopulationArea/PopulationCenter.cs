@@ -67,13 +67,13 @@ public class PopulationCenter : HabitationArea {
         marineFloat = marineGrowth - (long)marineGrowth;
 
         long civilianRequested = (long)(GetCapacity() * civilianRatio / 2 - population.civilians);
-        if (civilianRequested > 0 && unit is Station station && !(station.populationRequests.ContainsKey(this) &&
-            station.populationRequests[this].civilians == civilianRequested)) {
+        if (civilianRequested > 0 && unit is Station station && !(station.personnelRequests.ContainsKey(this) &&
+            station.personnelRequests[this].civilians == civilianRequested)) {
             hadChange = true;
-            if (station.populationRequests.ContainsKey(this)) {
-                station.populationRequests[this].civilians = civilianRequested;
+            if (station.personnelRequests.ContainsKey(this)) {
+                station.personnelRequests[this].civilians = civilianRequested;
             } else {
-                station.populationRequests.Add(this, new Population(civilianRequested));
+                station.personnelRequests.Add(this, new Population(civilianRequested));
             }
         }
 

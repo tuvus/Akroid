@@ -930,6 +930,7 @@ public class ShipAI {
                 } else if (!factionTrade.activeContracts.Contains(command.supplierContract) &&
                     !factionTrade.activeContracts.Contains(command.pickupContract)) {
                     command.supplierContract = null;
+                    command.pickupContract = null;
                     currentCommandState = CommandType.Idle;
                 } else {
                     //Add Contract to station to transfer cargo
@@ -955,7 +956,7 @@ public class ShipAI {
                 } else if (!factionTrade.activeContracts.Contains(command.requestContract) &&
                     !factionTrade.activeContracts.Contains(command.dropOffContract)) {
                     command.requestContract = null;
-                    command.pickupContract = null;
+                    command.dropOffContract = null;
                     currentCommandState = CommandType.Idle;
                 } else {
                     //Add Contract to station to transfer cargo
@@ -1138,7 +1139,7 @@ public class ShipAI {
                 toHireContract = new(origin, ship,
                     new(contractPersonnel, origin.faction.factionTrade.personnelToHire[origin].payment));
                 toDeliverContract = new(ship, destination,
-                    new(contractPersonnel, destination.faction.factionTrade.personnelRequested[destination].payment));
+                    new(new Population(contractPersonnel), destination.faction.factionTrade.personnelRequested[destination].payment));
             }
         }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "Resources/Components/MiningBayScriptableObject",
     menuName = "Components/MiningBay", order = 35)]
-public class MiningBayScriptableObject : ComponentScriptableObject {
+public class MiningBayScriptableObject : HabitationAreaScriptableObject {
 
     public long miningAmount;
     public float miningSpeed;

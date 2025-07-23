@@ -3,11 +3,10 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class MiningBay : ModuleComponent {
+public class MiningBay : HabitationArea {
     private MiningBayScriptableObject miningBayScriptableObject;
 
     private float miningTime;
-    public Population employees;
     public bool activelyMining { get; private set; }
 
     public List<Asteroid> nearbyAsteroids;
@@ -16,7 +15,6 @@ public class MiningBay : ModuleComponent {
         ComponentScriptableObject componentScriptableObject) : base(battleManager, module, unit,
         componentScriptableObject) {
         miningBayScriptableObject = (MiningBayScriptableObject)componentScriptableObject;
-        employees = new Population();
         miningTime = 0f;
         activelyMining = true;
         nearbyAsteroids = new();
@@ -41,17 +39,17 @@ public class MiningBay : ModuleComponent {
         if (!activelyMining) return;
 
         if (unit is Station station) {
-            long engineersWanted = miningBayScriptableObject.engineersRequired - employees.engineers;
+            long engineersWanted = miningBayScriptableObject.engineersRequired - population.engineers;
             if (engineersWanted > 0) {
-                if (!station.populationRequests.ContainsKey(this)) {
-                    station.populationRequests.Add(this, new Population(0,0,engineersWanted));
+                if (!station.personnelRequests.ContainsKey(this)) {
+                    station.personnelRequests.Add(this, new Population(0,0,engineersWanted));
                     station.updatePopulation = true;
-                } else if (station.populationRequests[this].engineers != engineersWanted) {
-                    station.populationRequests[this].engineers = engineersWanted;
+                } else if (station.personnelRequests[this].engineers != engineersWanted) {
+                    station.personnelRequests[this].engineers = engineersWanted;
                     station.updatePopulation = true;
                 }
-            } else if (station.populationRequests.ContainsKey(this)) {
-                station.populationRequests.Remove(this);
+            } else if (station.personnelRequests.ContainsKey(this)) {
+                station.personnelRequests.Remove(this);
             }
         }
 
@@ -65,7 +63,7 @@ public class MiningBay : ModuleComponent {
 
             unit.LoadCargo(nearbyAsteroids.First()
                     .MineAsteroid(math.min(unit.GetAvailableCargoSpace(nearbyAsteroids.First().GetAsteroidType()),
-                        (miningBayScriptableObject.miningAmount * employees.engineers) /
+                        (miningBayScriptableObject.miningAmount * population.engineers) /
                         miningBayScriptableObject.engineersRequired)),
                 nearbyAsteroids.First().GetAsteroidType());
             miningTime += miningBayScriptableObject.miningSpeed;
@@ -73,7 +71,7 @@ public class MiningBay : ModuleComponent {
     }
 
     public void FillEmployees(float ratio = 1f) {
-        employees.engineers = (long)(miningBayScriptableObject.engineersRequired * ratio);
+        population.engineers = (long)(miningBayScriptableObject.engineersRequired * ratio);
     }
 
     public float GetMiningRange() {
