@@ -44,11 +44,11 @@ public class FactionTrade {
     }
 
     public class TransportOffer {
-        public Population clients;
+        public Population personnel;
         public PopulationFloat payment;
 
-        public TransportOffer(Population clients, PopulationFloat payment) {
-            this.clients = clients;
+        public TransportOffer(Population personnel, PopulationFloat payment) {
+            this.personnel = personnel;
             this.payment = payment;
         }
     }

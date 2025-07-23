@@ -40,6 +40,21 @@ public class MiningBay : ModuleComponent {
     public void UpdateMiningBay(float deltaTime) {
         if (!activelyMining) return;
 
+        if (unit is Station station) {
+            long engineersWanted = miningBayScriptableObject.engineersRequired - employees.engineers;
+            if (engineersWanted > 0) {
+                if (!station.populationRequests.ContainsKey(this)) {
+                    station.populationRequests.Add(this, new Population(0,0,engineersWanted));
+                    station.updatePopulation = true;
+                } else if (station.populationRequests[this].engineers != engineersWanted) {
+                    station.populationRequests[this].engineers = engineersWanted;
+                    station.updatePopulation = true;
+                }
+            } else if (station.populationRequests.ContainsKey(this)) {
+                station.populationRequests.Remove(this);
+            }
+        }
+
         miningTime -= deltaTime;
         if (miningTime <= 0) {
             while (nearbyAsteroids.Count > 0 && !nearbyAsteroids[0].HasResources()) nearbyAsteroids.RemoveAt(0);

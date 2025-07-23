@@ -28,7 +28,7 @@ public class Command {
         UndockCommand,
         Transport,
         TransportDelay,
-        Trade,
+        TradeTransport,
         Research,
         CollectGas,
         DisbandFleet,
@@ -209,7 +209,7 @@ public class Command {
 
     public static Command CreateTradeTransportCommand(Station mustTradeWith = null,
         CargoBay.CargoType cargoTypeToTrade = CargoBay.CargoType.All, bool transport = true) {
-        return new Command(CommandType.Trade) {
+        return new Command(CommandType.TradeTransport) {
             cargoType = cargoTypeToTrade,
             destinationStation = mustTradeWith,
             transport = transport
@@ -276,7 +276,7 @@ public class Command {
         } else if (commandType == CommandType.BuildStation && !destinationStation.IsBuilt()) {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
-        } else if (commandType == CommandType.Trade) {
+        } else if (commandType == CommandType.TradeTransport) {
             if (supplierContract != null && supplierContract.provider != null)
                 supplierContract.provider.faction.factionTrade.RemoveContract(supplierContract);
             if (requestContract != null && requestContract.receiver != null)

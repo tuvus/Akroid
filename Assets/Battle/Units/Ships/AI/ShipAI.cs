@@ -108,7 +108,7 @@ public class ShipAI {
             CommandType.UndockCommand => DoUndockCommand(command, deltaTime),
             CommandType.Transport => DoTransportCommand(command, deltaTime),
             CommandType.TransportDelay => DoTransportDelayCommand(command, deltaTime),
-            CommandType.Trade => DoTradeTransportCommand(command, deltaTime),
+            CommandType.TradeTransport => DoTradeTransportCommand(command, deltaTime),
             CommandType.Research => DoResearchCommand(command, deltaTime),
             CommandType.CollectGas => DoCollectGasCommand(command, deltaTime),
             CommandType.Colonize => DoColonizeCommand(command, deltaTime),
@@ -865,9 +865,9 @@ public class ShipAI {
             command.requestContract = null;
         }
         if ((command.pickupContract != null && !activeContracts.Contains(command.pickupContract) &&
-                command.pickupContract.transportOffer.clients.TotalPopulation() != 0) ||
+                command.pickupContract.transportOffer.personnel.TotalPopulation() != 0) ||
             (command.dropOffContract != null && !activeContracts.Contains(command.dropOffContract) &&
-                command.dropOffContract.transportOffer.clients.TotalPopulation() != 0)) {
+                command.dropOffContract.transportOffer.personnel.TotalPopulation() != 0)) {
 
             if (command.pickupContract != null && activeContracts.Contains(command.supplierContract))
                 factionTrade.RemoveContract(command.supplierContract);
@@ -881,7 +881,7 @@ public class ShipAI {
         if (command.requestContract == null && command.dropOffContract == null)
             currentCommandState = CommandType.Idle;
 
-        if (command.supplierContract == null && command.requestContract == null) {
+        if (command.requestContract == null && command.dropOffContract == null) {
             // Try and find a new trade route
             var possibleTradeRoutes = new List<Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract,
                 FactionTrade.TransportContract, FactionTrade.TransportContract, float>>();
@@ -910,7 +910,7 @@ public class ShipAI {
             if (command.dropOffContract != null)
                 factionTrade.AddContract(command.dropOffContract);
 
-            currentCommandState = CommandType.Trade;
+            currentCommandState = CommandType.TradeTransport;
             newCommand = true;
         }
 
@@ -1109,7 +1109,7 @@ public class ShipAI {
                 contractCargo.Select(cc => cc.Item2).ToArray());
         }
 
-        if (ship.moduleSystem.Get<HabitationArea>().Any() &&
+        if (ship.moduleSystem.Get<HabitationArea>().Any(h => h.IsTransferHabitat()) &&
             (origin.faction.factionTrade.personnelToHire.TryGetValue(origin, out FactionTrade.TransportOffer hireOffer) &&
                 destination.faction.factionTrade.personnelRequested.TryGetValue(destination,
                     out FactionTrade.TransportOffer requestOffer))) {
@@ -1117,11 +1117,12 @@ public class ShipAI {
             long openCapacity = ship.moduleSystem.Get<HabitationArea>().Sum(h => h.GetCapacity());
             var occupationValueAmount = new List<Tuple<Occupation, float, long>>();
             HabitationArea.allOccupations.ForEach(o => {
-                if (hireOffer.clients.Get(o) > 0 && requestOffer.clients.Get(o) > 0) {
-                    occupationValueAmount.Add(new(o,
-                        factionTrade.GetOurSellValueOfOffer(origin.faction,requestOffer.payment.Get(o)) -
-                        factionTrade.GetOurBuyValueOfOffer(destination.faction, hireOffer.payment.Get(o)),
-                        math.min(hireOffer.clients.Get(o), requestOffer.clients.Get(o))));
+                if (hireOffer.personnel.Get(o) > 0 && requestOffer.personnel.Get(o) > 0) {
+                    float value = factionTrade.GetOurSellValueOfOffer(origin.faction, requestOffer.payment.Get(o)) -
+                        factionTrade.GetOurBuyValueOfOffer(destination.faction, hireOffer.payment.Get(o));
+                    if (value <= 0) return;
+                    occupationValueAmount.Add(new(o, value,
+                        math.min(hireOffer.personnel.Get(o), requestOffer.personnel.Get(o))));
                 }
             });
             var contractPersonnel = new Population();
@@ -1131,6 +1132,7 @@ public class ShipAI {
                 openCapacity -= toAdd;
                 totalValue += toAdd * occupationValueAmount.First().Item2;
                 contractPersonnel.Add(occupationValueAmount.First().Item1, toAdd);
+                occupationValueAmount.RemoveAt(0);
             }
             if (contractPersonnel.TotalPopulation() > 0) {
                 toHireContract = new(origin, ship,
@@ -1268,11 +1270,15 @@ public class ShipAI {
                     if (command.destinationStation != null)
                         positions.Add(command.destinationStation.GetPosition());
                 }
-            } else if (command.commandType == CommandType.Trade) {
+            } else if (command.commandType == CommandType.TradeTransport) {
                 if (command.supplierContract != null)
                     positions.Add(command.supplierContract.provider.position);
+                else if (command.pickupContract != null)
+                    positions.Add(command.pickupContract.provider.position);
                 if (command.requestContract != null)
                     positions.Add(command.requestContract.receiver.position);
+                else if (command.dropOffContract != null)
+                    positions.Add(command.dropOffContract.receiver.position);
             } else {
                 if (command.targetPosition == null) continue;
                 positions.Add(command.targetPosition);
