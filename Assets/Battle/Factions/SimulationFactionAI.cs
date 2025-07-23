@@ -264,7 +264,7 @@ public class SimulationFactionAI : FactionAI {
                         // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
                             // Command.CommandAction.Replace);
                     // }
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand(), Command.CommandAction.Replace);
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(), Command.CommandAction.Replace);
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),

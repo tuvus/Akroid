@@ -21,7 +21,7 @@ public abstract class Unit : BattleObject {
 
     [field: SerializeField] public List<Unit> enemyUnitsInRange { get; protected set; }
     [field: SerializeField] public List<float> enemyUnitsInRangeDistance { get; protected set; }
-    public HashSet<FactionTrade.TradeContract> contracts { get; private set; }
+    public HashSet<FactionTrade.Contract> contracts { get; private set; }
     public Unit() { }
 
     public Unit(BattleObjectData battleObjectData, BattleManager battleManager,
@@ -37,7 +37,7 @@ public abstract class Unit : BattleObject {
         scale = unitScriptableObject.baseScale * scale;
         turretsHibernating = false;
         hasWeapons = moduleSystem.Get<Turret>().Count > 0 || moduleSystem.Get<MissileLauncher>().Count > 0;
-        contracts = new HashSet<FactionTrade.TradeContract>();
+        contracts = new HashSet<FactionTrade.Contract>();
         SetupWeaponRanges();
         Spawn();
         SetSize(SetupSize());
@@ -176,8 +176,13 @@ public abstract class Unit : BattleObject {
         return true;
     }
 
-    public virtual void RemoveContract(FactionTrade.TradeContract tradeContract) {
-        contracts.Remove(tradeContract);
+    public virtual bool AddContract(FactionTrade.TransportContract transportContract) {
+        contracts.Add(transportContract);
+        return true;
+    }
+
+    public virtual void RemoveContract(FactionTrade.Contract contract) {
+        contracts.Remove(contract);
     }
 
     public void RemoveAllContracts() {
@@ -268,6 +273,19 @@ public abstract class Unit : BattleObject {
 
     public long GetAvailableCargoSpace(CargoBay.CargoType cargoType) {
         return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
+    }
+
+    /// <summary>
+    /// Loads as much of the population to this unit as possible and returns the population that was left over.
+    /// Does not modify the population given.
+    /// </summary>
+    public Population LoadPopulation(Population population) {
+        Population movePoplation = new Population(population);
+        foreach (HabitationArea habitationArea in moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
+            movePoplation.MovePopulationTo(habitationArea.population, population);
+            if (movePoplation.TotalPopulation() == 0) return movePoplation;
+        }
+        return movePoplation;
     }
 
     public string GetUnitName() {

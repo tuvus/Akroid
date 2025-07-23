@@ -42,8 +42,9 @@ public class Command {
     public float targetRotation;
     public Vector2 targetPosition;
     public bool useAlternateCommandOnceDone;
-    [FormerlySerializedAs("cargoType")] public CargoBay.CargoType cargoType;
+    public CargoBay.CargoType cargoType;
     public bool autoUnload;
+    public bool transport;
 
     public float maxSpeed;
     public Station destinationStation;
@@ -57,6 +58,8 @@ public class Command {
     public Unit targetUnit;
     public FactionTrade.TradeContract supplierContract;
     public FactionTrade.TradeContract requestContract;
+    public FactionTrade.TransportContract pickupContract;
+    public FactionTrade.TransportContract dropOffContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -204,11 +207,12 @@ public class Command {
         };
     }
 
-    public static Command CreateTradeCommand(Station mustTradeWith = null,
-        CargoBay.CargoType cargoTypeToTrade = CargoBay.CargoType.All) {
+    public static Command CreateTradeTransportCommand(Station mustTradeWith = null,
+        CargoBay.CargoType cargoTypeToTrade = CargoBay.CargoType.All, bool transport = true) {
         return new Command(CommandType.Trade) {
             cargoType = cargoTypeToTrade,
-            destinationStation = mustTradeWith
+            destinationStation = mustTradeWith,
+            transport = transport
         };
     }
 

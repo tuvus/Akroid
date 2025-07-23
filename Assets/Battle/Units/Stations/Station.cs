@@ -31,7 +31,7 @@ public class Station : Unit, IPositionConfirmer {
     public Dictionary<CargoBay.CargoType, (long wanted, long has)> reservedCargo = new();
     public Dictionary<CargoBay.CargoType, (long wanted, long has)> contractedCargo = new();
     public Dictionary<CargoBay.CargoType, (long minWanted, long maxWanted, long has)> freeCargo = new();
-    public HashSet<FactionTrade.TradeContract> contractShipsDocked;
+    public HashSet<FactionTrade.Contract> contractShipsDocked;
     public Dictionary<CargoBay.CargoType, long> pendingContractResources = new();
     public Population contractedPersonnel = new();
     public Population pendingPersonnel = new();
@@ -69,7 +69,7 @@ public class Station : Unit, IPositionConfirmer {
         StationScriptableObject stationScriptableObject, bool built)
         : base(battleObjectData, battleManager, stationScriptableObject) {
         this.stationScriptableObject = stationScriptableObject;
-        contractShipsDocked = new HashSet<FactionTrade.TradeContract>();
+        contractShipsDocked = new HashSet<FactionTrade.Contract>();
         CargoBay.allCargoTypes.ForEach(c => pendingContractResources.TryAdd(c, 0));
         switch (stationScriptableObject.stationType) {
             case StationType.Shipyard:
@@ -163,11 +163,18 @@ public class Station : Unit, IPositionConfirmer {
             repairTime += stationScriptableObject.repairSpeed;
         }
 
-        foreach (FactionTrade.TradeContract contract in contractShipsDocked.ToList()) {
+        foreach (FactionTrade.Contract contract in contractShipsDocked.ToList()) {
             if (contract.provider == this) {
-                LoadContractToShip(200, contract);
+                if (contract is FactionTrade.TradeContract tradeContract)
+                    LoadTradeContractToShip(200, tradeContract);
+                else if (contract is FactionTrade.TransportContract transportContract)
+                    LoadPersonnelToShip(transportContract);
             } else {
-                UnloadContractFromShip(200, contract);
+                if (contract is FactionTrade.TradeContract tradeContract)
+                    UnloadContractFromShip(200, tradeContract);
+                else if (contract is FactionTrade.TransportContract transportContract)
+                    UnloadPersnonelFromShip(transportContract);
+
             }
         }
 
@@ -403,24 +410,64 @@ public class Station : Unit, IPositionConfirmer {
         return true;
     }
 
-    public override void RemoveContract(FactionTrade.TradeContract tradeContract) {
-        base.RemoveContract(tradeContract);
-        if (tradeContract.provider == this) {
-            foreach (var request in tradeContract.cargo.Values) {
-                long extra = contractedCargo[request.cargoType].has - contractedCargo[request.cargoType].wanted +
-                    request.amount;
-                var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
-                if (contractedCargo[request.cargoType].wanted - request.amount == 0)
-                    contractedCargo.Remove(request.cargoType);
-                else contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
-                if (extra > 0) LoadCargo(extra, request.cargoType);
-            }
-        } else if (tradeContract.receiver == this) {
-            foreach (var request in tradeContract.cargo.Values) {
-                pendingContractResources[request.cargoType] -= request.amount;
-            }
+    public override bool AddContract(FactionTrade.TransportContract transportContract) {
+        // Validate that the receiver can buy from the provider
+        if (transportContract.provider.faction != transportContract.receiver.faction &&
+            !transportContract.provider.faction.factionTrade.tradeSellAgreements
+                .ContainsKey(transportContract.receiver.faction))
+            throw new Exception("Trying to buy without a trade agreement!");
+
+        base.AddContract(transportContract);
+        if (transportContract.provider == this) {
+            if (!faction.factionTrade.personnelToHire.ContainsKey(this))
+                throw new Exception("Trying to hire personnel that aren't being offered!");
+            Population offered = faction.factionTrade.personnelToHire[this].clients;
+            if (!HabitationArea.allOccupations.All(o => offered.Get(o) >= transportContract.transportOffer.clients.Get(o)))
+                throw new Exception("Trying to hire personnel that don't exist.");
+            HabitationArea.allOccupations.ForEach(o =>
+                contractedPersonnel.Add(o, transportContract.transportOffer.clients.Get(o)));
+        } else {
+            if (!faction.factionTrade.personnelRequested.ContainsKey(this))
+                throw new Exception("Trying to offer personnel that aren't being requested!");
+            Population requested = faction.factionTrade.personnelToHire[this].clients;
+            if (!HabitationArea.allOccupations.All(o => requested.Get(o) <= transportContract.transportOffer.clients.Get(o)))
+                throw new Exception("Trying to provide a personnel that isn't reqested.");
+            HabitationArea.allOccupations.ForEach(o =>
+                pendingPersonnel.Add(o, transportContract.transportOffer.clients.Get(o)));
         }
-        contractShipsDocked.Remove(tradeContract);
+        UpdateJobMarket();
+        return true;
+    }
+
+    public override void RemoveContract(FactionTrade.Contract contract) {
+        base.RemoveContract(contract);
+        if (contract is FactionTrade.TradeContract tradeContract) {
+            if (tradeContract.provider == this) {
+                foreach (var request in tradeContract.cargo.Values) {
+                    long extra = contractedCargo[request.cargoType].has - contractedCargo[request.cargoType].wanted +
+                        request.amount;
+                    var current = contractedCargo.GetValueOrDefault(request.cargoType, (0, 0));
+                    if (contractedCargo[request.cargoType].wanted - request.amount == 0)
+                        contractedCargo.Remove(request.cargoType);
+                    else contractedCargo[request.cargoType] = (current.wanted - request.amount, current.has - extra);
+                    if (extra > 0) LoadCargo(extra, request.cargoType);
+                    UpdateCargoTrade(request.cargoType);
+                }
+            } else if (tradeContract.receiver == this) {
+                foreach (var request in tradeContract.cargo.Values) {
+                    pendingContractResources[request.cargoType] -= request.amount;
+                    UpdateCargoTrade(request.cargoType);
+                }
+            }
+            contractShipsDocked.Remove(tradeContract);
+        } else if (contract is FactionTrade.TransportContract transportContract) {
+            if (transportContract.provider == this) {
+                contractedPersonnel.SubtractPopulation(transportContract.transportOffer.clients);
+            } else if (transportContract.receiver == this) {
+                pendingPersonnel.SubtractPopulation(transportContract.transportOffer.clients);
+            }
+            UpdateJobMarket();
+        }
     }
 
     /// <summary>
@@ -458,7 +505,7 @@ public class Station : Unit, IPositionConfirmer {
     /// <param name="amount">The total amount of cargo to load in this operation</param>
     /// <param name="tradeContract">The contract to load</param>
     /// <returns>True if the contract is finished, false otherwise</returns>
-    public bool LoadContractToShip(long amount, FactionTrade.TradeContract tradeContract) {
+    public bool LoadTradeContractToShip(long amount, FactionTrade.TradeContract tradeContract) {
         Assert.AreEqual(tradeContract.provider, this);
         Assert.IsTrue(tradeContract.receiver.IsShip());
         Assert.AreEqual(((Ship)tradeContract.receiver).dockedStation, this);
@@ -668,6 +715,50 @@ public class Station : Unit, IPositionConfirmer {
             return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) +
                 .1f;
         }
+    }
+
+    public void LoadPersonnelToShip(FactionTrade.TransportContract transportContract) {
+        Assert.AreEqual(transportContract.provider, this);
+        Assert.IsTrue(transportContract.receiver.IsShip());
+        Assert.AreEqual(((Ship)transportContract.receiver).dockedStation, this);
+
+        foreach (HabitationArea habitationArea in moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
+            Population toTransfer = new Population(habitationArea.population);
+            toTransfer.Min(transportContract.transportOffer.clients);
+            toTransfer.SubtractPopulation(transportContract.receiver.LoadPopulation(toTransfer));
+            habitationArea.population.SubtractPopulation(toTransfer);
+            transportContract.transportOffer.clients.SubtractPopulation(toTransfer);
+            transportContract.receiver.faction.TransferCredits(
+                transportContract.transportOffer.payment.GetTotalValue(toTransfer), transportContract.provider.faction);
+            if (transportContract.transportOffer.clients.TotalPopulation() == 0) {
+                faction.factionTrade.RemoveContract(transportContract);
+                break;
+            }
+        }
+        updatePopulation = true;
+    }
+
+    public void UnloadPersnonelFromShip(FactionTrade.TransportContract transportContract) {
+        Assert.AreEqual(transportContract.receiver, this);
+        Assert.IsTrue(transportContract.provider.IsShip());
+        Assert.AreEqual(((Ship)transportContract.provider).dockedStation, this);
+
+        foreach (HabitationArea habitationArea in transportContract.provider.moduleSystem.Get<HabitationArea>()
+            .Where(h => h.IsTransferHabitat())) {
+            Population toTransfer = new Population(habitationArea.population);
+            toTransfer.Min(transportContract.transportOffer.clients);
+            toTransfer.SubtractPopulation(LoadPopulation(toTransfer));
+            habitationArea.population.SubtractPopulation(toTransfer);
+            transportContract.transportOffer.clients.SubtractPopulation(toTransfer);
+            transportContract.receiver.faction.TransferCredits(
+                transportContract.transportOffer.payment.GetTotalValue(toTransfer), transportContract.provider.faction);
+            if (transportContract.transportOffer.clients.TotalPopulation() == 0) {
+                faction.factionTrade.RemoveContract(transportContract);
+                break;
+            }
+        }
+
+        updatePopulation = true;
     }
 
     public void UpdateJobMarket() {

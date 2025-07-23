@@ -30,7 +30,7 @@ public class PlayerFactionAI : FactionAI {
 
     private void ManageIdleShips() {
         foreach (Ship ship in idleShips.Where(s => s.IsIdle() && s.IsTransportShip() && s.fleet == null)) {
-            ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand());
+            ship.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand());
         }
     }
 

@@ -128,7 +128,7 @@ public class StationTradeTests {
         Assert.AreEqual(400, testStation.contractedCargo[CargoBay.CargoType.Metal].wanted);
         Assert.Zero(testShip.GetAllCargoOfType(CargoBay.CargoType.Metal));
 
-        Assert.False(testStation.LoadContractToShip(200, tradeContract));
+        Assert.False(testStation.LoadTradeContractToShip(200, tradeContract));
         Assert.AreEqual(1, testStation.contractedCargo.Count);
         Assert.True(testStation.contractedCargo.ContainsKey(CargoBay.CargoType.Metal));
         Assert.AreEqual(400, testStation.contractedCargo[CargoBay.CargoType.Metal].wanted);
@@ -143,7 +143,7 @@ public class StationTradeTests {
         Assert.Zero(testStation.GetAllCargoOfType(CargoBay.CargoType.Metal, true, false));
         Assert.AreEqual(200, testStation.GetAllCargoOfType(CargoBay.CargoType.Metal, false, true));
 
-        Assert.False(testStation.LoadContractToShip(100, tradeContract));
+        Assert.False(testStation.LoadTradeContractToShip(100, tradeContract));
         Assert.AreEqual(300, testStation.contractedCargo[CargoBay.CargoType.Metal].wanted);
         Assert.AreEqual(100, testStation.contractedCargo[CargoBay.CargoType.Metal].has);
         Assert.Zero(testStation.freeCargo.Count);
@@ -153,7 +153,7 @@ public class StationTradeTests {
         Assert.AreEqual(100, testShip.GetAllCargoOfType(CargoBay.CargoType.Metal));
         Assert.AreEqual(300, tradeContract.cargo[CargoBay.CargoType.Metal].amount);
 
-        Assert.False(testStation.LoadContractToShip(200, tradeContract));
+        Assert.False(testStation.LoadTradeContractToShip(200, tradeContract));
         Assert.AreEqual(200, testStation.contractedCargo[CargoBay.CargoType.Metal].wanted);
         Assert.Zero(testStation.contractedCargo[CargoBay.CargoType.Metal].has);
         Assert.Zero(testStation.freeCargo.Count);
@@ -173,7 +173,7 @@ public class StationTradeTests {
         Assert.AreEqual(200, testShip.GetAllCargoOfType(CargoBay.CargoType.Metal));
         Assert.AreEqual(200, tradeContract.cargo[CargoBay.CargoType.Metal].amount);
 
-        Assert.True(testStation.LoadContractToShip(400, tradeContract));
+        Assert.True(testStation.LoadTradeContractToShip(400, tradeContract));
         Assert.Zero(testStation.contractedCargo.Count);
         Assert.AreEqual(1, testStation.freeCargo.Count);
         Assert.Zero(testStation.reservedCargo.Count);

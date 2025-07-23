@@ -1,7 +1,14 @@
 using System;
-using Castle.Components.DictionaryAdapter.Xml;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Mathematics;
-using UnityEngine;
+
+public enum Occupation {
+    Civilian,
+    Pilot,
+    Engineer,
+    Marine
+}
 
 [Serializable]
 public class Population {
@@ -70,8 +77,64 @@ public class Population {
         return otherPopFreeSpace;
     }
 
+    /// <summary>
+    /// Moves amountToMove population from this population to toMoveTo
+    /// taking the min of what this population has and amountToMove.
+    /// Returns the population that wasn't moved.
+    /// </summary>
+    public Population MovePopulationTo(Population toMoveTo, Population amountToMove) {
+        Population notMoved = new Population(amountToMove);
+        notMoved.SubtractPopulation(this);
+        toMoveTo.AddPopulation(amountToMove);
+        SubtractPopulation(amountToMove);
+        toMoveTo.SubtractPopulation(notMoved);
+        return notMoved;
+    }
+
+    /// <summary>
+    /// Sets each occupation to the minimum of this population's value and the other population's value
+    /// </summary>
+    /// <param name="other"></param>
+    public void Min(Population other) {
+        civilians = math.min(civilians, other.civilians);
+        pilots = math.min(pilots, other.pilots);
+        engineers = math.min(engineers, other.engineers);
+        marines = math.min(marines, other.marines);
+    }
+
     public long TotalPopulation() {
         return civilians + pilots + engineers + marines;
+    }
+
+    public void Add(Occupation occupation, long amount) {
+        switch (occupation) {
+            case Occupation.Civilian:
+                civilians += amount;
+                break;
+            case Occupation.Pilot:
+                pilots += amount;
+                break;
+            case Occupation.Engineer:
+                engineers += amount;
+                break;
+            case Occupation.Marine:
+                marines += amount;
+                break;
+        }
+    }
+
+    public long Get(Occupation occupation) {
+        switch (occupation) {
+            case Occupation.Civilian:
+                return civilians;
+            case Occupation.Pilot:
+                return pilots;
+            case Occupation.Engineer:
+                return engineers;
+            case Occupation.Marine:
+                return marines;
+        }
+        return -1;
     }
 }
 
@@ -88,11 +151,31 @@ public class PopulationFloat {
         this.engineers = engineers;
         this.marines = marines;
     }
+
+    public long GetTotalValue(Population population) {
+        return (long)HabitationArea.allOccupations.Sum(o => population.Get(o) * Get(o));
+    }
+
+    public float Get(Occupation occupation) {
+        switch (occupation) {
+            case Occupation.Civilian:
+                return civilians;
+            case Occupation.Pilot:
+                return pilots;
+            case Occupation.Engineer:
+                return engineers;
+            case Occupation.Marine:
+                return marines;
+        }
+        return -1;
+    }
 }
 
 public class HabitationArea : ModuleComponent {
     private HabitationAreaScriptableObject habitationAreaScriptableObject;
     public Population population { get; private set; }
+    public static readonly List<Occupation> allOccupations = new List<Occupation>
+        { Occupation.Civilian, Occupation.Pilot, Occupation.Engineer, Occupation.Marine };
 
     public HabitationArea(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
@@ -121,5 +204,10 @@ public class HabitationArea : ModuleComponent {
 
     public long GetCapacity() {
         return habitationAreaScriptableObject.populationSpace;
+    }
+
+    /// <returns> If the population in habitat should be available to transport to and from. </returns>
+    public virtual bool IsTransferHabitat() {
+        return true;
     }
 }

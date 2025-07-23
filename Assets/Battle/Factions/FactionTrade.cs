@@ -24,14 +24,18 @@ public class FactionTrade {
         }
     }
 
-    public class TradeContract {
+    public class Contract {
         public Unit provider;
         public Unit receiver;
+
+    }
+
+    public class TradeContract : Contract {
         public Dictionary<CargoBay.CargoType, TradeOffer> cargo;
 
-        public TradeContract(Unit provider, Unit reciever, params TradeOffer[] offers) {
+        public TradeContract(Unit provider, Unit receiver, params TradeOffer[] offers) {
             this.provider = provider;
-            this.receiver = reciever;
+            this.receiver = receiver;
             cargo = new Dictionary<CargoBay.CargoType, TradeOffer>();
             foreach (TradeOffer offer in offers) {
                 cargo.Add(offer.cargoType, offer);
@@ -49,9 +53,7 @@ public class FactionTrade {
         }
     }
 
-    public class TransportContract {
-        public Unit provider;
-        public Unit receiver;
+    public class TransportContract : Contract {
         public TransportOffer transportOffer;
 
         public TransportContract(Unit provider, Unit receiver, TransportOffer transportOffer) {
@@ -77,7 +79,7 @@ public class FactionTrade {
     public Dictionary<Faction, float> tradeSellAgreements;
     /// <summary> The factions that we can buy from and how much of a markup they have. </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
-    public HashSet<TradeContract> activeContracts;
+    public HashSet<Contract> activeContracts;
 
     public FactionTrade(Faction faction) {
         this.faction = faction;
@@ -121,14 +123,28 @@ public class FactionTrade {
         return true;
     }
 
-    public void RemoveContract(TradeContract tradeContract) {
-        if (!activeContracts.Contains(tradeContract)) return;
-        tradeContract.provider.RemoveContract(tradeContract);
-        tradeContract.receiver.RemoveContract(tradeContract);
-        activeContracts.Remove(tradeContract);
-        Faction otherFaction = tradeContract.provider.faction;
-        if (otherFaction == faction) otherFaction = tradeContract.receiver.faction;
-        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(tradeContract);
+    public bool AddContract(TransportContract transportContract) {
+        if (!transportContract.provider.AddContract(transportContract)) return false;
+        if (!transportContract.receiver.AddContract(transportContract)) {
+            transportContract.provider.RemoveContract(transportContract);
+            return false;
+        }
+        activeContracts.Add(transportContract);
+        Faction otherFaction = transportContract.provider.faction;
+        if (otherFaction == faction) otherFaction = transportContract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(transportContract);
+        return true;
+
+    }
+
+    public void RemoveContract(Contract contract) {
+        if (!activeContracts.Contains(contract)) return;
+        contract.provider.RemoveContract(contract);
+        contract.receiver.RemoveContract(contract);
+        activeContracts.Remove(contract);
+        Faction otherFaction = contract.provider.faction;
+        if (otherFaction == faction) otherFaction = contract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(contract);
     }
 
     public float GetBuyCostOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
@@ -146,17 +162,25 @@ public class FactionTrade {
     }
 
     public float GetOurBuyValueOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
+        return GetOurBuyValueOfOffer(otherFaction, tradeOffer.price);
+    }
+
+    public float GetOurBuyValueOfOffer(Faction otherFaction, float price) {
         if (otherFaction == faction) {
-            return 0.7f * tradeOffer.price;
+            return 0.7f * price;
         }
-        return tradeOffer.price;
+        return price;
     }
 
     public float GetOurSellValueOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
+        return GetOurSellValueOfOffer(otherFaction, tradeOffer.price);
+    }
+
+    public float GetOurSellValueOfOffer(Faction otherFaction, float price) {
         if (otherFaction == faction) {
-            return tradeOffer.price * 1.3f;
+            return price * 1.3f;
         }
-        return tradeOffer.price;
+        return price;
     }
 
 

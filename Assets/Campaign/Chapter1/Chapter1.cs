@@ -121,8 +121,8 @@ public class Chapter1 : CampaingController {
         tradeStation.LoadCargo(2400 * 5, CargoBay.CargoType.Gas);
         tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
             planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
-        // tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
-            // pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
+        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
+            pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -184,6 +184,7 @@ public class Chapter1 : CampaingController {
                     battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian")
                 .FillRequiredCrew());
         }
+        civilianShips.ForEach(c => c.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand()));
 
         playerFactionAI.Setup(this, playerMiningStation);
         otherMiningFactionAI.Setup(this, shipyardFactionAI, otherMiningStation, tradeStation);

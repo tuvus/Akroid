@@ -11,4 +11,8 @@ public class Bridge : HabitationArea {
         base.Upgrade(componentScriptableObject);
         bridgeScriptableObject = (BridgeScriptableObject)componentScriptableObject;
     }
+
+    public override bool IsTransferHabitat() {
+        return false;
+    }
 }

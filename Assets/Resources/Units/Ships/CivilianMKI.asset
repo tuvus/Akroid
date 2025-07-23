@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: CivilianMKI
   m_EditorClassIdentifier: 
-  cost: 1694
+  cost: 1699
   resourceTypes: 0100000002000000
-  resourceCosts: 3201000000000000ea00000000000000
+  resourceCosts: 4301000000000000ea00000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Civilian
@@ -34,7 +34,7 @@ MonoBehaviour:
     moduleCount: 1
   - name: Utility
     type: 1
-    component: {fileID: 11400000, guid: d0200e15cd6fafb49b7efced311352cd, type: 2}
+    component: {fileID: 11400000, guid: 6287fdd7790c37d9ab2d7015b43d0d1e, type: 2}
     moduleSize: 0
     moduleCount: 1
   - name: MainThruster

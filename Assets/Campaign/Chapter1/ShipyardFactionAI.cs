@@ -98,7 +98,7 @@ public class ShipyardFactionAI : FactionAI {
     private void ManageIdleShips() {
         foreach (Ship ship in idleShips) {
             if (ship.IsTransportShip() && ship.IsIdle()) {
-                ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand(shipyard), Command.CommandAction.Replace);
+                ship.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(shipyard), Command.CommandAction.Replace);
             }
         }
     }

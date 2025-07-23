@@ -89,26 +89,27 @@ public class PlanetFactionAI : FactionAI {
         friendlyStations.AddRange(battleManager.stations.Where(s => !faction.IsAtWarWithFaction(s.faction)));
         foreach (Ship idleShip in idleShips) {
             if (idleShip.IsIdle() && idleShip.IsCivilianShip()) {
-                int randomNumber = Random.Range(0, 100);
-                if (friendlyStations.Count > 0 && idleShip.dockedStation != null && randomNumber > 20 ||
-                    idleShip.dockedStation == null && randomNumber > 80) {
-                    idleShip.shipAI.AddUnitAICommand(
-                        Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(7, 30f)));
-                } else {
-                    if (idleShip.dockedStation != null) {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
-                            Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
-                                Random.Range(6000, 12000))));
-                    } else {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
-                            Calculator.GetPositionOutOfAngleAndDistance(idleShip.rotation + Random.Range(-120, 120),
-                                Random.Range(1000, 5000))));
-                    }
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
-                }
+                // int randomNumber = Random.Range(0, 100);
+                // if (friendlyStations.Count > 0 && idleShip.dockedStation != null && randomNumber > 20 ||
+                //     idleShip.dockedStation == null && randomNumber > 80) {
+                //     idleShip.shipAI.AddUnitAICommand(
+                //         Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
+                //     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(7, 30f)));
+                // } else {
+                //     if (idleShip.dockedStation != null) {
+                //         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
+                //             Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
+                //                 Random.Range(6000, 12000))));
+                //     } else {
+                //         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
+                //             Calculator.GetPositionOutOfAngleAndDistance(idleShip.rotation + Random.Range(-120, 120),
+                //                 Random.Range(1000, 5000))));
+                //     }
+                //     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
+                // }
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand());
             } else if (idleShip.IsIdle() && idleShip.IsTransportShip()) {
-                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand());
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand());
             }
         }
     }

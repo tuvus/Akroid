@@ -205,10 +205,10 @@ public class FactionTradeTests {
         factionTrade.AddContract(contract2);
         Assert.AreEqual(1, factionTrade.activeContracts.Count);
         Assert.Zero(factionTrade.resourcesOffered[CargoBay.CargoType.Gas].Count);
-        Assert.False(testStation.LoadContractToShip(100, contract2));
+        Assert.False(testStation.LoadTradeContractToShip(100, contract2));
         Assert.AreEqual(100, testShip.GetAllCargoOfType(CargoBay.CargoType.Gas));
         Assert.AreEqual(100, testStation.contractedCargo[CargoBay.CargoType.Gas].has);
-        Assert.True(testStation.LoadContractToShip(100, contract2));
+        Assert.True(testStation.LoadTradeContractToShip(100, contract2));
         Assert.Zero(testStation.contractedCargo.Count);
         Assert.Zero(factionTrade.activeContracts.Count);
     }
