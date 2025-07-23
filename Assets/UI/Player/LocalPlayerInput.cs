@@ -18,7 +18,7 @@ public class LocalPlayerInput : MonoBehaviour {
         StationBuilderCommand,
         ResearchCommand,
         CollectGasCommand,
-        TransportCommand,
+        TradeTransportCommand,
         ColonizeCommand
     }
 

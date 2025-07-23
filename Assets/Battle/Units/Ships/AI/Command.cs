@@ -279,8 +279,12 @@ public class Command {
         } else if (commandType == CommandType.TradeTransport) {
             if (supplierContract != null && supplierContract.provider != null)
                 supplierContract.provider.faction.factionTrade.RemoveContract(supplierContract);
+            else if (pickupContract != null && pickupContract.provider != null)
+                pickupContract.provider.faction.factionTrade.RemoveContract(pickupContract);
             if (requestContract != null && requestContract.receiver != null)
                 requestContract.provider.faction.factionTrade.RemoveContract(requestContract);
+            else if (dropOffContract != null && dropOffContract.receiver != null)
+                dropOffContract.receiver.faction.factionTrade.RemoveContract(dropOffContract);
 
         }
     }
