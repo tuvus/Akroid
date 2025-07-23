@@ -886,9 +886,16 @@ public class ShipAI {
             var possibleTradeRoutes = new List<Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract,
                 FactionTrade.TransportContract, FactionTrade.TransportContract, float>>();
             foreach (Station station in factionTrade.GetFactionsWeCanBuyFrom().SelectMany(f => f.faction.stations)) {
-                possibleTradeRoutes.AddRange(factionTrade.GetFactionsWeCanSellTo().SelectMany(f => f.faction.stations)
-                    .Select(s => GetBestContractsBetweenStations(station, s))
-                    .Where(tr => tr.Item5 > 0));
+                if (station == command.destinationStation || command.destinationStation == null) {
+                    possibleTradeRoutes.AddRange(factionTrade.GetFactionsWeCanSellTo()
+                        .SelectMany(f => f.faction.stations)
+                        .Select(s => GetBestContractsBetweenStations(station, s))
+                        .Where(tr => tr.Item5 > 0));
+                } else if (command.destinationStation.faction == ship.faction ||
+                    factionTrade.tradeSellAgreements.ContainsKey(command.destinationStation.faction)) {
+                    var route = GetBestContractsBetweenStations(station, command.destinationStation);
+                    if (route.Item5 > 0) possibleTradeRoutes.Add(route);
+                }
             }
             if (!possibleTradeRoutes.Any()) return CommandResult.Stop;
 
@@ -1072,7 +1079,8 @@ public class ShipAI {
                 cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3 * math.min(
                         math.min(ct.Item1.amount, ct.Item2.amount), ship.GetAvailableCargoSpace(ct.Item1.cargoType)))
                     .ToList();
-                long amountToLoad = math.min(cargoTradeTypes.First().Item1.amount, cargoTradeTypes.First().Item2.amount);
+                long amountToLoad = math.min(cargoTradeTypes.First().Item1.amount,
+                    cargoTradeTypes.First().Item2.amount);
                 for (int i = 0; i < cargoBays.Count; i++) {
                     int cargoBaysFullyFilled = math.min(cargoBays[i].Item2, (int)(amountToLoad / cargoBays[i].Item1));
                     amountToLoad -= cargoBaysFullyFilled * cargoBays[i].Item1;
@@ -1093,13 +1101,15 @@ public class ShipAI {
                         cargoBays.RemoveAt(cargoBays.Count - 1);
                     }
                 }
-                long totalAmount = math.min(cargoTradeTypes.First().Item1.amount, cargoTradeTypes.First().Item2.amount) - amountToLoad;
+                long totalAmount =
+                    math.min(cargoTradeTypes.First().Item1.amount, cargoTradeTypes.First().Item2.amount) - amountToLoad;
                 totalValue += totalAmount * cargoTradeTypes.First().Item3;
                 if (totalAmount == 0) continue;
                 contractCargo.Add(new(new FactionTrade.TradeOffer(cargoTradeTypes.First().Item1, totalAmount),
                     new FactionTrade.TradeOffer(cargoTradeTypes.First().Item2, totalAmount)));
                 if (contractCargo[^1].Item2.amount >
-                    destination.faction.factionTrade.resourcesRequested[contractCargo[^1].Item2.cargoType][destination].amount)
+                    destination.faction.factionTrade.resourcesRequested[contractCargo[^1].Item2.cargoType][destination]
+                        .amount)
                     Debug.Log("error");
                 cargoTradeTypes.RemoveAt(0);
             }
@@ -1111,7 +1121,8 @@ public class ShipAI {
         }
 
         if (ship.moduleSystem.Get<HabitationArea>().Any(h => h.IsTransferHabitat()) &&
-            (origin.faction.factionTrade.personnelToHire.TryGetValue(origin, out FactionTrade.TransportOffer hireOffer) &&
+            (origin.faction.factionTrade.personnelToHire.TryGetValue(origin,
+                    out FactionTrade.TransportOffer hireOffer) &&
                 destination.faction.factionTrade.personnelRequested.TryGetValue(destination,
                     out FactionTrade.TransportOffer requestOffer))) {
 
@@ -1139,7 +1150,8 @@ public class ShipAI {
                 toHireContract = new(origin, ship,
                     new(contractPersonnel, origin.faction.factionTrade.personnelToHire[origin].payment));
                 toDeliverContract = new(ship, destination,
-                    new(new Population(contractPersonnel), destination.faction.factionTrade.personnelRequested[destination].payment));
+                    new(new Population(contractPersonnel),
+                        destination.faction.factionTrade.personnelRequested[destination].payment));
             }
         }
 
