@@ -3,10 +3,12 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "Resources/Components/ConstructionBayScriptableObject",
     menuName = "Components/ConstructionBay", order = 1)]
-public class ConstructionBayScriptableObject : ComponentScriptableObject {
+public class ConstructionBayScriptableObject : HabitationAreaScriptableObject {
     public float constructionSpeed;
     public long constructionAmount;
     public int constructionBays;
+
+    public long engineersRequired;
 
     public override Type GetComponentType() {
         return typeof(ConstructionBay);

@@ -117,9 +117,12 @@ public class Chapter1 : CampaingController {
             tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
                 tradeStation.freeCargo[c].maxWanted));
         tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Metal);
-        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoType.Gas);
-        tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
-            planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Gas);
+        tradeStation.moduleSystem.Get<ConstructionBay>().ForEach(cb => {
+            cb.AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
+                planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+            cb.FillEmployees(.2f);
+        });
         tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
             pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
@@ -136,6 +139,7 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
+        shipyard.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees(.2f));
         shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);
