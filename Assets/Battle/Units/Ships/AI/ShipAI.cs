@@ -1036,8 +1036,9 @@ public class ShipAI {
 
     #region HelperMethods
 
-    private Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract, FactionTrade.TransportContract,
-        FactionTrade.TransportContract, float> GetBestContractsBetweenStations(Station origin, Station destination) {
+    public Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract, FactionTrade.TransportContract,
+        FactionTrade.TransportContract, float> GetBestContractsBetweenStations(Station origin, Station destination,
+        bool includeCurrentCargo = true) {
         if (origin == destination) return new(null, null, null, null, 0);
         FactionTrade.TradeContract providerContract = null;
         FactionTrade.TradeContract requesterContract = null;
@@ -1050,40 +1051,85 @@ public class ShipAI {
             // Get all cargo offered and requested from the stations and assign a value to them
             var cargoTradeTypes = new List<Tuple<FactionTrade.TradeOffer, FactionTrade.TradeOffer, float>>();
             CargoBay.allCargoTypes.ForEach(c => {
-                if (!(origin.faction.factionTrade.resourcesOffered[c].ContainsKey(origin) &&
-                    destination.faction.factionTrade.resourcesRequested[c].ContainsKey(destination)))
-                    return;
-                var offer = origin.faction.factionTrade.resourcesOffered[c][origin];
-                var request = destination.faction.factionTrade.resourcesRequested[c][destination];
-                float value = factionTrade.GetOurSellValueOfOffer(destination.faction, request) -
-                    factionTrade.GetOurBuyValueOfOffer(origin.faction, offer);
-                if (value > 0)
-                    cargoTradeTypes.Add(new(offer, request, value));
+                if (origin.faction.factionTrade.resourcesOffered[c].ContainsKey(origin) &&
+                    destination.faction.factionTrade.resourcesRequested[c].ContainsKey(destination)) {
+                    var offer = origin.faction.factionTrade.resourcesOffered[c][origin];
+                    var request = destination.faction.factionTrade.resourcesRequested[c][destination];
+                    float value = factionTrade.GetOurSellValueOfOffer(destination.faction, request) -
+                        factionTrade.GetOurBuyValueOfOffer(origin.faction, offer);
+                    if (value > 0)
+                        cargoTradeTypes.Add(new(offer, request, value));
+                } else if (destination.faction.factionTrade.resourcesRequested[c].ContainsKey(destination)
+                    && ship.GetAllCargoOfType(c) > 0) {
+                    var request = destination.faction.factionTrade.resourcesRequested[c][destination];
+                    cargoTradeTypes.Add(new(new FactionTrade.TradeOffer(c, 0, 0), request, request.price));
+                }
             });
+            // Sort them by most valuable first
+            cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3 *
+                math.min(ct.Item1.amount, ct.Item2.amount)).ToList();
+
             // Get all of our sizes of cargo bays along with how many we have
             var cargoBays = new List<Tuple<long, int>>();
             ship.moduleSystem.Get<CargoBay>().ForEach(cb => {
+                int cargoBaysUsed = cb.GetMaxCargoBays();
+                if (includeCurrentCargo)
+                    cargoBaysUsed -= cb.GetCargoBaysUsed();
                 if (cargoBays.Any(c => c.Item1 == cb.GetCargoBayCapacity())) {
                     int index = cargoBays.FindIndex(c => c.Item1 == cb.GetCargoBayCapacity());
-                    cargoBays[index] = new(cargoBays[index].Item1, cargoBays[index].Item2 + cb.GetMaxCargoBays());
+                    cargoBays[index] = new(cargoBays[index].Item1,
+                        cargoBays[index].Item2 + cargoBaysUsed);
                 } else {
-                    cargoBays.Add(new(cb.GetCargoBayCapacity(), cb.GetMaxCargoBays()));
+                    cargoBays.Add(new(cb.GetCargoBayCapacity(), cargoBaysUsed));
                 }
             });
-            // Sort them descending
+            // Sort them by largest capacity descending
             cargoBays.Sort((a, b) => b.Item1.CompareTo(a.Item1));
+
+            // Some cargo bays might be half filled if we are including the current cargo
+            // This is space that can only be used for that cargo type
+            Dictionary<CargoBay.CargoType, long> halfFilledCargo = new();
+            if (includeCurrentCargo) {
+                ship.moduleSystem.Get<CargoBay>().ForEach(cb => {
+                    foreach (var bay in cb.cargoBays) {
+                        long openSpace = bay.Value % cb.GetCargoBayCapacity();
+                        if (openSpace == 0) return;
+                        if (halfFilledCargo.ContainsKey(bay.Key)) {
+                            halfFilledCargo[bay.Key] += openSpace;
+                        } else {
+                            halfFilledCargo.Add(bay.Key, openSpace);
+                        }
+                    }
+                });
+            }
 
             var contractCargo = new List<Tuple<FactionTrade.TradeOffer, FactionTrade.TradeOffer>>();
             // Fill up the contract cargo with most valuable cargo first
-            while (cargoBays.Count != 0 && cargoTradeTypes.Count != 0) {
-                cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3 * math.min(
-                        math.min(ct.Item1.amount, ct.Item2.amount), ship.GetAvailableCargoSpace(ct.Item1.cargoType)))
-                    .ToList();
-                long amountToLoad = math.min(cargoTradeTypes.First().Item1.amount,
-                    cargoTradeTypes.First().Item2.amount);
+            foreach (var typeToLoad in cargoTradeTypes) {
+                long amountToLoad = typeToLoad.Item2.amount;
+                long totalAmount = 0;
+                CargoBay.CargoType cargoType = typeToLoad.Item1.cargoType;
+
+                long previousCargo = 0;
+                if (includeCurrentCargo) {
+                    // Account for any cargo that we already have
+                    previousCargo = math.min(amountToLoad, ship.GetAllCargoOfType(cargoType));
+                    amountToLoad -= previousCargo;
+                    totalValue += previousCargo * typeToLoad.Item2.price;
+
+                    if (halfFilledCargo.TryGetValue(cargoType, out long cargo)) {
+                        // The first priority goes to filling half full cargo bays
+                        totalAmount += math.min(cargo, amountToLoad);
+                        amountToLoad -= math.min(cargo, amountToLoad);
+                    }
+                }
+
+                amountToLoad = math.min(typeToLoad.Item1.amount, amountToLoad);
+
                 for (int i = 0; i < cargoBays.Count; i++) {
                     int cargoBaysFullyFilled = math.min(cargoBays[i].Item2, (int)(amountToLoad / cargoBays[i].Item1));
                     amountToLoad -= cargoBaysFullyFilled * cargoBays[i].Item1;
+                    totalAmount += cargoBaysFullyFilled * cargoBays[i].Item1;
                     if (cargoBays[i].Item2 - cargoBaysFullyFilled == 0) {
                         cargoBays.RemoveAt(i);
                         i--;
@@ -1094,6 +1140,7 @@ public class ShipAI {
                 if (amountToLoad > 0 && cargoBays.Count != 0) {
                     // In this case there must be at least one cargo bay left and all cargo bays have a capacity
                     // higher than totalAmount
+                    totalAmount += amountToLoad;
                     amountToLoad = 0;
                     if (cargoBays[^1].Item2 != 1) {
                         cargoBays[^1] = new(cargoBays[^1].Item1, cargoBays[^1].Item2 - 1);
@@ -1101,23 +1148,19 @@ public class ShipAI {
                         cargoBays.RemoveAt(cargoBays.Count - 1);
                     }
                 }
-                long totalAmount =
-                    math.min(cargoTradeTypes.First().Item1.amount, cargoTradeTypes.First().Item2.amount) - amountToLoad;
-                totalValue += totalAmount * cargoTradeTypes.First().Item3;
-                if (totalAmount == 0) continue;
-                contractCargo.Add(new(new FactionTrade.TradeOffer(cargoTradeTypes.First().Item1, totalAmount),
-                    new FactionTrade.TradeOffer(cargoTradeTypes.First().Item2, totalAmount)));
-                if (contractCargo[^1].Item2.amount >
-                    destination.faction.factionTrade.resourcesRequested[contractCargo[^1].Item2.cargoType][destination]
-                        .amount)
-                    Debug.Log("error");
-                cargoTradeTypes.RemoveAt(0);
+                totalValue += totalAmount * typeToLoad.Item3;
+                if (totalAmount + previousCargo == 0) continue;
+                contractCargo.Add(new(new FactionTrade.TradeOffer(typeToLoad.Item1, totalAmount),
+                    new FactionTrade.TradeOffer(typeToLoad.Item2, totalAmount + previousCargo)));
             }
 
-            providerContract = new FactionTrade.TradeContract(origin, ship,
-                contractCargo.Select(cc => cc.Item1).ToArray());
-            requesterContract = new FactionTrade.TradeContract(ship, destination,
-                contractCargo.Select(cc => cc.Item2).ToArray());
+            if (contractCargo.Any(cc => cc.Item1.amount > 0))
+                providerContract = new FactionTrade.TradeContract(origin, ship,
+                    contractCargo.Select(cc => cc.Item1).Where(c => c.amount > 0)
+                        .ToArray());
+            if (contractCargo.Any(cc => cc.Item2.amount > 0))
+                requesterContract = new FactionTrade.TradeContract(ship, destination,
+                    contractCargo.Select(cc => cc.Item2).Where(c => c.amount > 0).ToArray());
         }
 
         if (ship.moduleSystem.Get<HabitationArea>().Any(h => h.IsTransferHabitat()) &&
@@ -1126,33 +1169,49 @@ public class ShipAI {
                 destination.faction.factionTrade.personnelRequested.TryGetValue(destination,
                     out FactionTrade.TransportOffer requestOffer))) {
 
-            long openCapacity = ship.moduleSystem.Get<HabitationArea>().Sum(h => h.GetCapacity());
-            var occupationValueAmount = new List<Tuple<Occupation, float, long>>();
+            long openCapacity = ship.moduleSystem.Get<HabitationArea>()
+                .Sum(h => includeCurrentCargo ? h.GetFreeSpace() : h.GetCapacity());
+            var occupationValueAmount = new List<Tuple<Occupation, float, long, long>>();
             HabitationArea.allOccupations.ForEach(o => {
                 if (hireOffer.personnel.Get(o) > 0 && requestOffer.personnel.Get(o) > 0) {
                     float value = factionTrade.GetOurSellValueOfOffer(origin.faction, requestOffer.payment.Get(o)) -
                         factionTrade.GetOurBuyValueOfOffer(destination.faction, hireOffer.payment.Get(o));
                     if (value <= 0) return;
-                    occupationValueAmount.Add(new(o, value,
-                        math.min(hireOffer.personnel.Get(o), requestOffer.personnel.Get(o))));
+                    occupationValueAmount.Add(new(o, value, hireOffer.personnel.Get(o), requestOffer.personnel.Get(o)));
                 }
             });
             var contractPersonnel = new Population();
+            // Holds personnel that are already picked up
+            var currentContractPersonnel = new Population();
+
             occupationValueAmount.Sort((a, b) => b.Item2.CompareTo(a.Item2));
-            while (openCapacity > 0 && occupationValueAmount.Count != 0) {
-                long toAdd = math.min(openCapacity, occupationValueAmount.First().Item3);
+            foreach (var occupationTransport in occupationValueAmount) {
+                Occupation occupation = occupationTransport.Item1;
+                long previousPopulation = 0;
+                if (includeCurrentCargo) {
+                    previousPopulation = math.min(ship.moduleSystem.Get<HabitationArea>()
+                            .Sum(h => h.population.Get(occupation)),
+                        occupationTransport.Item4);
+                    currentContractPersonnel.Add(occupation, previousPopulation);
+                }
+
+                long toAdd = math.min(openCapacity,
+                    math.min(occupationTransport.Item3, occupationTransport.Item4 - previousPopulation));
                 openCapacity -= toAdd;
-                totalValue += toAdd * occupationValueAmount.First().Item2;
-                contractPersonnel.Add(occupationValueAmount.First().Item1, toAdd);
-                occupationValueAmount.RemoveAt(0);
+                totalValue += toAdd * occupationTransport.Item2;
+                totalValue += previousPopulation * requestOffer.payment.Get(occupation);
+                contractPersonnel.Add(occupation, toAdd);
             }
-            if (contractPersonnel.TotalPopulation() > 0) {
+
+            if (contractPersonnel.TotalPopulation() > 0)
                 toHireContract = new(origin, ship,
-                    new(contractPersonnel, origin.faction.factionTrade.personnelToHire[origin].payment));
+                    new(new Population(contractPersonnel),
+                        origin.faction.factionTrade.personnelToHire[origin].payment));
+            contractPersonnel.AddPopulation(currentContractPersonnel);
+            if (contractPersonnel.TotalPopulation() > 0)
                 toDeliverContract = new(ship, destination,
                     new(new Population(contractPersonnel),
                         destination.faction.factionTrade.personnelRequested[destination].payment));
-            }
         }
 
         return new(providerContract, requesterContract, toHireContract, toDeliverContract, totalValue);

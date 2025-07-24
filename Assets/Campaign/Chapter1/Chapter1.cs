@@ -224,7 +224,7 @@ public class Chapter1 : CampaingController {
         planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L,
             Random.Range(0.001f, 0.003f), "All base stats improved");
 
-        battleManager.GetLocalPlayer().SetLockedUnits(true);
+        // battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
         battleManager.GetLocalPlayer().SetFaction(playerFaction);
         eventManager.SetPlayerZoom(400);
