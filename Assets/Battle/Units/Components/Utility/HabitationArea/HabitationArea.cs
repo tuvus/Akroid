@@ -136,6 +136,11 @@ public class Population {
         }
         return -1;
     }
+
+    public override bool Equals(object obj) {
+        if (obj is not Population pop) return false;
+        return HabitationArea.allOccupations.All(o => Get(o) == pop.Get(o));
+    }
 }
 
 [Serializable]

@@ -40,17 +40,7 @@ public class MiningBay : HabitationArea {
 
         if (unit is Station station) {
             long engineersWanted = miningBayScriptableObject.engineersRequired - population.engineers;
-            if (engineersWanted > 0) {
-                if (!station.personnelRequests.ContainsKey(this)) {
-                    station.personnelRequests.Add(this, new Population(0, 0, engineersWanted));
-                    station.updatePopulation = true;
-                } else if (station.personnelRequests[this].engineers != engineersWanted) {
-                    station.personnelRequests[this].engineers = engineersWanted;
-                    station.updatePopulation = true;
-                }
-            } else if (station.personnelRequests.ContainsKey(this)) {
-                station.personnelRequests.Remove(this);
-            }
+            station.RequestPersonnel(this, new Population(0, 0, engineersWanted));
         }
 
         miningTime -= deltaTime;

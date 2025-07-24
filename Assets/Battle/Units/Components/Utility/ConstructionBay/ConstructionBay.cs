@@ -52,17 +52,7 @@ public class ConstructionBay : HabitationArea {
         constructionTime -= deltaTime;
         if (unit is Station station) {
             long engineersWanted = constructionBayScriptableObject.engineersRequired - population.engineers;
-            if (engineersWanted > 0) {
-                if (!station.personnelRequests.ContainsKey(this)) {
-                    station.personnelRequests.Add(this, new Population(0, 0, engineersWanted));
-                    station.updatePopulation = true;
-                } else if (station.personnelRequests[this].engineers != engineersWanted) {
-                    station.personnelRequests[this].engineers = engineersWanted;
-                    station.updatePopulation = true;
-                }
-            } else if (station.personnelRequests.ContainsKey(this)) {
-                station.personnelRequests.Remove(this);
-            }
+            station.RequestPersonnel(this, new Population(0, 0, engineersWanted));
         }
 
         if (constructionTime <= 0) {

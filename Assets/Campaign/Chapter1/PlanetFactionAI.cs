@@ -69,13 +69,27 @@ public class PlanetFactionAI : FactionAI {
                     if (amount <= 0) continue;
                     tradeStation.LoadCargo(amount, type);
                     faction.UseCredits((long)(amount * battleManager.baseResourcePrice[type] * 2));
-                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2) {
+                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) /
+                    2) {
                     // We have too much cargo, sell some to the planet
-                    long amount = math.min(800, cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
+                    long amount = math.min(800,
+                        cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
                     if (amount <= 0) continue;
                     tradeStation.UseCargo(amount, type);
                     faction.AddCredits((long)(amount * battleManager.baseResourcePrice[type] * 1.4f));
                 }
+            }
+
+            PopulationCenter populationCenter = tradeStation.moduleSystem.Get<PopulationCenter>().First();
+            if (populationCenter.population.engineers <
+                populationCenter.GetCapacity() * PopulationCenter.engineerRatio) {
+                long engineersToAdd = math.min(populationCenter.population.civilians, math.min(3,
+                    (long)(populationCenter.GetCapacity() * PopulationCenter.engineerRatio) -
+                    populationCenter.population.engineers));
+                populationCenter.population.engineers += engineersToAdd;
+                populationCenter.population.civilians -=
+                    populationCenter.population.TotalPopulation() - populationCenter.GetCapacity();
+                faction.UseCredits(engineersToAdd * 10);
             }
 
             tradeWithPlanetTime += 5;

@@ -836,6 +836,35 @@ public class Station : Unit, IPositionConfirmer {
             ((personnelWanted + modifier) / (float)modifier) + .1f);
     }
 
+    public void RequestPersonnel(HabitationArea habitationArea, Population personnelRequested) {
+        if (personnelRequested.TotalPopulation() == 0) {
+            personnelRequests.Remove(habitationArea);
+            return;
+        }
+        if (personnelRequests.ContainsKey(habitationArea)) {
+            if (!personnelRequests[habitationArea].Equals(personnelRequested)) {
+                personnelRequests[habitationArea] = personnelRequested;
+                updatePopulation = true;
+            }
+            return;
+        }
+
+        Population internalPopulation = new Population();
+        moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat()).ToList().ForEach(h => {
+            Population tmp = new Population();
+            h.population.MovePopulationTo(tmp, personnelRequested);
+            personnelRequested.SubtractPopulation(tmp);
+            internalPopulation.AddPopulation(tmp);
+        });
+
+        habitationArea.population.AddPopulation(internalPopulation);
+
+        if (personnelRequested.TotalPopulation() > 0) {
+            personnelRequests.Add(habitationArea, personnelRequested);
+            updatePopulation = true;
+        }
+    }
+
     #endregion
 
     #region GetMethods
