@@ -105,7 +105,6 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
         otherMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f));
         otherMiningStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
-        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoType.Metal);
 
 
         tradeStation = (Shipyard)battleManager.CreateNewStation(
@@ -137,7 +136,7 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
-        shipyard.LoadCargo(2400 * 4, CargoBay.CargoType.Gas);
+        shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
@@ -324,7 +323,8 @@ public class Chapter1 : CampaingController {
                             AddWarEscalationEventLine();
                             battleManager.GetLocalPlayer().SetLockedUnits(false);
                             eventManager.AddEvent(new PredicateCondition(e => playerMiningStation.IsBuilt()),
-                                () => playerMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f)));
+                                () => playerMiningStation.moduleSystem.Get<MiningBay>()
+                                    .ForEach(m => m.FillEmployees(.3f)));
                         });
                 }, 20);
             }), 10 * GetTimeScale());
