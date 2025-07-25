@@ -14,6 +14,6 @@ public class CargoBayScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += maxCargoBays * cargoBaySize / 50;
-        AddResourceCost(CargoBay.CargoTypes.Metal, maxCargoBays * cargoBaySize / 20);
+        AddResourceCost(CargoBay.CargoType.Metal, maxCargoBays * cargoBaySize / 20);
     }
 }

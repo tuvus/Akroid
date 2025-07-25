@@ -16,6 +16,8 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: 6009000000000000
   upgrade: {fileID: 0}
+  populationSpace: 0
   constructionSpeed: 1.6
   constructionAmount: 75
   constructionBays: 8
+  engineersRequired: 120

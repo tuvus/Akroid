@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ZarrackMkI
   m_EditorClassIdentifier: 
-  cost: 9723
+  cost: 9748
   resourceTypes: 0100000002000000
-  resourceCosts: 55060000000000008202000000000000
+  resourceCosts: 6906000000000000a800000000000000
   prefabPath: Prefabs/ShipPrefabs/Zarrack
   prefab: {fileID: 5023812487943957023, guid: ecca5209414585644a82cedba9893789, type: 3}
   unitName: Zarrack
@@ -47,6 +47,11 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: fb846025b1f4e7f428ac99ad6f3506b7, type: 2}
     moduleSize: 0
     moduleCount: 2
+  - name: Bridge
+    type: 5
+    component: {fileID: 11400000, guid: 0353fa6af1846bfc58efdc5838966e51, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 8.48, y: 15.58}
@@ -54,5 +59,10 @@ MonoBehaviour:
   shipType: 3
   turnSpeed: 25
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 2
+    engineers: 3
+    marines: 0
   baseMass: 779
   baseSpeed: 32.400513

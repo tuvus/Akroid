@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Resources/Objects/GasCloud", menuName = "Objects/GasCloud", order = 5)]
 public class GasCloudScriptableObject : ScriptableObject {
     public Sprite sprite;
-    public CargoBay.CargoTypes type;
+     public CargoBay.CargoType type;
     [field: SerializeField] public Vector2 spriteBounds { get; private set; }
     public GameObject prefab;
 

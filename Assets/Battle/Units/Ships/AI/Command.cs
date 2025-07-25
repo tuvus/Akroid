@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = Unity.Mathematics.Random;
 
 [Serializable]
@@ -27,7 +28,7 @@ public class Command {
         UndockCommand,
         Transport,
         TransportDelay,
-        Trade,
+        TradeTransport,
         Research,
         CollectGas,
         DisbandFleet,
@@ -41,8 +42,9 @@ public class Command {
     public float targetRotation;
     public Vector2 targetPosition;
     public bool useAlternateCommandOnceDone;
-    public CargoBay.CargoTypes cargoType;
+    public CargoBay.CargoType cargoType;
     public bool autoUnload;
+    public bool transport;
 
     public float maxSpeed;
     public Station destinationStation;
@@ -54,8 +56,10 @@ public class Command {
     public Planet targetPlanet;
     public Star targetStar;
     public Unit targetUnit;
-    public FactionTrade.Contract? supplierContract;
-    public FactionTrade.Contract? requestContract;
+    public FactionTrade.TradeContract supplierContract;
+    public FactionTrade.TradeContract requestContract;
+    public FactionTrade.TransportContract pickupContract;
+    public FactionTrade.TransportContract dropOffContract;
 
     private Command(CommandType commandType) {
         this.commandType = commandType;
@@ -181,7 +185,7 @@ public class Command {
     }
 
     public static Command CreateTransportCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType, bool oneTrip = false, bool autoUnload = true) {
+        CargoBay.CargoType cargoType, bool oneTrip = false, bool autoUnload = true) {
         return new Command(CommandType.Transport) {
             destinationStation = destinationStation,
             productionStation = productionStation,
@@ -192,7 +196,7 @@ public class Command {
     }
 
     public static Command CreateTransportDelayCommand(Station productionStation, Station destinationStation,
-        CargoBay.CargoTypes cargoType, float delay, bool autoUnload = true) {
+        CargoBay.CargoType cargoType, float delay, bool autoUnload = true) {
         return new Command(CommandType.TransportDelay) {
             destinationStation = destinationStation,
             productionStation = productionStation,
@@ -203,11 +207,12 @@ public class Command {
         };
     }
 
-    public static Command CreateTradeCommand(Station mustTradeWith = null,
-        CargoBay.CargoTypes cargoTypeToTrade = CargoBay.CargoTypes.All) {
-        return new Command(CommandType.Trade) {
+    public static Command CreateTradeTransportCommand(Station mustTradeWith = null,
+        CargoBay.CargoType cargoTypeToTrade = CargoBay.CargoType.All, bool transport = true) {
+        return new Command(CommandType.TradeTransport) {
             cargoType = cargoTypeToTrade,
-            destinationStation = mustTradeWith
+            destinationStation = mustTradeWith,
+            transport = transport
         };
     }
 
@@ -271,11 +276,15 @@ public class Command {
         } else if (commandType == CommandType.BuildStation && !destinationStation.IsBuilt()) {
             // The unbuilt station needs to be destroyed once the command is destroyed since unbuilt stations are actual objects
             destinationStation.Explode();
-        } else if (commandType == CommandType.Trade) {
-            if (supplierContract != null && supplierContract.Value.provider != null)
-                supplierContract.Value.provider.faction.factionTrade.RemoveContract(supplierContract.Value);
-            if (requestContract != null && requestContract.Value.receiver != null)
-                requestContract.Value.provider.faction.factionTrade.RemoveContract(requestContract.Value);
+        } else if (commandType == CommandType.TradeTransport) {
+            if (supplierContract != null && supplierContract.provider != null)
+                supplierContract.provider.faction.factionTrade.RemoveContract(supplierContract);
+            else if (pickupContract != null && pickupContract.provider != null)
+                pickupContract.provider.faction.factionTrade.RemoveContract(pickupContract);
+            if (requestContract != null && requestContract.receiver != null)
+                requestContract.provider.faction.factionTrade.RemoveContract(requestContract);
+            else if (dropOffContract != null && dropOffContract.receiver != null)
+                dropOffContract.receiver.faction.factionTrade.RemoveContract(dropOffContract);
 
         }
     }

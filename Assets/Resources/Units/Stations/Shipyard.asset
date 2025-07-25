@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 97838
   resourceTypes: 0100000002000000
-  resourceCosts: 414a0000000000002a01000000000000
+  resourceCosts: 414a0000000000003100000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   prefab: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441, type: 3}
   unitName: Shipyard

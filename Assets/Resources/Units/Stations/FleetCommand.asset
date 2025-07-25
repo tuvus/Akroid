@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 139443
   resourceTypes: 0100000002000000
-  resourceCosts: c45b000000000000d402000000000000
+  resourceCosts: c45b0000000000007000000000000000
   prefabPath: Prefabs/StationPrefabs/FleetCommand
   prefab: {fileID: 8198535041992587762, guid: e804d706e62697043b88a6a2535373d5, type: 3}
   unitName: FleetCommand

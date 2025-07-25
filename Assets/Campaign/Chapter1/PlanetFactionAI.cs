@@ -61,7 +61,7 @@ public class PlanetFactionAI : FactionAI {
 
     private void UpdateTradeStation() {
         if (tradeWithPlanetTime <= 0) {
-            foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
+            foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 long cargo = tradeStation.GetAllCargoOfType(type);
                 if (cargo < tradeStation.freeCargo[type].minWanted + 400) {
                     // We have too little cargo, buy some at an expensive price from the planet
@@ -69,14 +69,31 @@ public class PlanetFactionAI : FactionAI {
                     if (amount <= 0) continue;
                     tradeStation.LoadCargo(amount, type);
                     faction.UseCredits((long)(amount * battleManager.baseResourcePrice[type] * 2));
-                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2) {
+                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) /
+                    2) {
                     // We have too much cargo, sell some to the planet
-                    long amount = math.min(800, cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
+                    long amount = math.min(800,
+                        cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
                     if (amount <= 0) continue;
                     tradeStation.UseCargo(amount, type);
                     faction.AddCredits((long)(amount * battleManager.baseResourcePrice[type] * 1.4f));
                 }
             }
+
+            PopulationCenter populationCenter = tradeStation.moduleSystem.Get<PopulationCenter>().First();
+            HabitationArea.allOccupations.ForEach(o => {
+                if (o == Occupation.Civilian) return;
+                if (populationCenter.population.Get(o) <
+                    populationCenter.GetCapacity() * PopulationCenter.GetOccupationRatio(o)) {
+                    long personnelToAdd = math.min(populationCenter.population.civilians, math.min(3,
+                        (long)(populationCenter.GetCapacity() * PopulationCenter.GetOccupationRatio(o)) -
+                        populationCenter.population.Get(o)));
+                    populationCenter.population.Add(o, personnelToAdd);
+                    populationCenter.population.civilians -=
+                        populationCenter.population.TotalPopulation() - populationCenter.GetCapacity();
+                    faction.UseCredits(personnelToAdd * 20);
+                }
+            });
 
             tradeWithPlanetTime += 5;
         }
@@ -89,26 +106,27 @@ public class PlanetFactionAI : FactionAI {
         friendlyStations.AddRange(battleManager.stations.Where(s => !faction.IsAtWarWithFaction(s.faction)));
         foreach (Ship idleShip in idleShips) {
             if (idleShip.IsIdle() && idleShip.IsCivilianShip()) {
-                int randomNumber = Random.Range(0, 100);
-                if (friendlyStations.Count > 0 && idleShip.dockedStation != null && randomNumber > 20 ||
-                    idleShip.dockedStation == null && randomNumber > 80) {
-                    idleShip.shipAI.AddUnitAICommand(
-                        Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(7, 30f)));
-                } else {
-                    if (idleShip.dockedStation != null) {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
-                            Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
-                                Random.Range(6000, 12000))));
-                    } else {
-                        idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
-                            Calculator.GetPositionOutOfAngleAndDistance(idleShip.rotation + Random.Range(-120, 120),
-                                Random.Range(1000, 5000))));
-                    }
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
-                }
+                // int randomNumber = Random.Range(0, 100);
+                // if (friendlyStations.Count > 0 && idleShip.dockedStation != null && randomNumber > 20 ||
+                //     idleShip.dockedStation == null && randomNumber > 80) {
+                //     idleShip.shipAI.AddUnitAICommand(
+                //         Command.CreateDockCommand(friendlyStations[Random.Range(0, friendlyStations.Count)]));
+                //     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(7, 30f)));
+                // } else {
+                //     if (idleShip.dockedStation != null) {
+                //         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
+                //             Calculator.GetPositionOutOfAngleAndDistance(Random.Range(0, 360),
+                //                 Random.Range(6000, 12000))));
+                //     } else {
+                //         idleShip.shipAI.AddUnitAICommand(Command.CreateMoveCommand(idleShip.GetPosition() +
+                //             Calculator.GetPositionOutOfAngleAndDistance(idleShip.rotation + Random.Range(-120, 120),
+                //                 Random.Range(1000, 5000))));
+                //     }
+                //     idleShip.shipAI.AddUnitAICommand(Command.CreateWaitCommand(Random.Range(1, 3f)));
+                // }
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand());
             } else if (idleShip.IsIdle() && idleShip.IsTransportShip()) {
-                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand());
+                idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand());
             }
         }
     }

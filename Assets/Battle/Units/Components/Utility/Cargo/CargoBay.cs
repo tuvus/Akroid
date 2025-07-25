@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
-using UnityEngine.Assertions;
 
 /// <summary>
 ///     Handles storing resources in multiple cargo bays.
@@ -12,24 +10,24 @@ using UnityEngine.Assertions;
 ///     This allows us to easily reserve cargo bays based on the type of resource.
 /// </summary>
 public class CargoBay : ModuleComponent {
-    public enum CargoTypes {
+    public enum CargoType {
         All = -1,
         Empty = 0,
         Metal = 1,
         Gas = 2
     }
 
-    public static readonly List<CargoTypes> allCargoTypes = new List<CargoTypes> { CargoTypes.Metal, CargoTypes.Gas };
+    public static readonly List<CargoType> allCargoTypes = new List<CargoType> { CargoType.Metal, CargoType.Gas };
 
     private CargoBayScriptableObject cargoBayScriptableObject;
     private int cargoBaysInUse;
-    public Dictionary<CargoTypes, long> cargoBays { get; } = new Dictionary<CargoTypes, long>();
+    public Dictionary<CargoType, long> cargoBays { get; } = new Dictionary<CargoType, long>();
 
     public CargoBay(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
         base(battleManager, module, unit, componentScriptableObject) {
         cargoBayScriptableObject = (CargoBayScriptableObject)componentScriptableObject;
-        foreach (CargoTypes cargoType in allCargoTypes) {
+        foreach (CargoType cargoType in allCargoTypes) {
             cargoBays.Add(cargoType, 0);
         }
     }
@@ -41,7 +39,7 @@ public class CargoBay : ModuleComponent {
 
 
     /// <returns> Returns the amount of cargo that could not be loaded. </returns>
-    public long LoadCargo(long cargoToLoad, CargoTypes cargoType) {
+    public long LoadCargo(long cargoToLoad, CargoType cargoType) {
         // Puts Cargo into the existing half full cargo bay
         long openSpaceInUsedBay = cargoBayScriptableObject.cargoBaySize -
             cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
@@ -65,9 +63,9 @@ public class CargoBay : ModuleComponent {
 
 
     /// <summary> Returns the amount of cargo that could not be used. </summary>
-    public long UseCargo(long cargoAmount, CargoTypes cargoType) {
-        if (cargoType == CargoTypes.All) {
-            foreach (CargoTypes allCargoType in allCargoTypes) {
+    public long UseCargo(long cargoAmount, CargoType cargoType) {
+        if (cargoType == CargoType.All) {
+            foreach (CargoType allCargoType in allCargoTypes) {
                 cargoAmount = UseCargo(cargoAmount, allCargoType);
                 if (cargoAmount <= 0) return cargoAmount;
             }
@@ -86,9 +84,9 @@ public class CargoBay : ModuleComponent {
         return cargoAmount - cargoToUse;
     }
 
-    public void LoadCargoFromBay(CargoBay cargoBay, CargoTypes cargoType, long maxLoad = long.MaxValue) {
-        if (cargoType == CargoTypes.All) {
-            foreach (CargoTypes allCargoType in allCargoTypes) {
+    public void LoadCargoFromBay(CargoBay cargoBay, CargoType cargoType, long maxLoad = long.MaxValue) {
+        if (cargoType == CargoType.All) {
+            foreach (CargoType allCargoType in allCargoTypes) {
                 long cargoToLoadOfType = math.min(maxLoad, GetOpenCargoCapacityOfType(allCargoType));
                 long cargoLoaded = cargoToLoadOfType - cargoBay.UseCargo(cargoToLoadOfType, allCargoType);
                 LoadCargo(cargoLoaded, allCargoType);
@@ -103,30 +101,30 @@ public class CargoBay : ModuleComponent {
     }
 
     /// <returns> The amount of empty cargo bays that can be used for this cargo type. </returns>
-    private int GetOpenCargoBays(CargoTypes cargoType) {
-        if (cargoType == CargoTypes.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
+    private int GetOpenCargoBays(CargoType cargoType) {
+        if (cargoType == CargoType.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
         return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
     }
 
-    public long GetOpenCargoCapacityOfType(CargoTypes cargoType) {
+    public long GetOpenCargoCapacityOfType(CargoType cargoType) {
         long openSpaceFromUsedCargoBay = 0;
-        if (cargoType != CargoTypes.All) {
+        if (cargoType != CargoType.All) {
             openSpaceFromUsedCargoBay = cargoBayScriptableObject.cargoBaySize - cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
             if (openSpaceFromUsedCargoBay == cargoBayScriptableObject.cargoBaySize) openSpaceFromUsedCargoBay = 0;
         }
         return openSpaceFromUsedCargoBay + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
     }
 
-    public bool IsCargoFullOfType(CargoTypes cargoTypes) {
-        return GetOpenCargoCapacityOfType(cargoTypes) <= 0;
+    public bool IsCargoFullOfType(CargoType cargoType) {
+        return GetOpenCargoCapacityOfType(cargoType) <= 0;
     }
 
-    public bool IsCargoEmptyOfType(CargoTypes cargoTypes) {
-        return GetAllCargo(cargoTypes) <= 0;
+    public bool IsCargoEmptyOfType(CargoType cargoType) {
+        return GetAllCargo(cargoType) <= 0;
     }
 
-    public long GetAllCargo(CargoTypes cargoType) {
-        if (cargoType == CargoTypes.All) return allCargoTypes.Sum(t => GetAllCargo(t));
+    public long GetAllCargo(CargoType cargoType) {
+        if (cargoType == CargoType.All) return allCargoTypes.Sum(t => GetAllCargo(t));
         return cargoBays[cargoType];
     }
 
@@ -134,8 +132,8 @@ public class CargoBay : ModuleComponent {
         return cargoBaysInUse;
     }
 
-    public int GetCargoBaysUsedByType(CargoTypes cargoType) {
-        if (cargoType == CargoTypes.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
+    public int GetCargoBaysUsedByType(CargoType cargoType) {
+        if (cargoType == CargoType.All) return cargoBayScriptableObject.maxCargoBays - cargoBaysInUse;
         return (int)((cargoBays[cargoType] + cargoBayScriptableObject.cargoBaySize - 1) /
             cargoBayScriptableObject.cargoBaySize);
     }

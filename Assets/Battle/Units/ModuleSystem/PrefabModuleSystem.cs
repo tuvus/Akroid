@@ -16,7 +16,8 @@ public class PrefabModuleSystem : MonoBehaviour {
         Utility,
         Weapon,
         Turret,
-        Thruster
+        Thruster,
+        Bridge
     }
 
     [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
@@ -61,12 +62,11 @@ public class PrefabModuleSystem : MonoBehaviour {
         systems.Add(new PrefabSystem(name, type));
     }
 
-    public void RemoveSystem(int system, bool destroyModules = false) {
+    public void RemoveSystem(int system, bool destroyModules = true) {
         if (system >= systems.Count)
             return;
         if (destroyModules) {
             for (int i = modules.Count - 1; i >= 0; i--) {
-                Debug.Log("1");
                 if (modules[i].system == system) {
                     if (modules[i] != null)
                         DestroyImmediate(modules[i].gameObject);
@@ -97,6 +97,7 @@ public class PrefabModuleSystem : MonoBehaviour {
         Module newModule = Instantiate(Resources.Load<GameObject>("Prefabs/Module"), transform).GetComponent<Module>();
         modules.Add(newModule);
         newModule.name = systems[system].type.ToString();
+        newModule.SetSystem(system);
         // newModule.CreateModule(this, system, rotation, minRotate, maxRotate);
         RefreshSystemCounts();
         return newModule;

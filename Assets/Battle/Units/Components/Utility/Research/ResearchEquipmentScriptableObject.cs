@@ -16,6 +16,6 @@ public class ResearchEquipmentScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(researchAmount / researchSpeed * 30);
-        AddResourceCost(CargoBay.CargoTypes.Metal, maxData);
+        AddResourceCost(CargoBay.CargoType.Metal, maxData);
     }
 }

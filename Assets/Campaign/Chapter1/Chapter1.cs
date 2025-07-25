@@ -49,8 +49,8 @@ public class Chapter1 : CampaingController {
     public override void SetupBattle(BattleManager battleManager) {
         base.SetupBattle(battleManager);
         battleManager.SetSimulationTimeScale(1);
-        battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] = 2f;
-        battleManager.baseResourcePrice[CargoBay.CargoTypes.Gas] = 7f;
+        battleManager.baseResourcePrice[CargoBay.CargoType.Metal] = 2f;
+        battleManager.baseResourcePrice[CargoBay.CargoType.Gas] = 7f;
 
         battleManager.CreateNewStar("Sun", new PositionGiver(Vector2.zero));
         colorPicker = new ColorPicker();
@@ -103,8 +103,8 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Mining Station",
                 new PositionGiver(otherMiningFaction.position, 0, 1000, 100, 10, 4),
                 Random.Range(0, 360), otherMiningFaction), miningStationScriptableObject, true);
-        otherMiningStation.BuildShip(Ship.ShipClass.Transport);
-        otherMiningStation.LoadCargo(2400 * 3, CargoBay.CargoTypes.Metal);
+        otherMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f));
+        otherMiningStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
 
 
         tradeStation = (Shipyard)battleManager.CreateNewStation(
@@ -116,11 +116,15 @@ public class Chapter1 : CampaingController {
         CargoBay.allCargoTypes.ForEach(c =>
             tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
                 tradeStation.freeCargo[c].maxWanted));
-        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoTypes.Metal);
-        tradeStation.LoadCargo(2400 * 5, CargoBay.CargoTypes.Gas);
-        tradeStation.GetConstructionBay().AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
-            planetFaction,
-            battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Metal);
+        tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Gas);
+        tradeStation.moduleSystem.Get<ConstructionBay>().ForEach(cb => {
+            cb.AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
+                planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+            cb.FillEmployees(.2f);
+        });
+        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
+            pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -129,15 +133,16 @@ public class Chapter1 : CampaingController {
 
         shipyardFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(ShipyardFactionAI), "Solar Shipyards", "SSH", colorPicker.PickColor(),
-                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] * 4), 0, 0, 0),
+                (long)(2400 * battleManager.baseResourcePrice[CargoBay.CargoType.Metal] * 4), 0, 0, 0),
             new PositionGiver(Vector2.zero, 4000, 50000, 500, 1000, 10), 100);
         shipyard = (Shipyard)battleManager.CreateNewStation(
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
-        shipyard.LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
-        Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport);
-        shipyardTransport.LoadCargo(2400, CargoBay.CargoTypes.Metal);
+        shipyard.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees(.2f));
+        shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
+        Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
+        shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);
         shipyardFactionAI = (ShipyardFactionAI)shipyardFaction.GetFactionAI();
         shipyard.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -154,13 +159,12 @@ public class Chapter1 : CampaingController {
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
 
-        playerMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder),
-                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport),
-                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle")
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
+                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle").FillRequiredCrew()
             });
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
             Command.CommandAction.Replace);
@@ -174,15 +178,16 @@ public class Chapter1 : CampaingController {
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateBuildStationCommand(playerMiningStation));
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateDisbandFleetCommand());
 
-        otherMiningStation.GetMiningStationAI().SetupWantedTransports(tradeStation.GetPosition());
         otherMiningFaction.GetTransportShip(0).shipAI
             .AddUnitAICommand(Command.CreateWaitCommand(Random.Range(10, 20)), Command.CommandAction.AddToBeginning);
 
         var civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(0, 2); i++) {
             civilianShips.Add(tradeStation.BuildShip(planetFaction,
-                battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian"));
+                    battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian")
+                .FillRequiredCrew());
         }
+        civilianShips.ForEach(c => c.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand()));
 
         playerFactionAI.Setup(this, playerMiningStation);
         otherMiningFactionAI.Setup(this, shipyardFactionAI, otherMiningStation, tradeStation);
@@ -195,44 +200,34 @@ public class Chapter1 : CampaingController {
             battleManager.CreateNewGasCloud(new PositionGiver(Vector2.zero, 10000, 100000, 20000, 1000, 3));
         }
 
-        pirateFaction =
-            battleManager.CreateNewFaction(
-                new FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0),
-                new PositionGiver(planet.position), 100);
+        pirateFaction = battleManager.CreateNewFaction(
+            new FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0),
+            new PositionGiver(planet.position), 100);
 
         planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), Random.Range(12, 35) * 1000000L,
-            Random.Range(0.01f, 0.02f),
-            "Increases space production");
-        planetEmpire =
-            battleManager.CreateNewFaction(
-                new FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0),
-                new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+            Random.Range(0.01f, 0.02f), "Increases space production");
+        planetEmpire = battleManager.CreateNewFaction(
+            new FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(18, 24) * 100000000L,
-            Random.Range(0.002f, 0.004f),
-            "Increases unit production");
-        planetDemocracy =
-            battleManager.CreateNewFaction(
-                new FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0),
-                new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+            Random.Range(0.002f, 0.004f), "Increases unit production");
+        planetDemocracy = battleManager.CreateNewFaction(
+            new FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(22, 36) * 100000000L,
-            Random.Range(0.0014f, 0.003f),
-            "Increases research rate");
-        planetOligarchy =
-            battleManager.CreateNewFaction(
-                new FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0),
-                new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+            Random.Range(0.0014f, 0.003f), "Increases research rate");
+        planetOligarchy = battleManager.CreateNewFaction(
+            new FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetOligarchy, Random.Range(0.65f, 0.75f), Random.Range(12, 20) * 100000000L,
-            Random.Range(0.0025f, 0.0035f),
-            "Increases mining speed");
-        minorFactions =
-            battleManager.CreateNewFaction(
-                new FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0),
-                new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
+            Random.Range(0.0025f, 0.0035f), "Increases mining speed");
+        minorFactions = battleManager.CreateNewFaction(
+            new FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L,
-            Random.Range(0.001f, 0.003f),
-            "All base stats improved");
+            Random.Range(0.001f, 0.003f), "All base stats improved");
 
-        battleManager.GetLocalPlayer().SetLockedUnits(true);
+        // battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
         battleManager.GetLocalPlayer().SetFaction(playerFaction);
         eventManager.SetPlayerZoom(400);
@@ -265,7 +260,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = true;
+        bool skipTutorial = false;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
@@ -327,11 +322,13 @@ public class Chapter1 : CampaingController {
                             }
 
                             playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
-                            // playerFaction.AddCredits(10000000);
                             GetBattleManager().SetSimulationTimeScale(10);
                             AddResearchQuestLine();
                             AddWarEscalationEventLine();
                             battleManager.GetLocalPlayer().SetLockedUnits(false);
+                            eventManager.AddEvent(new PredicateCondition(e => playerMiningStation.IsBuilt()),
+                                () => playerMiningStation.moduleSystem.Get<MiningBay>()
+                                    .ForEach(m => m.FillEmployees(.3f)));
                         });
                 }, 20);
             }), 10 * GetTimeScale());
@@ -504,6 +501,7 @@ public class Chapter1 : CampaingController {
                 15 * GetTimeScale());
             eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
                 () => {
+                    playerMiningStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees(.3f));
                     AddStationTutorial();
                 });
         })();
@@ -1081,7 +1079,7 @@ public class Chapter1 : CampaingController {
             pirateFaction.StartWar(playerFaction);
             pirateFaction.StartWar(shipyardFaction);
             pirateFaction.StartWar(otherMiningFaction);
-            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.25f;
+            battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.25f;
         });
         pirateChain.AddCommEvent(planetCommManager, playerFaction,
             $"Pirates have seized the {otherMiningFaction.name}'s mining station!\n" +
@@ -1159,7 +1157,7 @@ public class Chapter1 : CampaingController {
             planetOligarchy.GetFactionAI().attackStrength = .05f;
             planetDemocracy.GetFactionAI().attackSpeed = 7f;
             planetDemocracy.GetFactionAI().attackStrength = .04f;
-            battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f;
+            battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
             $"Warning: The {planetEmpire.name} has declared war on {planetOligarchy.name} and {planetDemocracy.name}");
@@ -1176,8 +1174,7 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             robotFaction = battleManager.CreateNewFaction(
                 new FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(),
-                    Random.Range(1, 2) * 5400, 2000, 0,
-                    0), new PositionGiver(planet.GetPosition()), 100);
+                    Random.Range(1, 2) * 5400, 2000, 0, 0), new PositionGiver(planet.GetPosition()), 100);
             robotFactionAI = (RobotFactionAI)robotFaction.GetFactionAI();
             for (int i = 0; i < 200; i++) {
                 robotFaction.DiscoverResearchArea((ResearchAreas)Random.Range(0, 3), true);
@@ -1205,7 +1202,7 @@ public class Chapter1 : CampaingController {
         // Uprising Occurs
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"A robot uprising has begun within the {planetOligarchy.name}");
-        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(100));
         planetEscalationChain.AddAction(() =>
             planet.planetFactions[planetOligarchy].AddForce(planet.planetFactions[planetOligarchy].RemoveForce(70000)));
@@ -1225,13 +1222,13 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackSpeed = 4f;
             robotFaction.GetFactionAI().attackStrength = .05f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetOligarchy].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetOligarchy].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetOligarchy].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetOligarchy].force);
-                    planet.planetFactions[planetFaction]
-                        .AddPopulation(planet.planetFactions[planetOligarchy].population);
+                    planet.planetFactions[planetOligarchy].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetOligarchy].territory
                         .SubtractFrom(planet.planetFactions[planetOligarchy].territory);
                     planet.RemoveFaction(planetOligarchy);
@@ -1243,13 +1240,13 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(planetDemocracy);
             robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetDemocracy].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetDemocracy].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetDemocracy].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetDemocracy].force);
-                    planet.planetFactions[planetFaction]
-                        .AddPopulation(planet.planetFactions[planetDemocracy].population);
+                    planet.planetFactions[planetDemocracy].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetDemocracy].territory
                         .SubtractFrom(planet.planetFactions[planetDemocracy].territory);
                     planet.RemoveFaction(planetDemocracy);
@@ -1261,11 +1258,12 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(planetEmpire);
             robotFaction.GetFactionAI().attackStrength = .09f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[planetEmpire].force < 1000000), () => {
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[planetEmpire].population.marines < 1000000), () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[planetEmpire].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[planetEmpire].force);
-                    planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[planetEmpire].population);
+                    planet.planetFactions[planetEmpire].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[planetEmpire].territory
                         .SubtractFrom(planet.planetFactions[planetEmpire].territory);
                     planet.RemoveFaction(planetEmpire);
@@ -1277,18 +1275,19 @@ public class Chapter1 : CampaingController {
             robotFaction.StartWar(minorFactions);
             robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(
-                eventManager.CreatePredicateCondition(_ => planet.planetFactions[minorFactions].force < 1000000),
+                eventManager.CreatePredicateCondition(_ =>
+                    planet.planetFactions[minorFactions].population.marines < 1000000),
                 () => {
                     planet.planetFactions[planetFaction].territory
                         .AddFrom(planet.planetFactions[minorFactions].territory);
-                    planet.planetFactions[planetFaction].AddForce(planet.planetFactions[minorFactions].force);
-                    planet.planetFactions[planetFaction].AddPopulation(planet.planetFactions[minorFactions].population);
+                    planet.planetFactions[minorFactions].population
+                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
                     planet.planetFactions[minorFactions].territory
                         .SubtractFrom(planet.planetFactions[minorFactions].territory);
                     planet.RemoveFaction(minorFactions);
                 });
         });
-        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoTypes.Metal] *= 1.1f);
+        planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f);
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
         planetEscalationChain.AddAction(() => planet.planetFactions[robotFaction].AddForce(80000000L));
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
@@ -1300,13 +1299,13 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCondition(eventManager.CreatePredicateCondition(_ => {
             long alliedForce = 0;
             if (planet.planetFactions.ContainsKey(planetDemocracy))
-                alliedForce += planet.planetFactions[planetDemocracy].force;
+                alliedForce += planet.planetFactions[planetDemocracy].population.marines;
             if (planet.planetFactions.ContainsKey(planetOligarchy))
-                alliedForce += planet.planetFactions[planetOligarchy].force;
+                alliedForce += planet.planetFactions[planetOligarchy].population.marines;
             if (planet.planetFactions.ContainsKey(planetEmpire))
-                alliedForce += planet.planetFactions[planetEmpire].force;
+                alliedForce += planet.planetFactions[planetEmpire].population.marines;
             if (planet.planetFactions.ContainsKey(minorFactions))
-                alliedForce += planet.planetFactions[minorFactions].force;
+                alliedForce += planet.planetFactions[minorFactions].population.marines;
             return alliedForce < 6000000000L;
         }));
         planetEscalationChain.AddAction(() => {

@@ -138,6 +138,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                 new BattleObject.BattleObjectData("FleetCommand", stationPositionGiver, random.NextFloat(0f, 360f),
                     this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
+            fleetCommand.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees());
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
@@ -145,8 +146,9 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                         this),
                     (MiningStationScriptableObject)battleManager.GetStationBlueprint(Station.StationType.MiningStation)
                         .stationScriptableObject, true);
+                newStation.moduleSystem.Get<MiningBay>().ForEach(m => m.FillEmployees());
                 if (shipCount > 0) {
-                    newStation.BuildShip(Ship.ShipClass.Transport);
+                    newStation.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
                     shipCount--;
                 }
             }
@@ -680,9 +682,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     /// </summary>
     /// <returns> The total wanted transports throughout the faction </returns>
     public int GetTotalWantedTransports() {
-        return activeMiningStations.Where(station => station.IsSpawned())
-                .Sum(station => station.GetMiningStationAI().GetWantedTransportShips().GetValueOrDefault(0))
-            - ships.Count(s => s.IsTransportShip());
+        return activeMiningStations.Count(station => station.IsSpawned()) * 2 - ships.Count(s => s.IsTransportShip());
     }
 
     /// <summary>

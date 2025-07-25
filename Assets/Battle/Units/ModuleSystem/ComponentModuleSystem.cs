@@ -7,11 +7,12 @@ using System.Linq;
 ///     Caches the components for efficientcy.
 /// </summary>
 public class ComponentModuleSystem : ModuleSystem {
+    /// A list of all component types that will be kept track of
     private static readonly HashSet<Type> ComponentTypes = new HashSet<Type> {
         typeof(Turret), typeof(LaserTurret), typeof(ProjectileTurret), typeof(MissileLauncher),
         typeof(ShieldGenerator), typeof(Thruster), typeof(Generator), typeof(CargoBay), typeof(Hangar),
         typeof(ConstructionBay), typeof(HabitationArea), typeof(ResearchEquipment), typeof(GasCollector),
-        typeof(EmptyComponent)
+        typeof(Bridge), typeof(PopulationCenter), typeof(MiningBay), typeof(EmptyComponent)
     };
     private readonly Dictionary<Type, List<ModuleComponent>> components;
 

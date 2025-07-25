@@ -19,7 +19,7 @@ public class ModuleSystemTests {
         component.cost = 10;
         component.thrustSpeed = 1000;
         component.color = Color.blue;
-        component.resourceTypes = new List<CargoBay.CargoTypes> { CargoBay.CargoTypes.Gas };
+        component.resourceTypes = new List<CargoBay.CargoType> { CargoBay.CargoType.Gas };
         component.resourceCosts = new List<long> { 55 };
         MockModule mockModule = new MockModule();
         unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System> {
@@ -54,12 +54,12 @@ public class ModuleSystemTests {
         component.cost = 10;
         component.thrustSpeed = 1000;
         component.color = Color.blue;
-        component.resourceTypes = new List<CargoBay.CargoTypes> { CargoBay.CargoTypes.Gas };
+        component.resourceTypes = new List<CargoBay.CargoType> { CargoBay.CargoType.Gas };
         component.resourceCosts = new List<long> { 55 };
         component.name = "TestThruster";
         ThrusterScriptableObject upgradeComponent = ScriptableObject.CreateInstance<ThrusterScriptableObject>();
         upgradeComponent.cost = 20;
-        upgradeComponent.resourceTypes = new List<CargoBay.CargoTypes>();
+        upgradeComponent.resourceTypes = new List<CargoBay.CargoType>();
         upgradeComponent.resourceCosts = new List<long>();
         upgradeComponent.name = "UpgradedTestThruster";
         component.upgrade = upgradeComponent;
@@ -91,7 +91,7 @@ public class ModuleSystemTests {
         public void SetupMock(string name, int maxHealth, long cost, List<ModuleSystem.System> systems,
             List<IModule> modules) {
             resourceCosts = new List<long>();
-            resourceTypes = new List<CargoBay.CargoTypes>();
+            resourceTypes = new List<CargoBay.CargoType>();
             this.systems = systems.ToArray();
             this.modules = modules.ToArray();
             this.name = name;

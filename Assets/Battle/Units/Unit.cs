@@ -71,6 +71,8 @@ public abstract class Unit : BattleObject {
 
         moduleSystem.Get<ShieldGenerator>().ForEach(s => s.UpdateShieldGenerator(deltaTime));
         moduleSystem.Get<Generator>().ForEach(s => s.UpdateGenerator(deltaTime));
+        moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.UpdatePopulationCenter(deltaTime));
+        moduleSystem.Get<MiningBay>().ForEach(m => m.UpdateMiningBay(deltaTime));
     }
 
     public virtual void FindEnemies() {
@@ -169,8 +171,13 @@ public abstract class Unit : BattleObject {
 
     #region HelperMethods
 
-    public virtual bool AddContract(FactionTrade.Contract contract, bool mustHaveImmediateResources = true) {
-        contracts.Add(contract);
+    public virtual bool AddContract(FactionTrade.TradeContract tradeContract, bool mustHaveImmediateResources = true) {
+        contracts.Add(tradeContract);
+        return true;
+    }
+
+    public virtual bool AddContract(FactionTrade.TransportContract transportContract) {
+        contracts.Add(transportContract);
         return true;
     }
 
@@ -214,7 +221,7 @@ public abstract class Unit : BattleObject {
     ///     Tries and uses up to the amount cargo from all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be used, or 0 if all of it was used</returns>
-    public virtual long UseCargo(long amount, CargoBay.CargoTypes cargoType) {
+    public virtual long UseCargo(long amount, CargoBay.CargoType cargoType) {
         long totalCargoToUse = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToUse = cargoBay.UseCargo(totalCargoToUse, cargoType);
@@ -228,7 +235,7 @@ public abstract class Unit : BattleObject {
     ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
-    public virtual long LoadCargo(long amount, CargoBay.CargoTypes cargoType, FactionTrade.Contract? contract = null) {
+    public virtual long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.TradeContract? contract = null) {
         long totalCargoToLoad = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
@@ -243,9 +250,9 @@ public abstract class Unit : BattleObject {
     ///     Does not take contracts into account.
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
-    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoTypes cargoType, Unit unit, FactionTrade.Contract? contract = null) {
-        if (cargoType == CargoBay.CargoTypes.All) {
-            foreach (CargoBay.CargoTypes type in CargoBay.allCargoTypes) {
+    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoType cargoType, Unit unit, FactionTrade.TradeContract? contract = null) {
+        if (cargoType == CargoBay.CargoType.All) {
+            foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);
                 if (amount == 0) break;
             }
@@ -260,12 +267,25 @@ public abstract class Unit : BattleObject {
         return amount - cargoToLoad;
     }
 
-    public virtual long GetAllCargoOfType(CargoBay.CargoTypes cargoType, bool includeReserved = false) {
+    public virtual long GetAllCargoOfType(CargoBay.CargoType cargoType, bool includeReserved = false) {
         return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetAllCargo(cargoType));
     }
 
-    public long GetAvailableCargoSpace(CargoBay.CargoTypes cargoType) {
+    public long GetAvailableCargoSpace(CargoBay.CargoType cargoType) {
         return moduleSystem.Get<CargoBay>().Sum(cargoBay => cargoBay.GetOpenCargoCapacityOfType(cargoType));
+    }
+
+    /// <summary>
+    /// Loads as much of the population to this unit as possible and returns the population that was left over.
+    /// Does not modify the population given.
+    /// </summary>
+    public Population LoadPopulation(Population population) {
+        Population movePoplation = new Population(population);
+        foreach (HabitationArea habitationArea in moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
+            movePoplation.MovePopulationTo(habitationArea.population, population);
+            if (movePoplation.TotalPopulation() == 0) return movePoplation;
+        }
+        return movePoplation;
     }
 
     public string GetUnitName() {
