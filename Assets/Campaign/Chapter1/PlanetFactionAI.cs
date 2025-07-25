@@ -81,16 +81,19 @@ public class PlanetFactionAI : FactionAI {
             }
 
             PopulationCenter populationCenter = tradeStation.moduleSystem.Get<PopulationCenter>().First();
-            if (populationCenter.population.engineers <
-                populationCenter.GetCapacity() * PopulationCenter.engineerRatio) {
-                long engineersToAdd = math.min(populationCenter.population.civilians, math.min(3,
-                    (long)(populationCenter.GetCapacity() * PopulationCenter.engineerRatio) -
-                    populationCenter.population.engineers));
-                populationCenter.population.engineers += engineersToAdd;
-                populationCenter.population.civilians -=
-                    populationCenter.population.TotalPopulation() - populationCenter.GetCapacity();
-                faction.UseCredits(engineersToAdd * 10);
-            }
+            HabitationArea.allOccupations.ForEach(o => {
+                if (o == Occupation.Civilian) return;
+                if (populationCenter.population.Get(o) <
+                    populationCenter.GetCapacity() * PopulationCenter.GetOccupationRatio(o)) {
+                    long personnelToAdd = math.min(populationCenter.population.civilians, math.min(3,
+                        (long)(populationCenter.GetCapacity() * PopulationCenter.GetOccupationRatio(o)) -
+                        populationCenter.population.Get(o)));
+                    populationCenter.population.Add(o, personnelToAdd);
+                    populationCenter.population.civilians -=
+                        populationCenter.population.TotalPopulation() - populationCenter.GetCapacity();
+                    faction.UseCredits(personnelToAdd * 20);
+                }
+            });
 
             tradeWithPlanetTime += 5;
         }

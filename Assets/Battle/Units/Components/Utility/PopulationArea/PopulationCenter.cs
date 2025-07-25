@@ -15,6 +15,20 @@ public class PopulationCenter : HabitationArea {
     public static readonly float pilotRatio = .001f;
     public static readonly float marineRatio = .1f;
 
+    public static float GetOccupationRatio(Occupation o) {
+        switch (o) {
+            case Occupation.Civilian:
+                return civilianRatio;
+            case Occupation.Pilot:
+                return pilotRatio;
+            case Occupation.Engineer:
+                return engineerRatio;
+            case Occupation.Marine:
+                return marineRatio;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(o), o, null);
+        }
+    }
 
     public PopulationCenter(BattleManager battleManager, IModule module, Unit unit,
         ComponentScriptableObject componentScriptableObject) :
