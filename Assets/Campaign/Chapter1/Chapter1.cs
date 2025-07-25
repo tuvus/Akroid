@@ -260,7 +260,7 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         // Increase time to skip tutorial
-        bool skipTutorial = true;
+        bool skipTutorial = false;
         EventChainBuilder eventChain = new EventChainBuilder();
         eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
         eventChain.AddAction(() => {
