@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: ZarrackMkI
   m_EditorClassIdentifier: 
-  cost: 9773
+  cost: 9748
   resourceTypes: 0100000002000000
-  resourceCosts: 64060000000000008202000000000000
+  resourceCosts: 6906000000000000a800000000000000
   prefabPath: Prefabs/ShipPrefabs/Zarrack
   prefab: {fileID: 5023812487943957023, guid: ecca5209414585644a82cedba9893789, type: 3}
   unitName: Zarrack

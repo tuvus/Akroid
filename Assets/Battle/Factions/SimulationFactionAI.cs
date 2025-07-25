@@ -259,12 +259,13 @@ public class SimulationFactionAI : FactionAI {
                 } else if (idleShip.IsTransportShip()) {
                     // Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
                     // if (miningStation != null) {
-                        // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
+                    // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
                     // } else if (idleShip.dockedStation != fleetCommand) {
-                        // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
-                            // Command.CommandAction.Replace);
+                    // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
+                    // Command.CommandAction.Replace);
                     // }
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(), Command.CommandAction.Replace);
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(),
+                        Command.CommandAction.Replace);
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),
@@ -328,7 +329,7 @@ public class SimulationFactionAI : FactionAI {
         bool wantTransport = faction.GetTotalWantedTransports() > transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
             faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 5 + 5;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 5;
 
         if (fleetCommand.GetConstructionBay().HasOpenBays()) {
             if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {
@@ -372,10 +373,11 @@ public class SimulationFactionAI : FactionAI {
     }
 
     private void ManageStationUpgrades() {
-        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoType.Metal) > 10000) {
+        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoType.Metal, true) > 10000) {
             for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
                 if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
                     fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);
+                    break;
                 }
             }
         }

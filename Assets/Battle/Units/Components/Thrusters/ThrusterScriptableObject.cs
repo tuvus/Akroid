@@ -23,6 +23,6 @@ public class ThrusterScriptableObject : ComponentScriptableObject {
         base.UpdateCosts();
         cost += (long)(thrustSpeed / 10);
         AddResourceCost(CargoBay.CargoType.Metal, (long)(thrustSpeed / 50));
-        AddResourceCost(CargoBay.CargoType.Gas, (long)(thrustSpeed / 50));
+        AddResourceCost(CargoBay.CargoType.Gas, (long)(thrustSpeed / 200));
     }
 }

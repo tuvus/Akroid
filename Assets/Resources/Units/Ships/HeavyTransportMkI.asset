@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: HeavyTransportMkI
   m_EditorClassIdentifier: 
-  cost: 17196
+  cost: 17156
   resourceTypes: 0100000002000000
-  resourceCosts: 6e110000000000008603000000000000
+  resourceCosts: 7611000000000000cb00000000000000
   prefabPath: Prefabs/ShipPrefabs/HeavyTransport
   prefab: {fileID: 4268936986182817265, guid: 72731ae285ebb60409b19c7447cf20bf, type: 3}
   unitName: Heavy Transport

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: StationBuilder
   m_EditorClassIdentifier: 
-  cost: 20558
+  cost: 20478
   resourceTypes: 0100000002000000
-  resourceCosts: 9c100000000000008602000000000000
+  resourceCosts: ac10000000000000b000000000000000
   prefabPath: Prefabs/ShipPrefabs/StationBuilder
   prefab: {fileID: 8113073670915643603, guid: 8a77ee138cd670442a6334ab455d3fe6, type: 3}
   unitName: Station Builder

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: TransportMkI
   m_EditorClassIdentifier: 
-  cost: 9078
+  cost: 9053
   resourceTypes: 0100000002000000
-  resourceCosts: 1d050000000000001a01000000000000
+  resourceCosts: 22050000000000005400000000000000
   prefabPath: Prefabs/ShipPrefabs/Transport
   prefab: {fileID: 9215602423523637135, guid: ca496db1332dd3d4c8785fd2ca34d0b7, type: 3}
   unitName: Transport

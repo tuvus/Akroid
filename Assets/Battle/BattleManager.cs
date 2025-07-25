@@ -406,7 +406,7 @@ public class BattleManager {
         GasCloud newGasCloud = new GasCloud(
             new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, random.NextFloat(0, 360), Vector2.one * size),
             this,
-            (long)(random.NextFloat(1500, 3500) * size * resourceModifier),
+            (long)(random.NextFloat(3000, 5500) * size * resourceModifier),
             gasCloudBlueprints[random.NextInt(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);

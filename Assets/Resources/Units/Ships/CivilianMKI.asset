@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 1699
   resourceTypes: 0100000002000000
-  resourceCosts: 4301000000000000ea00000000000000
+  resourceCosts: 43010000000000004900000000000000
   prefabPath: Prefabs/ShipPrefabs/Aria
   prefab: {fileID: 4630675845762834490, guid: b5097db5007622a4f89785bb26d69731, type: 3}
   unitName: Civilian

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: LancerMkI
   m_EditorClassIdentifier: 
-  cost: 10357
+  cost: 10297
   resourceTypes: 0100000002000000
-  resourceCosts: a2080000000000003204000000000000
+  resourceCosts: ae080000000000008a01000000000000
   prefabPath: Prefabs/ShipPrefabs/Lancer
   prefab: {fileID: 4870678752167284642, guid: a9e61fb73f7b72743b3543d2c589e17b, type: 3}
   unitName: Lancer

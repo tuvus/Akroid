@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: GasCollectorMkI
   m_EditorClassIdentifier: 
-  cost: 3875
+  cost: 3860
   resourceTypes: 0100000002000000
-  resourceCosts: e203000000000000b801000000000000
+  resourceCosts: e5030000000000007600000000000000
   prefabPath: Prefabs/ShipPrefabs/GasCollector
   prefab: {fileID: 5023812487943957023, guid: 8ce14274c0874f446849e1a2a8301acd, type: 3}
   unitName: GasCollector

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 26183
   resourceTypes: 0100000002000000
-  resourceCosts: 830f0000000000007201000000000000
+  resourceCosts: 830f0000000000003d00000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   prefab: {fileID: 831600065110085484, guid: 604e1434a52205a4890f62bb79245dfc, type: 3}
   unitName: MiningStation
