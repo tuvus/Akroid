@@ -248,7 +248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &600022690
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1658,12 +1658,12 @@ GameObject:
   - component: {fileID: 2093057333}
   - component: {fileID: 2093057332}
   m_Layer: 0
-  m_Name: EventSystem
+  m_Name: LoadingEventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2093057332
 MonoBehaviour:
   m_ObjectHideFlags: 0
