@@ -882,6 +882,14 @@ public class ShipAI {
             currentCommandState = CommandType.Idle;
 
         if (command.requestContract == null && command.dropOffContract == null) {
+            // Finding a new trade route is an expensive operation if we can't find
+            // a good route the first time we should wait a little before trying again
+            if (command.waitTime > 0) {
+                command.waitTime -= deltaTime;
+                return CommandResult.Stop;
+            }
+            command.waitTime += .5f;
+
             // Try and find a new trade route
             var possibleTradeRoutes = new List<Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract,
                 FactionTrade.TransportContract, FactionTrade.TransportContract, float>>();
@@ -919,6 +927,7 @@ public class ShipAI {
 
             currentCommandState = CommandType.TradeTransport;
             newCommand = true;
+            command.waitTime = 0;
         }
 
         if (ship.shipAction == Ship.ShipAction.Idle || newCommand) {
