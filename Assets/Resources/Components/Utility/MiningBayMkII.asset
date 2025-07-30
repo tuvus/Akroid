@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 307c188af4fc4290ab51f3e6ac13980f, type: 3}
   m_Name: MiningBayMkII
   m_EditorClassIdentifier: 
-  cost: 2750
+  cost: 3500
   resourceTypes: 01000000
-  resourceCosts: a500000000000000
+  resourceCosts: d200000000000000
   upgrade: {fileID: 0}
-  miningAmount: 550
+  populationSpace: 0
+  miningAmount: 700
   miningSpeed: 10
   miningRange: 500
   engineersRequired: 44

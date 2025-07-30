@@ -1075,8 +1075,7 @@ public class ShipAI {
                 }
             });
             // Sort them by most valuable first
-            cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3 *
-                math.min(ct.Item1.amount, ct.Item2.amount)).ToList();
+            cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3).ToList();
 
             // Get all of our sizes of cargo bays along with how many we have
             var cargoBays = new List<Tuple<long, int>>();
@@ -1133,7 +1132,11 @@ public class ShipAI {
                     }
                 }
 
-                amountToLoad = math.min(typeToLoad.Item1.amount, amountToLoad);
+                long providerAmount = typeToLoad.Item1.amount;
+                if (origin is MiningStation miningStation &&
+                    miningStation.moduleSystem.Get<MiningBay>().Any(b => b.activelyMining))
+                    providerAmount = long.MaxValue;
+                amountToLoad = math.min(providerAmount, amountToLoad);
 
                 for (int i = 0; i < cargoBays.Count; i++) {
                     int cargoBaysFullyFilled = math.min(cargoBays[i].Item2, (int)(amountToLoad / cargoBays[i].Item1));

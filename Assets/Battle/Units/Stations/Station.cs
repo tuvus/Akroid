@@ -4,7 +4,6 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.PlayerLoop;
 using static Ship;
 using Random = Unity.Mathematics.Random;
 
@@ -707,18 +706,18 @@ public class Station : Unit, IPositionConfirmer {
         if (freeWantDiff > 0) {
             // We have a little extra cargo that we can sell
             int c = 1000;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) +
-                .1f;
+            // Goes from 1.3 to 0.5 and equals 1.0 when c==freeWantDiff
+            return priceModifier * (.8f / ((freeWantDiff * .6f / c) + 1) + .5f);
         } else {
             // We have too much cargo and would like to sell it
-            int c = 1000;
+            int c = 10000;
+            // Goes from 1.0 to .5 and equals .75 when c==freeDiff
             long freeDiff = free.has - free.maxWanted;
-            priceModifier *= math.pow((freeDiff + c) / (float)c, 1.2f) / ((freeDiff + c) / (float)c) + .1f;
+            priceModifier *= (.5f / ((float)freeDiff / c + 1)) + .5f;
             // We would also like to sell our other cargo
             freeWantDiff = free.maxWanted - free.minWanted;
-            c = 5000;
-            return priceModifier * math.pow((freeWantDiff + c) / (float)c, 1.2f) / ((freeWantDiff + c) / (float)c) +
-                .1f;
+            c = 20000;
+            return priceModifier * (.5f / ((float)freeWantDiff / c + 1)) + .5f;
         }
     }
 
