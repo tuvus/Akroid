@@ -21,3 +21,4 @@ MonoBehaviour:
   constructionAmount: 50
   constructionBays: 3
   engineersRequired: 60
+  maxBuildSize: 8

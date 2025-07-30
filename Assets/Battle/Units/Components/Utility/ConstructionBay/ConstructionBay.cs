@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -28,17 +29,26 @@ public class ConstructionBay : HabitationArea {
     }
 
     public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {
-        if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) {
-            unit.faction.UseCredits(shipBlueprint.cost);
-            buildQueue.Add(shipBlueprint);
-            return true;
-        }
+        if (!CanBuildBlueprint(shipBlueprint))
+            throw new Exception("Trying to build a ship blueprint that can't be built by this construction bay! " +
+                shipBlueprint.name);
 
-        return false;
+        if (!shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) return false;
+        unit.faction.UseCredits(shipBlueprint.cost);
+        buildQueue.Add(shipBlueprint);
+        return true;
+
     }
 
-    public void AddConstructionToBeginningQueue(ShipConstructionBlueprint shipBlueprint) {
+    public bool AddConstructionToBeginningQueue(ShipConstructionBlueprint shipBlueprint) {
+        if (!CanBuildBlueprint(shipBlueprint))
+            throw new Exception("Trying to build a ship blueprint that can't be built by this construction bay! " +
+                shipBlueprint.name);
+
+        if (!shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) return false;
+        unit.faction.UseCredits(shipBlueprint.cost);
         buildQueue.Insert(0, shipBlueprint);
+        return true;
     }
 
     public void RemoveBlueprintFromQueue(int index) {
@@ -149,5 +159,9 @@ public class ConstructionBay : HabitationArea {
 
     public void FillEmployees(float ratio = 1f) {
         population.engineers = (long)(constructionBayScriptableObject.engineersRequired * ratio);
+    }
+
+    public bool CanBuildBlueprint(ShipBlueprint shipBlueprint) {
+        return shipBlueprint.shipScriptableObject.spriteSize <= constructionBayScriptableObject.maxBuildSize;
     }
 }

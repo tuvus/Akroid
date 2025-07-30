@@ -9,6 +9,7 @@ public class ConstructionBayScriptableObject : HabitationAreaScriptableObject {
     public int constructionBays;
 
     public long engineersRequired;
+    public float maxBuildSize;
 
     public override Type GetComponentType() {
         return typeof(ConstructionBay);

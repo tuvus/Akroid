@@ -235,7 +235,8 @@ public abstract class Unit : BattleObject {
     ///     Tries to load up to the amount in cargo to all of the cargo bays
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded to any cargo bay, or 0 if all was added</returns>
-    public virtual long LoadCargo(long amount, CargoBay.CargoType cargoType, FactionTrade.TradeContract? contract = null) {
+    public virtual long LoadCargo(long amount, CargoBay.CargoType cargoType,
+        FactionTrade.TradeContract? contract = null) {
         long totalCargoToLoad = amount;
         foreach (CargoBay cargoBay in moduleSystem.Get<CargoBay>()) {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
@@ -250,7 +251,8 @@ public abstract class Unit : BattleObject {
     ///     Does not take contracts into account.
     /// </summary>
     /// <returns>The leftover amount that couldn't be loaded </returns>
-    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoType cargoType, Unit unit, FactionTrade.TradeContract? contract = null) {
+    public virtual long LoadCargoFromUnit(long amount, CargoBay.CargoType cargoType, Unit unit,
+        FactionTrade.TradeContract? contract = null) {
         if (cargoType == CargoBay.CargoType.All) {
             foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 amount = LoadCargoFromUnit(amount, type, unit);
@@ -281,7 +283,8 @@ public abstract class Unit : BattleObject {
     /// </summary>
     public Population LoadPopulation(Population population) {
         Population movePoplation = new Population(population);
-        foreach (HabitationArea habitationArea in moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
+        foreach (HabitationArea habitationArea in
+            moduleSystem.Get<HabitationArea>().Where(h => h.IsTransferHabitat())) {
             movePoplation.MovePopulationTo(habitationArea.population, population);
             if (movePoplation.TotalPopulation() == 0) return movePoplation;
         }
@@ -402,7 +405,7 @@ public abstract class Unit : BattleObject {
     }
 
     public override float GetSpriteSize() {
-        return Calculator.GetSpriteSizeFromBounds(unitScriptableObject.spriteBounds, scale);
+        return unitScriptableObject.spriteSize;
     }
 
     public DestroyEffect GetDestroyEffect() {

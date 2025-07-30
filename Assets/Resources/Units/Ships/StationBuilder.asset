@@ -43,8 +43,9 @@ MonoBehaviour:
     moduleSize: 0
     moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
-  baseScale: {x: 1, y: 1}
+  baseScale: {x: 0.7, y: 0.7}
   <spriteBounds>k__BackingField: {x: 10.82, y: 32.7}
+  <spriteSize>k__BackingField: 11.445
   shipClass: 5
   shipType: 2
   turnSpeed: 30
@@ -54,5 +55,5 @@ MonoBehaviour:
     pilots: 4
     engineers: 12
     marines: 0
-  baseMass: 1635
-  baseSpeed: 19.14373
+  baseMass: 1144.5
+  baseSpeed: 27.348186

@@ -157,8 +157,10 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     }
 
     private void UpdateShipBlueprintUI() {
-        shipBlueprints = uiBattleManager.battleManager.shipBlueprints.ToList();
-        for (int i = 0; i < uiBattleManager.battleManager.shipBlueprints.Count; i++) {
+        ConstructionBay constructionBay = ((Shipyard)displayedObject.battleObject).GetConstructionBay();
+        shipBlueprints = uiBattleManager.battleManager.shipBlueprints.Where(b => constructionBay.CanBuildBlueprint(b))
+            .ToList();
+        for (int i = 0; i < shipBlueprints.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
             }
@@ -173,8 +175,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
             long cost;
             if (localPlayer.GetFaction() != null) {
-                cost = ((Shipyard)displayedObject.battleObject).GetConstructionBay()
-                    .GetCreditCostOfShip(localPlayer.player.faction, blueprint.shipScriptableObject);
+                cost = constructionBay.GetCreditCostOfShip(localPlayer.player.faction, blueprint.shipScriptableObject);
                 button.interactable = localPlayer.GetFaction().credits >= cost;
             } else {
                 cost = blueprint.shipScriptableObject.cost;
@@ -184,15 +185,14 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             cargoBayButton.GetChild(1).GetComponent<TMP_Text>().text = "Cost: " + NumFormatter.ConvertNumber(cost);
         }
 
-        for (int i = uiBattleManager.battleManager.shipBlueprints.Count; i < blueprintList.childCount; i++) {
+        for (int i = shipBlueprints.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
         }
     }
 
     public void ShipBlueprintButtonPressed(int index) {
-        if (((Shipyard)displayedObject.battleObject).GetConstructionBay()
-            .AddConstructionToQueue(
-                new Ship.ShipConstructionBlueprint(localPlayer.GetFaction(), shipBlueprints[index]))) {
+        if (((Shipyard)displayedObject.battleObject).GetConstructionBay().AddConstructionToQueue(
+            new Ship.ShipConstructionBlueprint(localPlayer.GetFaction(), shipBlueprints[index]))) {
             UpdateConstructionUI(((Shipyard)displayedObject.battleObject).GetConstructionBay());
             UpdateShipBlueprintUI();
         }
