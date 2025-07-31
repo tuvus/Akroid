@@ -24,6 +24,7 @@ public class UnitScriptableObject : ScriptableObject {
     // Removing it will result in the build behaving differently than the editor and object having a size of 0.
     [field: SerializeField] public Vector2 spriteBounds { get; private set; }
     [SerializeField] protected IModule[] modules;
+    [field: SerializeField] public float spriteSize { get; private set; }
 
     public virtual void OnValidate() {
         if (systems == null) {
@@ -51,6 +52,7 @@ public class UnitScriptableObject : ScriptableObject {
         if (sprite != null) {
             if (Calculator.GetSpriteBounds(sprite) != Vector2.zero)
                 spriteBounds = Calculator.GetSpriteBounds(sprite);
+            spriteSize = Calculator.GetSpriteSizeFromBounds(spriteBounds, baseScale);
         }
 
         UpdateCosts();

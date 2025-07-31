@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour {
         this.battleManager = battleManager;
         uiBattleManager = GetComponent<UIBattleManager>();
         uiBattleManager.SetupUnitSpriteManager(battleManager, this);
-        localPlayer = GameObject.Find("Player").GetComponent<LocalPlayer>();
+        localPlayer = transform.parent.GetChild(1).GetComponent<LocalPlayer>();
         localPlayer.PreBattleManagerSetup(battleManager, this);
         playerUI = localPlayer.playerUI;
         uIEventManager = new UIEventManager(battleManager, localPlayer, localPlayer.GetLocalPlayerGameInput(),
@@ -30,6 +30,11 @@ public class UIManager : MonoBehaviour {
     /// </summary>
     public void SetupUIManager() {
         localPlayer.SetUpPlayer();
+
+        // For the very first frame we need to render the UI and process any camera positioning events
+        // that the campaign might have requested
+        uiBattleManager.UIUpdate();
+        uIEventManager.UpdateUIEvents();
     }
 
     public void LateUpdate() {

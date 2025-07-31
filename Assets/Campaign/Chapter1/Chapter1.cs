@@ -227,7 +227,7 @@ public class Chapter1 : CampaingController {
         planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L,
             Random.Range(0.001f, 0.003f), "All base stats improved");
 
-        // battleManager.GetLocalPlayer().SetLockedUnits(true);
+        battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
         battleManager.GetLocalPlayer().SetFaction(playerFaction);
         eventManager.SetPlayerZoom(400);
@@ -1094,6 +1094,10 @@ public class Chapter1 : CampaingController {
 
         EventChainBuilder moonColonyChain = new EventChainBuilder();
         moonColonyChain.AddCondition(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()));
+        moonColonyChain.AddCondition(eventManager.CreatePredicateCondition(_ =>
+            shipyard.moduleSystem.Get<ConstructionBay>().First()
+                .CanBuildBlueprint(battleManager.GetShipBlueprint(Ship.ShipType.Colonizer))
+        ));
         moonColonyChain.AddCondition(eventManager.CreateWaitCondition(200));
         moonColonyChain.AddCommEvent(planetCommManager, shipyardFaction,
             "We would like to order a colony ship to the moon.");

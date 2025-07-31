@@ -45,6 +45,7 @@ MonoBehaviour:
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 0.5, y: 0.5}
   <spriteBounds>k__BackingField: {x: 92.3, y: 90.3}
+  <spriteSize>k__BackingField: 23.075
   stationType: 3
   repairAmount: 100
   repairSpeed: 5

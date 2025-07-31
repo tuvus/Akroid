@@ -91,7 +91,10 @@ public class ModuleSystem {
     }
 
     public bool CanUpgradeSystem(int systemIndex, Unit upgrader) {
-        System system = systems[systemIndex];
+        return CanUpgradeSystem(systems[systemIndex], upgrader);
+    }
+
+    public bool CanUpgradeSystem(System system, Unit upgrader) {
         ComponentScriptableObject current = system.component;
         ComponentScriptableObject upgrade = current.upgrade;
         if (upgrade == null) return false;
@@ -100,7 +103,8 @@ public class ModuleSystem {
                 long currentAmount = 0;
                 int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
                 if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
-                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i], true) < upgrade.resourceCosts[i] - currentAmount) {
+                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i], true) <
+                    upgrade.resourceCosts[i] - currentAmount) {
                     return false;
                 }
             }
@@ -110,10 +114,13 @@ public class ModuleSystem {
     }
 
     public void UpgradeSystem(int systemIndex, Unit upgrader) {
-        System system = systems[systemIndex];
+        UpgradeSystem(systems[systemIndex], upgrader);
+    }
+
+    public void UpgradeSystem(System system, Unit upgrader) {
         ComponentScriptableObject current = system.component;
         ComponentScriptableObject upgrade = current.upgrade;
-        if (!CanUpgradeSystem(systemIndex, upgrader)) return;
+        if (!CanUpgradeSystem(system, upgrader)) return;
 
         //Pay for the upgrade cost
         upgrader.faction.UseCredits((upgrade.cost - current.cost) * system.moduleCount);
@@ -122,7 +129,7 @@ public class ModuleSystem {
         }
 
         //Upgrade the system
-        systems[systemIndex].component = upgrade;
+        systems[systems.IndexOf(system)].component = upgrade;
 
         //Upgrade the moduleComponents
 

@@ -101,7 +101,7 @@ public class SceneLoader : MonoBehaviour {
             CampaingController campaingController =
                 Instantiate(chapter, gameTransform).GetComponent<CampaingController>();
             loadingBar.value = 25 / totalProgress;
-            statusText.SetText("Loading Campaing...");
+            statusText.SetText("Loading Campaign...");
             yield return null;
             // Camping loading must be done synchronously
             // This can change in the future if we force it to load resources first
@@ -143,12 +143,15 @@ public class SceneLoader : MonoBehaviour {
         // We need to wait one more frame to show the shield on the ship
         yield return null;
 
+        gameTransform.GetChild(1).gameObject.SetActive(true);
+        uIManager.SetupUIManager();
+
+        // Activate the battle camera and the canvas for the UI
         loadingCamera.SetActive(false);
         loadingEventSystem.SetActive(false);
-        // Activate the battle camera and the canvas for the UI
         gameTransform.GetChild(1).GetChild(0).GetComponent<AudioListener>().enabled = true;
         gameTransform.GetChild(1).GetChild(2).GetComponent<EventSystem>().enabled = true;
-        uIManager.SetupUIManager();
+
         battleManager.StartBattle();
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
         Destroy(gameObject);

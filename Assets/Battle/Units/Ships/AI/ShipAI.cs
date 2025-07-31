@@ -882,6 +882,14 @@ public class ShipAI {
             currentCommandState = CommandType.Idle;
 
         if (command.requestContract == null && command.dropOffContract == null) {
+            // Finding a new trade route is an expensive operation if we can't find
+            // a good route the first time we should wait a little before trying again
+            if (command.waitTime > 0) {
+                command.waitTime -= deltaTime;
+                return CommandResult.Stop;
+            }
+            command.waitTime += .5f;
+
             // Try and find a new trade route
             var possibleTradeRoutes = new List<Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract,
                 FactionTrade.TransportContract, FactionTrade.TransportContract, float>>();
@@ -919,6 +927,7 @@ public class ShipAI {
 
             currentCommandState = CommandType.TradeTransport;
             newCommand = true;
+            command.waitTime = 0;
         }
 
         if (ship.shipAction == Ship.ShipAction.Idle || newCommand) {
@@ -1066,8 +1075,7 @@ public class ShipAI {
                 }
             });
             // Sort them by most valuable first
-            cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3 *
-                math.min(ct.Item1.amount, ct.Item2.amount)).ToList();
+            cargoTradeTypes = cargoTradeTypes.OrderByDescending(ct => ct.Item3).ToList();
 
             // Get all of our sizes of cargo bays along with how many we have
             var cargoBays = new List<Tuple<long, int>>();
@@ -1124,7 +1132,11 @@ public class ShipAI {
                     }
                 }
 
-                amountToLoad = math.min(typeToLoad.Item1.amount, amountToLoad);
+                long providerAmount = typeToLoad.Item1.amount;
+                if (origin is MiningStation miningStation &&
+                    miningStation.moduleSystem.Get<MiningBay>().Any(b => b.activelyMining))
+                    providerAmount = long.MaxValue;
+                amountToLoad = math.min(providerAmount, amountToLoad);
 
                 for (int i = 0; i < cargoBays.Count; i++) {
                     int cargoBaysFullyFilled = math.min(cargoBays[i].Item2, (int)(amountToLoad / cargoBays[i].Item1));
