@@ -256,81 +256,60 @@ public class Chapter1 : CampaingController {
 
     /// <summary>
     ///     Handles the first part of the tutorial where the fleet is on the way to set up the station.
-    ///     This can be skipped by holding left shift
     /// </summary>
     private void StartTutorial() {
-        // Increase time to skip tutorial
         bool skipTutorial = false;
-        EventChainBuilder eventChain = new EventChainBuilder();
-        eventChain.AddCondition(eventManager.CreateWaitCondition(1f));
-        eventChain.AddAction(() => {
-            // if (battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
-            // GetBattleManager().SetSimulationTimeScale(10);
-            // skipTutorial = true;
-            // }
-        });
-        eventChain.Build(eventManager)();
-        EventChainBuilder eventChain2 = new EventChainBuilder();
-        eventChain2.AddCondition(eventManager.CreateWaitCondition(2f));
-        eventChain2.AddAction(() => {
-            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
-            // GetBattleManager().SetSimulationTimeScale(10);
-            // skipTutorial = true;
-            // }
-        });
-        eventChain2.Build(eventManager)();
-        EventChainBuilder eventChain3 = new EventChainBuilder();
-        eventChain3.AddCondition(eventManager.CreateWaitCondition(5f));
-        eventChain3.AddAction(() => {
-            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
-            // GetBattleManager().SetSimulationTimeScale(10);
-            // skipTutorial = true;
-            // }
-        });
-        eventChain3.Build(eventManager)();
-        EventChainBuilder eventChain4 = new EventChainBuilder();
-        eventChain4.AddCondition(eventManager.CreateWaitCondition(10f));
-        eventChain4.AddAction(() => {
-            // if (!skipTutorial && battleManager.GetLocalPlayer().GetLocalPlayerGameInput().AdditiveButtonPressed) {
-            // GetBattleManager().SetSimulationTimeScale(10);
-            // skipTutorial = true;
-            // }
-        });
-        eventChain4.Build(eventManager)();
-
-
+        CommunicationEvent skipTutorialEvent = new CommunicationEvent(
+            playerFaction.GetFactionCommManager(), "Chapter 1:", new CommunicationEventOption[] {
+                new CommunicationEventOption("Skip Tutorial", e => e.isActive, e => {
+                    if (!e.isActive) return false;
+                    e.DeactivateEvent();
+                    skipTutorial = true;
+                    playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
+                        Fleet setupFleet = playerFaction.fleets.First();
+                        // Increase time speed
+                        if (setupFleet.fleetAI.commands.First().commandType != Command.CommandType.Move) {
+                            GetBattleManager().SetSimulationTimeScale(10);
+                            eventManager.AddEvent(
+                                new PredicateCondition(_ => setupFleet.fleetAI.commands.First().commandType ==
+                                    Command.CommandType.Move),
+                                () => GetBattleManager().SetSimulationTimeScale(
+                                    setupFleet.fleetAI.GetTimeUntilFinishedWithCommand() / 2)
+                            );
+                        } else {
+                            GetBattleManager().SetSimulationTimeScale(
+                                setupFleet.fleetAI.GetTimeUntilFinishedWithCommand() / 5);
+                        }
+                        eventManager.AddEvent(
+                            eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()), () => {
+                                playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
+                                GetBattleManager().SetSimulationTimeScale(10);
+                                AddResearchQuestLine();
+                                AddWarEscalationEventLine();
+                                battleManager.GetLocalPlayer().SetLockedUnits(false);
+                                battleManager.GetLocalPlayer().ResetOwnedUnits();
+                                eventManager.AddEvent(new PredicateCondition(
+                                    e => playerFaction.fleets.Count == 0), () => {
+                                    playerFaction.ships.Where(s => s.IsTransportShip()).ToList()
+                                        .ForEach(s => s.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand()));
+                                });
+                                playerMiningStation.moduleSystem.Get<MiningBay>()
+                                    .ForEach(m => m.FillEmployees(.3f));
+                            });
+                    });
+                    return true;
+                })
+            }, true);
+        playerFaction.GetFactionCommManager().SendCommunication(skipTutorialEvent);
         planetFactionAI.faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(
             playerFaction.GetFactionCommManager(),
             "Undocking procedure successful! \n You are now on route to the designated mining location. " +
             "As we planned, you will construct the mining station at the designated point (" +
             Mathf.RoundToInt(playerMiningStation.GetPosition().x) + ", " +
             Mathf.RoundToInt(playerMiningStation.GetPosition().y) + ") and begin operations.\nGood luck!", _ => {
-                if (!skipTutorial) {
-                    AddTutorial1();
-                    return;
-                }
-
-                playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
-                    GetBattleManager()
-                        .SetSimulationTimeScale(playerFaction.fleets.First().fleetAI.GetTimeUntilFinishedWithCommand() /
-                            5);
-                    eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => playerMiningStation.IsBuilt()),
-                        () => {
-                            Ship shuttle = playerFaction.ships.First(s => s.IsCivilianShip());
-                            if (battleManager.GetLocalPlayer().faction == playerFaction) {
-                                battleManager.GetLocalPlayer().AddOwnedUnit(shuttle);
-                            }
-
-                            playerFaction.factionTrade.MakeSellTradeAgreement(planetFaction);
-                            GetBattleManager().SetSimulationTimeScale(10);
-                            AddResearchQuestLine();
-                            AddWarEscalationEventLine();
-                            battleManager.GetLocalPlayer().SetLockedUnits(false);
-                            eventManager.AddEvent(new PredicateCondition(e => playerMiningStation.IsBuilt()),
-                                () => playerMiningStation.moduleSystem.Get<MiningBay>()
-                                    .ForEach(m => m.FillEmployees(.3f)));
-                        });
-                }, 20);
+                if (skipTutorial) return;
+                skipTutorialEvent.DeactivateEvent();
+                AddTutorial1();
             }), 10 * GetTimeScale());
     }
 

@@ -14,7 +14,7 @@ public class PlayerCommsManager : MonoBehaviour {
     [SerializeField] private TMP_Text characterName;
     [SerializeField] private TMP_Text factionName;
     [SerializeField] private GameObject communicationPanel;
-    [SerializeField] private Transform communicationLogTransform;
+    [SerializeField] private Transform commLogTransform;
     [SerializeField] private Transform communicationToggleTransform;
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private RectTransform contentTransform;
@@ -31,8 +31,8 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     public void SetupFaction(Faction faction) {
-        for (int i = communicationLogTransform.childCount - 1; i >= 0; i--) {
-            DestroyImmediate(communicationLogTransform.GetChild(i).gameObject);
+        for (int i = commLogTransform.childCount - 1; i >= 0; i--) {
+            DestroyImmediate(commLogTransform.GetChild(i).gameObject);
         }
 
         if (faction != null) {
@@ -51,14 +51,15 @@ public class PlayerCommsManager : MonoBehaviour {
                 SetPortrait(factionCommManager.communicationLog[factionCommManager.communicationLog.Count - 1].sender);
             }
 
-            factionCommManager.OnCommunicationRecieved += RecieveNewCommEvent;
+            factionCommManager.OnCommunicationReceived += ReceiveNewCommEvent;
+            factionCommManager.OnCommunicationEventDeactivated += OnCommunicationEventDeactivate;
         } else {
             HidePanel();
         }
     }
 
 
-    public void RecieveNewCommEvent(CommunicationEvent communicationEvent) {
+    public void ReceiveNewCommEvent(CommunicationEvent communicationEvent) {
         lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1
             || contentTransform.rect.height <= scrollRect.GetComponent<RectTransform>().rect.height;
         ShowPanel();
@@ -82,7 +83,7 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     private void CreateCommEvent(CommunicationEvent communicationEvent) {
-        GameObject newCommEvent = Instantiate(communicationEventPrefab, communicationLogTransform);
+        GameObject newCommEvent = Instantiate(communicationEventPrefab, commLogTransform);
         newCommEvent.transform.GetChild(0).GetComponent<TMP_Text>().text = communicationEvent.text;
         newCommEvent.GetComponent<Image>().color = communicationEvent.sender.faction.GetColorBackgroundTint();
         if (communicationEvent.isActive) {
@@ -93,13 +94,13 @@ public class PlayerCommsManager : MonoBehaviour {
                 newOption.GetComponent<Button>().interactable =
                     communicationEvent.options[i].checkStatus(communicationEvent);
                 newOption.GetComponent<Button>().onClick.AddListener(() =>
-                    ChooseCommuncationEventOption(communicationEvent, newCommEvent,
+                    ChooseCommunicationEventOption(communicationEvent, newCommEvent,
                         newOption.transform.GetSiblingIndex()));
             }
         }
     }
 
-    private void ChooseCommuncationEventOption(CommunicationEvent communicationEvent, GameObject commEvent,
+    private void ChooseCommunicationEventOption(CommunicationEvent communicationEvent, GameObject commEvent,
         int optionIndex) {
         communicationEvent.ChooseOption(optionIndex);
         if (!communicationEvent.isActive) {
@@ -112,10 +113,8 @@ public class PlayerCommsManager : MonoBehaviour {
 
     public void OnCommunicationEventDeactivate(int communicationEventIndex) {
         lockToBottom = lockToBottom || scrollRect.verticalNormalizedPosition <= 0.1;
-        for (int i = communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1;
-            i >= 0;
-            i--) {
-            DestroyImmediate(communicationLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i)
+        for (int i = commLogTransform.GetChild(communicationEventIndex).GetChild(1).childCount - 1; i >= 0; i--) {
+            DestroyImmediate(commLogTransform.GetChild(communicationEventIndex).GetChild(1).GetChild(i)
                 .gameObject);
         }
     }
@@ -172,7 +171,7 @@ public class PlayerCommsManager : MonoBehaviour {
     }
 
     public void ToggleVisibility() {
-        if (!communicationPanel.activeSelf && communicationLogTransform.childCount > 0) {
+        if (!communicationPanel.activeSelf && commLogTransform.childCount > 0) {
             ShowPanel();
         } else {
             HidePanel();

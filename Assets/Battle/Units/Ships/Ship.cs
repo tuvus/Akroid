@@ -261,7 +261,8 @@ public class Ship : Unit {
                 position = movePosition;
                 SetIdle();
             } else {
-                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, currentSpeed * deltaTime) - GetPosition();
+                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, currentSpeed * deltaTime) -
+                    GetPosition();
                 position += (Vector2)temp;
             }
         }
@@ -272,6 +273,7 @@ public class Ship : Unit {
             .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
         speed = thrust / GetMass();
     }
+
     #endregion
 
     #region ShipControlls
@@ -367,6 +369,10 @@ public class Ship : Unit {
 
     public void SetMaxSpeed(float maxspeed = float.MaxValue) {
         maxSetSpeed = maxspeed;
+    }
+
+    public float GetMaxSetSpeed() {
+        return maxSetSpeed;
     }
 
     public float GetThrust() {

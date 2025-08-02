@@ -34,8 +34,8 @@ public class CommunicationEvent {
     ///     Sends a message with options, the AI chooses a random option
     /// </summary>
     public CommunicationEvent(FactionCommManager receiver, string text, CommunicationEventOption[] options,
-        bool isActive) : this(receiver,
-        text, options, eventLogic => { }, choiceLogic => Random.Range(0, options.Length), isActive) { }
+        bool isActive) : this(receiver, text, options, eventLogic => { },
+        choiceLogic => Random.Range(0, options.Length), isActive) { }
 
     /// <summary>
     ///     Sends a message with options and calls a ReceivedEventLogic, the AI chooses a random option
