@@ -242,7 +242,6 @@ public abstract class Unit : BattleObject {
             totalCargoToLoad = cargoBay.LoadCargo(totalCargoToLoad, cargoType);
             if (totalCargoToLoad <= 0) return 0;
         }
-
         return totalCargoToLoad;
     }
 

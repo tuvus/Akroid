@@ -18,8 +18,7 @@ public class PlanetFactionAI : FactionAI {
     public PlanetFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) { }
 
     public void Setup(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Shipyard tradeStation,
-        Shipyard shipyard,
-        List<Ship> civilianShips, EventManager eventManager) {
+        Shipyard shipyard, List<Ship> civilianShips, EventManager eventManager) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;
@@ -33,7 +32,7 @@ public class PlanetFactionAI : FactionAI {
         void produceCivilianShipDelayed() {
             eventManager.AddEvent(eventManager.CreateWaitCondition(1000 + Random.Range(0, 1000)), () => {
                 tradeStation.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
-                    battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+                    battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Shuttle"));
                 produceCivilianShipDelayed();
             });
         }
@@ -42,7 +41,7 @@ public class PlanetFactionAI : FactionAI {
             tradeStation.UnReserveCargo(keyValuePair.Value.wanted, keyValuePair.Key);
         }
 
-        eventManager.AddEvent(eventManager.CreateWaitCondition(40000), () => { produceCivilianShipDelayed(); });
+        eventManager.AddEvent(eventManager.CreateWaitCondition(4000), () => { produceCivilianShipDelayed(); });
         produceCivilianShipDelayed();
     }
 
@@ -63,17 +62,17 @@ public class PlanetFactionAI : FactionAI {
         if (tradeWithPlanetTime <= 0) {
             foreach (CargoBay.CargoType type in CargoBay.allCargoTypes) {
                 long cargo = tradeStation.GetAllCargoOfType(type);
-                if (cargo < tradeStation.freeCargo[type].minWanted + 400) {
+                if (cargo < tradeStation.freeCargo[type].minWanted + 100) {
                     // We have too little cargo, buy some at an expensive price from the planet
-                    long amount = math.min(400, tradeStation.freeCargo[type].minWanted + 400 - cargo);
+                    long amount = math.min(100, tradeStation.freeCargo[type].minWanted + 100 - cargo);
                     if (amount <= 0) continue;
                     tradeStation.LoadCargo(amount, type);
                     faction.UseCredits((long)(amount * battleManager.baseResourcePrice[type] * 2));
-                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) /
+                } else if (cargo > (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].minWanted) /
                     2) {
                     // We have too much cargo, sell some to the planet
                     long amount = math.min(800,
-                        cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].maxWanted) / 2);
+                        cargo - (tradeStation.freeCargo[type].maxWanted + tradeStation.freeCargo[type].minWanted) / 2);
                     if (amount <= 0) continue;
                     tradeStation.UseCargo(amount, type);
                     faction.AddCredits((long)(amount * battleManager.baseResourcePrice[type] * 1.4f));

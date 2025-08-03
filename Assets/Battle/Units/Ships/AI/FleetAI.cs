@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Profiling;
 using static Command;
@@ -610,6 +611,14 @@ public class FleetAI {
         if (command.commandType == CommandType.Move) {
             float distance = Vector2.Distance(fleet.GetPosition(), command.targetPosition);
             return distance / fleet.minShipSpeed;
+        }
+        if (command.commandType == CommandType.Formation || command.commandType == CommandType.FormationLocation) {
+            return fleet.ships.Max(s => {
+                if (s.IsIdle()) return 0;
+                return math.distance(s.GetPosition(),
+                        s.shipAI.commands.First(c => c.commandType == CommandType.Move).targetPosition) /
+                    s.GetMaxSetSpeed();
+            });
         }
 
         return 0;

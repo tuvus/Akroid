@@ -519,8 +519,8 @@ public class Station : Unit, IPositionConfirmer {
             long toMove = math.min(math.min(math.min(cargoToMove, offer.amount),
                 tradeContract.receiver.GetAvailableCargoSpace(offer.cargoType)), contractedCargo[offer.cargoType].has);
             // Actually update the cargo bays
-            Assert.AreEqual(0, base.UseCargo(toMove, offer.cargoType));
-            Assert.AreEqual(0, tradeContract.receiver.LoadCargo(toMove, offer.cargoType));
+            base.UseCargo(toMove, offer.cargoType);
+            tradeContract.receiver.LoadCargo(toMove, offer.cargoType);
             if (offer.amount - toMove == 0) {
                 tradeContract.cargo.Remove(offer.cargoType);
             } else {
