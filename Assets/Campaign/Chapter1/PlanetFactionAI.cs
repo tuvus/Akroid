@@ -33,7 +33,7 @@ public class PlanetFactionAI : FactionAI {
         void produceCivilianShipDelayed() {
             eventManager.AddEvent(eventManager.CreateWaitCondition(1000 + Random.Range(0, 1000)), () => {
                 tradeStation.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
-                    battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+                    battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Shuttle"));
                 produceCivilianShipDelayed();
             });
         }
@@ -42,7 +42,7 @@ public class PlanetFactionAI : FactionAI {
             tradeStation.UnReserveCargo(keyValuePair.Value.wanted, keyValuePair.Key);
         }
 
-        eventManager.AddEvent(eventManager.CreateWaitCondition(40000), () => { produceCivilianShipDelayed(); });
+        eventManager.AddEvent(eventManager.CreateWaitCondition(4000), () => { produceCivilianShipDelayed(); });
         produceCivilianShipDelayed();
     }
 

@@ -120,7 +120,7 @@ public class Chapter1 : CampaingController {
         tradeStation.LoadCargo(2400 * 1, CargoBay.CargoType.Gas);
         tradeStation.moduleSystem.Get<ConstructionBay>().ForEach(cb => {
             cb.AddConstructionToBeginningQueue(new Ship.ShipConstructionBlueprint(
-                planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Civilian), "Civilian Ship"));
+                planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Civilian Ship"));
             cb.FillEmployees(.2f);
         });
         tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
@@ -164,7 +164,7 @@ public class Chapter1 : CampaingController {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.StationBuilder).FillRequiredCrew(),
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
-                tradeStation.BuildShip(playerFaction, Ship.ShipType.Civilian, "Shuttle").FillRequiredCrew()
+                tradeStation.BuildShip(playerFaction, Ship.ShipType.Shuttle, "Shuttle").FillRequiredCrew()
             });
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
             Command.CommandAction.Replace);
@@ -184,7 +184,7 @@ public class Chapter1 : CampaingController {
         var civilianShips = new List<Ship>();
         for (int i = 0; i < Random.Range(0, 2); i++) {
             civilianShips.Add(tradeStation.BuildShip(planetFaction,
-                    battleManager.GetShipBlueprint(Ship.ShipType.Civilian).shipScriptableObject, "Civilian")
+                    battleManager.GetShipBlueprint(Ship.ShipType.Shuttle).shipScriptableObject, "Civilian")
                 .FillRequiredCrew());
         }
         civilianShips.ForEach(c => c.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand()));

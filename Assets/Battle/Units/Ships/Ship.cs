@@ -31,7 +31,7 @@ public class Ship : Unit {
     }
 
     public enum ShipType {
-        Civilian,
+        Shuttle,
         Transport,
         Construction,
         Research,
@@ -496,7 +496,7 @@ public class Ship : Unit {
     }
 
     public bool IsCivilianShip() {
-        return shipScriptableObject.shipType == ShipType.Civilian;
+        return shipScriptableObject.shipType == ShipType.Shuttle;
     }
 
     public float GetMass() {
