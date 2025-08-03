@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEngine;
 
 /// <summary>
 ///     Handles storing resources in multiple cargo bays.
@@ -40,6 +41,7 @@ public class CargoBay : ModuleComponent {
 
     /// <returns> Returns the amount of cargo that could not be loaded. </returns>
     public long LoadCargo(long cargoToLoad, CargoType cargoType) {
+        Debug.Log("Should load: " + cargoToLoad);
         // Puts Cargo into the existing half full cargo bay
         long openSpaceInUsedBay = cargoBayScriptableObject.cargoBaySize -
             cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
@@ -109,7 +111,8 @@ public class CargoBay : ModuleComponent {
     public long GetOpenCargoCapacityOfType(CargoType cargoType) {
         long openSpaceFromUsedCargoBay = 0;
         if (cargoType != CargoType.All) {
-            openSpaceFromUsedCargoBay = cargoBayScriptableObject.cargoBaySize - cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
+            openSpaceFromUsedCargoBay = cargoBayScriptableObject.cargoBaySize -
+                cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;
             if (openSpaceFromUsedCargoBay == cargoBayScriptableObject.cargoBaySize) openSpaceFromUsedCargoBay = 0;
         }
         return openSpaceFromUsedCargoBay + GetOpenCargoBays(cargoType) * cargoBayScriptableObject.cargoBaySize;
