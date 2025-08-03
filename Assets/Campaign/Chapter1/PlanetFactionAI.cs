@@ -18,8 +18,7 @@ public class PlanetFactionAI : FactionAI {
     public PlanetFactionAI(BattleManager battleManager, Faction faction) : base(battleManager, faction) { }
 
     public void Setup(Chapter1 chapter1, ShipyardFactionAI shipyardFactionAI, Planet planet, Shipyard tradeStation,
-        Shipyard shipyard,
-        List<Ship> civilianShips, EventManager eventManager) {
+        Shipyard shipyard, List<Ship> civilianShips, EventManager eventManager) {
         this.chapter1 = chapter1;
         this.shipyardFactionAI = shipyardFactionAI;
         this.planet = planet;

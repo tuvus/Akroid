@@ -622,7 +622,6 @@ public class ShipAI {
         return CommandResult.Stop;
     }
 
-    /// <summary> AttackMove to the gas cloud, do research, then remove command. </summary>
     private CommandResult DoCollectGasCommand(Command command, float deltaTime) {
         if (command.targetGasCloud == null || command.destinationStation == null) {
             return CommandResult.StopRemove;
@@ -706,6 +705,10 @@ public class ShipAI {
                     ship.GetAvailableCargoSpace(CargoBay.CargoType.Gas))
                 || (command.supplierContract != null && ship.GetAllCargoOfType(CargoBay.CargoType.Gas) <
                     command.supplierContract.cargo[CargoBay.CargoType.Gas].amount)) {
+                if (!command.targetGasCloud.HasResources())
+                    command.targetGasCloud = ship.faction.GetClosestGasCloud(ship.GetPosition());
+                if (command.targetGasCloud == null)
+                    return CommandResult.StopRemove;
                 command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
