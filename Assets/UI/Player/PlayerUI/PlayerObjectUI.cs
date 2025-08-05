@@ -35,9 +35,9 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
             }
             moduleUIs[i].SetActive(true);
             moduleUIs[i].GetComponent<RectTransform>().anchoredPosition = module.GetPosition() *
-                displayedImageTransform.GetComponent<RectTransform>().sizeDelta *
+                displayedImageTransform.GetComponent<RectTransform>().sizeDelta * unit.scale *
                 ((unit.IsStation() ? -3f : -.2f) * unit.unitScriptableObject.sprite.pixelsPerUnit) /
-                (unit.scale * unit.unitScriptableObject.spriteBounds);
+                unit.unitScriptableObject.spriteBounds;
             moduleUIs[i].transform.GetChild(0).eulerAngles = new Vector3(0, 0, module.rotation);
             if (module.componentScriptableObject.sprite != null) {
                 moduleUIs[i].transform.GetChild(0).GetComponent<Image>().sprite =
@@ -59,7 +59,6 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     private void OnModuleButtonPress(int moduleIndex) {
         ModuleSystem moduleSystem = ((Unit)displayedObject.iObject).moduleSystem;
         selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
-        Debug.Log("Module " + moduleIndex + " pressed");
     }
 
     protected override void RefreshLeftPanel() { }

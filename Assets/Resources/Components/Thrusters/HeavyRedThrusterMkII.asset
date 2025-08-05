@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 1080
   resourceTypes: 0100000002000000
-  resourceCosts: d800000000000000d800000000000000
+  resourceCosts: d8000000000000003600000000000000
   upgrade: {fileID: 0}
+  sprite: {fileID: 8408953756493599431, guid: 06fa50bbf3bbc79b4870d486283fef2a, type: 3}
   thrustSpeed: 10800
   color: {r: 1, g: 0.39607844, b: 0, a: 0}
   startThrustColor: {r: 0.50980395, g: 0.078431375, b: 0, a: 0}
