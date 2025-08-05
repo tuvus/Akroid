@@ -35,8 +35,8 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
             }
             moduleUIs[i].SetActive(true);
             moduleUIs[i].GetComponent<RectTransform>().anchoredPosition = module.GetPosition() *
-                displayedImageTransform.GetComponent<RectTransform>().rect.size * 6f *
-                unit.unitScriptableObject.sprite.pixelsPerUnit / 10000;
+                displayedImageTransform.GetComponent<RectTransform>().rect.size * unit.scale * 42 /
+                (100 * unit.GetSpriteSize());
             moduleUIs[i].transform.GetChild(0).eulerAngles = new Vector3(0, 0, module.rotation);
             if (module.componentScriptableObject.sprite != null) {
                 moduleUIs[i].transform.GetChild(0).GetComponent<Image>().sprite =
