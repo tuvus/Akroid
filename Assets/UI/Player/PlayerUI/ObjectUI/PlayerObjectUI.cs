@@ -99,7 +99,12 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
 
     private void OnModuleButtonPress(int moduleIndex) {
         ModuleSystem moduleSystem = ((Unit)displayedObject.iObject).moduleSystem;
-        selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
+        if (selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]]) DeselectSystem();
+        else selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
+    }
+
+    public void DeselectSystem() {
+        selectedSystem = null;
     }
 
     protected override bool ShouldShowLeftPanel() {
