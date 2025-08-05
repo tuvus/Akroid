@@ -28,7 +28,7 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
         return unit != null;
     }
 
-    protected override void UpdateMenu() {
+    public override void UpdateMenu() {
         UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().ToList());
         UpdateShipBlueprintUI();
     }

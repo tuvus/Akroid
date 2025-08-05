@@ -32,7 +32,7 @@ public abstract class PlayerObjectUIMenu : MonoBehaviour {
 
     public abstract bool ShouldShowMenu();
 
-    protected abstract void UpdateMenu();
+    public abstract void UpdateMenu();
 }
 
 public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
@@ -43,6 +43,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     private List<GameObject> moduleUIs;
     [SerializeField] private GameObject moduleUIPrefab;
     private ModuleSystem.System selectedSystem;
+    [SerializeField] private ObjectSystemUI objectSystemUI;
 
     [SerializeField] private ObjectConstructionUI constructionUI;
     [SerializeField] private ObjectHangarUI hangarUI;
@@ -52,14 +53,16 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
         moduleUIs = new List<GameObject>();
         constructionUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
         hangarUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        objectSystemUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        objectSystemUI.gameObject.SetActive(false);
     }
-
 
     public override void SetDisplayedObject(ObjectUI objectToDisplay) {
         base.SetDisplayedObject(objectToDisplay);
         selectedSystem = null;
         constructionUI.SetDisplayedObject(displayedObject);
         hangarUI.SetDisplayedObject(displayedObject);
+        objectSystemUI.SetDisplayedObject(displayedObject);
     }
 
     protected override void RefreshMiddlePanel() {
@@ -110,12 +113,21 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
 
     private void OnModuleButtonPress(int moduleIndex) {
         ModuleSystem moduleSystem = ((Unit)displayedObject.iObject).moduleSystem;
-        if (selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]]) DeselectSystem();
-        else selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
+        if (selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]]) {
+            DeselectSystem();
+        } else {
+            selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
+            rightPanel = objectSystemUI.gameObject;
+            objectSystemUI.SelectSystem(selectedSystem);
+            objectSystemUI.UpdateMenu();
+            hangarUI.gameObject.SetActive(false);
+        }
     }
 
     public void DeselectSystem() {
         selectedSystem = null;
+        rightPanel = hangarUI.gameObject;
+        objectSystemUI.gameObject.SetActive(false);
     }
 
     protected override bool ShouldShowLeftPanel() {
@@ -127,10 +139,13 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     }
 
     protected override bool ShouldShowRightPanel() {
-        return hangarUI.ShouldShowMenu() && selectedSystem == null;
+        return (hangarUI.ShouldShowMenu() && selectedSystem == null)
+            || (objectSystemUI.ShouldShowMenu() && selectedSystem != null);
     }
 
     protected override void RefreshRightPanel() {
-        hangarUI.UpdateUI();
+        if (selectedSystem == null)
+            hangarUI.UpdateUI();
+        else objectSystemUI.UpdateUI();
     }
 }

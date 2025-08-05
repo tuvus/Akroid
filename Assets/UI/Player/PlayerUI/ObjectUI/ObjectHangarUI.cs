@@ -22,7 +22,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
         return unit != null;
     }
 
-    protected override void UpdateMenu() {
+    public override void UpdateMenu() {
         shipsInHangars.Clear();
         unit.moduleSystem.Get<Hangar>().SelectMany(h => h.ships).ToList().ForEach(s => shipsInHangars.Add(s));
         hangarStatus.text = "Hangar capacity " + shipsInHangars.Count + "/" +
