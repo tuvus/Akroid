@@ -93,6 +93,7 @@ public class Chapter1 : CampaingController {
 
         MiningStationScriptableObject miningStationScriptableObject =
             Resources.Load<MiningStationScriptableObject>("MiningStation");
+        miningStationScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
 
         playerMiningStation = battleManager.CreateNewMiningStation(
             new BattleObject.BattleObjectData("Mining Station",
@@ -113,6 +114,7 @@ public class Chapter1 : CampaingController {
                     1000, 50, 200, 5),
                 Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>("TradeStation"),
             true);
+        tradeStation.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
         CargoBay.allCargoTypes.ForEach(c =>
             tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
                 tradeStation.freeCargo[c].maxWanted));
@@ -139,6 +141,7 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
+        shipyard.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
         shipyard.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees(.2f));
         shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
@@ -158,6 +161,8 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()),
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
+        researchStation.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules
+            .ForEach(m => m.SetupData());
 
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
