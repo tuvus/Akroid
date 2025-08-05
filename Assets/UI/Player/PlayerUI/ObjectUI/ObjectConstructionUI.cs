@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -12,9 +13,9 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text constructionBayStatus;
     [SerializeField] private Transform constructionBayList;
     private List<Ship.ShipBlueprint> shipBlueprints = new List<Ship.ShipBlueprint>();
+    private List<Tuple<ConstructionBay, int>> blueprintToConstructionBay = new List<Tuple<ConstructionBay, int>>();
 
     private Unit unit;
-
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
@@ -28,57 +29,64 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
     }
 
     protected override void UpdateMenu() {
-        UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().First());
+        UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().ToList());
         UpdateShipBlueprintUI();
     }
 
     public void ShipBlueprintButtonPressed(int index) {
-        if (unit.moduleSystem.Get<ConstructionBay>().First().AddConstructionToQueue(
-            new Ship.ShipConstructionBlueprint(localPlayer.GetFaction(), shipBlueprints[index]))) {
-            UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().First());
+        var blueprint = new Ship.ShipConstructionBlueprint(localPlayer.GetFaction(), shipBlueprints[index]);
+        var constructor = unit.moduleSystem.Get<ConstructionBay>().FirstOrDefault(c => c.CanBuildBlueprint(blueprint));
+        if (constructor != null) {
+            constructor.AddConstructionToQueue(blueprint);
+            UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().ToList());
             UpdateShipBlueprintUI();
         }
     }
 
-    private void UpdateConstructionUI(ConstructionBay constructionBay) {
-        autoBuildShips.transform.parent.gameObject.SetActive(
-            unit.faction.GetFactionAI() is SimulationFactionAI);
+    private void UpdateConstructionUI(List<ConstructionBay> constructionBays) {
+        autoBuildShips.transform.parent.gameObject.SetActive(unit.faction.GetFactionAI() is SimulationFactionAI);
         if (autoBuildShips.gameObject.activeInHierarchy) {
-            autoBuildShips.SetIsOnWithoutNotify(((SimulationFactionAI)unit.faction.GetFactionAI())
-                .autoConstruction);
+            autoBuildShips.SetIsOnWithoutNotify(((SimulationFactionAI)unit.faction.GetFactionAI()).autoConstruction);
             autoBuildShips.onValueChanged.RemoveAllListeners();
             autoBuildShips.onValueChanged.AddListener(autoConstruction => SetAutoConstruction(autoConstruction));
         }
 
         constructionBayStatus.text = "Construction bays in use " +
-            Mathf.Min(constructionBay.buildQueue.Count, constructionBay.GetConstructionBays()) + "/" +
-            constructionBay.GetConstructionBays();
-        for (int i = 0; i < constructionBay.buildQueue.Count; i++) {
-            if (constructionBayList.childCount <= i) {
-                Instantiate(shipConstructionButtonPrefab, constructionBayList);
-            }
+            Mathf.Min(constructionBays.Sum(cb => cb.buildQueue.Count),
+                constructionBays.Sum(cb => cb.GetConstructionBays())) + "/" +
+            constructionBays.Sum(cb => cb.GetConstructionBays());
 
-            Transform constructionBayButtonTransform = constructionBayList.GetChild(i);
-            Button constructionBayButton = constructionBayButtonTransform.GetComponent<Button>();
-            constructionBayButton.onClick.RemoveAllListeners();
-            int f = i;
-            constructionBayButton.onClick.AddListener(() => ConstructionButtonPressed(f));
-            constructionBayButtonTransform.gameObject.SetActive(true);
-            Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
-            constructionBayButtonTransform.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
-            constructionBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text =
-                blueprint.faction.abbreviatedName;
-            constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
-                (100 - blueprint.GetTotalResourcesLeftToUse() * 100 / blueprint.totalResourcesRequired) + "%";
-            if (uiManager.GetFactionColoringShown()) {
-                constructionBayButton.GetComponent<Image>().color = blueprint.faction.GetColorTint();
-            } else {
-                constructionBayButton.GetComponent<Image>().color =
-                    localPlayer.GetColorOfRelationType(localPlayer.GetRelationToFaction(blueprint.GetFaction()));
+        blueprintToConstructionBay.Clear();
+        int index = 0;
+        foreach (ConstructionBay constructionBay in constructionBays) {
+            for (int i = 0; i < constructionBay.buildQueue.Count; i++, index++) {
+                if (constructionBayList.childCount <= index) {
+                    Instantiate(shipConstructionButtonPrefab, constructionBayList);
+                }
+
+                Transform constructionBayButtonTransform = constructionBayList.GetChild(index);
+                Button constructionBayButton = constructionBayButtonTransform.GetComponent<Button>();
+                constructionBayButton.onClick.RemoveAllListeners();
+                int f = index;
+                constructionBayButton.onClick.AddListener(() => ConstructionButtonPressed(f));
+                constructionBayButtonTransform.gameObject.SetActive(true);
+                Ship.ShipConstructionBlueprint blueprint = constructionBay.buildQueue[i];
+                constructionBayButtonTransform.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
+                constructionBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text =
+                    blueprint.faction.abbreviatedName;
+                constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
+                    (100 - blueprint.GetTotalResourcesLeftToUse() * 100 / blueprint.totalResourcesRequired) + "%";
+                if (uiManager.GetFactionColoringShown()) {
+                    constructionBayButton.GetComponent<Image>().color = blueprint.faction.GetColorTint();
+                } else {
+                    constructionBayButton.GetComponent<Image>().color =
+                        localPlayer.GetColorOfRelationType(localPlayer.GetRelationToFaction(blueprint.GetFaction()));
+                }
+                blueprintToConstructionBay.Add(new(constructionBay, i));
             }
         }
 
-        for (int i = constructionBay.buildQueue.Count; i < constructionBayList.childCount; i++) {
+        for (int i = index; i < constructionBayList.childCount; i++) {
             constructionBayList.GetChild(i).gameObject.SetActive(false);
         }
     }
@@ -88,19 +96,19 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
     }
 
     public void ConstructionButtonPressed(int index) {
-        ConstructionBay constructionBay = unit.moduleSystem.Get<ConstructionBay>().First();
+        ConstructionBay constructionBay = blueprintToConstructionBay[index].Item1;
+        index = blueprintToConstructionBay[index].Item2;
         if (localPlayer.GetFaction() != null &&
             constructionBay.buildQueue[index].GetFaction() == localPlayer.GetFaction()) {
             constructionBay.RemoveBlueprintFromQueue(index);
-            UpdateConstructionUI(constructionBay);
+            UpdateConstructionUI(unit.moduleSystem.Get<ConstructionBay>().ToList());
             UpdateShipBlueprintUI();
         }
     }
 
     private void UpdateShipBlueprintUI() {
-        ConstructionBay constructionBay = unit.moduleSystem.Get<ConstructionBay>().First();
-        shipBlueprints = uiBattleManager.battleManager.shipBlueprints.Where(b => constructionBay.CanBuildBlueprint(b))
-            .ToList();
+        shipBlueprints = uiBattleManager.battleManager.shipBlueprints
+            .Where(b => unit.moduleSystem.Get<ConstructionBay>().Any(cb => cb.CanBuildBlueprint(b))).ToList();
         for (int i = 0; i < shipBlueprints.Count; i++) {
             if (blueprintList.childCount <= i) {
                 Instantiate(shipBlueprintButtonPrefab, blueprintList);
@@ -116,7 +124,8 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
             cargoBayButton.GetChild(0).GetComponent<TMP_Text>().text = blueprint.name;
             long cost;
             if (localPlayer.GetFaction() != null) {
-                cost = constructionBay.GetCreditCostOfShip(localPlayer.player.faction, blueprint.shipScriptableObject);
+                cost = unit.moduleSystem.Get<ConstructionBay>().First()
+                    .GetCreditCostOfShip(localPlayer.player.faction, blueprint.shipScriptableObject);
                 button.interactable = localPlayer.GetFaction().credits >= cost;
             } else {
                 cost = blueprint.shipScriptableObject.cost;

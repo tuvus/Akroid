@@ -9,7 +9,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text hangarStatus;
     [SerializeField] private Transform hangarList;
     private Unit unit;
-    [SerializeField] private readonly List<Ship> shipsInHangar = new List<Ship>();
+    [SerializeField] private readonly List<Ship> shipsInHangars = new List<Ship>();
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
@@ -23,15 +23,12 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
     }
 
     protected override void UpdateMenu() {
-        Hangar hangar = unit.moduleSystem.Get<Hangar>().First();
-        shipsInHangar.Clear();
+        shipsInHangars.Clear();
+        unit.moduleSystem.Get<Hangar>().SelectMany(h => h.ships).ToList().ForEach(s => shipsInHangars.Add(s));
+        hangarStatus.text = "Hangar capacity " + shipsInHangars.Count + "/" +
+            unit.moduleSystem.Get<Hangar>().Sum(h => h.GetMaxDockSpace());
 
-        for (int i = 0; i < hangar.ships.Count; i++) {
-            shipsInHangar.Add(hangar.ships[i]);
-        }
-
-        hangarStatus.text = "Hangar capacity " + shipsInHangar.Count + "/" + hangar.GetMaxDockSpace();
-        for (int i = 0; i < shipsInHangar.Count; i++) {
+        for (int i = 0; i < shipsInHangars.Count; i++) {
             if (hangarList.childCount <= i) {
                 Instantiate(shipHangerButtonPrefab, hangarList);
             }
@@ -40,7 +37,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
             Button hangarBayButton = hangarBayButtonTransform.GetComponent<Button>();
             hangarBayButton.onClick.RemoveAllListeners();
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick.RemoveAllListeners();
-            Ship ship = shipsInHangar[i];
+            Ship ship = shipsInHangars[i];
             ShipUI shipUI = (ShipUI)uiBattleManager.units[ship];
             int f = i;
 
@@ -60,7 +57,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
             }
         }
 
-        for (int i = shipsInHangar.Count; i < hangarList.childCount; i++) {
+        for (int i = shipsInHangars.Count; i < hangarList.childCount; i++) {
             hangarList.GetChild(i).gameObject.SetActive(false);
         }
     }
@@ -71,9 +68,9 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
                 (LocalPlayerSelectionInput)localPlayer.GetLocalPlayerInput();
 
             if (localPlayerSelection.AdditiveButtonPressed) {
-                localPlayerSelection.ToggleSelectedUnit(uiBattleManager.units[shipsInHangar[index]]);
+                localPlayerSelection.ToggleSelectedUnit(uiBattleManager.units[shipsInHangars[index]]);
             } else {
-                localPlayerSelection.SelectBattleObjects(uiBattleManager.units[shipsInHangar[index]]);
+                localPlayerSelection.SelectBattleObjects(uiBattleManager.units[shipsInHangars[index]]);
             }
 
             UpdateMenu();
@@ -82,10 +79,10 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
 
     public void HangarInfoButtonPressed(int index) {
         localPlayer.GetPlayerUI().CloseAllMenus();
-        localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.units[shipsInHangar[index]]);
+        localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.units[shipsInHangars[index]]);
     }
 
     public Button GetButtonOfShip(Ship ship) {
-        return hangarList.GetChild(shipsInHangar.IndexOf(ship)).GetComponent<Button>();
+        return hangarList.GetChild(shipsInHangars.IndexOf(ship)).GetComponent<Button>();
     }
 }
