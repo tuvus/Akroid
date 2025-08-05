@@ -16,6 +16,7 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: 2c01000000000000
   upgrade: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
+  sprite: {fileID: -1652516724379087771, guid: 073348473345a261598eabc069fa1cef, type: 3}
   populationSpace: 0
   constructionSpeed: 3
   constructionAmount: 20

@@ -65,6 +65,7 @@ MonoBehaviour:
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 11.142858, y: 29.185715}
+  <spriteSize>k__BackingField: 14.592857
   shipClass: 4
   shipType: 7
   turnSpeed: 45

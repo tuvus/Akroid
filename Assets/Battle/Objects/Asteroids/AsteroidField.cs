@@ -41,4 +41,8 @@ public class AsteroidField : ObjectGroup<Asteroid>, IPositionConfirmer {
             return targetPosition.Value;
         return positionGiver.position;
     }
+
+    public override string GetName() {
+        return "Asteroid Field";
+    }
 }

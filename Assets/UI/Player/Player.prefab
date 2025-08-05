@@ -51746,6 +51746,7 @@ MonoBehaviour:
   middlePanel: {fileID: 8112346540426320161}
   leftPanel: {fileID: 7279842928060309408}
   rightPanel: {fileID: 4439356296484786285}
+  titleText: {fileID: 2286785871679368025}
   objectViewCameraTransform: {fileID: 8319850054324089011}
   objectViewCamera: {fileID: 8503612500600833288}
   displayedImageTransform: {fileID: 7067606213689492677}

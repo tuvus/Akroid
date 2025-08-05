@@ -16,6 +16,7 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: dc05000000000000
   upgrade: {fileID: 11400000, guid: 84dcbf7f64b90164993a9d4faf77c35b, type: 2}
+  sprite: {fileID: -476015121638721715, guid: fbbfa8a915d189b54bb75b61f764218a, type: 3}
   consumptionSpeed: 4.5
   consumptionAmount: 300
   energyGain: 18000

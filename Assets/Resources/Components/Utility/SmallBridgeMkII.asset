@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 214c87819f435ed709b35f226ef4b069, type: 3}
   m_Name: SmallBridgeMkII
   m_EditorClassIdentifier: 
-  cost: 2
+  cost: 10
   resourceTypes: 01000000
-  resourceCosts: 0000000000000000
+  resourceCosts: 0400000000000000
   upgrade: {fileID: 11400000, guid: 6490f3345a3e8a299807baec53a6259b, type: 2}
+  sprite: {fileID: -5504918752100610507, guid: 531211c2272ed0ebd8284b262fa03e61, type: 3}
   populationSpace: 2

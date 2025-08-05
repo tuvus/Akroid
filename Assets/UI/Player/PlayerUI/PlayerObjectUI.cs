@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
+    [SerializeField] private TMP_Text titleText;
     [SerializeField] private Transform objectViewCameraTransform;
     [SerializeField] private Camera objectViewCamera;
     [SerializeField] private Transform displayedImageTransform;
@@ -16,6 +18,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     }
 
     protected override void RefreshMiddlePanel() {
+        titleText.text = displayedObject.iObject.GetName();
         objectViewCameraTransform.transform.position = new Vector3(displayedObject.transform.position.x,
             displayedObject.transform.position.y, -10);
         objectViewCameraTransform.eulerAngles = new Vector3(0, 0, displayedObject.transform.eulerAngles.z);

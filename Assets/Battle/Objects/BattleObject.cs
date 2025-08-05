@@ -112,6 +112,10 @@ public abstract class BattleObject : IObject, IPositionConfirmer {
         return 0;
     }
 
+    public string GetName() {
+        return objectName;
+    }
+
     public bool IsUnit() {
         return this is Unit;
     }

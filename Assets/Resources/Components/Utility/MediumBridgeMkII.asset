@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 214c87819f435ed709b35f226ef4b069, type: 3}
   m_Name: MediumBridgeMkII
   m_EditorClassIdentifier: 
-  cost: 12
+  cost: 60
   resourceTypes: 01000000
-  resourceCosts: 0100000000000000
+  resourceCosts: 1800000000000000
   upgrade: {fileID: 11400000, guid: 67725b610704fe7668fa46b1c127d0e2, type: 2}
+  sprite: {fileID: -5504918752100610507, guid: 531211c2272ed0ebd8284b262fa03e61, type: 3}
   populationSpace: 12
