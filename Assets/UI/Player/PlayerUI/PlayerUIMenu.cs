@@ -4,16 +4,13 @@ using UnityEngine;
 /// <summary>
 ///     Why is this abstract class here? Why do we need an abstract class inheriting another abstract class?
 ///     Well first C# does not allow us to make lists of generic constraints.
-///     So we can't make List
-///     <PlayerUIMenu>
-///         where we only care that T of PlayerUIMenu is of the type BattleObject.
-///         To solve this we need to have a non generic interface to use in PlayerUI.
-///         Unity, however, does not support lists of interfaces in the editor.
-///         Therefore we must use an abstract class instead. Thankfully this workaround actually works.
+///     So we can't make List where we only care that T of PlayerUIMenu is of the type BattleObject.
+///     To solve this we need to have a non generic interface to use in PlayerUI.
+///     Unity, however, does not support lists of interfaces in the editor.
+///     Therefore we must use an abstract class instead. Thankfully this workaround actually works.
 /// </summary>
 public abstract class IPlayerUIMenu : MonoBehaviour {
-    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager,
-        float updateSpeed);
+    public abstract void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager);
 
     public abstract void SetDisplayedObject(ObjectUI objectUI);
 
@@ -39,11 +36,9 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     private float updateTime;
     public T displayedObject { get; protected set; }
 
-    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager,
-        float updateSpeed) {
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         this.playerUI = playerUI;
         this.localPlayer = localPlayer;
-        this.updateSpeed = updateSpeed;
         this.uiManager = uiManager;
         uiBattleManager = uiManager.uiBattleManager;
     }
@@ -66,7 +61,7 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     }
 
     /// <summary>
-    ///     Call this in LateUpdate to referesh the UI respecting the update speed
+    ///     Call this in LateUpdate to refresh the UI respecting the update speed
     /// </summary>
     public override void UpdateUI() {
         updateTime -= Time.deltaTime;

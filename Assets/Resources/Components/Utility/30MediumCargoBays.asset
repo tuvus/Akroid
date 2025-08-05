@@ -16,5 +16,6 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: 100e000000000000
   upgrade: {fileID: 11400000, guid: 4d05dceee13211e48ba1eac70c1f88f9, type: 2}
+  sprite: {fileID: 21300000, guid: c67cf78d0271903668abf49b3c9ffafb, type: 3}
   maxCargoBays: 30
   cargoBaySize: 2400

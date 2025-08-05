@@ -45,7 +45,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
         base.UpdatePlayer();
 
         if (mouseOverBattleObject != null && !selectedUnits.ContainsObject(mouseOverBattleObject) &&
-            !selectedUnits.ContainsObject(mouseOverBattleObject) && !localPlayer.playerUI.IsAMenueShown()) {
+            !selectedUnits.ContainsObject(mouseOverBattleObject) && !localPlayer.playerUI.IsAMenuShown()) {
             mouseOverBattleObject.SelectObject(UnitIconUI.SelectionStrength.Highlighted);
         }
 
@@ -60,7 +60,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     protected override void PrimaryMouseDown() {
         base.PrimaryMouseDown();
-        if (localPlayer.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         if (actionType == ActionType.None)
             StartBoxSelection(GetMousePosition());
@@ -68,7 +68,7 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     protected override void PrimaryMouseHeld() {
         base.PrimaryMouseHeld();
-        if (localPlayer.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         if (actionType == ActionType.Selecting)
             UpdateBoxSelection(GetMousePosition());
@@ -76,14 +76,14 @@ public class LocalPlayerSelectionInput : LocalPlayerInput {
 
     protected override void PrimaryMouseUp() {
         base.PrimaryMouseUp();
-        if (localPlayer.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         if (actionType == ActionType.Selecting)
             EndBoxSelection();
     }
 
     protected override void SecondaryMouseUp() {
-        if (localPlayer.playerUI.IsAMenueShown() || maxRightClickDistance >= 10 + mainCamera.orthographicSize / 100) {
+        if (localPlayer.playerUI.IsAMenuShown() || maxRightClickDistance >= 10 + mainCamera.orthographicSize / 100) {
             base.SecondaryMouseUp();
         } else {
             base.SecondaryMouseUp();

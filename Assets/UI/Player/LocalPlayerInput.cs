@@ -124,7 +124,7 @@ public class LocalPlayerInput : MonoBehaviour {
     private void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
-        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer? 1 : 20f;
+        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer ? 1 : 20f;
         float targetSize = Mathf.Min(50000,
             Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollFactor * platformModifier *
                 localPlayer.playerUI.scrollSpeed));
@@ -199,7 +199,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void PrimaryMouseDown() {
-        if (primaryMousePressed || localPlayer.GetPlayerUI().IsAMenueShown())
+        if (primaryMousePressed || localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         primaryMousePressed = true;
         leftClickedBattleObject = mouseOverBattleObject;
@@ -209,7 +209,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void PrimaryMouseUp() {
         primaryMousePressed = false;
-        if (localPlayer.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         if (leftClickedBattleObject != null && !doingUnitClickAction) {
             displayedBattleObject = leftClickedBattleObject;
@@ -228,7 +228,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseHeld() {
         maxRightClickDistance = Mathf.Max(maxRightClickDistance,
             Vector2.Distance(rightClickStartPosition, GetMousePosition()));
-        if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
+        if (!localPlayer.GetPlayerUI().IsAMenuShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() /
                 1200);
@@ -239,7 +239,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
         if (maxRightClickDistance < 10 + mainCamera.orthographicSize / 100) {
-            if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
+            if (!localPlayer.GetPlayerUI().IsAMenuShown()) {
                 if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
                     localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
                     rightClickedBattleObject = null;
@@ -286,7 +286,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     private void EscapeButtonPressed() {
-        if (localPlayer.GetPlayerUI().IsAMenueShown()) {
+        if (localPlayer.GetPlayerUI().IsAMenuShown()) {
             localPlayer.GetPlayerUI().CloseAllMenus();
             return;
         }

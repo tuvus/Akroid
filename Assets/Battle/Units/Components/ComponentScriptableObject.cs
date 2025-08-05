@@ -8,6 +8,7 @@ public abstract class ComponentScriptableObject : ScriptableObject {
     public List<CargoType> resourceTypes;
     public List<long> resourceCosts;
     public ComponentScriptableObject upgrade;
+    public Sprite sprite;
 
     public virtual void OnValidate() {
         UpdateCosts();

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 83
   resourceTypes: 0100000002000000
-  resourceCosts: 1f000000000000001b00000000000000
+  resourceCosts: 1f000000000000000300000000000000
   upgrade: {fileID: 11400000, guid: 7d645bd4bff988049a4598a934e6f890, type: 2}
+  sprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   DPS: 3.9130435
-  turretSprite: {fileID: 964632292, guid: 438822e4e6564684697f86e16f255ea7, type: 3}
   range: 310
   rotateSpeed: 110
   targeting: 1

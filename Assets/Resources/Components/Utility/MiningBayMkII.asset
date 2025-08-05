@@ -16,6 +16,7 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: d200000000000000
   upgrade: {fileID: 0}
+  sprite: {fileID: -459025886, guid: c75acc51f43a932489bb8c348a3d64d9, type: 3}
   populationSpace: 0
   miningAmount: 700
   miningSpeed: 10

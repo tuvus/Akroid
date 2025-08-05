@@ -9,7 +9,7 @@ public class TurretUI : ComponentUI {
     public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
         base.Setup(battleObject, uIManager, unitUI);
         turret = (Turret)battleObject;
-        spriteRenderer.sprite = turret.turretScriptableObject.turretSprite;
+        spriteRenderer.sprite = turret.turretScriptableObject.sprite;
         spriteRenderer.enabled = true;
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.resource = turret.turretScriptableObject.turretFire;
