@@ -3,6 +3,36 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public abstract class PlayerObjectUIMenu : MonoBehaviour {
+    [SerializeField] private float updateSpeed;
+    protected LocalPlayer localPlayer;
+    protected PlayerUI playerUI;
+    protected UIBattleManager uiBattleManager;
+    protected UIManager uiManager;
+    private float updateTime;
+
+    public virtual void SetupPlayerObjectUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
+        this.playerUI = playerUI;
+        this.localPlayer = localPlayer;
+        this.uiManager = uiManager;
+        uiBattleManager = uiManager.uiBattleManager;
+    }
+
+    public abstract void SetDisplayedObject(ObjectUI objectUI);
+
+    public void UpdateUI() {
+        updateTime -= Time.deltaTime;
+        if (updateTime <= 0) {
+            updateTime += updateSpeed;
+            UpdateMenu();
+        }
+    }
+
+    public abstract bool ShouldShowMenu();
+
+    protected abstract void UpdateMenu();
+}
+
 public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private Transform objectViewCameraTransform;
@@ -12,9 +42,18 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     [SerializeField] private GameObject moduleUIPrefab;
     private ModuleSystem.System selectedSystem;
 
+    [SerializeField] private ObjectConstructionUI constructionUI;
+
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
         moduleUIs = new List<GameObject>();
+        constructionUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+    }
+
+    public override void SetDisplayedObject(ObjectUI objectToDisplay) {
+        base.SetDisplayedObject(objectToDisplay);
+        selectedSystem = null;
+        constructionUI.SetDisplayedObject(displayedObject);
     }
 
     protected override void RefreshMiddlePanel() {
@@ -63,6 +102,17 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
         selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
     }
 
-    protected override void RefreshLeftPanel() { }
+    protected override bool ShouldShowLeftPanel() {
+        return constructionUI.ShouldShowMenu() && selectedSystem == null;
+    }
+
+    protected override void RefreshLeftPanel() {
+        constructionUI.UpdateUI();
+    }
+
+    protected override bool ShouldShowRightPanel() {
+        return selectedSystem == null;
+    }
+
     protected override void RefreshRightPanel() { }
 }

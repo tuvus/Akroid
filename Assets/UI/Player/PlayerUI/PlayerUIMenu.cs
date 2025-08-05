@@ -44,10 +44,10 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     }
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
-        SetDisplayedObject((T)objectUI);
+        SetDisplayedObjectT((T)objectUI);
     }
 
-    public void SetDisplayedObject(T objectToDisplay) {
+    private void SetDisplayedObjectT(T objectToDisplay) {
         displayedObject = objectToDisplay;
         if (displayedObject == null) {
             ShowMenu(false);
@@ -89,11 +89,15 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         if (ShouldShowLeftPanel()) {
             if (!leftPanel.activeSelf) leftPanel.SetActive(true);
             RefreshLeftPanel();
+        } else {
+            leftPanel.SetActive(false);
         }
 
         if (ShouldShowRightPanel()) {
             if (!rightPanel.activeSelf) rightPanel.SetActive(true);
             RefreshRightPanel();
+        } else {
+            rightPanel.SetActive(false);
         }
     }
 
