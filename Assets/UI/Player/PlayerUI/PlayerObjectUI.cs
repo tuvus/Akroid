@@ -8,6 +8,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     [SerializeField] private Transform displayedImageTransform;
     private List<GameObject> moduleUIs;
     [SerializeField] private GameObject moduleUIPrefab;
+    private ModuleSystem.System selectedSystem;
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
@@ -24,8 +25,9 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     }
 
     private void UpdateModules(Unit unit) {
-        for (int i = 0; i < unit.moduleSystem.modules.Count; i++) {
-            var module = unit.moduleSystem.modules[i];
+        ModuleSystem moduleSystem = unit.moduleSystem;
+        for (int i = 0; i < moduleSystem.modules.Count; i++) {
+            var module = moduleSystem.modules[i];
             if (moduleUIs.Count <= i) {
                 moduleUIs.Add(Instantiate(moduleUIPrefab, displayedImageTransform));
                 int moduleIndex = i;
@@ -34,7 +36,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
             moduleUIs[i].SetActive(true);
             moduleUIs[i].GetComponent<RectTransform>().anchoredPosition = module.GetPosition() *
                 displayedImageTransform.GetComponent<RectTransform>().sizeDelta *
-                (-3f * unit.unitScriptableObject.sprite.pixelsPerUnit) /
+                ((unit.IsStation() ? -3f : -.2f) * unit.unitScriptableObject.sprite.pixelsPerUnit) /
                 (unit.scale * unit.unitScriptableObject.spriteBounds);
             moduleUIs[i].transform.GetChild(0).eulerAngles = new Vector3(0, 0, module.rotation);
             if (module.componentScriptableObject.sprite != null) {
@@ -42,13 +44,21 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
                     module.componentScriptableObject.sprite;
                 moduleUIs[i].transform.GetChild(0).gameObject.SetActive(true);
             } else moduleUIs[i].transform.GetChild(0).gameObject.SetActive(false);
+
+            if (selectedSystem != null && selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[i]]) {
+                moduleUIs[i].GetComponent<Image>().color = Color.white;
+            } else {
+                moduleUIs[i].GetComponent<Image>().color = Color.grey;
+            }
         }
-        for (int i = unit.moduleSystem.modules.Count; i < moduleUIs.Count; i++) {
+        for (int i = moduleSystem.modules.Count; i < moduleUIs.Count; i++) {
             moduleUIs[i].SetActive(false);
         }
     }
 
     private void OnModuleButtonPress(int moduleIndex) {
+        ModuleSystem moduleSystem = ((Unit)displayedObject.iObject).moduleSystem;
+        selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
         Debug.Log("Module " + moduleIndex + " pressed");
     }
 
