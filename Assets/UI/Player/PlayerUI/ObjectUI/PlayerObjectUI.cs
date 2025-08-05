@@ -18,7 +18,9 @@ public abstract class PlayerObjectUIMenu : MonoBehaviour {
         uiBattleManager = uiManager.uiBattleManager;
     }
 
-    public abstract void SetDisplayedObject(ObjectUI objectUI);
+    public virtual void SetDisplayedObject(ObjectUI objectUI) {
+        updateTime = 0;
+    }
 
     public void UpdateUI() {
         updateTime -= Time.deltaTime;
@@ -43,17 +45,21 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     private ModuleSystem.System selectedSystem;
 
     [SerializeField] private ObjectConstructionUI constructionUI;
+    [SerializeField] private ObjectHangarUI hangarUI;
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
         moduleUIs = new List<GameObject>();
         constructionUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        hangarUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
     }
+
 
     public override void SetDisplayedObject(ObjectUI objectToDisplay) {
         base.SetDisplayedObject(objectToDisplay);
         selectedSystem = null;
         constructionUI.SetDisplayedObject(displayedObject);
+        hangarUI.SetDisplayedObject(displayedObject);
     }
 
     protected override void RefreshMiddlePanel() {
@@ -116,8 +122,10 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
     }
 
     protected override bool ShouldShowRightPanel() {
-        return selectedSystem == null;
+        return hangarUI.ShouldShowMenu() && selectedSystem == null;
     }
 
-    protected override void RefreshRightPanel() { }
+    protected override void RefreshRightPanel() {
+        hangarUI.UpdateUI();
+    }
 }

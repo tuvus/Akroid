@@ -24375,6 +24375,7 @@ GameObject:
   - component: {fileID: 4116374303705038383}
   - component: {fileID: 3018084148716773491}
   - component: {fileID: 5296169398650395143}
+  - component: {fileID: 2782576781018312680}
   m_Layer: 5
   m_Name: StationHangars
   m_TagString: Untagged
@@ -24469,6 +24470,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &2782576781018312680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4439356296484786285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dea5bfc428b98bdea5504d4e5e984b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateSpeed: 1
+  shipHangerButtonPrefab: {fileID: 6917939575041792617, guid: 24e4ee27584b2474db3f56aa4c880e1e,
+    type: 3}
+  hangarStatus: {fileID: 2688963479435565015}
+  hangarList: {fileID: 9187630566887892384}
 --- !u!1 &4448017951439002573
 GameObject:
   m_ObjectHideFlags: 0
@@ -51256,6 +51274,7 @@ MonoBehaviour:
   moduleUIPrefab: {fileID: 861201660554388760, guid: f54ca90ed8f6339cbace1c84bbcbd919,
     type: 3}
   constructionUI: {fileID: 1798025576143244682}
+  hangarUI: {fileID: 2782576781018312680}
 --- !u!1 &8996116118321398399
 GameObject:
   m_ObjectHideFlags: 0

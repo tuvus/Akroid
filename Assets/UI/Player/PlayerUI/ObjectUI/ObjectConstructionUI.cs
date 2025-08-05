@@ -17,8 +17,10 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
 
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
+        base.SetDisplayedObject(objectUI);
         if (objectUI != null && objectUI.iObject is Unit testUnit && testUnit.moduleSystem.Get<ConstructionBay>().Any())
             unit = testUnit;
+        else unit = null;
     }
 
     public override bool ShouldShowMenu() {
