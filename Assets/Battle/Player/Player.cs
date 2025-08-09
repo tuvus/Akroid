@@ -49,4 +49,11 @@ public class Player {
 
         lockedOwnedUnits = locked;
     }
+
+    public void ResetOwnedUnits() {
+        ownedUnits.Clear();
+        if (!lockedOwnedUnits) {
+            ownedUnits.UnionWith(faction.units);
+        }
+    }
 }

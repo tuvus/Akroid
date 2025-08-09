@@ -20,7 +20,7 @@ public class GasCollector : ModuleComponent {
         collectionTime -= deltaTime;
         if (collectionTime <= 0) {
             if (unit.LoadCargo(gasCloud.CollectGas(gasCollectorScriptableObject.collectionAmount),
-                CargoBay.CargoTypes.Gas) > 0) {
+                CargoBay.CargoType.Gas) > 0) {
                 collectionTime = gasCollectorScriptableObject.collectionSpeed;
                 return false;
             }
@@ -32,6 +32,6 @@ public class GasCollector : ModuleComponent {
     }
 
     public bool WantsMoreGas() {
-        return unit.GetAvailableCargoSpace(CargoBay.CargoTypes.Gas) > 0;
+        return unit.GetAvailableCargoSpace(CargoBay.CargoType.Gas) > 0;
     }
 }

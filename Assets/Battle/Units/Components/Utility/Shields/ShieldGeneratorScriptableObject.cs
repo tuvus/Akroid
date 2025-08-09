@@ -24,6 +24,6 @@ public class ShieldGeneratorScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(shieldRegenHealth / shieldRegenRate * 14 + maxShieldHealth);
-        AddResourceCost(CargoBay.CargoTypes.Metal, maxShieldHealth / 2);
+        AddResourceCost(CargoBay.CargoType.Metal, maxShieldHealth / 2);
     }
 }

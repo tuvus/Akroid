@@ -1,61 +1,82 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Components.DictionaryAdapter.Xml;
 
 public class FactionTrade {
     public Faction faction { get; private set; }
 
-    public struct Offer {
-        public CargoBay.CargoTypes cargoType;
+    public struct TradeOffer {
+        public CargoBay.CargoType cargoType;
         public long amount;
         public float price;
 
-        public Offer(CargoBay.CargoTypes cargoType, long amount, float price) {
+        public TradeOffer(CargoBay.CargoType cargoType, long amount, float price) {
             this.cargoType = cargoType;
             this.amount = amount;
             this.price = price;
         }
 
-        public Offer(Offer offer, long newAmount) {
-            this.cargoType = offer.cargoType;
+        public TradeOffer(TradeOffer tradeOffer, long newAmount) {
+            this.cargoType = tradeOffer.cargoType;
             this.amount = newAmount;
-            this.price = offer.price;
+            this.price = tradeOffer.price;
         }
     }
 
-    public struct Contract {
+    public class Contract {
         public Unit provider;
         public Unit receiver;
-        public Dictionary<CargoBay.CargoTypes, Offer> cargo;
 
-        public Contract(Unit provider, Unit reciever, params Offer[] offers) {
+    }
+
+    public class TradeContract : Contract {
+        public Dictionary<CargoBay.CargoType, TradeOffer> cargo;
+
+        public TradeContract(Unit provider, Unit receiver, params TradeOffer[] offers) {
             this.provider = provider;
-            this.receiver = reciever;
-            cargo = new Dictionary<CargoBay.CargoTypes, Offer>();
-            foreach (Offer offer in offers) {
+            this.receiver = receiver;
+            cargo = new Dictionary<CargoBay.CargoType, TradeOffer>();
+            foreach (TradeOffer offer in offers) {
                 cargo.Add(offer.cargoType, offer);
             }
         }
     }
 
-    /// <summary>
-    /// The resources being offered by each station in the faction.
-    /// </summary>
-    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesOffered;
+    public class TransportOffer {
+        public Population personnel;
+        public PopulationFloat payment;
 
-    /// <summary>
-    /// The resources being requested by each station in the faction.
-    /// </summary>
-    public Dictionary<CargoBay.CargoTypes, Dictionary<Unit, Offer>> resourcesRequested;
+        public TransportOffer(Population personnel, PopulationFloat payment) {
+            this.personnel = personnel;
+            this.payment = payment;
+        }
+    }
 
-    /// <summary>
-    /// The factions that we can sell to and how much of a markup we have.
-    /// </summary>
+    public class TransportContract : Contract {
+        public TransportOffer transportOffer;
+
+        public TransportContract(Unit provider, Unit receiver, TransportOffer transportOffer) {
+            this.provider = provider;
+            this.receiver = receiver;
+            this.transportOffer = transportOffer;
+        }
+    }
+
+    /// <summary> The resources being offered by each station in the faction. </summary>
+    public Dictionary<CargoBay.CargoType, Dictionary<Unit, TradeOffer>> resourcesOffered;
+
+    /// <summary> The resources being requested by each station in the faction. </summary>
+    public Dictionary<CargoBay.CargoType, Dictionary<Unit, TradeOffer>> resourcesRequested;
+
+    /// <summary> The personnel that are open to being hired by each station in the faction. </summary>
+    public Dictionary<Unit, TransportOffer> personnelToHire;
+
+    /// <summary> The personnel requested by each station in the faction. </summary>
+    public Dictionary<Unit, TransportOffer> personnelRequested;
+
+    /// <summary> The factions that we can sell to and how much of a markup we have. </summary>
     public Dictionary<Faction, float> tradeSellAgreements;
-    /// <summary>
-    /// The factions that we can buy from and how much of a markup they have.
-    /// </summary>
+    /// <summary> The factions that we can buy from and how much of a markup they have. </summary>
     public Dictionary<Faction, float> tradeBuyAgreements;
     public HashSet<Contract> activeContracts;
 
@@ -63,10 +84,12 @@ public class FactionTrade {
         this.faction = faction;
         resourcesOffered = new();
         resourcesRequested = new();
-        foreach (CargoBay.CargoTypes cargoType in CargoBay.allCargoTypes) {
+        foreach (CargoBay.CargoType cargoType in CargoBay.allCargoTypes) {
             resourcesOffered.Add(cargoType, new());
             resourcesRequested.Add(cargoType, new());
         }
+        personnelToHire = new();
+        personnelRequested = new();
         tradeSellAgreements = new();
         tradeBuyAgreements = new();
         activeContracts = new();
@@ -74,7 +97,8 @@ public class FactionTrade {
 
 
     public void MakeSellTradeAgreement(Faction tradePartner, float markupPrice = 1.2f) {
-        if (!tradeSellAgreements.TryAdd(tradePartner, markupPrice) || !tradePartner.factionTrade.tradeBuyAgreements.TryAdd(faction, markupPrice))
+        if (!tradeSellAgreements.TryAdd(tradePartner, markupPrice) ||
+            !tradePartner.factionTrade.tradeBuyAgreements.TryAdd(faction, markupPrice))
             throw new Exception("Trying to start a trade agreement that already exists with " + tradePartner.name +
                 "!");
     }
@@ -85,17 +109,31 @@ public class FactionTrade {
                 " but the agreement doesn't exist!");
     }
 
-    public bool AddContract(Contract contract, bool mustHaveImmediateResources = true) {
-        if (!contract.provider.AddContract(contract, mustHaveImmediateResources)) return false;
-        if (!contract.receiver.AddContract(contract, mustHaveImmediateResources)) {
-            contract.provider.RemoveContract(contract);
+    public bool AddContract(TradeContract tradeContract, bool mustHaveImmediateResources = true) {
+        if (!tradeContract.provider.AddContract(tradeContract, mustHaveImmediateResources)) return false;
+        if (!tradeContract.receiver.AddContract(tradeContract, mustHaveImmediateResources)) {
+            tradeContract.provider.RemoveContract(tradeContract);
             return false;
         }
-        activeContracts.Add(contract);
-        Faction otherFaction = contract.provider.faction;
-        if (otherFaction == faction) otherFaction = contract.receiver.faction;
-        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(contract);
+        activeContracts.Add(tradeContract);
+        Faction otherFaction = tradeContract.provider.faction;
+        if (otherFaction == faction) otherFaction = tradeContract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(tradeContract);
         return true;
+    }
+
+    public bool AddContract(TransportContract transportContract) {
+        if (!transportContract.provider.AddContract(transportContract)) return false;
+        if (!transportContract.receiver.AddContract(transportContract)) {
+            transportContract.provider.RemoveContract(transportContract);
+            return false;
+        }
+        activeContracts.Add(transportContract);
+        Faction otherFaction = transportContract.provider.faction;
+        if (otherFaction == faction) otherFaction = transportContract.receiver.faction;
+        if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Add(transportContract);
+        return true;
+
     }
 
     public void RemoveContract(Contract contract) {
@@ -108,32 +146,40 @@ public class FactionTrade {
         if (otherFaction != faction) otherFaction.factionTrade.activeContracts.Remove(contract);
     }
 
-    public float GetBuyCostOfOffer(Faction otherFaction, Offer offer) {
+    public float GetBuyCostOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
         if (otherFaction == faction) {
-            return faction.battleManager.baseResourcePrice[offer.cargoType] + offer.price * .8f;
+            return faction.battleManager.baseResourcePrice[tradeOffer.cargoType] + tradeOffer.price * .8f;
         }
-        return offer.price * tradeBuyAgreements[otherFaction];
+        return tradeOffer.price * tradeBuyAgreements[otherFaction];
     }
 
-    public float GetSellCostOfOffer(Faction otherFaction, Offer offer) {
+    public float GetSellCostOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
         if (otherFaction == faction) {
-            return faction.battleManager.baseResourcePrice[offer.cargoType] + offer.price * 1.2f;
+            return faction.battleManager.baseResourcePrice[tradeOffer.cargoType] + tradeOffer.price * 1.2f;
         }
-        return offer.price;
+        return tradeOffer.price;
     }
 
-    public float GetOurBuyValueOfOffer(Faction otherFaction, Offer offer) {
-        if (otherFaction == faction) {
-            return 0.7f * offer.price;
-        }
-        return offer.price;
+    public float GetOurBuyValueOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
+        return GetOurBuyValueOfOffer(otherFaction, tradeOffer.price);
     }
 
-    public float GetOurSellValueOfOffer(Faction otherFaction, Offer offer) {
+    public float GetOurBuyValueOfOffer(Faction otherFaction, float price) {
         if (otherFaction == faction) {
-            return offer.price * 1.3f;
+            return 0.7f * price;
         }
-        return offer.price;
+        return price;
+    }
+
+    public float GetOurSellValueOfOffer(Faction otherFaction, TradeOffer tradeOffer) {
+        return GetOurSellValueOfOffer(otherFaction, tradeOffer.price);
+    }
+
+    public float GetOurSellValueOfOffer(Faction otherFaction, float price) {
+        if (otherFaction == faction) {
+            return price * 1.3f;
+        }
+        return price;
     }
 
 
@@ -146,7 +192,7 @@ public class FactionTrade {
     }
 
     public void RemoveStationOffersAndRequests(Station station) {
-        foreach (CargoBay.CargoTypes c in CargoBay.allCargoTypes) {
+        foreach (CargoBay.CargoType c in CargoBay.allCargoTypes) {
             resourcesOffered[c].Remove(station);
             resourcesRequested[c].Remove(station);
         }

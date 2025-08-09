@@ -72,9 +72,9 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 GenerateCollectGasCommand();
                 actionType = ActionType.None;
                 break;
-            case ActionType.TransportCommand:
+            case ActionType.TradeTransportCommand:
                 SelectOnlyControllableUnits();
-                GenerateTransportCommand();
+                GenerateTradeTransportCommand();
                 actionType = ActionType.None;
                 break;
             case ActionType.ColonizeCommand:
@@ -132,8 +132,8 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
                 ToggleActionType(ActionType.ResearchCommand);
             } else if (selectedUnits.ContainsOnlyGasCollectionShips()) {
                 ToggleActionType(ActionType.CollectGasCommand);
-            } else if (selectedUnits.ContainsOnlyTransportShips()) {
-                ToggleActionType(ActionType.TransportCommand);
+            } else if (selectedUnits.ContainsOnlyTradeTransportShips()) {
+                ToggleActionType(ActionType.TradeTransportCommand);
             } else if (selectedUnits.ContainsOnlyColonizerShips()) {
                 ToggleActionType(ActionType.ColonizeCommand);
             } else {
@@ -319,16 +319,12 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
 
         if (closestStar == null) return;
 
-        List<ShipUI> allShips = selectedUnits.GetAllShips();
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsScienceShip()) {
-                allShips[i].ship.shipAI
-                    .AddUnitAICommand(
-                        Command.CreateResearchCommand(closestStar, localPlayer.player.faction.GetFleetCommand()),
-                        GetCommandAction());
-                localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-            }
-        }
+        selectedUnits.GetAllShips().Where(s => s.ship.IsScienceShip()).ToList().ForEach(s => {
+            s.ship.shipAI.AddUnitAICommand(
+                Command.CreateResearchCommand(closestStar, localPlayer.player.faction.GetFleetCommand()),
+                GetCommandAction());
+            localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+        });
     }
 
     private void GenerateCollectGasCommand() {
@@ -344,29 +340,23 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
 
         if (closestGasCloud == null) return;
-        List<ShipUI> allShips = selectedUnits.GetAllShips();
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsGasCollectorShip()) {
-                allShips[i].ship.shipAI
-                    .AddUnitAICommand(
-                        Command.CreateCollectGasCommand(closestGasCloud, localPlayer.player.faction.GetFleetCommand()),
-                        GetCommandAction());
-                localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-            }
-        }
+        selectedUnits.GetAllShips().Where(s => s.ship.IsGasCollectorShip()).ToList().ForEach(s => {
+            s.ship.shipAI.AddUnitAICommand(
+                Command.CreateCollectGasCommand(closestGasCloud, localPlayer.player.faction.GetFleetCommand()),
+                GetCommandAction());
+            localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+        });
     }
 
-    private void GenerateTransportCommand() {
+    private void GenerateTradeTransportCommand() {
         Station station = null;
         if (mouseOverBattleObject is StationUI stationUI) station = stationUI.station;
 
-        List<ShipUI> allShips = selectedUnits.GetAllShips();
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsTransportShip()) {
-                allShips[i].ship.shipAI.AddUnitAICommand(Command.CreateTradeCommand(station), GetCommandAction());
+        selectedUnits.GetAllShips().Where(s => s.ship.IsTransportShip() || s.ship.IsCivilianShip()).ToList()
+            .ForEach(s => {
+                s.ship.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(station), GetCommandAction());
                 localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-            }
-        }
+            });
     }
 
     private void GenerateColonizationCommand() {
@@ -382,16 +372,11 @@ public class LocalPlayerGameInput : LocalPlayerSelectionInput {
         }
 
         if (closestPlanet == null) return;
-        List<ShipUI> allShips = selectedUnits.GetAllShips();
-        for (int i = 0; i < allShips.Count; i++) {
-            if (allShips[i].ship.IsColonizerShip()) {
-                allShips[i].ship.shipAI
-                    .AddUnitAICommand(Command.CreateColonizeCommand(closestPlanet), GetCommandAction());
-                localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
-            }
-        }
+        selectedUnits.GetAllShips().Where(s => s.ship.IsColonizerShip()).ToList().ForEach(s => {
+            s.ship.shipAI.AddUnitAICommand(Command.CreateColonizeCommand(closestPlanet), GetCommandAction());
+            localPlayer.GetPlayerUI().GetCommandClick().Click(GetMouseWorldPosition(), Color.yellow);
+        });
     }
-
 
     private void ClearCommands() {
         if (localPlayer.player.ownedUnits == null)

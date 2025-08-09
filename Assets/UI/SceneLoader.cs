@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -38,6 +39,7 @@ public class SceneLoader : MonoBehaviour {
     private IEnumerator LoadBattleScene(bool campaign) {
         yield return null;
         GameObject startCamera = GameObject.Find("Main Camera");
+        GameObject startEventSystem = GameObject.Find("EventSystem");
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
         asyncLoad.allowSceneActivation = false;
         while (asyncLoad.progress < 0.9f) {
@@ -56,7 +58,12 @@ public class SceneLoader : MonoBehaviour {
         GameObject loadingCamera = FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
             .First(o => o.name == "LoadingCamera");
         startCamera.SetActive(false);
+        startEventSystem.SetActive(false);
         loadingCamera.SetActive(true);
+        GameObject loadingEventSystem =
+            FindObjectsByType<GameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .First(o => o.name == "LoadingEventSystem");
+        loadingEventSystem.SetActive(true);
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
 
         TMP_Text statusText = FindObjectsByType<TMP_Text>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
@@ -94,7 +101,7 @@ public class SceneLoader : MonoBehaviour {
             CampaingController campaingController =
                 Instantiate(chapter, gameTransform).GetComponent<CampaingController>();
             loadingBar.value = 25 / totalProgress;
-            statusText.SetText("Loading Campaing...");
+            statusText.SetText("Loading Campaign...");
             yield return null;
             // Camping loading must be done synchronously
             // This can change in the future if we force it to load resources first
@@ -136,11 +143,15 @@ public class SceneLoader : MonoBehaviour {
         // We need to wait one more frame to show the shield on the ship
         yield return null;
 
-        loadingCamera.SetActive(false);
-        // Activate the battle camera and the canvas for the UI
-        gameTransform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-        gameTransform.GetChild(1).GetChild(1).gameObject.SetActive(true);
+        gameTransform.GetChild(1).gameObject.SetActive(true);
         uIManager.SetupUIManager();
+
+        // Activate the battle camera and the canvas for the UI
+        loadingCamera.SetActive(false);
+        loadingEventSystem.SetActive(false);
+        gameTransform.GetChild(1).GetChild(0).GetComponent<AudioListener>().enabled = true;
+        gameTransform.GetChild(1).GetChild(2).GetComponent<EventSystem>().enabled = true;
+
         battleManager.StartBattle();
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());
         Destroy(gameObject);

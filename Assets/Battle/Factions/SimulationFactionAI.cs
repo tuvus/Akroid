@@ -259,12 +259,13 @@ public class SimulationFactionAI : FactionAI {
                 } else if (idleShip.IsTransportShip()) {
                     // Station miningStation = faction.GetClosestMiningStationWantingTransport(idleShip.GetPosition());
                     // if (miningStation != null) {
-                        // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
+                    // ((MiningStationAI)miningStation.stationAI).AddTransportShip(idleShip);
                     // } else if (idleShip.dockedStation != fleetCommand) {
-                        // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
-                            // Command.CommandAction.Replace);
+                    // idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
+                    // Command.CommandAction.Replace);
                     // }
-                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeCommand(), Command.CommandAction.Replace);
+                    idleShip.shipAI.AddUnitAICommand(Command.CreateTradeTransportCommand(),
+                        Command.CommandAction.Replace);
                 } else if (idleShip.IsScienceShip()) {
                     idleShip.shipAI.AddUnitAICommand(
                         Command.CreateResearchCommand(faction.GetClosestStar(idleShip.GetPosition()), fleetCommand),
@@ -319,63 +320,70 @@ public class SimulationFactionAI : FactionAI {
     }
 
     private void ManageSpecialShipBuilding() {
-        int transportQueueCount = fleetCommand.GetConstructionBay()
-            .GetNumberOfShipsOfTypeFaction(Ship.ShipType.Transport, faction);
+        ConstructionBay constructionBay = fleetCommand.GetConstructionBay();
+        int transportQueueCount = constructionBay.GetNumberOfShipsOfTypeFaction(Ship.ShipType.Transport, faction);
         int stationBuilderQueueCount =
-            fleetCommand.GetConstructionBay().GetNumberOfShipsOfClassFaction(Ship.ShipClass.StationBuilder, faction);
-        int gasCollectorQueueCount = fleetCommand.GetConstructionBay()
-            .GetNumberOfShipsOfTypeFaction(Ship.ShipType.GasCollector, faction);
+            constructionBay.GetNumberOfShipsOfClassFaction(Ship.ShipClass.StationBuilder, faction);
+        int gasCollectorQueueCount = constructionBay.GetNumberOfShipsOfTypeFaction(Ship.ShipType.GasCollector, faction);
         bool wantTransport = faction.GetTotalWantedTransports() > transportQueueCount;
         bool wantNewStationBuilder = fleetCommand.faction.GetAvailableAsteroidFieldsCount() >
             faction.GetShipCountOfType(Ship.ShipType.Construction) + stationBuilderQueueCount;
-        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 5 + 5;
+        int gasCollectorsWanted = faction.GetShipCountOfType(Ship.ShipType.Transport) / 2 + 5;
 
-        if (fleetCommand.GetConstructionBay().HasOpenBays()) {
+        if (constructionBay.HasOpenBays()) {
             if (faction.GetShipCountOfType(Ship.ShipType.GasCollector) + gasCollectorQueueCount < gasCollectorsWanted) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                constructionBay.AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipType.GasCollector)));
             } else if (transportQueueCount == 0 && stationBuilderQueueCount == 0) {
                 if (wantTransport) {
-                    fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(
+                    constructionBay.AddConstructionToBeginningQueue(
                         new Ship.ShipConstructionBlueprint(faction,
                             battleManager.GetShipBlueprint(Ship.ShipClass.Transport)));
                 } else if (wantNewStationBuilder) {
-                    fleetCommand.GetConstructionBay().AddConstructionToBeginningQueue(
-                        new Ship.ShipConstructionBlueprint(faction,
-                            battleManager.GetShipBlueprint(Ship.ShipClass.StationBuilder)));
+                    var stationBuilderBlueprint = new Ship.ShipConstructionBlueprint(faction,
+                        battleManager.GetShipBlueprint(Ship.ShipClass.StationBuilder));
+                    if (constructionBay.CanBuildBlueprint(stationBuilderBlueprint)) {
+                        constructionBay.AddConstructionToBeginningQueue(stationBuilderBlueprint);
+                    } else {
+                        fleetCommand.moduleSystem.UpgradeSystem(
+                            fleetCommand.moduleSystem.moduleToSystem[constructionBay], fleetCommand);
+                    }
                 }
             }
         }
     }
 
     private void ManageShipBuilding() {
-        if (fleetCommand.GetConstructionBay().HasOpenBays()) {
+        ConstructionBay constructionBay = fleetCommand.GetConstructionBay();
+        if (constructionBay.HasOpenBays()) {
             float randomNumber = 0;
             if (faction.HasEnemy()) {
                 randomNumber = random.NextFloat(0, 100);
             }
 
             if (randomNumber < 15) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                constructionBay.AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipType.Research), "Science Ship"));
             } else if (randomNumber < 45) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                constructionBay.AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipClass.Aria)));
-            } else if (randomNumber < 80) {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+            } else if (randomNumber < 80 || !constructionBay.CanBuildBlueprint(new Ship.ShipConstructionBlueprint(
+                faction, battleManager.GetShipBlueprint(Ship.ShipClass.Aterna)))) {
+                constructionBay.AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipClass.Lancer)));
             } else {
-                fleetCommand.GetConstructionBay().AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
+                constructionBay.AddConstructionToQueue(new Ship.ShipConstructionBlueprint(faction,
                     battleManager.GetShipBlueprint(Ship.ShipClass.Aterna)));
             }
         }
     }
 
     private void ManageStationUpgrades() {
-        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoTypes.Metal) > 10000) {
+        if (fleetCommand.GetAllCargoOfType(CargoBay.CargoType.Metal, true) > 10000) {
             for (int i = 0; i < fleetCommand.moduleSystem.systems.Count; i++) {
                 if (fleetCommand.moduleSystem.CanUpgradeSystem(i, fleetCommand)) {
                     fleetCommand.moduleSystem.UpgradeSystem(i, fleetCommand);
+                    break;
                 }
             }
         }

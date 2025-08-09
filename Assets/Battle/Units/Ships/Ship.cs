@@ -31,7 +31,7 @@ public class Ship : Unit {
     }
 
     public enum ShipType {
-        Civilian,
+        Shuttle,
         Transport,
         Construction,
         Research,
@@ -94,12 +94,12 @@ public class Ship : Unit {
         ///     The amount of resources to be put into the blueprint before it can be constructed.
         ///     This value may be reduced throughout construction.
         /// </summary>
-        public Dictionary<CargoBay.CargoTypes, long> resourceCosts;
+        public Dictionary<CargoBay.CargoType, long> resourceCosts;
 
         public ShipConstructionBlueprint(Faction faction, ShipBlueprint shipBlueprint, string name = null) : base(
             faction, shipBlueprint.shipScriptableObject, name) {
             cost = shipScriptableObject.cost;
-            resourceCosts = new Dictionary<CargoBay.CargoTypes, long>();
+            resourceCosts = new Dictionary<CargoBay.CargoType, long>();
             totalResourcesRequired = 0;
             for (int i = 0; i < shipScriptableObject.resourceTypes.Count; i++) {
                 resourceCosts.Add(shipScriptableObject.resourceTypes[i], shipScriptableObject.resourceCosts[i]);
@@ -261,7 +261,8 @@ public class Ship : Unit {
                 position = movePosition;
                 SetIdle();
             } else {
-                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, currentSpeed * deltaTime) - GetPosition();
+                Vector3 temp = Vector2.MoveTowards(GetPosition(), movePosition, currentSpeed * deltaTime) -
+                    GetPosition();
                 position += (Vector2)temp;
             }
         }
@@ -272,6 +273,7 @@ public class Ship : Unit {
             .Sum(t => t.GetThrust() * faction.GetImprovementModifier(Faction.ImprovementAreas.ThrustPower));
         speed = thrust / GetMass();
     }
+
     #endregion
 
     #region ShipControlls
@@ -369,6 +371,10 @@ public class Ship : Unit {
         maxSetSpeed = maxspeed;
     }
 
+    public float GetMaxSetSpeed() {
+        return maxSetSpeed;
+    }
+
     public float GetThrust() {
         return thrust;
     }
@@ -422,6 +428,16 @@ public class Ship : Unit {
         base.Explode();
         shipAI.ClearCommands();
         thrusting = false;
+    }
+
+    public Ship FillRequiredCrew() {
+        var populationRequired = new Population(shipScriptableObject.crewNeeded);
+        moduleSystem.Get<Bridge>().ForEach(b => populationRequired.SubtractPopulation(b.population));
+        foreach (Bridge bridge in moduleSystem.Get<Bridge>()) {
+            populationRequired.MovePopulationTo(bridge.population, bridge.GetFreeSpace());
+            if (populationRequired.TotalPopulation() == 0) break;
+        }
+        return this;
     }
 
     #endregion
@@ -480,7 +496,7 @@ public class Ship : Unit {
     }
 
     public bool IsCivilianShip() {
-        return shipScriptableObject.shipType == ShipType.Civilian;
+        return shipScriptableObject.shipType == ShipType.Shuttle;
     }
 
     public float GetMass() {

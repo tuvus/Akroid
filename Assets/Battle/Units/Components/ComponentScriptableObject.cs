@@ -5,7 +5,7 @@ using static CargoBay;
 
 public abstract class ComponentScriptableObject : ScriptableObject {
     public long cost;
-    public List<CargoTypes> resourceTypes;
+    public List<CargoType> resourceTypes;
     public List<long> resourceCosts;
     public ComponentScriptableObject upgrade;
 
@@ -21,7 +21,7 @@ public abstract class ComponentScriptableObject : ScriptableObject {
         resourceCosts.Clear();
     }
 
-    protected void AddResourceCost(CargoTypes type, long cost) {
+    protected void AddResourceCost(CargoType type, long cost) {
         int metalIndex = resourceTypes.IndexOf(type);
         if (metalIndex == -1) {
             resourceTypes.Add(type);

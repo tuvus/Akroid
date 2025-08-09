@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 42721
   resourceTypes: 0100000002000000
-  resourceCosts: 9e210000000000002a01000000000000
+  resourceCosts: 9e210000000000003100000000000000
   prefabPath: Prefabs/StationPrefabs/DefenceStation
   prefab: {fileID: 7158030276076730609, guid: b137e15685cd8db4d9bf16a386fb2a68, type: 3}
   unitName: DefenceStation

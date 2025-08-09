@@ -18,8 +18,8 @@ public class FactionCommManager {
         delayedCommunications = new List<DelayCommunication>();
     }
     public Faction faction { get; }
-    public event Action<CommunicationEvent> OnCommunicationRecieved = delegate { };
-    public event Action<int> OnCommunicationEventDeativated = delegate { };
+    public event Action<CommunicationEvent> OnCommunicationReceived = delegate { };
+    public event Action<int> OnCommunicationEventDeactivated = delegate { };
 
     public void UpdateCommunications() {
         while (delayedCommunications.Count > 0 &&
@@ -67,7 +67,7 @@ public class FactionCommManager {
         receivedCommunication.receiver = this;
         communicationLog.Add(receivedCommunication);
         if (IsLocalPlayer()) {
-            OnCommunicationRecieved(receivedCommunication);
+            OnCommunicationReceived(receivedCommunication);
         } else if (receivedCommunication.options != null && receivedCommunication.optionChoiceLogic != null) {
             receivedCommunication.ChooseOption(receivedCommunication.optionChoiceLogic(receivedCommunication));
         }
@@ -80,7 +80,7 @@ public class FactionCommManager {
     #region HelperMethods
 
     public void DeactivateCommunicationEvent(CommunicationEvent communicationEvent) {
-        OnCommunicationEventDeativated(communicationLog.IndexOf(communicationEvent));
+        OnCommunicationEventDeactivated(communicationLog.IndexOf(communicationEvent));
     }
 
     public bool IsLocalPlayer() {

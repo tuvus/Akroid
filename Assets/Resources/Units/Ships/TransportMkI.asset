@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5352bebb7ecf9e45a808dfa450fc9cb, type: 3}
   m_Name: TransportMkI
   m_EditorClassIdentifier: 
-  cost: 9028
+  cost: 9053
   resourceTypes: 0100000002000000
-  resourceCosts: 0e050000000000001a01000000000000
+  resourceCosts: 22050000000000005400000000000000
   prefabPath: Prefabs/ShipPrefabs/Transport
   prefab: {fileID: 9215602423523637135, guid: ca496db1332dd3d4c8785fd2ca34d0b7, type: 3}
   unitName: Transport
@@ -37,6 +37,11 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 998cafad1cfed9545bfb57b568021db3, type: 2}
     moduleSize: 0
     moduleCount: 2
+  - name: Bridge
+    type: 5
+    component: {fileID: 11400000, guid: 0353fa6af1846bfc58efdc5838966e51, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 5, y: 12.91}
@@ -44,5 +49,10 @@ MonoBehaviour:
   shipType: 1
   turnSpeed: 40
   combatRotation: 0
+  crewNeeded:
+    civilians: 0
+    pilots: 2
+    engineers: 2
+    marines: 0
   baseMass: 645.5
   baseSpeed: 20.325329

@@ -49,7 +49,7 @@ public class BattleManager {
     protected float startOfSimulation;
     public EventManager eventManager { get; protected set; }
 
-    public Dictionary<CargoBay.CargoTypes, float> baseResourcePrice;
+    public Dictionary<CargoBay.CargoType, float> baseResourcePrice;
 
     public HashSet<Faction> factions { get; protected set; }
     public HashSet<BattleObject> battleObjects { get; protected set; }
@@ -154,9 +154,9 @@ public class BattleManager {
         usedMissiles = new HashSet<Missile>(100);
         unusedMissiles = new HashSet<Missile>(100);
         players = new HashSet<Player>();
-        baseResourcePrice = new Dictionary<CargoBay.CargoTypes, float>();
-        baseResourcePrice.Add(CargoBay.CargoTypes.Metal, 8.4f);
-        baseResourcePrice.Add(CargoBay.CargoTypes.Gas, 19.5f);
+        baseResourcePrice = new Dictionary<CargoBay.CargoType, float>();
+        baseResourcePrice.Add(CargoBay.CargoType.Metal, 8.4f);
+        baseResourcePrice.Add(CargoBay.CargoType.Gas, 19.5f);
 
         for (int i = 0; i < 100; i++) {
             PreSpawnNewProjectile();
@@ -200,7 +200,7 @@ public class BattleManager {
 
         foreach (Faction faction in factions) {
             if (faction.GetFleetCommand() != null)
-                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoTypes.Gas);
+                faction.GetFleetCommand().LoadCargo(2400 * 4, CargoBay.CargoType.Gas);
             foreach (Faction faction2 in factions) {
                 if (faction == faction2) continue;
                 faction.AddEnemyFaction(faction2);
@@ -320,7 +320,6 @@ public class BattleManager {
         } else if (stationScriptableObject.stationType == StationType.MiningStation) {
             newStation = new MiningStation(battleObjectData, this,
                 (MiningStationScriptableObject)stationScriptableObject, built);
-            ((MiningStation)newStation).GetMiningStationAI().SetupMiningStation();
         } else newStation = new Station(battleObjectData, this, stationScriptableObject, built);
 
         newStation.SetupPosition(battleObjectData.positionGiver);
@@ -343,7 +342,6 @@ public class BattleManager {
         if (built) {
             units.Add(newStation);
             stations.Add(newStation);
-            newStation.GetMiningStationAI().SetupMiningStation();
         } else {
             stationsInProgress.Add(newStation);
         }
@@ -408,7 +406,7 @@ public class BattleManager {
         GasCloud newGasCloud = new GasCloud(
             new BattleObject.BattleObjectData("Gas Cloud", Vector2.zero, random.NextFloat(0, 360), Vector2.one * size),
             this,
-            (long)(random.NextFloat(1500, 3500) * size * resourceModifier),
+            (long)(random.NextFloat(3000, 5500) * size * resourceModifier),
             gasCloudBlueprints[random.NextInt(0, gasCloudBlueprints.Count)]);
         newGasCloud.SetupPosition(positionGiver);
         gasClouds.Add(newGasCloud);

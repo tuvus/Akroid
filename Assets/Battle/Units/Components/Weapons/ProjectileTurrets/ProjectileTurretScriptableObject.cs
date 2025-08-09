@@ -42,7 +42,7 @@ public class ProjectileTurretScriptableObject : TurretScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(GetDamagePerSecond() * 15 * (rotateSpeed / 80) * (range / 300));
-        AddResourceCost(CargoBay.CargoTypes.Metal, (long)(GetDamagePerSecond() * 8));
-        AddResourceCost(CargoBay.CargoTypes.Gas, (long)(GetDamagePerSecond() * 7));
+        AddResourceCost(CargoBay.CargoType.Metal, (long)(GetDamagePerSecond() * 8));
+        AddResourceCost(CargoBay.CargoType.Gas, (long)(GetDamagePerSecond() * 1));
     }
 }

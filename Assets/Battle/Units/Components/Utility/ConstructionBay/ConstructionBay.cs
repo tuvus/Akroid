@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using static Ship;
 
-public class ConstructionBay : ModuleComponent {
+public class ConstructionBay : HabitationArea {
     [SerializeField] public List<ShipConstructionBlueprint> buildQueue;
     private ConstructionBayScriptableObject constructionBayScriptableObject;
 
@@ -16,8 +17,8 @@ public class ConstructionBay : ModuleComponent {
         constructionBayScriptableObject = (ConstructionBayScriptableObject)componentScriptableObject;
 
         if (unit.IsStation()) {
-            ((Station)unit).ReserveCargo(1200 * 12, CargoBay.CargoTypes.Metal);
-            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoTypes.Gas);
+            ((Station)unit).ReserveCargo(1200 * 12, CargoBay.CargoType.Metal);
+            ((Station)unit).ReserveCargo(1200 * 8, CargoBay.CargoType.Gas);
         }
         buildQueue = new List<ShipConstructionBlueprint>(10);
     }
@@ -28,17 +29,26 @@ public class ConstructionBay : ModuleComponent {
     }
 
     public bool AddConstructionToQueue(ShipConstructionBlueprint shipBlueprint) {
-        if (shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) {
-            unit.faction.UseCredits(shipBlueprint.cost);
-            buildQueue.Add(shipBlueprint);
-            return true;
-        }
+        if (!CanBuildBlueprint(shipBlueprint))
+            throw new Exception("Trying to build a ship blueprint that can't be built by this construction bay! " +
+                shipBlueprint.name);
 
-        return false;
+        if (!shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) return false;
+        unit.faction.UseCredits(shipBlueprint.cost);
+        buildQueue.Add(shipBlueprint);
+        return true;
+
     }
 
-    public void AddConstructionToBeginningQueue(ShipConstructionBlueprint shipBlueprint) {
+    public bool AddConstructionToBeginningQueue(ShipConstructionBlueprint shipBlueprint) {
+        if (!CanBuildBlueprint(shipBlueprint))
+            throw new Exception("Trying to build a ship blueprint that can't be built by this construction bay! " +
+                shipBlueprint.name);
+
+        if (!shipBlueprint.GetFaction().TransferCredits(shipBlueprint.cost, unit.faction)) return false;
+        unit.faction.UseCredits(shipBlueprint.cost);
         buildQueue.Insert(0, shipBlueprint);
+        return true;
     }
 
     public void RemoveBlueprintFromQueue(int index) {
@@ -50,6 +60,11 @@ public class ConstructionBay : ModuleComponent {
 
     public void UpdateConstructionBay(float deltaTime) {
         constructionTime -= deltaTime;
+        if (unit is Station station) {
+            long engineersWanted = constructionBayScriptableObject.engineersRequired - population.engineers;
+            station.RequestPersonnel(this, new Population(0, 0, engineersWanted));
+        }
+
         if (constructionTime <= 0) {
             int amountMultiplier =
                 (int)(Mathf.Abs(constructionTime) / constructionBayScriptableObject.constructionSpeed) + 1;
@@ -60,9 +75,10 @@ public class ConstructionBay : ModuleComponent {
 
     private void UpdateConstruction(int amountMultiplier) {
         int availableConstructionBays = constructionBayScriptableObject.constructionBays;
-        long buildAmount = constructionBayScriptableObject.constructionAmount * amountMultiplier;
+        long buildAmount = (long)(constructionBayScriptableObject.constructionAmount * amountMultiplier
+            * constructionBayScriptableObject.engineersRequired / (double)population.engineers);
         if (buildAmount <= 0) return;
-        Dictionary<CargoBay.CargoTypes, long> cargoReserved = new Dictionary<CargoBay.CargoTypes, long>();
+        Dictionary<CargoBay.CargoType, long> cargoReserved = new Dictionary<CargoBay.CargoType, long>();
 
         foreach (ShipConstructionBlueprint shipBlueprint in buildQueue.ToList()) {
             if (availableConstructionBays == 0) return;
@@ -70,9 +86,9 @@ public class ConstructionBay : ModuleComponent {
             availableConstructionBays--;
 
             // We need to copy the ResourceCosts Dictionary so that we can concurrently remove entries
-            foreach (KeyValuePair<CargoBay.CargoTypes, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
-                long availableCargo = math.max(0,
-                    unit.GetAllCargoOfType(resourceCost.Key, true) - cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
+            foreach (KeyValuePair<CargoBay.CargoType, long> resourceCost in shipBlueprint.resourceCosts.ToList()) {
+                long availableCargo = math.max(0, unit.GetAllCargoOfType(resourceCost.Key, true) -
+                    cargoReserved.GetValueOrDefault(resourceCost.Key, 0));
                 long amountToUse = math.min(availableCargo, math.min(buildAmount, resourceCost.Value));
                 shipBlueprint.resourceCosts[resourceCost.Key] -= amountToUse;
                 unit.UseCargo(amountToUse, resourceCost.Key);
@@ -135,5 +151,17 @@ public class ConstructionBay : ModuleComponent {
 
     public int GetConstructionBays() {
         return constructionBayScriptableObject.constructionBays;
+    }
+
+    public override bool IsTransferHabitat() {
+        return false;
+    }
+
+    public void FillEmployees(float ratio = 1f) {
+        population.engineers = (long)(constructionBayScriptableObject.engineersRequired * ratio);
+    }
+
+    public bool CanBuildBlueprint(ShipBlueprint shipBlueprint) {
+        return shipBlueprint.shipScriptableObject.spriteSize <= constructionBayScriptableObject.maxBuildSize;
     }
 }

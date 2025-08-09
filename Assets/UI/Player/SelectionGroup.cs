@@ -365,8 +365,9 @@ public class SelectionGroup {
         return objects.All(obj => obj.battleObject.IsShip() && ((ShipUI)obj).ship.IsGasCollectorShip());
     }
 
-    public bool ContainsOnlyTransportShips() {
-        return objects.All(obj => obj.battleObject.IsShip() && ((ShipUI)obj).ship.IsTransportShip());
+    public bool ContainsOnlyTradeTransportShips() {
+        return objects.All(obj =>
+            obj.battleObject.IsShip() && (((ShipUI)obj).ship.IsTransportShip() || ((ShipUI)obj).ship.IsCivilianShip()));
     }
 
     public bool ContainsOnlyColonizerShips() {

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d21f91b94093424e9925688a4c0db5b, type: 3}
   m_Name: MiningStation
   m_EditorClassIdentifier: 
-  cost: 24183
+  cost: 26183
   resourceTypes: 0100000002000000
-  resourceCosts: 010f0000000000007201000000000000
+  resourceCosts: 830f0000000000003d00000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   prefab: {fileID: 831600065110085484, guid: 604e1434a52205a4890f62bb79245dfc, type: 3}
   unitName: MiningStation
@@ -37,13 +37,17 @@ MonoBehaviour:
     component: {fileID: 11400000, guid: 982da7acc5b18164f8341d47b9b8f893, type: 2}
     moduleSize: 0
     moduleCount: 1
+  - name: Utility
+    type: 1
+    component: {fileID: 11400000, guid: bb58a1fc589a7fcf8a49d79935b48e31, type: 2}
+    moduleSize: 0
+    moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 0.5, y: 0.5}
   <spriteBounds>k__BackingField: {x: 92.3, y: 90.3}
+  <spriteSize>k__BackingField: 23.075
   stationType: 3
   repairAmount: 100
   repairSpeed: 5
   rotationSpeed: 0.2
-  miningAmount: 600
-  miningSpeed: 10
   miningRange: 500

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 307c188af4fc4290ab51f3e6ac13980f, type: 3}
+  m_Name: MiningBayMkII
+  m_EditorClassIdentifier: 
+  cost: 3500
+  resourceTypes: 01000000
+  resourceCosts: d200000000000000
+  upgrade: {fileID: 0}
+  populationSpace: 0
+  miningAmount: 700
+  miningSpeed: 10
+  miningRange: 500
+  engineersRequired: 44

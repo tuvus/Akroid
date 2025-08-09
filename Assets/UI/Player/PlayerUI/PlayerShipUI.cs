@@ -75,7 +75,7 @@ public class PlayerShipUI : PlayerUIMenu<ShipUI> {
             cargoBayCapacity.text = "Cargo bay capacity " + NumFormatter.ConvertNumber(cargoBay.GetCargoBayCapacity());
 
             int cargoBayIndex = 0;
-            foreach (KeyValuePair<CargoBay.CargoTypes, long> cargoBayType in cargoBay.cargoBays) {
+            foreach (KeyValuePair<CargoBay.CargoType, long> cargoBayType in cargoBay.cargoBays) {
                 int numberOfCargoBaysUsed = cargoBay.GetCargoBaysUsedByType(cargoBayType.Key);
                 for (int i = 0; i < numberOfCargoBaysUsed; i++) {
                     if (cargoBayList.childCount <= cargoBayIndex + i) {

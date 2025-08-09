@@ -23,6 +23,7 @@ public class PrefabModuleSystemEditor : Editor {
         Button addSystemButton = new Button(() => {
             moduleSystem.AddSystem(dropdownField.value, (PrefabModuleSystem.SystemType)dropdownField.index);
             selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
+            selectSystem.SetValueWithoutNotify(selectSystem.highValue);
         }) {
             text = "AddSystem"
         };

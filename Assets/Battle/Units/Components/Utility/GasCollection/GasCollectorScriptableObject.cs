@@ -14,6 +14,6 @@ public class GasCollectorScriptableObject : ComponentScriptableObject {
     protected override void UpdateCosts() {
         base.UpdateCosts();
         cost += (long)(collectionAmount / collectionSpeed * 2);
-        AddResourceCost(CargoBay.CargoTypes.Metal, collectionAmount / 4);
+        AddResourceCost(CargoBay.CargoType.Metal, collectionAmount / 4);
     }
 }
