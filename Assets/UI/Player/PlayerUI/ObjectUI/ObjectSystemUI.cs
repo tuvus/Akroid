@@ -9,6 +9,9 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text maxComponentSize;
     private Unit unit;
     private ModuleSystem.System displayedSystem;
+    [SerializeField] private TMP_Text upgradeText;
+    [SerializeField] private TMP_Text upgradeCost;
+    [SerializeField] private Transform componentListTransform;
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
