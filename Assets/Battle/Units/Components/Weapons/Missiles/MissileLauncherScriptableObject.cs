@@ -44,4 +44,8 @@ public class MissileLauncherScriptableObject : ComponentScriptableObject {
         AddResourceCost(CargoBay.CargoType.Metal, (long)(GetDamagePerSecond() * 4));
         AddResourceCost(CargoBay.CargoType.Gas, (long)(GetDamagePerSecond() * 14 * (range / 500)));
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Weapon;
+    }
 }

@@ -26,4 +26,8 @@ public class ShieldGeneratorScriptableObject : ComponentScriptableObject {
         cost += (long)(shieldRegenHealth / shieldRegenRate * 14 + maxShieldHealth);
         AddResourceCost(CargoBay.CargoType.Metal, maxShieldHealth / 2);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

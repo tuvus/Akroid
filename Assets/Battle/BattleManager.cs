@@ -37,6 +37,7 @@ public class BattleManager {
     public List<AsteroidScriptableObject> asteroidBlueprints;
     public List<GasCloudScriptableObject> gasCloudBlueprints;
     public List<StarScriptableObject> starBlueprints;
+    public List<ComponentScriptableObject> components;
 
     [SerializeField] protected bool threaded = true;
     public bool instantHit;

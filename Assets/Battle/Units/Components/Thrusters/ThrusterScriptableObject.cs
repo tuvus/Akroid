@@ -25,4 +25,8 @@ public class ThrusterScriptableObject : ComponentScriptableObject {
         AddResourceCost(CargoBay.CargoType.Metal, (long)(thrustSpeed / 50));
         AddResourceCost(CargoBay.CargoType.Gas, (long)(thrustSpeed / 200));
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Thruster;
+    }
 }

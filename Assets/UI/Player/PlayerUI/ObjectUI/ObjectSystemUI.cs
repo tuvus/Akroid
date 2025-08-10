@@ -1,3 +1,4 @@
+using System.IO.IsolatedStorage;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text upgradeName;
     [SerializeField] private TMP_Text upgradeCost;
     [SerializeField] private Transform componentListTransform;
+    [SerializeField] private GameObject componentButtonPrefab;
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
@@ -38,16 +40,50 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
         if (displayedSystem.component.upgrade != null) {
             upgradeButton.transform.parent.gameObject.SetActive(true);
             upgradeName.text = displayedSystem.component.upgrade.name;
-            upgradeCost.text = "Cost: " + displayedSystem.component.upgrade.cost;
+            upgradeCost.text = "Cost: " + NumFormatter.ConvertNumber((displayedSystem.component.upgrade.cost -
+                displayedSystem.component.cost) * displayedSystem.moduleCount);
             upgradeButton.interactable =
-                unit.moduleSystem.CanUpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem), unit);
+                unit.moduleSystem.CanUpgradeSystem(displayedSystem, unit);
             if (!upgradeButton.interactable && unit is Ship ship && ship.dockedStation != null) {
-                upgradeButton.interactable =
-                    unit.moduleSystem.CanUpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem),
-                        ship.dockedStation);
+                upgradeButton.interactable = unit.moduleSystem.CanUpgradeSystem(displayedSystem, ship.dockedStation);
             }
         } else {
             upgradeButton.transform.parent.gameObject.SetActive(false);
+        }
+
+        int index = 0;
+        foreach (var componentScriptableObject in uiBattleManager.battleManager.components) {
+            if (!unit.moduleSystem.IsComponentCompatibleOnSystem(displayedSystem, componentScriptableObject)
+                || componentScriptableObject == displayedSystem.component)
+                continue;
+
+            if (index == componentListTransform.childCount)
+                Instantiate(componentButtonPrefab, componentListTransform);
+
+            Button component = componentListTransform.GetChild(index).GetComponent<Button>();
+            component.transform.GetChild(0).GetComponent<TMP_Text>().text =
+                componentScriptableObject.name == "Empty" ? "Remove" : componentScriptableObject.name;
+            component.transform.GetChild(1).GetComponent<TMP_Text>().text =
+                "Cost: " + NumFormatter.ConvertNumber(componentScriptableObject.cost * displayedSystem.moduleCount);
+            component.gameObject.SetActive(true);
+            component.onClick.RemoveAllListeners();
+            component.onClick.AddListener(() => {
+                unit.moduleSystem.ReplaceSystem(displayedSystem, componentScriptableObject,
+                    unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit)
+                        ? unit : ((Ship)unit).dockedStation);
+            });
+
+            component.interactable =
+                unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit);
+            if (!component.interactable && unit is Ship ship && ship.dockedStation != null)
+                component.interactable =
+                    unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, ship.dockedStation);
+
+            index++;
+        }
+
+        for (int i = index; i < componentListTransform.childCount; i++) {
+            componentListTransform.GetChild(i).gameObject.SetActive(false);
         }
     }
 

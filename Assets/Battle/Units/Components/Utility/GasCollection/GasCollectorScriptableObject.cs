@@ -16,4 +16,8 @@ public class GasCollectorScriptableObject : ComponentScriptableObject {
         cost += (long)(collectionAmount / collectionSpeed * 2);
         AddResourceCost(CargoBay.CargoType.Metal, collectionAmount / 4);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

@@ -16,4 +16,8 @@ public class CargoBayScriptableObject : ComponentScriptableObject {
         cost += maxCargoBays * cargoBaySize / 50;
         AddResourceCost(CargoBay.CargoType.Metal, maxCargoBays * cargoBaySize / 20);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

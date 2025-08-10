@@ -29,7 +29,7 @@ public abstract class UnitUI : BattleObjectUI {
             Module module = prefabModuleSystem.modules[i];
             ModuleSystem.System system = unit.moduleSystem.moduleToSystem[moduleComponent];
 
-            if (system.type == PrefabModuleSystem.SystemType.Turret) {
+            if (system.type == ModuleSystem.SystemType.Turret) {
                 TurretUI turretUI;
                 if (unit.moduleSystem.moduleToSystem[moduleComponent].component is LaserTurretScriptableObject) {
                     turretUI = module.gameObject.AddComponent<LaserTurretUI>();
@@ -42,11 +42,11 @@ public abstract class UnitUI : BattleObjectUI {
 
                 components.Add(turretUI);
                 turretUI.Setup(moduleComponent, uIManager, this);
-            } else if (system.type == PrefabModuleSystem.SystemType.Thruster) {
+            } else if (system.type == ModuleSystem.SystemType.Thruster) {
                 ThrusterUI thrusterUI = module.gameObject.AddComponent<ThrusterUI>();
                 components.Add(thrusterUI);
                 thrusterUI.Setup(moduleComponent, uIManager, this);
-            } else if (system.type == PrefabModuleSystem.SystemType.Utility &&
+            } else if (system.type == ModuleSystem.SystemType.Utility &&
                 system.component is ShieldGeneratorScriptableObject) {
                 ShieldGenderatorUI shieldGeneratorUI = module.gameObject.AddComponent<ShieldGenderatorUI>();
                 components.Add(shieldGeneratorUI);

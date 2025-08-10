@@ -24,7 +24,7 @@ public class ModuleSystemTests {
         MockModule mockModule = new MockModule();
         unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System> {
             new ModuleSystem.System(
-                new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                new PrefabModuleSystem.PrefabSystem("TestSystem", ModuleSystem.SystemType.Thruster, 10, 1),
                 component)
         }, new List<IModule> { mockModule });
 
@@ -34,7 +34,7 @@ public class ModuleSystemTests {
         ModuleSystem moduleSystem = unit.Object.moduleSystem;
         Assert.AreEqual(1, moduleSystem.systems.Count);
         Assert.AreEqual("TestSystem", moduleSystem.systems.First().name);
-        Assert.AreEqual(PrefabModuleSystem.SystemType.Thruster, moduleSystem.systems.First().type);
+        Assert.AreEqual(ModuleSystem.SystemType.Thruster, moduleSystem.systems.First().type);
         Assert.AreEqual(component, moduleSystem.systems.First().component);
         Assert.AreEqual(component, moduleSystem.modules.First().componentScriptableObject);
         Assert.AreEqual(mockModule, moduleSystem.modules.First().module);
@@ -66,7 +66,7 @@ public class ModuleSystemTests {
         MockModule mockModule = new MockModule();
         unitScriptableObject.SetupMock("TestUnit", 1000, 10000, new List<ModuleSystem.System> {
             new ModuleSystem.System(
-                new PrefabModuleSystem.PrefabSystem("TestSystem", PrefabModuleSystem.SystemType.Thruster, 10, 1),
+                new PrefabModuleSystem.PrefabSystem("TestSystem", ModuleSystem.SystemType.Thruster, 10, 1),
                 component)
         }, new List<IModule> { mockModule });
 

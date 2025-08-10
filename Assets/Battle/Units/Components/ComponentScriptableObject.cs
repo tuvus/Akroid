@@ -32,4 +32,6 @@ public abstract class ComponentScriptableObject : ScriptableObject {
 
         resourceCosts[metalIndex] += cost;
     }
+
+    public abstract ModuleSystem.SystemType GetSystemType();
 }

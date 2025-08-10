@@ -36,4 +36,8 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public virtual float GetDamagePerSecond() {
         return 0;
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Turret;
+    }
 }

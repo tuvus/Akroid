@@ -18,4 +18,8 @@ public class ResearchEquipmentScriptableObject : ComponentScriptableObject {
         cost += (long)(researchAmount / researchSpeed * 30);
         AddResourceCost(CargoBay.CargoType.Metal, maxData);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

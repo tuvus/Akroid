@@ -9,6 +9,15 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 public class ModuleSystem {
+    public enum SystemType {
+        Any,
+        Utility,
+        Weapon,
+        Turret,
+        Thruster,
+        Bridge
+    }
+
     [field: SerializeField] public List<System> systems { get; private set; }
 
     private Unit unit;
@@ -19,11 +28,11 @@ public class ModuleSystem {
     [Serializable]
     public class System {
         public string name;
-        public PrefabModuleSystem.SystemType type;
+        public ModuleSystem.SystemType type;
         public ComponentScriptableObject component;
         public int moduleSize;
 
-        public System(string name, PrefabModuleSystem.SystemType type) {
+        public System(string name, ModuleSystem.SystemType type) {
             this.name = name;
             this.type = type;
             moduleCount = 0;
@@ -86,6 +95,12 @@ public class ModuleSystem {
 
     #region SystemUpgrades
 
+    public bool IsComponentCompatibleOnSystem(System system, ComponentScriptableObject component) {
+        if (component.GetSystemType() != SystemType.Any &&
+            component.GetSystemType() != system.type) return false;
+        return true;
+    }
+
     public ComponentScriptableObject GetSystemUpgrade(int system) {
         return systems[system].component.upgrade;
     }
@@ -97,16 +112,16 @@ public class ModuleSystem {
     public bool CanUpgradeSystem(System system, Unit upgrader) {
         ComponentScriptableObject current = system.component;
         ComponentScriptableObject upgrade = current.upgrade;
+        if (!IsComponentCompatibleOnSystem(system, upgrade)) return false;
         if (upgrade == null) return false;
-        if (upgrader.faction.credits >= (upgrade.cost - current.cost) * system.moduleCount) {
-            for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
-                long currentAmount = 0;
-                int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
-                if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
-                if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i], true) <
-                    upgrade.resourceCosts[i] - currentAmount) {
-                    return false;
-                }
+        if (upgrader.faction.credits < (upgrade.cost - current.cost) * system.moduleCount) return false;
+        for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
+            long currentAmount = 0;
+            int currentTypeIndex = current.resourceTypes.IndexOf(upgrade.resourceTypes[i]);
+            if (currentTypeIndex >= 0) currentAmount = current.resourceCosts[currentTypeIndex];
+            if (upgrader.GetAllCargoOfType(upgrade.resourceTypes[i], true) <
+                upgrade.resourceCosts[i] - currentAmount) {
+                return false;
             }
         }
 
@@ -132,21 +147,42 @@ public class ModuleSystem {
         systems[systems.IndexOf(system)].component = upgrade;
 
         //Upgrade the moduleComponents
-
-        // Creating an entirely new module for upgrading allows for us to upgrade into different components.
-        // However, this causes a problem with any state the old component might have had and any temporary variables referring to it.
-        // Therefore, I have disabled the extra functionality for now, although it might never be used again.
-        // for (int i = 0; i < modules.Count(); i++) {
-        //     ModuleComponent oldModule = modules[i];
-        //     if (moduleToSystem[oldModule] == system) {
-        //         object[] args = { unit.battleManager, oldModule.module, unit, upgrade };
-        //         modules[i] = (ModuleComponent)Activator.CreateInstance(upgrade.GetComponentType(), args);
-        //         moduleToSystem.Remove(oldModule);
-        //         moduleToSystem.Add(modules[i], system);
-        //     }
-        // }
         modules.Where(m => moduleToSystem[m] == system).ToList()
             .ForEach(m => m.Upgrade(upgrade));
+    }
+
+    public bool CanReplaceSystem(System system, ComponentScriptableObject replacement, Unit upgrader) {
+        if (!IsComponentCompatibleOnSystem(system, replacement)) return false;
+        if (upgrader.faction.credits < replacement.cost * system.moduleCount) return false;
+        for (int i = 0; i < replacement.resourceTypes.Count; i++) {
+            if (upgrader.GetAllCargoOfType(replacement.resourceTypes[i], true) < replacement.resourceCosts[i])
+                return false;
+        }
+        return true;
+    }
+
+    public void ReplaceSystem(System system, ComponentScriptableObject replacement, Unit upgrader) {
+        if (!CanReplaceSystem(system, replacement, upgrader))
+            Debug.LogError("Trying to replace a component that can't be paid for!");
+
+        //Pay for the upgrade cost
+        upgrader.faction.UseCredits(replacement.cost * system.moduleCount);
+        for (int i = 0; i < replacement.resourceTypes.Count; i++) {
+            upgrader.UseCargo(replacement.resourceCosts[i], replacement.resourceTypes[i]);
+        }
+        systems[systems.IndexOf(system)].component = replacement;
+
+
+        for (int i = 0; i < modules.Count; i++) {
+            ModuleComponent oldModule = modules[i];
+            if (moduleToSystem[oldModule] != system) continue;
+
+            object[] args = { unit.battleManager, oldModule.module, unit, replacement };
+            modules[i] = (ModuleComponent)Activator.CreateInstance(replacement.GetComponentType(), args);
+            moduleToSystem.Remove(oldModule);
+            moduleToSystem.Add(modules[i], system);
+        }
+
     }
 
     #endregion

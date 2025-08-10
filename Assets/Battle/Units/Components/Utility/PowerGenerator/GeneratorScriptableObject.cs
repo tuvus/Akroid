@@ -19,4 +19,8 @@ public class GeneratorScriptableObject : ComponentScriptableObject {
         cost += (long)(85 * energyGain / (consumptionAmount * consumptionSpeed));
         AddResourceCost(CargoBay.CargoType.Metal, consumptionAmount * 5);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

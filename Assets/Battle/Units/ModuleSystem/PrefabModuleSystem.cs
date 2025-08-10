@@ -11,26 +11,17 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 public class PrefabModuleSystem : MonoBehaviour {
-    public enum SystemType {
-        Any,
-        Utility,
-        Weapon,
-        Turret,
-        Thruster,
-        Bridge
-    }
-
     [field: SerializeField] public List<PrefabSystem> systems { get; private set; } = new List<PrefabSystem>();
     [field: SerializeField] public List<Module> modules { get; private set; } = new List<Module>();
 
     [Serializable]
     public struct PrefabSystem {
         public string name;
-        public SystemType type;
+        public ModuleSystem.SystemType type;
         public int moduleSize;
         public int moduleCount;
 
-        public PrefabSystem(string name, SystemType type) {
+        public PrefabSystem(string name, ModuleSystem.SystemType type) {
             this.name = name;
             this.type = type;
             moduleCount = 0;
@@ -44,7 +35,7 @@ public class PrefabModuleSystem : MonoBehaviour {
             this.moduleCount = moduleCount;
         }
 
-        public PrefabSystem(string name, SystemType type, int moduleSize, int moduleCount) {
+        public PrefabSystem(string name, ModuleSystem.SystemType type, int moduleSize, int moduleCount) {
             this.name = name;
             this.type = type;
             this.moduleSize = moduleSize;
@@ -55,10 +46,10 @@ public class PrefabModuleSystem : MonoBehaviour {
     #region SystemsAndModules
 
     public void AddSystem() {
-        systems.Add(new PrefabSystem("New System", SystemType.Any));
+        systems.Add(new PrefabSystem("New System", ModuleSystem.SystemType.Any));
     }
 
-    public void AddSystem(string name, SystemType type) {
+    public void AddSystem(string name, ModuleSystem.SystemType type) {
         systems.Add(new PrefabSystem(name, type));
     }
 
