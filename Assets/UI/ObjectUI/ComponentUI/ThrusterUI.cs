@@ -20,8 +20,8 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         main.simulationSpeed = speed;
     }
 
-    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
-        base.Setup(battleObject, uIManager, unitUI);
+    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
+        base.Setup(battleObject, uIManager, unitUI, componentIndex);
         thruster = (Thruster)battleObject;
         shipUI = (ShipUI)unitUI;
         Instantiate(thruster.GetPrefab(), transform);
@@ -43,6 +43,12 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
         uIManager.uiBattleManager.particleHolders.Add(this);
     }
 
+    public override void RemoveComponent() {
+        DestroyImmediate(gameObject.GetComponent<AudioSource>());
+        DestroyImmediate(transform.GetChild(0).gameObject);
+        spriteRenderer.enabled = false;
+    }
+
     public override void UpdateObject() {
         base.UpdateObject();
 
@@ -54,7 +60,6 @@ public class ThrusterUI : ComponentUI, IParticleHolder {
             thrusting = false;
             EndThrust();
         }
-
 
         if (thrusting) {
             // Only show the thrust effects if the ship is being looked at

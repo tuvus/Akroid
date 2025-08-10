@@ -3,12 +3,16 @@ using UnityEngine;
 public abstract class ComponentUI : BattleObjectUI {
     public ModuleComponent moduleComponent { get; private set; }
     protected UnitUI unitUI { get; private set; }
+    public int componentIndex { get; private set; }
 
-    public virtual void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
+    public virtual void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
         base.Setup(battleObject, uIManager);
         this.unitUI = unitUI;
         moduleComponent = (ModuleComponent)battleObject;
+        this.componentIndex = componentIndex;
     }
+
+    public abstract void RemoveComponent();
 
     public abstract void OnUnitDestroyed();
     public abstract void OnUnitRemoved();

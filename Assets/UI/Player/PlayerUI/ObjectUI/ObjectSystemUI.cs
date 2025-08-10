@@ -71,6 +71,7 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
                 unit.moduleSystem.ReplaceSystem(displayedSystem, componentScriptableObject,
                     unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit)
                         ? unit : ((Ship)unit).dockedStation);
+                UpdateMenu();
             });
 
             component.interactable =

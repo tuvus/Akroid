@@ -4,8 +4,8 @@ public class ProjectileTurretUI : TurretUI {
     private SpriteRenderer flash;
     private ProjectileTurret projectileTurret;
 
-    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
-        base.Setup(battleObject, uIManager, unitUI);
+    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
+        base.Setup(battleObject, uIManager, unitUI, componentIndex);
         projectileTurret = (ProjectileTurret)battleObject;
         spriteRenderer.sprite = projectileTurret.turretScriptableObject.sprite;
         spriteRenderer.enabled = true;

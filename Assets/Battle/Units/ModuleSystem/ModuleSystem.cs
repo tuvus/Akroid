@@ -24,6 +24,7 @@ public class ModuleSystem {
 
     [field: SerializeField] public List<ModuleComponent> modules { get; private set; }
     public Dictionary<ModuleComponent, System> moduleToSystem { get; private set; }
+    public event Action OnSystemReplaced = delegate { };
 
     [Serializable]
     public class System {
@@ -112,8 +113,8 @@ public class ModuleSystem {
     public bool CanUpgradeSystem(System system, Unit upgrader) {
         ComponentScriptableObject current = system.component;
         ComponentScriptableObject upgrade = current.upgrade;
-        if (!IsComponentCompatibleOnSystem(system, upgrade)) return false;
         if (upgrade == null) return false;
+        if (!IsComponentCompatibleOnSystem(system, upgrade)) return false;
         if (upgrader.faction.credits < (upgrade.cost - current.cost) * system.moduleCount) return false;
         for (int i = 0; i < upgrade.resourceTypes.Count; i++) {
             long currentAmount = 0;
@@ -149,6 +150,7 @@ public class ModuleSystem {
         //Upgrade the moduleComponents
         modules.Where(m => moduleToSystem[m] == system).ToList()
             .ForEach(m => m.Upgrade(upgrade));
+        OnSystemReplaced();
     }
 
     public bool CanReplaceSystem(System system, ComponentScriptableObject replacement, Unit upgrader) {
@@ -182,7 +184,7 @@ public class ModuleSystem {
             moduleToSystem.Remove(oldModule);
             moduleToSystem.Add(modules[i], system);
         }
-
+        OnSystemReplaced();
     }
 
     #endregion
