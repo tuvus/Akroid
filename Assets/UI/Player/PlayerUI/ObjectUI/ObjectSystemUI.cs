@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ObjectSystemUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text title;
@@ -9,7 +10,8 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
     [SerializeField] private TMP_Text maxComponentSize;
     private Unit unit;
     private ModuleSystem.System displayedSystem;
-    [SerializeField] private TMP_Text upgradeText;
+    [SerializeField] private Button upgradeButton;
+    [SerializeField] private TMP_Text upgradeName;
     [SerializeField] private TMP_Text upgradeCost;
     [SerializeField] private Transform componentListTransform;
 
@@ -32,5 +34,33 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
         systemType.text = "System type: " + displayedSystem.type;
         moduleCount.text = "Module count: " + displayedSystem.moduleCount;
         maxComponentSize.text = "Max component size: " + displayedSystem.moduleSize;
+
+        if (displayedSystem.component.upgrade != null) {
+            upgradeButton.transform.parent.gameObject.SetActive(true);
+            upgradeName.text = displayedSystem.component.upgrade.name;
+            upgradeCost.text = "Cost: " + displayedSystem.component.upgrade.cost;
+            upgradeButton.interactable =
+                unit.moduleSystem.CanUpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem), unit);
+            if (!upgradeButton.interactable && unit is Ship ship && ship.dockedStation != null) {
+                upgradeButton.interactable =
+                    unit.moduleSystem.CanUpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem),
+                        ship.dockedStation);
+            }
+        } else {
+            upgradeButton.transform.parent.gameObject.SetActive(false);
+        }
+    }
+
+    public void UpgradeComponent() {
+        if (!upgradeButton.gameObject.activeSelf)
+            Debug.LogError("Trying to upgrade a system that doesn't have an upgrade!");
+        if (unit.moduleSystem.CanUpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem), unit)) {
+            unit.moduleSystem.UpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem), unit);
+        } else if (unit is Ship ship && ship.dockedStation != null) {
+            unit.moduleSystem.UpgradeSystem(unit.moduleSystem.systems.IndexOf(displayedSystem), ship.dockedStation);
+        } else {
+            Debug.LogError("Trying to upgrade a system that isn't allowed to be upgraded!");
+        }
+        UpdateMenu();
     }
 }

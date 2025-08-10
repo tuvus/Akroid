@@ -59,10 +59,10 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
 
     public override void SetDisplayedObject(ObjectUI objectToDisplay) {
         base.SetDisplayedObject(objectToDisplay);
-        selectedSystem = null;
         constructionUI.SetDisplayedObject(displayedObject);
         hangarUI.SetDisplayedObject(displayedObject);
         objectSystemUI.SetDisplayedObject(displayedObject);
+        DeselectSystem();
     }
 
     protected override void RefreshMiddlePanel() {
