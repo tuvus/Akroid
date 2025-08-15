@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 307c188af4fc4290ab51f3e6ac13980f, type: 3}
   m_Name: MiningBayMkI
   m_EditorClassIdentifier: 
-  cost: 2500
+  cost: 2650
   resourceTypes: 01000000
-  resourceCosts: 9600000000000000
+  resourceCosts: c800000000000000
   upgrade: {fileID: 0}
   sprite: {fileID: -459025886, guid: c75acc51f43a932489bb8c348a3d64d9, type: 3}
-  populationSpace: 0
+  populationSpace: 50
   miningAmount: 500
   miningSpeed: 10
   miningRange: 500

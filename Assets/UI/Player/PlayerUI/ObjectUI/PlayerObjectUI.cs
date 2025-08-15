@@ -47,6 +47,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
 
     [SerializeField] private ObjectConstructionUI constructionUI;
     [SerializeField] private ObjectHangarUI hangarUI;
+    [SerializeField] private UnitUIMenu unitUI;
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
@@ -55,6 +56,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
         hangarUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
         objectSystemUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
         objectSystemUI.gameObject.SetActive(false);
+        unitUI.SetupUnitUIMenu(playerUI, localPlayer, uiManager);
     }
 
     public override void SetDisplayedObject(ObjectUI objectToDisplay) {
@@ -62,6 +64,12 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
         constructionUI.SetDisplayedObject(displayedObject);
         hangarUI.SetDisplayedObject(displayedObject);
         objectSystemUI.SetDisplayedObject(displayedObject);
+        if (objectToDisplay is UnitUI unit) {
+            unitUI.gameObject.SetActive(true);
+            unitUI.SetUnit(unit);
+        } else {
+            unitUI.gameObject.SetActive(false);
+        }
         DeselectSystem();
     }
 
@@ -73,6 +81,7 @@ public class PlayerObjectUI : PlayerUIMenu<ObjectUI> {
         objectViewCamera.orthographicSize = displayedObject.iObject.GetSize() * 1.2f;
         if (displayedObject.iObject is Unit unit) {
             UpdateModules(unit);
+            unitUI.UpdateMenu();
         } else {
             for (int i = 0; i < displayedImageTransform.childCount; i++) {
                 displayedImageTransform.GetChild(i).gameObject.SetActive(false);
