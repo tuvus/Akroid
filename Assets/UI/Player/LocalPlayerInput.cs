@@ -25,6 +25,8 @@ public class LocalPlayerInput : MonoBehaviour {
     [SerializeField] protected ActionType actionType;
 
     public float scrollFactor = 1;
+
+    private readonly int[] timeSteps = { 0, 1, 2, 5, 10, 15, 20, 25 };
     private Background background;
     protected BattleManager battleManager;
     protected CanvasScaler canvasScaler;
@@ -42,8 +44,6 @@ public class LocalPlayerInput : MonoBehaviour {
     private Vector2 rightClickStartPosition;
     protected bool secondaryMousePressed;
     private int timeStepIndex;
-
-    private readonly int[] timeSteps = { 0, 1, 2, 5, 10, 15, 20, 25 };
     protected UIBattleManager uiBattleManager;
 
     public Camera mainCamera { get; private set; }
@@ -291,7 +291,7 @@ public class LocalPlayerInput : MonoBehaviour {
             return;
         }
 
-        PlayerUI.Instance.ToggleMenueUI();
+        PlayerUI.Instance.ToggleMenuUI();
     }
 
     private void FollowUnitButtonPressed() {

@@ -2,13 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
-public class UnitUIMenu : MonoBehaviour {
-    private UnitUI unitUI;
-
-    protected LocalPlayer localPlayer;
-    protected PlayerUI playerUI;
-    protected UIBattleManager uiBattleManager;
+public class UnitUIMenu : PlayerUIMenu<UnitUI> {
+    [SerializeField] private GameObject moduleUIPrefab;
+    [SerializeField] private Transform displayedImageTransform;
+    [SerializeField] private ObjectConstructionUI constructionUI;
+    [SerializeField] private ObjectHangarUI hangarUI;
+    [FormerlySerializedAs("objectSystemUI")] [SerializeField] private ObjectSystemUI systemUI;
 
     [SerializeField] private TMP_Text factionText;
     [SerializeField] private TMP_Text unitClassText;
@@ -32,20 +34,97 @@ public class UnitUIMenu : MonoBehaviour {
     [SerializeField] private Transform populationList;
     [SerializeField] private GameObject populationButtonPrefab;
 
+    private List<GameObject> moduleUIs;
+    private ModuleSystem.System selectedSystem;
 
-    public void SetupUnitUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
-        this.playerUI = playerUI;
-        this.localPlayer = localPlayer;
-        this.uiBattleManager = uiManager.uiBattleManager;
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
+        base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
+        moduleUIs = new List<GameObject>();
+        constructionUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        hangarUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        systemUI.SetupPlayerObjectUIMenu(playerUI, localPlayer, uiManager);
+        systemUI.gameObject.SetActive(false);
     }
 
-    public void SetUnit(UnitUI unitUI) {
-        this.unitUI = unitUI;
-        shipPanel.SetActive(unitUI.unit.IsShip());
+    public override void SetDisplayedObject(ObjectUI objectUI) {
+        base.SetDisplayedObject(objectUI);
+        constructionUI.SetDisplayedObject(displayedObject);
+        hangarUI.SetDisplayedObject(displayedObject);
+        systemUI.SetDisplayedObject(displayedObject);
+        shipPanel.SetActive(displayedObject.unit.IsShip());
+        hangarUI.gameObject.SetActive(true);
+        systemUI.gameObject.SetActive(false);
     }
 
-    public void UpdateMenu() {
-        Unit unit = unitUI.unit;
+    protected override bool ShouldShowLeftPanel() {
+        return constructionUI.ShouldShowMenu();
+    }
+
+    protected override bool ShouldShowRightPanel() {
+        return hangarUI.ShouldShowMenu();
+    }
+
+    protected override void RefreshLeftPanel() {
+        constructionUI.UpdateMenu();
+    }
+
+    protected override void RefreshRightPanel() {
+        if (selectedSystem == null)
+            hangarUI.UpdateMenu();
+        else systemUI.UpdateMenu();
+    }
+
+    public override void RefreshMenu() {
+        base.RefreshMenu();
+        UpdateModules(displayedObject.unit);
+    }
+
+    private void UpdateModules(Unit unit) {
+        ModuleSystem moduleSystem = unit.moduleSystem;
+        for (int i = 0; i < moduleSystem.modules.Count; i++) {
+            ModuleComponent module = moduleSystem.modules[i];
+            if (moduleUIs.Count <= i) {
+                moduleUIs.Add(Instantiate(moduleUIPrefab, displayedImageTransform));
+                int moduleIndex = i;
+                moduleUIs[i].GetComponent<Button>().onClick.AddListener(() => OnModuleButtonPress(moduleIndex));
+            }
+            moduleUIs[i].SetActive(true);
+            moduleUIs[i].GetComponent<RectTransform>().anchoredPosition = module.GetPosition() *
+                displayedImageTransform.GetComponent<RectTransform>().rect.size * unit.scale * 42 /
+                (100 * unit.GetSpriteSize());
+            moduleUIs[i].transform.GetChild(0).eulerAngles = new Vector3(0, 0, module.rotation);
+            if (module.componentScriptableObject.sprite != null) {
+                moduleUIs[i].transform.GetChild(0).GetComponent<Image>().sprite =
+                    module.componentScriptableObject.sprite;
+                moduleUIs[i].transform.GetChild(0).gameObject.SetActive(true);
+            } else moduleUIs[i].transform.GetChild(0).gameObject.SetActive(false);
+
+            if (selectedSystem != null && selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[i]]) {
+                moduleUIs[i].GetComponent<Image>().color = Color.white;
+            } else {
+                moduleUIs[i].GetComponent<Image>().color = Color.grey;
+            }
+        }
+        for (int i = moduleSystem.modules.Count; i < moduleUIs.Count; i++) {
+            moduleUIs[i].SetActive(false);
+        }
+    }
+
+    private void OnModuleButtonPress(int moduleIndex) {
+        ModuleSystem moduleSystem = ((Unit)displayedObject.iObject).moduleSystem;
+        if (selectedSystem == moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]]) {
+            DeselectSystem();
+        } else {
+            selectedSystem = moduleSystem.moduleToSystem[moduleSystem.modules[moduleIndex]];
+            rightPanel = systemUI.gameObject;
+            systemUI.SelectSystem(selectedSystem);
+            systemUI.UpdateMenu();
+            hangarUI.gameObject.SetActive(false);
+        }
+    }
+
+    protected override void RefreshStatusPanel() {
+        Unit unit = displayedObject.unit;
         factionText.text = unit.faction.name;
         if (unit is Station station) {
             unitClassText.text = station.GetStationType().ToString();
@@ -75,15 +154,14 @@ public class UnitUIMenu : MonoBehaviour {
     }
 
     private void UpdateCargoBayUI() {
-        Unit unit = unitUI.unit;
+        Unit unit = displayedObject.unit;
         if (!unit.moduleSystem.Get<CargoBay>().Any()) {
             cargoBayObject.SetActive(false);
             return;
-        } else {
-            cargoBayObject.SetActive(true);
         }
+        cargoBayObject.SetActive(true);
 
-        var cargoBays = unit.moduleSystem.Get<CargoBay>().ToList();
+        List<CargoBay> cargoBays = unit.moduleSystem.Get<CargoBay>().ToList();
         long totalCapacity = cargoBays.Sum(cb => cb.GetCargoBayCapacity() * cb.GetMaxCargoBays());
         cargoBaysStatus.text =
             "Cargo bays " + cargoBays.Sum(cb => cb.GetCargoBaysUsed()) + "/" +
@@ -114,22 +192,21 @@ public class UnitUIMenu : MonoBehaviour {
     }
 
     private void UpdatePopulationUI() {
-        Unit unit = unitUI.unit;
+        Unit unit = displayedObject.unit;
         if (!unit.moduleSystem.Get<HabitationArea>().Any()) {
             populationObject.SetActive(false);
             return;
-        } else {
-            populationObject.SetActive(true);
         }
+        populationObject.SetActive(true);
 
-        var habitationAreas = unit.moduleSystem.Get<HabitationArea>().ToList();
+        List<HabitationArea> habitationAreas = unit.moduleSystem.Get<HabitationArea>().ToList();
 
         populationCapacity.text = NumFormatter.ConvertNumber(habitationAreas.Sum(h => h.population.TotalPopulation())) +
             "/" + NumFormatter.ConvertNumber(habitationAreas.Sum(h => h.GetCapacity()));
 
         int populationIndex = 0;
 
-        foreach (var occupation in HabitationArea.allOccupations) {
+        foreach (Occupation occupation in HabitationArea.allOccupations) {
             long pop = habitationAreas.Sum(h => h.population.Get(occupation));
             if (pop == 0) continue;
 
@@ -148,5 +225,11 @@ public class UnitUIMenu : MonoBehaviour {
         for (int i = populationIndex; i < populationList.childCount; i++) {
             populationList.GetChild(i).gameObject.SetActive(false);
         }
+    }
+
+    public void DeselectSystem() {
+        selectedSystem = null;
+        rightPanel = hangarUI.gameObject;
+        systemUI.gameObject.SetActive(false);
     }
 }

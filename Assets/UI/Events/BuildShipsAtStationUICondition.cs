@@ -18,7 +18,8 @@ public class BuildShipsAtStationUICondition : UIWrapperEventCondition<BuildShips
             }));
         if (shipBlueprintsToBuild.Count == 0) return;
 
-        PlayerStationUI playerStationUI = (PlayerStationUI)localPlayer.playerUI.uIMenus[typeof(StationUI)];
+        PlayerStationUI playerStationUI =
+            (PlayerStationUI)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(StationUI)];
         if (playerStationUI.gameObject.activeSelf &&
             playerStationUI.displayedObject.station == conditionLogic.station) {
             shipBlueprintsToBuild.ForEach(b => {

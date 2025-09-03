@@ -39,7 +39,8 @@ public abstract class UIEventCondition : EventCondition {
             localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null)
             selectedUnits = new HashSet<UnitUI>();
-        PlayerStationUI playerStationUI = (PlayerStationUI)localPlayer.playerUI.uIMenus[typeof(StationUI)];
+        PlayerStationUI playerStationUI =
+            (PlayerStationUI)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(StationUI)];
 
         foreach (ShipUI shipUI in shipsToSelect) {
             if (selectedUnits.Contains(shipUI)) continue;

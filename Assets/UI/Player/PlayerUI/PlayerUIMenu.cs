@@ -16,7 +16,7 @@ public abstract class IPlayerUIMenu : MonoBehaviour {
 
     public abstract void UpdateUI();
 
-    public abstract void RefreshUI();
+    public abstract void RefreshMenu();
 
     public abstract bool IsShown();
 
@@ -26,7 +26,7 @@ public abstract class IPlayerUIMenu : MonoBehaviour {
 public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     [SerializeField] private float updateSpeed;
 
-    [SerializeField] protected GameObject middlePanel;
+    [SerializeField] protected GameObject statusPanel;
     [SerializeField] protected GameObject leftPanel;
     [SerializeField] protected GameObject rightPanel;
     protected LocalPlayer localPlayer;
@@ -54,7 +54,7 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         } else {
             ShowMenu(true);
             if (leftPanel != null) leftPanel.SetActive(false);
-            if (middlePanel != null) middlePanel.SetActive(false);
+            if (statusPanel != null) statusPanel.SetActive(false);
             if (rightPanel != null) rightPanel.SetActive(false);
             updateTime = 0;
         }
@@ -67,7 +67,7 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         updateTime -= Time.deltaTime;
         if (updateTime <= 0) {
             updateTime += updateSpeed;
-            RefreshUI();
+            RefreshMenu();
         }
     }
 
@@ -75,28 +75,28 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     ///     Immediately refreshes the UI with the information of the displayedBattleObject.
     ///     If the object is no longer viable then the menu will be closed.
     /// </summary>
-    public override void RefreshUI() {
+    public override void RefreshMenu() {
         if (!IsObjectViable()) {
             playerUI.CloseAllMenus();
             return;
         }
 
-        if (ShouldShowMiddlePanel()) {
-            if (!middlePanel.activeSelf) middlePanel.SetActive(true);
-            RefreshMiddlePanel();
+        if (ShouldShowStatusPanel()) {
+            if (!statusPanel.activeSelf) statusPanel.SetActive(true);
+            RefreshStatusPanel();
         }
 
         if (ShouldShowLeftPanel()) {
             if (!leftPanel.activeSelf) leftPanel.SetActive(true);
             RefreshLeftPanel();
-        } else {
+        } else if (leftPanel != null) {
             leftPanel.SetActive(false);
         }
 
         if (ShouldShowRightPanel()) {
             if (!rightPanel.activeSelf) rightPanel.SetActive(true);
             RefreshRightPanel();
-        } else {
+        } else if (leftPanel != null) {
             rightPanel.SetActive(false);
         }
     }
@@ -113,8 +113,8 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
     ///     Unimplemented panels shouldn't be refreshed since they shouldn't be shown.
     ///     However if the program somehow tries to refresh a panel that shouldn't exist we should throw an error.
     /// </summary>
-    protected virtual void RefreshMiddlePanel() {
-        throw new InvalidProgramException("The middle panel was refreshed without any logic to refresh the panel.");
+    protected virtual void RefreshStatusPanel() {
+        throw new InvalidProgramException("The status panel was refreshed without any logic to refresh the panel.");
     }
 
     protected virtual void RefreshLeftPanel() {
@@ -125,8 +125,8 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         throw new InvalidProgramException("The right panel was refreshed without any logic to refresh the panel.");
     }
 
-    protected virtual bool ShouldShowMiddlePanel() {
-        return middlePanel != null;
+    protected virtual bool ShouldShowStatusPanel() {
+        return statusPanel != null;
     }
 
     protected virtual bool ShouldShowLeftPanel() {

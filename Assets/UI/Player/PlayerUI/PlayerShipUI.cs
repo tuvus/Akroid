@@ -25,7 +25,7 @@ public class PlayerShipUI : PlayerUIMenu<ShipUI> {
         return displayedObject != null && displayedObject.ship.IsSpawned();
     }
 
-    protected override void RefreshMiddlePanel() {
+    protected override void RefreshStatusPanel() {
         shipName.text = displayedObject.ship.GetUnitName();
         shipFaction.text = displayedObject.ship.faction.name;
         shipClass.text = "Ship Class: " + displayedObject.ship.GetShipClass();
