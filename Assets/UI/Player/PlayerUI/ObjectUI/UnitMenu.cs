@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class UnitUIMenu : PlayerUIMenu<UnitUI> {
+public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private GameObject moduleUIPrefab;
     [SerializeField] private Transform displayedImageTransform;
     [SerializeField] private ObjectConstructionUI constructionUI;
@@ -52,8 +52,7 @@ public class UnitUIMenu : PlayerUIMenu<UnitUI> {
         hangarUI.SetDisplayedObject(displayedObject);
         systemUI.SetDisplayedObject(displayedObject);
         shipPanel.SetActive(displayedObject.unit.IsShip());
-        hangarUI.gameObject.SetActive(true);
-        systemUI.gameObject.SetActive(false);
+        DeselectSystem();
     }
 
     protected override bool ShouldShowLeftPanel() {
@@ -61,7 +60,7 @@ public class UnitUIMenu : PlayerUIMenu<UnitUI> {
     }
 
     protected override bool ShouldShowRightPanel() {
-        return hangarUI.ShouldShowMenu();
+        return selectedSystem == null ? hangarUI.ShouldShowMenu() : systemUI.ShouldShowMenu();
     }
 
     protected override void RefreshLeftPanel() {
@@ -216,7 +215,7 @@ public class UnitUIMenu : PlayerUIMenu<UnitUI> {
 
             Transform populationButton = populationList.GetChild(populationIndex);
             populationButton.gameObject.SetActive(true);
-            populationButton.GetChild(0).GetComponent<TMP_Text>().text = occupation.ToString();
+            populationButton.GetChild(0).GetComponent<TMP_Text>().text = occupation + "s";
             populationButton.GetChild(1).GetComponent<TMP_Text>().text = NumFormatter.ConvertNumber(pop);
             populationIndex++;
 
