@@ -223,7 +223,9 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void ShowFactionUI(FactionUI faction) {
-        SetDisplayedObject(faction);
+        CloseAllMenus();
+        playerFactionOverviewUI.gameObject.SetActive(true);
+        playerFactionOverviewUI.SetDisplayedFaction(faction);
     }
 
     public void ShowLocalFaction() {

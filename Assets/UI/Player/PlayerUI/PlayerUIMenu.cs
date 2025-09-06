@@ -96,7 +96,7 @@ public abstract class PlayerUIMenu<T> : IPlayerUIMenu where T : ObjectUI {
         if (ShouldShowRightPanel()) {
             if (!rightPanel.activeSelf) rightPanel.SetActive(true);
             RefreshRightPanel();
-        } else if (leftPanel != null) {
+        } else if (rightPanel != null) {
             rightPanel.SetActive(false);
         }
     }

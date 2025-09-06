@@ -31,6 +31,10 @@ public class PlayerFactionOverviewUI : MonoBehaviour {
         uiBattleManager = uiManager.uiBattleManager;
     }
 
+    public void SetDisplayedFaction(FactionUI faction) {
+        factionUI = faction;
+    }
+
     public void RefreshMenu() {
         RefreshMiddlePanel();
         if (localPlayer.GetFactionUI() == factionUI) {
