@@ -8,7 +8,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
     [SerializeField] private GameObject shipHangerButtonPrefab;
     [SerializeField] private TMP_Text hangarStatus;
     [SerializeField] private Transform hangarList;
-    private Unit unit;
+    public Unit unit { get; private set; }
     [SerializeField] private readonly List<Ship> shipsInHangars = new List<Ship>();
 
     public override void SetDisplayedObject(ObjectUI objectUI) {

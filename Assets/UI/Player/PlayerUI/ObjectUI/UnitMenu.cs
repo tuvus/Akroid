@@ -9,8 +9,8 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private GameObject moduleUIPrefab;
     [SerializeField] private Transform displayedImageTransform;
     [SerializeField] private ObjectConstructionUI constructionUI;
-    [SerializeField] private ObjectHangarUI hangarUI;
-    [FormerlySerializedAs("objectSystemUI")] [SerializeField] private ObjectSystemUI systemUI;
+    [field:SerializeField] public ObjectHangarUI hangarUI { get; private set; }
+    [SerializeField] private ObjectSystemUI systemUI;
 
     [SerializeField] private TMP_Text factionText;
     [SerializeField] private TMP_Text unitClassText;

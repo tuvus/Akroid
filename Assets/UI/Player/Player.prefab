@@ -37817,7 +37817,7 @@ MonoBehaviour:
     type: 3}
   displayedImageTransform: {fileID: 7067606213689492677}
   constructionUI: {fileID: 1798025576143244682}
-  hangarUI: {fileID: 2782576781018312680}
+  <hangarUI>k__BackingField: {fileID: 2782576781018312680}
   systemUI: {fileID: 3119544700429365537}
   factionText: {fileID: 2821027889793805257}
   unitClassText: {fileID: 1155079211972369138}
