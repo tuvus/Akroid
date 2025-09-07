@@ -35,7 +35,7 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private GameObject populationButtonPrefab;
 
     private List<GameObject> moduleUIs;
-    private ModuleSystem.System selectedSystem;
+    public ModuleSystem.System selectedSystem { get; private set; }
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
