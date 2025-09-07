@@ -125,8 +125,7 @@ public class Chapter1 : CampaingController {
                 planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Civilian Ship"));
             cb.FillEmployees(.2f);
         });
-        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
-            pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
+        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.FillBasicPop(.666f));
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -265,7 +264,7 @@ public class Chapter1 : CampaingController {
     private void StartTutorial() {
         bool skipTutorial = false;
         CommunicationEvent skipTutorialEvent = new CommunicationEvent(
-            playerFaction.GetFactionCommManager(), "Chapter 1:", new CommunicationEventOption[] {
+            playerFaction.GetFactionCommManager(), "Chapter 1:", new[] {
                 new CommunicationEventOption("Skip Tutorial", e => e.isActive, e => {
                     if (!e.isActive) return false;
                     e.DeactivateEvent();

@@ -139,6 +139,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             fleetCommand.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees());
+            fleetCommand.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.population.Add(Occupation.Pilot, 100));
+            fleetCommand.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.FillBasicPop(1f));
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
