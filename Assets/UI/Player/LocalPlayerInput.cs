@@ -321,7 +321,7 @@ public class LocalPlayerInput : MonoBehaviour {
         foreach (BattleObjectUI targetObject in uiBattleManager.battleObjects.Values) {
             if (!targetObject.IsSelectable()) continue;
 
-            float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.battleObject.position);
+            float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.GetPosition());
             float size = targetObject.battleObject.GetSize();
             if (targetObject is UnitUI unitUI)
                 size *= Mathf.Max(1.2f, unitUI.unitIconUI.GetSize() * 2);

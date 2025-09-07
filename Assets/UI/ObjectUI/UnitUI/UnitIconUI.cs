@@ -15,8 +15,8 @@ public class UnitIconUI : MonoBehaviour {
     private const float highlightedAlpha = .8f;
     private const float selectedAlpha = 1f;
     private EngagedVisual engagedVisual;
-    private SpriteRenderer iconUI;
-    private SpriteRenderer spriteRenderer;
+    private SpriteRenderer selectionOutline;
+    private SpriteRenderer unitIcon;
     private UIManager uIManager;
     private float unitsize;
     private UnitUI unitUI;
@@ -24,22 +24,22 @@ public class UnitIconUI : MonoBehaviour {
     public void SetupIconUI(UnitUI unitUI, UIManager uIManager) {
         this.unitUI = unitUI;
         this.uIManager = uIManager;
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.enabled = false;
-        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+        unitIcon = GetComponent<SpriteRenderer>();
+        unitIcon.enabled = false;
+        unitIcon.color = new Color(unitIcon.color.r, unitIcon.color.g, unitIcon.color.b,
             unselectedAlpha);
-        spriteRenderer.sprite = unitUI.unit.unitScriptableObject.sprite;
+        unitIcon.sprite = unitUI.unit.unitScriptableObject.sprite;
         engagedVisual = GetComponentInChildren<EngagedVisual>();
         engagedVisual.SetupEngagedVisual(unitUI, uIManager);
-        iconUI = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        selectionOutline = transform.GetChild(1).GetComponent<SpriteRenderer>();
 
         // We want to make the selection outline the right size, however we also want the outline thickness to scale with the size.
         // We can do this by reducing the outline size and increasing the scale of the object
         unitsize = unitUI.unit.GetSize();
         if (unitUI.unit.IsStation()) unitsize *= 2f / 3;
-        iconUI.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize +
+        selectionOutline.size = unitUI.unit.unitScriptableObject.spriteBounds * unitUI.unit.scale * 6 / unitsize +
             new Vector2(5, 5);
-        iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+        selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
         UpdateFactionColor();
         SetSelected();
     }
@@ -51,13 +51,13 @@ public class UnitIconUI : MonoBehaviour {
     }
 
     public void UpdateFactionColor() {
-        float previousAlpha = spriteRenderer.color.a;
+        float previousAlpha = unitIcon.color.a;
         if (uIManager.GetFactionColoringShown()) {
-            spriteRenderer.color = unitUI.unit.faction.GetColorBackgroundTint(previousAlpha);
+            unitIcon.color = unitUI.unit.faction.GetColorBackgroundTint(previousAlpha);
         } else {
             Color relationColor =
                 uIManager.localPlayer.GetColorOfRelationType(uIManager.localPlayer.GetRelationToUnit(unitUI.unit));
-            spriteRenderer.color = new Color(relationColor.r, relationColor.g, relationColor.b, previousAlpha);
+            unitIcon.color = new Color(relationColor.r, relationColor.g, relationColor.b, previousAlpha);
         }
     }
 
@@ -70,7 +70,7 @@ public class UnitIconUI : MonoBehaviour {
             unitUI.unit.IsStation() && !((Station)unitUI.unit).IsBuilt()
             || !unitUI.IsVisible()) {
             ShowUnitIconUI(false);
-            iconUI.enabled = false;
+            selectionOutline.enabled = false;
             return false;
         }
 
@@ -78,27 +78,28 @@ public class UnitIconUI : MonoBehaviour {
         if (cameraSize <= 500) {
             // In this case the camera is zoomed in so close that we don't want to display the icon at all
             transform.localScale = new Vector2(1, 1);
-            spriteRenderer.enabled = false;
+            unitIcon.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
-            iconUI.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+            selectionOutline.transform.localScale = Vector2.one * unitsize / 6 / unitUI.unit.scale;
+            selectionOutline.enabled = true;
             return false;
         }
 
         float imageSize = unitsize * cameraSize * cameraSize * 2.23f;
         float size = (Mathf.Pow(imageSize, 1f / 4f) + 0.1f) / unitsize;
-        spriteRenderer.enabled = true;
+        unitIcon.enabled = true;
         transform.localScale = new Vector2(size, size);
         engagedVisual.UpdateEngagedVisual();
-        iconUI.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
-        iconUI.enabled = true;
+        selectionOutline.transform.localScale = Vector2.one * unitsize / 8 / unitUI.unit.scale;
+        selectionOutline.enabled = true;
 
         if (cameraSize > 1000) {
             // In this case we are zoomed out pretty far and the icon is displayed over the unit
-            spriteRenderer.sortingOrder = 10;
+            unitIcon.sortingOrder = 10;
         } else {
-            // In this case the is is visible, however it is displayed underneath the unit
+            // In this case the it is visible, however it is displayed underneath the unit
             // so that the player can see the real size of the unit
-            spriteRenderer.sortingOrder = -10;
+            unitIcon.sortingOrder = -10;
         }
 
         return true;
@@ -106,10 +107,10 @@ public class UnitIconUI : MonoBehaviour {
 
     public void ShowUnitIconUI(bool show) {
         if (uIManager.localPlayer.GetPlayerUI().GetShowUnitZoomIndicators()) {
-            spriteRenderer.enabled = show;
+            unitIcon.enabled = show;
             engagedVisual.ShowEngagedVisual(show);
         } else {
-            spriteRenderer.enabled = false;
+            unitIcon.enabled = false;
             engagedVisual.ShowEngagedVisual(false);
         }
     }
@@ -117,31 +118,31 @@ public class UnitIconUI : MonoBehaviour {
     public void SetSelected(SelectionStrength selectionStrength = SelectionStrength.Unselected) {
         switch (selectionStrength) {
             case SelectionStrength.Unselected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                unitIcon.color = new Color(unitIcon.color.r, unitIcon.color.g, unitIcon.color.b,
                     unselectedAlpha);
-                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 0f);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 0f);
                 break;
             case SelectionStrength.Selected:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                unitIcon.color = new Color(unitIcon.color.r, unitIcon.color.g, unitIcon.color.b,
                     selectedAlpha);
-                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, 1f);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, 1f);
                 break;
             case SelectionStrength.Highlighted:
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b,
+                unitIcon.color = new Color(unitIcon.color.r, unitIcon.color.g, unitIcon.color.b,
                     highlightedAlpha);
-                iconUI.color = new Color(iconUI.color.r, iconUI.color.g, iconUI.color.b, .4f);
+                selectionOutline.color = new Color(selectionOutline.color.r, selectionOutline.color.g, selectionOutline.color.b, .4f);
                 break;
         }
     }
 
     public float GetSize() {
-        if (!spriteRenderer.enabled)
+        if (!unitIcon.enabled)
             return 0;
         return transform.localScale.y;
     }
 
     public Color GetColor() {
         if (!unitUI.unit.visible) UpdateFactionColor();
-        return spriteRenderer.color;
+        return unitIcon.color;
     }
 }
