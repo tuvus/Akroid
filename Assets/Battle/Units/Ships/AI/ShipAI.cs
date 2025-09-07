@@ -662,12 +662,10 @@ public class ShipAI {
             newCommand = false;
         }
 
-        if (ship.shipAction != Ship.ShipAction.Idle) return CommandResult.Stop;
-
-        if (currentCommandState == CommandType.Move) {
+        if (currentCommandState == CommandType.Move && Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             // We must be at the gas cloud, start collecting gas
             currentCommandState = CommandType.CollectGas;
-        } else if (currentCommandState == CommandType.Dock) {
+        } else if (currentCommandState == CommandType.Dock && ship.dockedStation == command.supplierContract.receiver) {
             // We must be at the receiver station, start unloading
             currentCommandState = CommandType.Wait;
             ((Station)command.supplierContract.receiver).contractShipsDocked
@@ -682,7 +680,7 @@ public class ShipAI {
             return CommandResult.Stop;
         }
 
-        if (currentCommandState == CommandType.CollectGas) {
+        if (currentCommandState == CommandType.CollectGas && Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
@@ -955,7 +953,7 @@ public class ShipAI {
                     command.supplierContract = null;
                     command.pickupContract = null;
                     currentCommandState = CommandType.Idle;
-                } else {
+                } else if (ship.dockedStation == provider) {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait) {
                         if (command.supplierContract != null)
@@ -963,6 +961,8 @@ public class ShipAI {
                         if (command.pickupContract != null) provider.contractShipsDocked.Add(command.pickupContract);
                         currentCommandState = CommandType.Wait;
                     }
+                    return CommandResult.Stop;
+                } else {
                     return CommandResult.Stop;
                 }
             }
@@ -981,7 +981,7 @@ public class ShipAI {
                     command.requestContract = null;
                     command.dropOffContract = null;
                     currentCommandState = CommandType.Idle;
-                } else {
+                } else if (ship.dockedStation == receiver) {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait) {
                         if (command.requestContract != null)

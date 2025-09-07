@@ -15,7 +15,7 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
     private List<Ship.ShipBlueprint> shipBlueprints = new List<Ship.ShipBlueprint>();
     private List<Tuple<ConstructionBay, int>> blueprintToConstructionBay = new List<Tuple<ConstructionBay, int>>();
 
-    private Unit unit;
+    public Unit unit { get; private set; }
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
@@ -138,5 +138,11 @@ public class ObjectConstructionUI : PlayerObjectUIMenu {
         for (int i = shipBlueprints.Count; i < blueprintList.childCount; i++) {
             blueprintList.GetChild(i).gameObject.SetActive(false);
         }
+    }
+
+    public Button GetButtonOfShipBlueprint(Ship.ShipBlueprint shipBlueprint) {
+        Ship.ShipBlueprint foundBlueprint =
+            shipBlueprints.FirstOrDefault(b => b.shipScriptableObject == shipBlueprint.shipScriptableObject);
+        return blueprintList.GetChild(shipBlueprints.IndexOf(foundBlueprint)).GetComponent<Button>();
     }
 }

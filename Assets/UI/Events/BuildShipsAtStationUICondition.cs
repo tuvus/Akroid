@@ -18,12 +18,13 @@ public class BuildShipsAtStationUICondition : UIWrapperEventCondition<BuildShips
             }));
         if (shipBlueprintsToBuild.Count == 0) return;
 
-        PlayerStationUI playerStationUI =
-            (PlayerStationUI)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(StationUI)];
-        if (playerStationUI.gameObject.activeSelf &&
-            playerStationUI.displayedObject.station == conditionLogic.station) {
+        UnitMenu unitMenu =
+            (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
+
+        if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf &&
+            unitMenu.constructionUI.unit == conditionLogic.station) {
             shipBlueprintsToBuild.ForEach(b => {
-                Button button = playerStationUI.GetButtonOfShipBlueprint(b);
+                Button button = unitMenu.constructionUI.GetButtonOfShipBlueprint(b);
                 if (button != null && !buttonsToVisualize.Contains(button)) buttonsToVisualize.Add(button);
             });
         } else {

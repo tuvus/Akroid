@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private GameObject moduleUIPrefab;
     [SerializeField] private Transform displayedImageTransform;
-    [SerializeField] private ObjectConstructionUI constructionUI;
+    [field:SerializeField] public ObjectConstructionUI constructionUI { get; private set; }
     [field:SerializeField] public ObjectHangarUI hangarUI { get; private set; }
     [SerializeField] private ObjectSystemUI systemUI;
 
