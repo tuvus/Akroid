@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public abstract class ModuleComponent : BattleObject {
     public IModule module;
-    protected Unit unit { get; }
+    public Unit unit { get; protected set; }
     public ComponentScriptableObject componentScriptableObject { get; private set; }
 
     public ModuleComponent(BattleManager battleManager, IModule module, Unit unit,

@@ -475,6 +475,12 @@ public class Ship : Unit {
             shipScriptableObject.shipType == ShipType.Frigate || shipScriptableObject.shipType == ShipType.Dreadnaught;
     }
 
+    public Population GetCrewNeeded() {
+        Population crewNeeded = new Population(shipScriptableObject.crewNeeded);
+        moduleSystem.Get<Bridge>().ForEach(b => crewNeeded.SubtractPopulation(b.population));
+        return crewNeeded;
+    }
+
     public bool IsTransportShip() {
         return shipScriptableObject.shipType == ShipType.Transport;
     }
