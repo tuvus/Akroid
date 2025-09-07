@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134b8b1fe31645448f971a0e5677516, type: 3}
   m_Name: LightConstructionBayMkI
   m_EditorClassIdentifier: 
-  cost: 66
+  cost: 171
   resourceTypes: 01000000
-  resourceCosts: 2c01000000000000
+  resourceCosts: 4f01000000000000
   upgrade: {fileID: 11400000, guid: 271af8fb937d8de4cb91ad36af7c4728, type: 2}
   sprite: {fileID: -1652516724379087771, guid: 073348473345a261598eabc069fa1cef, type: 3}
-  populationSpace: 0
+  populationSpace: 35
   constructionSpeed: 3
   constructionAmount: 20
   constructionBays: 1
