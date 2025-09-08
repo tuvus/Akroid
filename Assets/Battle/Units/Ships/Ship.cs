@@ -456,8 +456,6 @@ public class Ship : Unit {
         return movePosition;
     }
 
-
-
     public ShipClass GetShipClass() {
         return shipScriptableObject.shipClass;
     }

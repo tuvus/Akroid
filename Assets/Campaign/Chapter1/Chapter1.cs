@@ -1078,6 +1078,11 @@ public class Chapter1 : CampaingController {
             Fleet pirateFleet = pirateFaction.CreateNewFleet("Pirate Fleet", pirateShips.ToHashSet());
             pirateFleet.fleetAI.AddFormationTowardsPositionCommand(otherMiningStation.position, tradeStation.size * 2);
             pirateFleet.fleetAI.AddFleetAICommand(Command.CreateDockCommand(otherMiningStation));
+            // Fill ships with pirates
+            pirateFleet.ships.ToList().ForEach(s => {
+                s.FillRequiredCrew();
+                s.moduleSystem.Get<HabitationArea>().ForEach(h => h.population.marines += h.GetFreeSpace());
+            });
         });
         pirateChain.AddCondition(
             eventManager.CreateLateCondition(() =>

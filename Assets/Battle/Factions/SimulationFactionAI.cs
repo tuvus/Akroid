@@ -250,7 +250,7 @@ public class SimulationFactionAI : FactionAI {
 
     private void ManageIdleShips() {
         foreach (Ship idleShip in idleShips) {
-            if (idleShip.IsIdle() && idleShip.fleet == null) {
+            if (idleShip.IsIdle() && idleShip.GetCrewNeeded().TotalPopulation() == 0 && idleShip.fleet == null) {
                 if (idleShip.IsCombatShip() && autoCommandFleets) {
                     if (idleShip.dockedStation == null) {
                         idleShip.shipAI.AddUnitAICommand(Command.CreateDockCommand(fleetCommand),
@@ -296,7 +296,7 @@ public class SimulationFactionAI : FactionAI {
                 }
             } else {
                 HashSet<Ship> combatShips = fleetCommand.GetAllDockedShips()
-                    .Where(s => s.IsCombatShip() && !s.IsDamaged())
+                    .Where(s => s.IsCombatShip() && !s.IsDamaged() && s.GetCrewNeeded().TotalPopulation() == 0 )
                     .Take(maxCombatShips).ToHashSet();
                 if (combatShips.Count > 8) {
                     int totalHealth = combatShips.Sum(s => s.GetTotalHealth());
