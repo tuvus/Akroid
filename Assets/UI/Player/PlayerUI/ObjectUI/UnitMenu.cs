@@ -148,6 +148,9 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
         if (localPlayer.GetRelationToUnit(unit) != LocalPlayer.RelationType.Enemy) {
             UpdateCargoBayUI();
             UpdatePopulationUI();
+        } else {
+            cargoBayObject.SetActive(false);
+            populationObject.SetActive(false);
         }
     }
 
