@@ -752,7 +752,7 @@ public class Station : Unit, IPositionConfirmer {
             .Where(h => h.IsTransferHabitat())) {
             Population toTransfer = new Population(habitationArea.population);
             toTransfer.Min(transportContract.transportOffer.personnel);
-            foreach (var request in personnelRequests.ToList()) {
+            foreach (var request in personnelRequests.ToList().OrderBy(a => a.Value.TotalPopulation())) {
                 Population amountTransferred = new Population(toTransfer);
                 toTransfer.MovePopulationTo(request.Key.population, request.Value);
                 amountTransferred.SubtractPopulation(toTransfer);

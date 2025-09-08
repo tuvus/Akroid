@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: Shipyard
   m_EditorClassIdentifier: 
-  cost: 98095
-  resourceTypes: 0100000002000000
-  resourceCosts: cd460000000000003601000000000000
+  cost: 94555
+  resourceTypes: 01000000
+  resourceCosts: 6941000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   prefab: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441, type: 3}
   unitName: Shipyard
@@ -49,7 +49,7 @@ MonoBehaviour:
     moduleCount: 1
   - name: Utility
     type: 1
-    component: {fileID: 11400000, guid: 7a0b330c96728e448ba353baa38335d2, type: 2}
+    component: {fileID: 11400000, guid: 6d8e7baca0bb6f548a75d96e88cb2c25, type: 2}
     moduleSize: 0
     moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}

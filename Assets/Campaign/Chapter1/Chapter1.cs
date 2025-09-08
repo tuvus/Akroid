@@ -125,7 +125,10 @@ public class Chapter1 : CampaingController {
                 planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Civilian Ship"));
             cb.FillEmployees(.2f);
         });
-        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.FillBasicPop(.666f));
+        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc => {
+            pc.population.pilots += 20;
+            pc.FillBasicPop(.666f);
+        });
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -142,9 +145,7 @@ public class Chapter1 : CampaingController {
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
         shipyard.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
         shipyard.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees(.2f));
-        shipyard.moduleSystem.Get<PopulationCenter>().ForEach(pc => {
-            pc.population.pilots += 200;
-        });
+        playerFaction.AddCredits(100000);
         shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);

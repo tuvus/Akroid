@@ -662,7 +662,8 @@ public class ShipAI {
             newCommand = false;
         }
 
-        if (currentCommandState == CommandType.Move && Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
+        if (currentCommandState == CommandType.Move &&
+            Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             // We must be at the gas cloud, start collecting gas
             currentCommandState = CommandType.CollectGas;
         } else if (currentCommandState == CommandType.Dock && ship.dockedStation == command.supplierContract.receiver) {
@@ -680,7 +681,8 @@ public class ShipAI {
             return CommandResult.Stop;
         }
 
-        if (currentCommandState == CommandType.CollectGas && Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
+        if (currentCommandState == CommandType.CollectGas &&
+            Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
@@ -1228,8 +1230,15 @@ public class ShipAI {
                 destination.faction.factionTrade.personnelRequested.TryGetValue(destination,
                     out FactionTrade.TransportOffer requestOffer))) {
 
-            long openCapacity = ship.moduleSystem.Get<HabitationArea>()
-                .Sum(h => includeCurrentCargo ? h.GetFreeSpace() : h.GetCapacity());
+
+            long openCapacity = 0;
+            Population extraPop = new Population();
+            if (includeCurrentCargo) {
+                ship.moduleSystem.Get<HabitationArea>().ForEach(h => extraPop.AddPopulation(h.population));
+                extraPop.SubtractPopulation(ship.shipScriptableObject.crewNeeded);
+            }
+            openCapacity = ship.moduleSystem.Get<HabitationArea>()
+                .Sum(h => h.GetCapacity()) - extraPop.TotalPopulation() - ship.shipScriptableObject.crewNeeded.TotalPopulation();
             var occupationValueAmount = new List<Tuple<Occupation, float, long, long>>();
             HabitationArea.allOccupations.ForEach(o => {
                 if (hireOffer.personnel.Get(o) > 0 && requestOffer.personnel.Get(o) > 0) {
@@ -1248,9 +1257,7 @@ public class ShipAI {
                 Occupation occupation = occupationTransport.Item1;
                 long previousPopulation = 0;
                 if (includeCurrentCargo) {
-                    previousPopulation = math.min(ship.moduleSystem.Get<HabitationArea>()
-                            .Sum(h => h.population.Get(occupation)),
-                        occupationTransport.Item4);
+                    previousPopulation = math.min(extraPop.Get(occupation), occupationTransport.Item4);
                     currentContractPersonnel.Add(occupation, previousPopulation);
                 }
 
