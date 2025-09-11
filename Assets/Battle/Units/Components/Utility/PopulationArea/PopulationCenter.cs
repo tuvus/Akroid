@@ -2,9 +2,9 @@ using System;
 using Unity.Mathematics;
 
 public class PopulationCenter : HabitationArea {
-    public static readonly float civilianRatio = .79f;
+    public static readonly float civilianRatio = .65f;
     public static readonly float engineerRatio = .2f;
-    public static readonly float pilotRatio = .01f;
+    public static readonly float pilotRatio = .05f;
     public static readonly float marineRatio = .1f;
     private float engineerFloat;
     private float marineFloat;
@@ -52,7 +52,7 @@ public class PopulationCenter : HabitationArea {
         }
 
         long pilotTarget = (long)(population.civilians * pilotRatio);
-        float pilotGrowth = (pilotTarget - population.pilots) * deltaTime / 20 + pilotFloat;
+        float pilotGrowth = (pilotTarget - population.pilots) * deltaTime / 50 + pilotFloat;
         if ((long)pilotGrowth > 0) {
             population.civilians -= (long)pilotGrowth;
             population.pilots += (long)pilotGrowth;

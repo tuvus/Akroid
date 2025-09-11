@@ -733,6 +733,7 @@ public class Station : Unit, IPositionConfirmer {
             toTransfer.SubtractPopulation(transportContract.receiver.LoadPopulation(toTransfer));
             habitationArea.population.SubtractPopulation(toTransfer);
             transportContract.transportOffer.personnel.SubtractPopulation(toTransfer);
+            contractedPersonnel.SubtractPopulation(toTransfer);
             transportContract.receiver.faction.TransferCredits(
                 transportContract.transportOffer.payment.GetTotalValue(toTransfer), transportContract.provider.faction);
             if (transportContract.transportOffer.personnel.TotalPopulation() == 0) {
@@ -758,6 +759,7 @@ public class Station : Unit, IPositionConfirmer {
                 amountTransferred.SubtractPopulation(toTransfer);
                 habitationArea.population.SubtractPopulation(amountTransferred);
                 transportContract.transportOffer.personnel.SubtractPopulation(amountTransferred);
+                pendingPersonnel.SubtractPopulation(amountTransferred);
                 request.Value.SubtractPopulation(amountTransferred);
                 if (request.Value.TotalPopulation() == 0) personnelRequests.Remove(request.Key);
                 transportContract.receiver.faction.TransferCredits(
