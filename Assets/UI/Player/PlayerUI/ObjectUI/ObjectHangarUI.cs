@@ -19,7 +19,7 @@ public class ObjectHangarUI : PlayerObjectUIMenu {
     }
 
     public override bool ShouldShowMenu() {
-        return unit != null;
+        return unit != null && localPlayer.GetRelationToFaction(unit.faction) != LocalPlayer.RelationType.Enemy;
     }
 
     public override void UpdateMenu() {

@@ -27,17 +27,18 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
     }
 
     public override bool ShouldShowMenu() {
-        return unit != null && displayedSystem != null;
+        return unit != null && displayedSystem != null && localPlayer.GetRelationToFaction(unit.faction) != LocalPlayer.RelationType.Enemy;
     }
 
     public override void UpdateMenu() {
+        bool isOwned = localPlayer.GetRelationToUnit(unit) == LocalPlayer.RelationType.Owned;
         title.text = displayedSystem.name;
         componentName.text = displayedSystem.component.name;
         systemType.text = "System type: " + displayedSystem.type;
         moduleCount.text = "Module count: " + displayedSystem.moduleCount;
         maxComponentSize.text = "Max component size: " + displayedSystem.moduleSize;
 
-        if (displayedSystem.component.upgrade != null) {
+        if (displayedSystem.component.upgrade != null && isOwned) {
             upgradeButton.transform.parent.gameObject.SetActive(true);
             upgradeName.text = displayedSystem.component.upgrade.name;
             upgradeCost.text = "Cost: " + NumFormatter.ConvertNumber((displayedSystem.component.upgrade.cost -
@@ -52,35 +53,38 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
         }
 
         int index = 0;
-        foreach (var componentScriptableObject in uiBattleManager.battleManager.components) {
-            if (!unit.moduleSystem.IsComponentCompatibleOnSystem(displayedSystem, componentScriptableObject)
-                || componentScriptableObject == displayedSystem.component)
-                continue;
+        if (isOwned) {
+            foreach (var componentScriptableObject in uiBattleManager.battleManager.components) {
+                if (!unit.moduleSystem.IsComponentCompatibleOnSystem(displayedSystem, componentScriptableObject)
+                    || componentScriptableObject == displayedSystem.component)
+                    continue;
 
-            if (index == componentListTransform.childCount)
-                Instantiate(componentButtonPrefab, componentListTransform);
+                if (index == componentListTransform.childCount)
+                    Instantiate(componentButtonPrefab, componentListTransform);
 
-            Button component = componentListTransform.GetChild(index).GetComponent<Button>();
-            component.transform.GetChild(0).GetComponent<TMP_Text>().text =
-                componentScriptableObject.name == "Empty" ? "Remove" : componentScriptableObject.name;
-            component.transform.GetChild(1).GetComponent<TMP_Text>().text =
-                "Cost: " + NumFormatter.ConvertNumber(componentScriptableObject.cost * displayedSystem.moduleCount);
-            component.gameObject.SetActive(true);
-            component.onClick.RemoveAllListeners();
-            component.onClick.AddListener(() => {
-                unit.moduleSystem.ReplaceSystem(displayedSystem, componentScriptableObject,
-                    unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit)
-                        ? unit : ((Ship)unit).dockedStation);
-                UpdateMenu();
-            });
+                Button component = componentListTransform.GetChild(index).GetComponent<Button>();
+                component.transform.GetChild(0).GetComponent<TMP_Text>().text =
+                    componentScriptableObject.name == "Empty" ? "Remove" : componentScriptableObject.name;
+                component.transform.GetChild(1).GetComponent<TMP_Text>().text =
+                    "Cost: " + NumFormatter.ConvertNumber(componentScriptableObject.cost * displayedSystem.moduleCount);
+                component.gameObject.SetActive(true);
+                component.onClick.RemoveAllListeners();
+                component.onClick.AddListener(() => {
+                    unit.moduleSystem.ReplaceSystem(displayedSystem, componentScriptableObject,
+                        unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit)
+                            ? unit : ((Ship)unit).dockedStation);
+                    UpdateMenu();
+                });
 
-            component.interactable =
-                unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit);
-            if (!component.interactable && unit is Ship ship && ship.dockedStation != null)
                 component.interactable =
-                    unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, ship.dockedStation);
+                    unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject, unit);
+                if (!component.interactable && unit is Ship ship && ship.dockedStation != null)
+                    component.interactable =
+                        unit.moduleSystem.CanReplaceSystem(displayedSystem, componentScriptableObject,
+                            ship.dockedStation);
 
-            index++;
+                index++;
+            }
         }
 
         for (int i = index; i < componentListTransform.childCount; i++) {
