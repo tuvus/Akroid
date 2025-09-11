@@ -39,7 +39,8 @@ public abstract class UIEventCondition : EventCondition {
             localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null)
             selectedUnits = new HashSet<UnitUI>();
-        PlayerStationUI playerStationUI = (PlayerStationUI)localPlayer.playerUI.uIMenus[typeof(StationUI)];
+        UnitMenu unitMenu =
+            (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
 
         foreach (ShipUI shipUI in shipsToSelect) {
             if (selectedUnits.Contains(shipUI)) continue;
@@ -50,9 +51,9 @@ public abstract class UIEventCondition : EventCondition {
                 if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
 
                 // If the station panel has been opened highlight the ship button
-                if (playerStationUI.gameObject.activeSelf &&
-                    playerStationUI.displayedObject.station == ship.dockedStation)
-                    buttonsToVisualize.Add(playerStationUI.GetButtonOfShip(ship));
+                if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf && unitMenu.selectedSystem == null &&
+                    unitMenu.hangarUI.unit == ship.dockedStation)
+                    buttonsToVisualize.Add(unitMenu.hangarUI.GetButtonOfShip(ship));
             } else {
                 objectsToVisualize.Add(shipUI);
             }

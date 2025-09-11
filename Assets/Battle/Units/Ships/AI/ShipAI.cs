@@ -7,6 +7,7 @@ using static Command;
 
 public class ShipAI {
     public readonly List<Command> commands;
+    public readonly List<ShipAISubprocess> subprocesses;
 
     private readonly Ship ship;
     public CommandType currentCommandState;
@@ -14,7 +15,9 @@ public class ShipAI {
 
     public ShipAI(Ship ship) {
         this.ship = ship;
-        commands = new List<Command>(10);
+        commands = new List<Command>(2);
+        subprocesses = new List<ShipAISubprocess>(1);
+        subprocesses.Add(new CrewSubprocess(ship, this));
         newCommand = false;
         currentCommandState = CommandType.Idle;
     }
@@ -67,18 +70,19 @@ public class ShipAI {
     }
 
     public void UpdateAI(float deltaTime) {
-        if (commands.Count > 0) {
-            // Profiler.BeginSample("ShipAI ResolveCommand");
-            CommandResult result = ResolveCommand(commands[0], deltaTime);
-            if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
-                commands.RemoveAt(0);
-                newCommand = true;
-            }
+        subprocesses.ForEach(s => s.Update());
+        if (commands.Count == 0) return;
 
-            if (result == CommandResult.ContinueRemove || result == CommandResult.Continue)
-                UpdateAI(deltaTime);
-            // Profiler.EndSample();
+        // Profiler.BeginSample("ShipAI ResolveCommand");
+        CommandResult result = ResolveCommand(commands[0], deltaTime);
+        if (result == CommandResult.StopRemove || result == CommandResult.ContinueRemove) {
+            commands.RemoveAt(0);
+            newCommand = true;
         }
+
+        if (result == CommandResult.ContinueRemove || result == CommandResult.Continue)
+            UpdateAI(deltaTime);
+        // Profiler.EndSample();
     }
 
     private enum CommandResult {
@@ -181,8 +185,8 @@ public class ShipAI {
     private CommandResult DoMoveRotateCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
-            ship.SetMovePosition(command.targetPosition);
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMovePosition(command.targetPosition);
+            SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
@@ -220,9 +224,9 @@ public class ShipAI {
             }
 
             if (newCommand) {
-                ship.SetMovePosition(command.targetPosition);
+                SetMovePosition(command.targetPosition);
                 currentCommandState = CommandType.Move;
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
@@ -234,13 +238,13 @@ public class ShipAI {
                         currentCommandState = CommandType.TurnToRotation;
                     } else {
                         currentCommandState = CommandType.AttackMove;
-                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                        SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     }
                 } else if (ship.shipAction == Ship.ShipAction.Idle) {
                     if (command.commandType == CommandType.Protect) {
                         if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) >
                             (ship.GetSize() + command.protectUnit.GetSize()) * 3)
-                            ship.SetMovePosition(command.protectUnit.GetPosition(),
+                            SetMovePosition(command.protectUnit.GetPosition(),
                                 (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                         return CommandResult.Stop;
                     }
@@ -255,7 +259,7 @@ public class ShipAI {
                 if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
                     currentCommandState = CommandType.TurnToRotation;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
@@ -305,11 +309,11 @@ public class ShipAI {
             }
 
             if (newCommand) {
-                ship.SetMovePosition(command.protectUnit.GetPosition(),
+                SetMovePosition(command.protectUnit.GetPosition(),
                     (ship.GetSize() + command.protectUnit.GetSize()) * 2);
-                command.targetPosition = ship.GetTargetMovePosition();
+                command.targetPosition = GetTargetMovePosition();
                 currentCommandState = CommandType.Move;
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
@@ -321,22 +325,22 @@ public class ShipAI {
                         currentCommandState = CommandType.TurnToRotation;
                     } else {
                         currentCommandState = CommandType.AttackMove;
-                        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                        SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     }
                 } else if (ship.shipAction == Ship.ShipAction.Idle) {
                     if (command.commandType == CommandType.Protect) {
                         if (Vector2.Distance(ship.GetPosition(), command.protectUnit.GetPosition()) >
                             (ship.GetSize() + command.protectUnit.GetSize()) * 3)
-                            ship.SetMovePosition(command.protectUnit.GetPosition(),
+                            SetMovePosition(command.protectUnit.GetPosition(),
                                 (ship.GetSize() + command.protectUnit.GetSize()) * 2);
                         return CommandResult.Stop;
                     }
 
                     return CommandResult.ContinueRemove;
                 } else {
-                    ship.SetMovePosition(command.protectUnit.GetPosition(),
+                    SetMovePosition(command.protectUnit.GetPosition(),
                         (ship.GetSize() + command.protectUnit.GetSize()) * 2);
-                    command.targetPosition = ship.GetTargetMovePosition();
+                    command.targetPosition = GetTargetMovePosition();
                     return CommandResult.Stop;
                 }
             }
@@ -345,7 +349,7 @@ public class ShipAI {
                 if (ship.shipAction == Ship.ShipAction.Idle || distanceToTargetUnit <= ship.GetMinWeaponRange() * .8f) {
                     currentCommandState = CommandType.TurnToRotation;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
@@ -372,7 +376,7 @@ public class ShipAI {
                 command.commandType = CommandType.AttackMove;
                 if (newCommand) {
                     command.targetPosition = ship.GetPosition();
-                    ship.SetMaxSpeed(command.maxSpeed);
+                    SetMaxSpeed(command.maxSpeed);
                 }
 
                 newCommand = true;
@@ -381,9 +385,9 @@ public class ShipAI {
 
             if (newCommand) {
                 currentCommandState = CommandType.Move;
-                ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 command.targetPosition = command.targetUnit.GetPosition();
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetMaxSpeed(command.maxSpeed);
                 newCommand = false;
             }
 
@@ -393,7 +397,7 @@ public class ShipAI {
                     ship.GetMinWeaponRange() * .8f) {
                     currentCommandState = CommandType.TurnToRotation;
                 } else {
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                     return CommandResult.Stop;
                 }
             }
@@ -401,7 +405,7 @@ public class ShipAI {
             if (currentCommandState == CommandType.TurnToRotation) {
                 if (Vector2.Distance(ship.GetPosition(), command.targetUnit.GetPosition()) > ship.GetMinWeaponRange()) {
                     currentCommandState = CommandType.Move;
-                    ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
+                    SetMovePosition(command.targetUnit.GetPosition(), ship.GetMinWeaponRange() * .8f);
                 } else {
                     ship.SetTargetRotate(command.targetUnit.GetPosition(), ship.GetCombatRotation());
                 }
@@ -434,7 +438,7 @@ public class ShipAI {
             }
 
             ship.SetMoveRotateTarget(targetPosition);
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMaxSpeed(command.maxSpeed);
             //newCommand = false;
         }
 
@@ -449,9 +453,9 @@ public class ShipAI {
     /// <summary> Follows friendly ship, Continue until friendly ship is destroyed, ContinueRemove once Finished. </summary>
     private CommandResult DoFollowCommand(Command command, float deltaTime) {
         if (newCommand) {
-            ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+            SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
             newCommand = false;
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMaxSpeed(command.maxSpeed);
             return CommandResult.Stop;
         }
 
@@ -460,7 +464,7 @@ public class ShipAI {
             return CommandResult.ContinueRemove;
         }
 
-        ship.SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
+        SetMovePosition(command.targetUnit.GetPosition(), ship.GetSize() + command.targetUnit.GetSize());
         return CommandResult.Stop;
     }
 
@@ -485,7 +489,7 @@ public class ShipAI {
             }
         }
 
-        ship.SetMovePosition(command.targetUnit.position + command.targetPosition);
+        SetMovePosition(command.targetUnit.position + command.targetPosition);
         return CommandResult.Continue;
     }
 
@@ -513,7 +517,7 @@ public class ShipAI {
             }
         }
 
-        ship.SetMovePosition(command.targetUnit.position + targetOffsetPosition);
+        SetMovePosition(command.targetUnit.position + targetOffsetPosition);
         CommandResult rotationResult = ResolveCommand(CreateRotationCommand(command.targetUnit.rotation), deltaTime);
         if (rotationResult == CommandResult.ContinueRemove || rotationResult == CommandResult.Continue) {
             return CommandResult.Continue;
@@ -526,8 +530,8 @@ public class ShipAI {
     private CommandResult DoDockCommand(Command command, float deltaTime) {
         if (newCommand) {
             if (command.destinationStation != null) {
-                ship.SetDockTarget(command.destinationStation);
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetDockTarget(command.destinationStation);
+                SetMaxSpeed(command.maxSpeed);
             } else {
                 ship.SetIdle();
                 return CommandResult.ContinueRemove;
@@ -567,14 +571,14 @@ public class ShipAI {
                 command.targetPosition = command.targetStar.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(
                     Calculator.GetAngleOutOfTwoPositions(command.targetStar.GetPosition(), ship.position) +
                     ship.random.NextFloat(-10, 10), ship.GetSize() + command.targetStar.GetSize() * 2);
-                ship.SetMovePosition(command.targetPosition);
+                SetMovePosition(command.targetPosition);
                 currentCommandState = CommandType.Move;
             } else {
-                ship.SetDockTarget(command.destinationStation);
+                SetDockTarget(command.destinationStation);
                 currentCommandState = CommandType.Dock;
             }
 
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
@@ -590,7 +594,7 @@ public class ShipAI {
                     }
                 }
 
-                ship.SetDockTarget(command.destinationStation);
+                SetDockTarget(command.destinationStation);
                 currentCommandState = CommandType.Dock;
                 return CommandResult.Stop;
             }
@@ -610,7 +614,7 @@ public class ShipAI {
                 command.targetPosition = command.targetStar.GetPosition() + Calculator.GetPositionOutOfAngleAndDistance(
                     Calculator.GetAngleOutOfTwoPositions(command.targetStar.GetPosition(), ship.position) +
                     ship.random.NextFloat(-10, 10), ship.GetSize() + command.targetStar.GetSize() * 2);
-                ship.SetMovePosition(command.targetPosition);
+                SetMovePosition(command.targetPosition);
                 currentCommandState = CommandType.Move;
                 return CommandResult.Stop;
             }
@@ -654,16 +658,15 @@ public class ShipAI {
             }
             currentCommandState = CommandType.Idle;
 
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
-        if (ship.shipAction != Ship.ShipAction.Idle) return CommandResult.Stop;
-
-        if (currentCommandState == CommandType.Move) {
+        if (currentCommandState == CommandType.Move &&
+            Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             // We must be at the gas cloud, start collecting gas
             currentCommandState = CommandType.CollectGas;
-        } else if (currentCommandState == CommandType.Dock) {
+        } else if (currentCommandState == CommandType.Dock && ship.dockedStation == command.supplierContract.receiver) {
             // We must be at the receiver station, start unloading
             currentCommandState = CommandType.Wait;
             ((Station)command.supplierContract.receiver).contractShipsDocked
@@ -678,7 +681,8 @@ public class ShipAI {
             return CommandResult.Stop;
         }
 
-        if (currentCommandState == CommandType.CollectGas) {
+        if (currentCommandState == CommandType.CollectGas &&
+            Vector2.Distance(ship.GetPosition(), command.targetGasCloud.GetPosition()) < command.targetGasCloud.size) {
             if (command.targetGasCloud.HasResources()) {
                 foreach (GasCollector gasCollector in ship.moduleSystem.Get<GasCollector>()) {
                     if (gasCollector.CollectGas(command.targetGasCloud, deltaTime)) {
@@ -712,14 +716,14 @@ public class ShipAI {
                 command.targetPosition = command.targetGasCloud.GetPosition() + new Vector2(
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2,
                     ship.random.NextFloat(-command.targetGasCloud.size, command.targetGasCloud.size) / 2);
-                ship.SetMovePosition(command.targetPosition, 2);
+                SetMovePosition(command.targetPosition, 2);
                 currentCommandState = CommandType.Move;
             } else if (command.supplierContract != null) {
-                ship.SetDockTarget((Station)command.supplierContract.receiver);
+                SetDockTarget((Station)command.supplierContract.receiver);
                 currentCommandState = CommandType.Dock;
             } else if (ship.dockedStation != ship.faction.GetFleetCommand() && ship.faction.GetFleetCommand() != null) {
                 // We have enough cargo and no contracts
-                ship.SetDockTarget(ship.faction.GetFleetCommand());
+                SetDockTarget(ship.faction.GetFleetCommand());
             }
         }
 
@@ -739,7 +743,7 @@ public class ShipAI {
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
                 currentCommandState = CommandType.Transport;
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetMaxSpeed(command.maxSpeed);
                 ship.SetGroup(command.productionStation.GetGroup());
                 newCommand = false;
             }
@@ -751,7 +755,7 @@ public class ShipAI {
                 }
 
                 if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
-                    ship.SetDockTarget(command.destinationStation);
+                    SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
                     ship.LoadCargoFromUnit(cargoTransferSpeed, command.cargoType, command.productionStation);
@@ -759,7 +763,7 @@ public class ShipAI {
                 }
             } else if (ship.dockedStation == command.destinationStation) {
                 if (ship.GetAllCargoOfType(command.cargoType) <= 0) {
-                    ship.SetDockTarget(command.productionStation);
+                    SetDockTarget(command.productionStation);
                     if (command.useAlternateCommandOnceDone)
                         currentCommandState = CommandType.Move;
                     else
@@ -771,10 +775,10 @@ public class ShipAI {
                 }
             } else {
                 if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
-                    ship.SetDockTarget(command.destinationStation);
+                    SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
-                    ship.SetDockTarget(command.productionStation);
+                    SetDockTarget(command.productionStation);
                     currentCommandState = CommandType.Dock;
                 }
             }
@@ -801,7 +805,7 @@ public class ShipAI {
         if (ship.dockedStation != null || newCommand) {
             if (newCommand) {
                 currentCommandState = CommandType.Transport;
-                ship.SetMaxSpeed(command.maxSpeed);
+                SetMaxSpeed(command.maxSpeed);
                 ship.SetGroup(command.productionStation.GetGroup());
                 newCommand = false;
             }
@@ -812,7 +816,7 @@ public class ShipAI {
                 }
 
                 if (ship.GetAvailableCargoSpace(command.cargoType) <= 0 || command.waitTime <= 0) {
-                    ship.SetDockTarget(command.destinationStation);
+                    SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
@@ -825,7 +829,7 @@ public class ShipAI {
                 }
 
                 if (ship.GetAllCargoOfType(command.cargoType) <= 0 || command.waitTime <= 0) {
-                    ship.SetDockTarget(command.productionStation);
+                    SetDockTarget(command.productionStation);
                     currentCommandState = CommandType.Dock;
                     command.waitTime = command.targetRotation;
                 } else {
@@ -836,10 +840,10 @@ public class ShipAI {
             } else {
                 command.waitTime = command.targetRotation;
                 if (ship.GetAvailableCargoSpace(command.cargoType) <= 0) {
-                    ship.SetDockTarget(command.destinationStation);
+                    SetDockTarget(command.destinationStation);
                     currentCommandState = CommandType.Dock;
                 } else {
-                    ship.SetDockTarget(command.productionStation);
+                    SetDockTarget(command.productionStation);
                     currentCommandState = CommandType.Dock;
                 }
             }
@@ -942,8 +946,8 @@ public class ShipAI {
                     : (Station)command.pickupContract.provider;
                 // Collect the cargo
                 if (ship.dockedStation != provider) {
-                    ship.SetDockTarget(provider);
-                    ship.SetMaxSpeed(command.maxSpeed);
+                    SetDockTarget(provider);
+                    SetMaxSpeed(command.maxSpeed);
                     currentCommandState = CommandType.Dock;
                     return CommandResult.Stop;
                 } else if (!factionTrade.activeContracts.Contains(command.supplierContract) &&
@@ -951,7 +955,7 @@ public class ShipAI {
                     command.supplierContract = null;
                     command.pickupContract = null;
                     currentCommandState = CommandType.Idle;
-                } else {
+                } else if (ship.dockedStation == provider) {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait) {
                         if (command.supplierContract != null)
@@ -959,6 +963,8 @@ public class ShipAI {
                         if (command.pickupContract != null) provider.contractShipsDocked.Add(command.pickupContract);
                         currentCommandState = CommandType.Wait;
                     }
+                    return CommandResult.Stop;
+                } else {
                     return CommandResult.Stop;
                 }
             }
@@ -968,8 +974,8 @@ public class ShipAI {
                     : (Station)command.dropOffContract.receiver;
                 // Deliver the cargo
                 if (ship.dockedStation != receiver) {
-                    ship.SetDockTarget(receiver);
-                    ship.SetMaxSpeed(command.maxSpeed);
+                    SetDockTarget(receiver);
+                    SetMaxSpeed(command.maxSpeed);
                     currentCommandState = CommandType.Dock;
                     return CommandResult.Stop;
                 } else if (!factionTrade.activeContracts.Contains(command.requestContract) &&
@@ -977,7 +983,7 @@ public class ShipAI {
                     command.requestContract = null;
                     command.dropOffContract = null;
                     currentCommandState = CommandType.Idle;
-                } else {
+                } else if (ship.dockedStation == receiver) {
                     //Add Contract to station to transfer cargo
                     if (currentCommandState != CommandType.Wait) {
                         if (command.requestContract != null)
@@ -999,9 +1005,9 @@ public class ShipAI {
     private CommandResult DoColonizeCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
-            ship.SetMovePosition(command.targetPlanet.position, command.targetPlanet.size + ship.size + 100);
-            command.targetPosition = ship.GetTargetMovePosition();
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMovePosition(command.targetPlanet.position, command.targetPlanet.size + ship.size + 100);
+            command.targetPosition = GetTargetMovePosition();
+            SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
@@ -1026,9 +1032,9 @@ public class ShipAI {
     private CommandResult DoBuildStationCommand(Command command, float deltaTime) {
         if (newCommand) {
             currentCommandState = CommandType.Move;
-            ship.SetMovePosition(command.destinationStation.position, command.destinationStation.size + ship.size + 2);
-            command.targetPosition = ship.GetTargetMovePosition();
-            ship.SetMaxSpeed(command.maxSpeed);
+            SetMovePosition(command.destinationStation.position, command.destinationStation.size + ship.size + 2);
+            command.targetPosition = GetTargetMovePosition();
+            SetMaxSpeed(command.maxSpeed);
             newCommand = false;
         }
 
@@ -1047,6 +1053,46 @@ public class ShipAI {
     #endregion
 
     #region HelperMethods
+
+    private void SetDockTarget(Station targetStation) {
+        foreach (ShipAISubprocess subprocess in subprocesses) {
+            if (subprocess.OverrideSetDockTarget(targetStation)) return;
+        }
+
+        ship.SetDockTarget(targetStation);
+    }
+
+    private void SetMovePosition(Vector2 targetPosition) {
+        foreach (ShipAISubprocess subprocess in subprocesses) {
+            if (subprocess.OverrideSetMovePosition(targetPosition)) return;
+        }
+        ship.SetMovePosition(targetPosition);
+    }
+
+    private void SetMovePosition(Vector2 targetPosition, float distanceFromPosition) {
+        targetPosition = Vector2.MoveTowards(ship.GetPosition(), targetPosition,
+            Vector2.Distance(ship.GetPosition(), targetPosition) - distanceFromPosition);
+
+        foreach (ShipAISubprocess subprocess in subprocesses) {
+            if (subprocess.OverrideSetMovePosition(targetPosition)) return;
+        }
+        ship.SetMovePosition(targetPosition);
+    }
+
+    private void SetMaxSpeed(float maxSpeed) {
+        foreach (ShipAISubprocess subprocess in subprocesses) {
+            if (subprocess.OverrideSetMaxSpeed(maxSpeed)) return;
+        }
+        ship.SetMaxSpeed(maxSpeed);
+    }
+
+    private Vector2 GetTargetMovePosition() {
+        foreach (ShipAISubprocess subprocess in subprocesses) {
+            Vector2? targetPos = subprocess.OverrideGetTargetPosition();
+            if (targetPos != null) return targetPos.Value;
+        }
+        return ship.GetTargetMovePosition();
+    }
 
     public Tuple<FactionTrade.TradeContract, FactionTrade.TradeContract, FactionTrade.TransportContract,
         FactionTrade.TransportContract, float> GetBestContractsBetweenStations(Station origin, Station destination,
@@ -1184,8 +1230,15 @@ public class ShipAI {
                 destination.faction.factionTrade.personnelRequested.TryGetValue(destination,
                     out FactionTrade.TransportOffer requestOffer))) {
 
-            long openCapacity = ship.moduleSystem.Get<HabitationArea>()
-                .Sum(h => includeCurrentCargo ? h.GetFreeSpace() : h.GetCapacity());
+
+            long openCapacity = 0;
+            Population extraPop = new Population();
+            if (includeCurrentCargo) {
+                ship.moduleSystem.Get<HabitationArea>().ForEach(h => extraPop.AddPopulation(h.population));
+                extraPop.SubtractPopulation(ship.shipScriptableObject.crewNeeded);
+            }
+            openCapacity = ship.moduleSystem.Get<HabitationArea>()
+                .Sum(h => h.GetCapacity()) - extraPop.TotalPopulation() - ship.shipScriptableObject.crewNeeded.TotalPopulation();
             var occupationValueAmount = new List<Tuple<Occupation, float, long, long>>();
             HabitationArea.allOccupations.ForEach(o => {
                 if (hireOffer.personnel.Get(o) > 0 && requestOffer.personnel.Get(o) > 0) {
@@ -1204,9 +1257,7 @@ public class ShipAI {
                 Occupation occupation = occupationTransport.Item1;
                 long previousPopulation = 0;
                 if (includeCurrentCargo) {
-                    previousPopulation = math.min(ship.moduleSystem.Get<HabitationArea>()
-                            .Sum(h => h.population.Get(occupation)),
-                        occupationTransport.Item4);
+                    previousPopulation = math.min(extraPop.Get(occupation), occupationTransport.Item4);
                     currentContractPersonnel.Add(occupation, previousPopulation);
                 }
 

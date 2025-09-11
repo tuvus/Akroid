@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134b8b1fe31645448f971a0e5677516, type: 3}
   m_Name: MediumConstructionBayMkIII
   m_EditorClassIdentifier: 
-  cost: 3749
+  cost: 4229
   resourceTypes: 01000000
-  resourceCosts: 6009000000000000
+  resourceCosts: 000a000000000000
   upgrade: {fileID: 0}
-  populationSpace: 0
+  sprite: {fileID: -1652516724379087771, guid: 073348473345a261598eabc069fa1cef, type: 3}
+  populationSpace: 160
   constructionSpeed: 1.6
   constructionAmount: 75
   constructionBays: 8

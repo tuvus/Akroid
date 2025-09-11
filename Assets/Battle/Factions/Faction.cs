@@ -40,10 +40,6 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
     private Random random;
     private double researchCostExtra;
 
-    public Faction() {
-        credits = 0;
-    }
-
     [field: SerializeField] public Color color { get; protected set; }
     [field: SerializeField] public string name { get; protected set; }
     [field: SerializeField] public string abbreviatedName { get; protected set; }
@@ -82,6 +78,10 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
 
     public event Action<Unit> OnUnitAdded = delegate { };
     public event Action<Unit> OnUnitRemoved = delegate { };
+
+    public Faction() {
+        credits = 0;
+    }
 
     public Faction(BattleManager battleManager, FactionData factionData, BattleManager.PositionGiver positionGiver) :
         base(battleManager, new HashSet<Unit>((factionData.ships + factionData.stations) * 5), false) {
@@ -139,6 +139,8 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
                     this),
                 battleManager.GetStationBlueprint(Station.StationType.FleetCommand).stationScriptableObject, true);
             fleetCommand.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees());
+            fleetCommand.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.population.Add(Occupation.Pilot, 100));
+            fleetCommand.moduleSystem.Get<PopulationCenter>().ForEach(pc => pc.FillBasicPop(1f));
             stationPositionGiver = new BattleManager.PositionGiver(fleetCommand.position, stationPositionGiver);
             for (int i = 0; i < factionData.stations - 1; i++) {
                 MiningStation newStation = battleManager.CreateNewMiningStation(
@@ -155,7 +157,7 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         }
 
         for (int i = 0; i < math.min(shipCount, 3); i++) {
-            GetFleetCommand().BuildShip(Ship.ShipType.GasCollector);
+            GetFleetCommand().BuildShip(Ship.ShipType.GasCollector).FillRequiredCrew();
             shipCount--;
         }
 
@@ -163,18 +165,19 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
             if (GetFleetCommand() != null) {
                 int randomNum = random.NextInt(0, 10);
                 if (randomNum < 3) {
-                    GetFleetCommand().BuildShip(Ship.ShipClass.Aria);
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aria).FillRequiredCrew();
                 } else if (randomNum < 8) {
-                    GetFleetCommand().BuildShip(Ship.ShipClass.Lancer);
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Lancer).FillRequiredCrew();
                 } else if (randomNum <= 10) {
-                    GetFleetCommand().BuildShip(Ship.ShipClass.Aterna);
+                    GetFleetCommand().BuildShip(Ship.ShipClass.Aterna).FillRequiredCrew();
                 }
-            } else
+            } else {
                 battleManager.CreateNewShip(
                     new BattleObject.BattleObjectData("Aria",
                         new Vector2(random.NextFloat(-100, 100), random.NextFloat(-100, 100)),
                         random.NextFloat(0, 360), this),
-                    battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject);
+                    battleManager.GetShipBlueprint(Ship.ShipClass.Aria).shipScriptableObject).FillRequiredCrew();
+            }
         }
     }
 

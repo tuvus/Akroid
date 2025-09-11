@@ -6,10 +6,10 @@ public class TurretUI : ComponentUI {
     private bool fire;
     private Turret turret;
 
-    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
-        base.Setup(battleObject, uIManager, unitUI);
+    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
+        base.Setup(battleObject, uIManager, unitUI, componentIndex);
         turret = (Turret)battleObject;
-        spriteRenderer.sprite = turret.turretScriptableObject.turretSprite;
+        spriteRenderer.sprite = turret.turretScriptableObject.sprite;
         spriteRenderer.enabled = true;
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.resource = turret.turretScriptableObject.turretFire;
@@ -22,6 +22,11 @@ public class TurretUI : ComponentUI {
         audioSource.dopplerLevel = 0;
         audioSource.volume = .2f;
         turret.OnFire += () => fire = true;
+    }
+
+    public override void RemoveComponent() {
+        DestroyImmediate(gameObject.GetComponent<AudioSource>());
+        spriteRenderer.enabled = false;
     }
 
     public override void UpdateObject() {

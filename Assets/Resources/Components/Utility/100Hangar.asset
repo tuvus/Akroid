@@ -12,4 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8e8411a578760b4eb0263cb40782dae, type: 3}
   m_Name: 100Hangar
   m_EditorClassIdentifier: 
+  cost: 1000
+  resourceTypes: 01000000
+  resourceCosts: b80b000000000000
+  upgrade: {fileID: 0}
+  sprite: {fileID: 3480704841986331072, guid: cb0a08cad953f5f9db1fd94ee7edd40c, type: 3}
   maxDockSpace: 100

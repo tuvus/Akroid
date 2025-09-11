@@ -16,8 +16,8 @@ MonoBehaviour:
   resourceTypes: 01000000
   resourceCosts: cf00000000000000
   upgrade: {fileID: 0}
+  sprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
   DPS: 25.96154
-  turretSprite: {fileID: -1574966895, guid: 1d20253041a05784e9101b9edabd92f1, type: 3}
   range: 400
   rotateSpeed: 76
   targeting: 1

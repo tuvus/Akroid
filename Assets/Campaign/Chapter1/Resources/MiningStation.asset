@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d21f91b94093424e9925688a4c0db5b, type: 3}
   m_Name: MiningStation
   m_EditorClassIdentifier: 
-  cost: 25488
+  cost: 26138
   resourceTypes: 01000000
-  resourceCosts: ba0e000000000000
+  resourceCosts: 0a0f000000000000
   prefabPath: Prefabs/StationPrefabs/MiningStation
   prefab: {fileID: 831600065110085484, guid: 604e1434a52205a4890f62bb79245dfc, type: 3}
   unitName: MiningStation
   maxHealth: 2300
-  sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
+  sprite: {fileID: -645021073995728445, guid: 4e0e4acbbcc2c2b7d85ad64df4bc4e76, type: 3}
   explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: Turrets
@@ -44,9 +44,10 @@ MonoBehaviour:
     moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
-  <spriteBounds>k__BackingField: {x: 92.3, y: 90.3}
+  <spriteBounds>k__BackingField: {x: 92.6, y: 96.9}
+  <spriteSize>k__BackingField: 48.45
   stationType: 3
   repairAmount: 100
   repairSpeed: 5
-  rotationSpeed: 0.103538096
+  rotationSpeed: 0.1
   miningRange: 500

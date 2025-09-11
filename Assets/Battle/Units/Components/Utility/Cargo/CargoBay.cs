@@ -41,7 +41,6 @@ public class CargoBay : ModuleComponent {
 
     /// <returns> Returns the amount of cargo that could not be loaded. </returns>
     public long LoadCargo(long cargoToLoad, CargoType cargoType) {
-        Debug.Log("Should load: " + cargoToLoad);
         // Puts Cargo into the existing half full cargo bay
         long openSpaceInUsedBay = cargoBayScriptableObject.cargoBaySize -
             cargoBays[cargoType] % cargoBayScriptableObject.cargoBaySize;

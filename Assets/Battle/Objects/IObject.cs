@@ -5,6 +5,7 @@ using UnityEngine;
 ///     This is required in order to have ObjectGroups and Objects in the same list.
 /// </summary>
 public interface IObject {
+    public string GetName();
     public float GetSize();
     public Vector2 GetPosition();
 

@@ -9,7 +9,7 @@ public class TestUtils {
             List<IModule> setupModules = new();
             List<ModuleSystem.System> setupSystems = new();
             foreach (ComponentScriptableObject scriptableObject in componentScriptableObject) {
-                var system = new ModuleSystem.System("TestSystem", PrefabModuleSystem.SystemType.Any);
+                var system = new ModuleSystem.System("TestSystem", ModuleSystem.SystemType.Any);
                 system.moduleCount = 1;
                 system.component = scriptableObject;
                 setupSystems.Add(system);
@@ -31,7 +31,7 @@ public class TestUtils {
             List<IModule> setupModules = new();
             List<ModuleSystem.System> setupSystems = new();
             foreach (ComponentScriptableObject scriptableObject in componentScriptableObject) {
-                var system = new ModuleSystem.System("TestSystem", PrefabModuleSystem.SystemType.Any);
+                var system = new ModuleSystem.System("TestSystem", ModuleSystem.SystemType.Any);
                 system.moduleCount = 1;
                 system.component = scriptableObject;
                 setupSystems.Add(system);

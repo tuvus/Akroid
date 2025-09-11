@@ -29,8 +29,8 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
     [SerializeField] private Transform blueprintList;
     [SerializeField] private TMP_Text constructionBayStatus;
     [SerializeField] private Transform constructionBayList;
+    private readonly List<Ship> shipsInHangar = new List<Ship>();
     private List<Ship.ShipBlueprint> shipBlueprints = new List<Ship.ShipBlueprint>();
-    [SerializeField] private readonly List<Ship> shipsInHangar = new List<Ship>();
 
     /// <summary> True for shipyard, false for upgrade </summary>
     private bool shipYardOrUpgrade = true;
@@ -40,7 +40,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         return displayedObject != null && displayedObject.battleObject.IsSpawned();
     }
 
-    protected override bool ShouldShowMiddlePanel() {
+    protected override bool ShouldShowStatusPanel() {
         return displayedObject.station.GetStationType() != Station.StationType.None;
     }
 
@@ -56,7 +56,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
         return !isEnemy && displayedObject.station.moduleSystem.Get<Hangar>().Any();
     }
 
-    protected override void RefreshMiddlePanel() {
+    protected override void RefreshStatusPanel() {
         stationName.text = displayedObject.station.GetUnitName();
         stationFaction.text = displayedObject.station.faction.name;
         stationType.text = "Station Type: " + displayedObject.station.GetStationType();
@@ -270,7 +270,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             constructionBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text =
                 blueprint.faction.abbreviatedName;
             constructionBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
-                (100 - blueprint.GetTotalResourcesLeftToUse() * 100 / blueprint.totalResourcesRequired) + "%";
+                100 - blueprint.GetTotalResourcesLeftToUse() * 100 / blueprint.totalResourcesRequired + "%";
             if (uiManager.GetFactionColoringShown()) {
                 constructionBayButton.GetComponent<Image>().color = blueprint.faction.GetColorTint();
             } else {
@@ -325,7 +325,7 @@ public class PlayerStationUI : PlayerUIMenu<StationUI> {
             hangarBayButtonTransform.GetChild(0).GetComponent<TMP_Text>().text = ship.GetUnitName();
             hangarBayButtonTransform.GetChild(1).GetComponent<TMP_Text>().text = ship.faction.abbreviatedName;
             hangarBayButtonTransform.GetChild(2).GetComponent<TMP_Text>().text =
-                (ship.GetHealth() * 100 / ship.GetMaxHealth()) + "%";
+                ship.GetHealth() * 100 / ship.GetMaxHealth() + "%";
             hangarBayButtonTransform.GetChild(3).GetComponent<Button>().onClick
                 .AddListener(() => HangarInfoButtonPressed(f));
             if (uiManager.GetFactionColoringShown()) {

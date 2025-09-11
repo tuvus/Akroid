@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d6c6a8733552dc479b93b2ebc7a4ca9, type: 3}
   m_Name: GasCollectorMkII
   m_EditorClassIdentifier: 
-  cost: 233
+  cost: 116
   resourceTypes: 01000000
-  resourceCosts: af00000000000000
+  resourceCosts: 5700000000000000
   upgrade: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 6d8a70fc833181f4c8545e2f904f4229, type: 3}
   collectionAmount: 350
   collectionSpeed: 6

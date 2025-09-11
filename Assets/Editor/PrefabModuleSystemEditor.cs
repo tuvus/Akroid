@@ -19,9 +19,9 @@ public class PrefabModuleSystemEditor : Editor {
         selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
         myInspector.Add(selectSystem);
         DropdownField dropdownField =
-            new DropdownField(new List<string>(Enum.GetNames(PrefabModuleSystem.SystemType.Turret.GetType())), 0);
+            new DropdownField(new List<string>(Enum.GetNames(ModuleSystem.SystemType.Turret.GetType())), 0);
         Button addSystemButton = new Button(() => {
-            moduleSystem.AddSystem(dropdownField.value, (PrefabModuleSystem.SystemType)dropdownField.index);
+            moduleSystem.AddSystem(dropdownField.value, (ModuleSystem.SystemType)dropdownField.index);
             selectSystem.highValue = math.max(0, moduleSystem.systems.Count - 1);
             selectSystem.SetValueWithoutNotify(selectSystem.highValue);
         }) {

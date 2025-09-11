@@ -1,19 +1,23 @@
 using System;
 using Unity.Mathematics;
-using UnityEngine;
 
 public class PopulationCenter : HabitationArea {
+    public static readonly float civilianRatio = .65f;
+    public static readonly float engineerRatio = .2f;
+    public static readonly float pilotRatio = .05f;
+    public static readonly float marineRatio = .1f;
+    private float engineerFloat;
+    private float marineFloat;
+    private float pilotFloat;
     private PopulationCenterScriptableObject populationCenterScriptableObject;
 
     private float populationFloat;
-    private float engineerFloat;
-    private float pilotFloat;
-    private float marineFloat;
 
-    public static readonly float civilianRatio = .799f;
-    public static readonly float engineerRatio = .2f;
-    public static readonly float pilotRatio = .001f;
-    public static readonly float marineRatio = .1f;
+    public PopulationCenter(BattleManager battleManager, IModule module, Unit unit,
+        ComponentScriptableObject componentScriptableObject) :
+        base(battleManager, module, unit, componentScriptableObject) {
+        populationCenterScriptableObject = (PopulationCenterScriptableObject)componentScriptableObject;
+    }
 
     public static float GetOccupationRatio(Occupation o) {
         switch (o) {
@@ -28,12 +32,6 @@ public class PopulationCenter : HabitationArea {
             default:
                 throw new ArgumentOutOfRangeException(nameof(o), o, null);
         }
-    }
-
-    public PopulationCenter(BattleManager battleManager, IModule module, Unit unit,
-        ComponentScriptableObject componentScriptableObject) :
-        base(battleManager, module, unit, componentScriptableObject) {
-        populationCenterScriptableObject = (PopulationCenterScriptableObject)componentScriptableObject;
     }
 
     public override void Upgrade(ComponentScriptableObject componentScriptableObject) {
@@ -94,5 +92,9 @@ public class PopulationCenter : HabitationArea {
         if (hadChange && unit.IsStation()) {
             ((Station)unit).updatePopulation = true;
         }
+    }
+
+    public void FillBasicPop(float percentage) {
+        population.AddPopulation(new Population().SetBasicPopulation((long)(GetFreeSpace() * percentage)));
     }
 }

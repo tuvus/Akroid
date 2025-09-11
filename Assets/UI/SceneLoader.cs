@@ -150,7 +150,7 @@ public class SceneLoader : MonoBehaviour {
         loadingCamera.SetActive(false);
         loadingEventSystem.SetActive(false);
         gameTransform.GetChild(1).GetChild(0).GetComponent<AudioListener>().enabled = true;
-        gameTransform.GetChild(1).GetChild(2).GetComponent<EventSystem>().enabled = true;
+        gameTransform.GetChild(1).GetChild(3).GetComponent<EventSystem>().enabled = true;
 
         battleManager.StartBattle();
         SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene());

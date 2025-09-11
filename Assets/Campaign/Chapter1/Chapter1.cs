@@ -93,6 +93,7 @@ public class Chapter1 : CampaingController {
 
         MiningStationScriptableObject miningStationScriptableObject =
             Resources.Load<MiningStationScriptableObject>("MiningStation");
+        miningStationScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
 
         playerMiningStation = battleManager.CreateNewMiningStation(
             new BattleObject.BattleObjectData("Mining Station",
@@ -113,6 +114,7 @@ public class Chapter1 : CampaingController {
                     1000, 50, 200, 5),
                 Random.Range(0, 360), planetFaction), Resources.Load<StationScriptableObject>("TradeStation"),
             true);
+        tradeStation.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
         CargoBay.allCargoTypes.ForEach(c =>
             tradeStation.SetDesiredFreeCargoRange(c, tradeStation.freeCargo[c].maxWanted / 4,
                 tradeStation.freeCargo[c].maxWanted));
@@ -123,8 +125,10 @@ public class Chapter1 : CampaingController {
                 planetFaction, battleManager.GetShipBlueprint(Ship.ShipType.Shuttle), "Civilian Ship"));
             cb.FillEmployees(.2f);
         });
-        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc =>
-            pc.population.AddPopulation(new Population().SetBasicPopulation((long)(pc.GetFreeSpace() * .666))));
+        tradeStation.moduleSystem.Get<PopulationCenter>().ForEach(pc => {
+            pc.population.pilots += 20;
+            pc.FillBasicPop(.666f);
+        });
         planetFactionAI = (PlanetFactionAI)planetFaction.GetFactionAI();
         tradeStation.stationAI.OnBuildShip += ship => {
             if (ship.faction == battleManager.GetLocalPlayer().faction)
@@ -139,7 +143,9 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Solar Shipyard", new PositionGiver(shipyardFaction.GetPosition()),
                 Random.Range(0, 360),
                 shipyardFaction), Resources.Load<StationScriptableObject>("Shipyard"), true);
+        shipyard.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules.ForEach(m => m.SetupData());
         shipyard.moduleSystem.Get<ConstructionBay>().ForEach(cb => cb.FillEmployees(.2f));
+        playerFaction.AddCredits(100000);
         shipyard.LoadCargo(2400, CargoBay.CargoType.Gas);
         Ship shipyardTransport = shipyard.BuildShip(Ship.ShipClass.Transport).FillRequiredCrew();
         shipyardTransport.LoadCargo(2400, CargoBay.CargoType.Metal);
@@ -158,6 +164,8 @@ public class Chapter1 : CampaingController {
             new BattleObject.BattleObjectData("Frontier Station", new PositionGiver(researchFaction.GetPosition()),
                 Random.Range(0, 360),
                 researchFaction), Resources.Load<StationScriptableObject>("ResearchStation"), true);
+        researchStation.unitScriptableObject.prefab.GetComponent<PrefabModuleSystem>().modules
+            .ForEach(m => m.SetupData());
 
         Fleet miningStationSetupFleet = playerFaction.CreateNewFleet("Station Setup Fleet",
             new HashSet<Ship> {
@@ -260,7 +268,7 @@ public class Chapter1 : CampaingController {
     private void StartTutorial() {
         bool skipTutorial = false;
         CommunicationEvent skipTutorialEvent = new CommunicationEvent(
-            playerFaction.GetFactionCommManager(), "Chapter 1:", new CommunicationEventOption[] {
+            playerFaction.GetFactionCommManager(), "Chapter 1:", new[] {
                 new CommunicationEventOption("Skip Tutorial", e => e.isActive, e => {
                     if (!e.isActive) return false;
                     e.DeactivateEvent();
@@ -1070,6 +1078,11 @@ public class Chapter1 : CampaingController {
             Fleet pirateFleet = pirateFaction.CreateNewFleet("Pirate Fleet", pirateShips.ToHashSet());
             pirateFleet.fleetAI.AddFormationTowardsPositionCommand(otherMiningStation.position, tradeStation.size * 2);
             pirateFleet.fleetAI.AddFleetAICommand(Command.CreateDockCommand(otherMiningStation));
+            // Fill ships with pirates
+            pirateFleet.ships.ToList().ForEach(s => {
+                s.FillRequiredCrew();
+                s.moduleSystem.Get<HabitationArea>().ForEach(h => h.population.marines += h.GetFreeSpace());
+            });
         });
         pirateChain.AddCondition(
             eventManager.CreateLateCondition(() =>

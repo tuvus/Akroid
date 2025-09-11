@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcb422cf85b663f468d34e4f8eae333e, type: 3}
   m_Name: HeavyShieldGeneratorMkI
   m_EditorClassIdentifier: 
-  cost: 563
+  cost: 914
   resourceTypes: 01000000
   resourceCosts: 9c01000000000000
+  upgrade: {fileID: 0}
+  sprite: {fileID: -6289687257119067799, guid: 5bd137c3725c26c4c831e7529a24ce08, type: 3}
   shieldRegenRate: 4.7
   shieldRecreateSpeed: 16
   shieldRegenHealth: 30
-  shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
+  shieldPrefab: {fileID: 2483464117563281541, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}
   maxShieldHealth: 825

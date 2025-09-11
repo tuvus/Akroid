@@ -19,7 +19,7 @@ MonoBehaviour:
   prefab: {fileID: 7158030276076730609, guid: b137e15685cd8db4d9bf16a386fb2a68, type: 3}
   unitName: DefenceStation
   maxHealth: 4046
-  sprite: {fileID: -66954656, guid: becc967935818bc45bea9ead77b37dd9, type: 3}
+  sprite: {fileID: -645021073995728445, guid: 4e0e4acbbcc2c2b7d85ad64df4bc4e76, type: 3}
   explosionSound: {fileID: 8300000, guid: de27e563816e194e9b334bd9d1fc2608, type: 3}
   systems:
   - name: Turrets
@@ -39,7 +39,8 @@ MonoBehaviour:
     moduleCount: 1
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 0.3, y: 0.3}
-  <spriteBounds>k__BackingField: {x: 92.3, y: 90.3}
+  <spriteBounds>k__BackingField: {x: 92.6, y: 96.9}
+  <spriteSize>k__BackingField: 14.535001
   stationType: 2
   repairAmount: 200
   repairSpeed: 5

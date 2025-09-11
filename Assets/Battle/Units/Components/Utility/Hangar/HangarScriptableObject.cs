@@ -14,4 +14,8 @@ public class HangarScriptableObject : ComponentScriptableObject {
         cost += maxDockSpace * 10;
         AddResourceCost(CargoBay.CargoType.Metal, maxDockSpace * 30);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

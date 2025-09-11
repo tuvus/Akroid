@@ -456,8 +456,6 @@ public class Ship : Unit {
         return movePosition;
     }
 
-
-
     public ShipClass GetShipClass() {
         return shipScriptableObject.shipClass;
     }
@@ -473,6 +471,12 @@ public class Ship : Unit {
     public bool IsCombatShip() {
         return shipScriptableObject.shipType == ShipType.Fighter || shipScriptableObject.shipType == ShipType.Cruiser ||
             shipScriptableObject.shipType == ShipType.Frigate || shipScriptableObject.shipType == ShipType.Dreadnaught;
+    }
+
+    public Population GetCrewNeeded() {
+        Population crewNeeded = new Population(shipScriptableObject.crewNeeded);
+        moduleSystem.Get<Bridge>().ForEach(b => crewNeeded.SubtractPopulation(b.population));
+        return crewNeeded;
     }
 
     public bool IsTransportShip() {

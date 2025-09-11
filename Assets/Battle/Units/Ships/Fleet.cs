@@ -210,4 +210,8 @@ public class Fleet : ShipGroup {
     public string GetFleetName() {
         return fleetName;
     }
+
+    public override string GetName() {
+        return fleetName;
+    }
 }

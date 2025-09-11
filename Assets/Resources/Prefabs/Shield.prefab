@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 579245397232031920}
   - component: {fileID: 3561529356722744132}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Shield
   m_TagString: Units/Shield
   m_Icon: {fileID: 0}
@@ -49,6 +49,9 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

@@ -4,13 +4,17 @@ public class ShieldGenderatorUI : ComponentUI {
     private ShieldGenerator shieldGenerator;
     private SpriteRenderer shieldRenderer;
 
-    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI) {
-        base.Setup(battleObject, uIManager, unitUI);
+    public override void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
+        base.Setup(battleObject, uIManager, unitUI, componentIndex);
         shieldGenerator = (ShieldGenerator)battleObject;
         shieldRenderer = Instantiate(shieldGenerator.shield.GetPrefab(), transform).GetComponent<SpriteRenderer>();
         shieldRenderer.transform.localScale = new Vector2(unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 1.6f,
             unitUI.unit.unitScriptableObject.sprite.bounds.size.x * 4f);
         shieldRenderer.enabled = false;
+    }
+
+    public override void RemoveComponent() {
+        DestroyImmediate(shieldRenderer.gameObject);
     }
 
     public override void UpdateObject() {

@@ -15,4 +15,8 @@ public class HabitationAreaScriptableObject : ComponentScriptableObject {
         cost += populationSpace * 3;
         AddResourceCost(CargoBay.CargoType.Metal, populationSpace);
     }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Utility;
+    }
 }

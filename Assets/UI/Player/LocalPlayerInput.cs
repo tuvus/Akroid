@@ -25,6 +25,8 @@ public class LocalPlayerInput : MonoBehaviour {
     [SerializeField] protected ActionType actionType;
 
     public float scrollFactor = 1;
+
+    private readonly int[] timeSteps = { 0, 1, 2, 5, 10, 15, 20, 25 };
     private Background background;
     protected BattleManager battleManager;
     protected CanvasScaler canvasScaler;
@@ -42,8 +44,6 @@ public class LocalPlayerInput : MonoBehaviour {
     private Vector2 rightClickStartPosition;
     protected bool secondaryMousePressed;
     private int timeStepIndex;
-
-    private readonly int[] timeSteps = { 0, 1, 2, 5, 10, 15, 20, 25 };
     protected UIBattleManager uiBattleManager;
 
     public Camera mainCamera { get; private set; }
@@ -124,7 +124,7 @@ public class LocalPlayerInput : MonoBehaviour {
     private void UpdateZoom(float scroll) {
         if (localPlayer.GetPlayerUI().FreezeZoom())
             return;
-        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer? 1 : 20f;
+        float platformModifier = Application.platform == RuntimePlatform.WebGLPlayer ? 1 : 20f;
         float targetSize = Mathf.Min(50000,
             Mathf.Max(1, mainCamera.orthographicSize + scroll * scrollFactor * platformModifier *
                 localPlayer.playerUI.scrollSpeed));
@@ -199,7 +199,7 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     protected virtual void PrimaryMouseDown() {
-        if (primaryMousePressed || localPlayer.GetPlayerUI().IsAMenueShown())
+        if (primaryMousePressed || localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         primaryMousePressed = true;
         leftClickedBattleObject = mouseOverBattleObject;
@@ -209,7 +209,7 @@ public class LocalPlayerInput : MonoBehaviour {
 
     protected virtual void PrimaryMouseUp() {
         primaryMousePressed = false;
-        if (localPlayer.GetPlayerUI().IsAMenueShown())
+        if (localPlayer.GetPlayerUI().IsAMenuShown())
             return;
         if (leftClickedBattleObject != null && !doingUnitClickAction) {
             displayedBattleObject = leftClickedBattleObject;
@@ -228,7 +228,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseHeld() {
         maxRightClickDistance = Mathf.Max(maxRightClickDistance,
             Vector2.Distance(rightClickStartPosition, GetMousePosition()));
-        if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
+        if (!localPlayer.GetPlayerUI().IsAMenuShown()) {
             Vector2 oldPosition = GetCamera().transform.position;
             MoveCamera((pastMousePosition - GetMousePosition()) * mainCamera.orthographicSize / GetScreenScale() /
                 1200);
@@ -239,7 +239,7 @@ public class LocalPlayerInput : MonoBehaviour {
     protected virtual void SecondaryMouseUp() {
         secondaryMousePressed = false;
         if (maxRightClickDistance < 10 + mainCamera.orthographicSize / 100) {
-            if (!localPlayer.GetPlayerUI().IsAMenueShown()) {
+            if (!localPlayer.GetPlayerUI().IsAMenuShown()) {
                 if (rightClickedBattleObject != null && rightClickedBattleObject == mouseOverBattleObject) {
                     localPlayer.GetPlayerUI().SetDisplayedObject(rightClickedBattleObject);
                     rightClickedBattleObject = null;
@@ -286,12 +286,12 @@ public class LocalPlayerInput : MonoBehaviour {
     }
 
     private void EscapeButtonPressed() {
-        if (localPlayer.GetPlayerUI().IsAMenueShown()) {
+        if (localPlayer.GetPlayerUI().IsAMenuShown()) {
             localPlayer.GetPlayerUI().CloseAllMenus();
             return;
         }
 
-        PlayerUI.Instance.ToggleMenueUI();
+        PlayerUI.Instance.ToggleMenuUI();
     }
 
     private void FollowUnitButtonPressed() {
@@ -321,7 +321,7 @@ public class LocalPlayerInput : MonoBehaviour {
         foreach (BattleObjectUI targetObject in uiBattleManager.battleObjects.Values) {
             if (!targetObject.IsSelectable()) continue;
 
-            float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.battleObject.position);
+            float tempDistance = Vector2.Distance(mouseWorldPosition, targetObject.GetPosition());
             float size = targetObject.battleObject.GetSize();
             if (targetObject is UnitUI unitUI)
                 size *= Mathf.Max(1.2f, unitUI.unitIconUI.GetSize() * 2);

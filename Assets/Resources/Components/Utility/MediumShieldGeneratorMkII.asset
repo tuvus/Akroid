@@ -15,9 +15,11 @@ MonoBehaviour:
   cost: 360
   resourceTypes: 01000000
   resourceCosts: 9b00000000000000
+  upgrade: {fileID: 0}
+  sprite: {fileID: -6289687257119067799, guid: 5bd137c3725c26c4c831e7529a24ce08, type: 3}
   shieldRegenRate: 5
   shieldRecreateSpeed: 12
   shieldRegenHealth: 18
-  shieldPrefab: {fileID: 4863749457260747931, guid: 9e4842c28d841064b91d1ee4b2270028,
+  shieldPrefab: {fileID: 2483464117563281541, guid: 9e4842c28d841064b91d1ee4b2270028,
     type: 3}
   maxShieldHealth: 310

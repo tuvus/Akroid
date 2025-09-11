@@ -4,7 +4,6 @@ using static Turret;
 
 public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float DPS;
-    public Sprite turretSprite;
 
     public float range;
     public float rotateSpeed;
@@ -26,15 +25,19 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public override void OnValidate() {
         DPS = GetDamagePerSecond();
         base.OnValidate();
-        if (turretSprite != null) {
-            spriteBounds = Calculator.GetSpriteBounds(turretSprite);
-            turretOffset = (turretSprite.rect.size.y - turretSprite.pivot.y) /
-                turretSprite.pixelsPerUnit;
+        if (sprite != null) {
+            spriteBounds = Calculator.GetSpriteBounds(sprite);
+            turretOffset = (sprite.rect.size.y - sprite.pivot.y) /
+                sprite.pixelsPerUnit;
 
         }
     }
 
     public virtual float GetDamagePerSecond() {
         return 0;
+    }
+
+    public override ModuleSystem.SystemType GetSystemType() {
+        return ModuleSystem.SystemType.Turret;
     }
 }

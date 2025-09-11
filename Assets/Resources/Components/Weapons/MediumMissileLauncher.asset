@@ -16,6 +16,7 @@ MonoBehaviour:
   resourceTypes: 0100000002000000
   resourceCosts: 4200000000000000ba00000000000000
   upgrade: {fileID: 0}
+  sprite: {fileID: -795279756, guid: d178ef83e7ad40642b1295bc0c068466, type: 3}
   DPS: 16.666668
   range: 400
   targeting: 1

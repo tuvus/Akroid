@@ -92,4 +92,8 @@ public class ObjectGroup<T> : IObject, IObjectGroupLink where T : BattleObject {
     public Vector2 GetAveragePosition() {
         return averagePosition;
     }
+
+    public virtual string GetName() {
+        return "Object Group";
+    }
 }

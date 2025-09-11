@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -8,6 +7,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour {
+    public static readonly string threadingPrefs = "Threading";
+    public static readonly string musicVolumePrefs = "MusicVolume";
+    public static readonly string soundEffectsPrefs = "SoundEffects";
+    public static readonly string scrollSpeedPrefs = "ScrollSpeed";
     [SerializeField] private PlayerObjectStatusUI objectStatusUI;
     [SerializeField] private PlayerShipFuelCellsUI shipFuelCellsUI;
     [field: SerializeField] public PlayerCommsManager playerCommsManager { get; private set; }
@@ -31,17 +34,13 @@ public class PlayerUI : MonoBehaviour {
     [SerializeField] private TMP_Text victoryFaction;
     [SerializeField] private TMP_Text victoryElapsedTime;
     [SerializeField] private TMP_Text victoryRealTime;
-    [SerializeField] private GameObject stationUI;
-    [SerializeField] private GameObject shipUI;
-    [SerializeField] private GameObject planetUI;
-    [SerializeField] private GameObject factionOverviewUI;
     [SerializeField] private LineRenderer commandRenderer;
-    [SerializeField] private GameObject starUI;
-    [SerializeField] private GameObject asteroidUI;
-    [SerializeField] private GameObject gasCloudUI;
+
+    [SerializeField] private GameObject factionOverviewUI;
+    [SerializeField] private GameObject objectUI;
     [field: SerializeField] public Button factionOverviewButton { get; private set; }
 
-    [SerializeField] private List<IPlayerUIMenu> uIMenusInput;
+    [SerializeField] public PlayerObjectUI playerObjectUI;
 
     public float musicVolume;
     public float soundEffectsVolume;
@@ -57,13 +56,7 @@ public class PlayerUI : MonoBehaviour {
     private LocalPlayer localPlayer;
     private LocalPlayerInput localPlayerInput;
     private UIBattleManager uiBattleManager;
-    public Dictionary<Type, IPlayerUIMenu> uIMenus;
     public static PlayerUI Instance { get; protected set; }
-
-    public static readonly string threadingPrefs = "Threading";
-    public static readonly string musicVolumePrefs = "MusicVolume";
-    public static readonly string soundEffectsPrefs = "SoundEffects";
-    public static readonly string scrollSpeedPrefs = "ScrollSpeed";
 
     public void SetUpUI(BattleManager battleManager, LocalPlayerInput localPlayerInput, LocalPlayer localPlayer,
         UIManager uIManager) {
@@ -88,12 +81,9 @@ public class PlayerUI : MonoBehaviour {
         soundEffectsVolume = PlayerPrefs.GetFloat(soundEffectsPrefs);
         if (!PlayerPrefs.HasKey(scrollSpeedPrefs)) PlayerPrefs.SetFloat(scrollSpeedPrefs, 1f);
         scrollSpeed = PlayerPrefs.GetFloat(scrollSpeedPrefs);
-        uIMenusInput.ForEach(m => m.SetupPlayerUIMenu(this, localPlayer, uIManager, .2f));
         playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
-        uIMenus = new Dictionary<Type, IPlayerUIMenu>();
-        foreach (IPlayerUIMenu menu in uIMenusInput) {
-            uIMenus.Add(menu.GetMenuType(), menu);
-        }
+        playerFactionOverviewUI.SetupPlayerUIMenu(this, localPlayer, uIManager);
+        playerObjectUI.SetupPlayerUIMenu(this, localPlayer, uIManager);
 
         playerEventUIVisualizer.SetupEventUI(uIManager, uIManager.uIEventManager, localPlayer, this);
 
@@ -132,9 +122,9 @@ public class PlayerUI : MonoBehaviour {
             GetLocalPlayerInput().GetDisplayedBattleObject(), unitCount);
         commandClick.UpdateCommandClick();
 
-        uIMenusInput.ForEach(m => {
-            if (m.IsShown()) m.UpdateUI();
-        });
+        if (factionOverviewUI.activeSelf) playerFactionOverviewUI.RefreshMenu();
+        if (objectUI.activeSelf) playerObjectUI.RefreshMenu();
+
         timeSpeed.text = "Time: " + Time.timeScale;
         playerEventUIVisualizer.UpdateEventUI();
         playerCommsManager.UpdateCommsManager();
@@ -195,13 +185,13 @@ public class PlayerUI : MonoBehaviour {
         ShowControlList(!controlsListUI.activeSelf);
     }
 
-    public void ShowMenueUI(bool shown) {
+    public void ShowMenuUI(bool shown) {
         CloseAllMenus();
         menuUI.SetActive(shown);
     }
 
-    public void ToggleMenueUI() {
-        ShowMenueUI(!menuUI.activeSelf);
+    public void ToggleMenuUI() {
+        ShowMenuUI(!menuUI.activeSelf);
         if (menuUI.activeSelf) {
             playerMenueUI.ShowMenueUI();
         }
@@ -227,20 +217,15 @@ public class PlayerUI : MonoBehaviour {
     }
 
     public void SetDisplayedObject(ObjectUI iObjectUI) {
-        Type currentType = iObjectUI.GetType();
-        while (currentType != null) {
-            if (uIMenus.ContainsKey(currentType)) {
-                CloseAllMenus();
-                uIMenus[currentType].SetDisplayedObject(iObjectUI);
-                return;
-            }
-
-            currentType = currentType.BaseType;
-        }
+        CloseAllMenus();
+        playerObjectUI.gameObject.SetActive(true);
+        playerObjectUI.SetDisplayedObject(iObjectUI);
     }
 
     public void ShowFactionUI(FactionUI faction) {
-        SetDisplayedObject(faction);
+        CloseAllMenus();
+        playerFactionOverviewUI.gameObject.SetActive(true);
+        playerFactionOverviewUI.SetDisplayedFaction(faction);
     }
 
     public void ShowLocalFaction() {
@@ -251,13 +236,8 @@ public class PlayerUI : MonoBehaviour {
         menuUI.SetActive(false);
         controlsListUI.SetActive(false);
         victoryUI.SetActive(false);
-        if (stationUI.activeSelf) stationUI.SetActive(false);
-        if (shipUI.activeSelf) shipUI.SetActive(false);
-        if (planetUI.activeSelf) planetUI.SetActive(false);
         if (factionOverviewUI.activeSelf) factionOverviewUI.SetActive(false);
-        if (starUI.activeSelf) starUI.SetActive(false);
-        if (asteroidUI.activeSelf) asteroidUI.SetActive(false);
-        if (gasCloudUI.activeSelf) gasCloudUI.SetActive(false);
+        if (objectUI.activeSelf) objectUI.SetActive(false);
     }
 
     public void ToggleUnitZoomIndicators() {
@@ -316,25 +296,16 @@ public class PlayerUI : MonoBehaviour {
     #region HelperMethods
 
     public bool FreezeZoom() {
-        return playerCommsManager.FreezeScrolling() || IsAMenueShown();
+        return playerCommsManager.FreezeScrolling() || IsAMenuShown();
     }
 
     public bool GetShowUnitZoomIndicators() {
         return showUnitZoomIndicators;
     }
 
-    public bool IsControlsListShown() {
-        return controlsListUI.activeSelf;
-    }
-
-    public bool IsAMenueShown() {
-        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || stationUI.activeSelf
-            || shipUI.activeSelf || planetUI.activeSelf || factionOverviewUI.activeSelf || starUI.activeSelf
-            || asteroidUI.activeSelf || gasCloudUI.activeSelf;
-    }
-
-    public bool IsAnObjectMenuShown() {
-        return stationUI.activeSelf || shipUI.activeSelf || planetUI.activeSelf;
+    public bool IsAMenuShown() {
+        return controlsListUI.activeSelf || menuUI.activeSelf || victoryUI.activeSelf || factionOverviewUI.activeSelf
+            || objectUI.activeSelf;
     }
 
     public CommandClick GetCommandClick() {
