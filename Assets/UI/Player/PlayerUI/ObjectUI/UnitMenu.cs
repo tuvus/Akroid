@@ -33,6 +33,9 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private Transform populationList;
     [SerializeField] private GameObject populationButtonPrefab;
 
+    [SerializeField] private GameObject stationImageObject;
+    [SerializeField] private Image stationImage;
+
     private List<GameObject> moduleUIs;
     public ModuleSystem.System selectedSystem { get; private set; }
 
@@ -51,6 +54,7 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
         hangarUI.SetDisplayedObject(displayedObject);
         systemUI.SetDisplayedObject(displayedObject);
         shipPanel.SetActive(displayedObject.unit.IsShip());
+        RefreshStationButton();
         DeselectSystem();
     }
 
@@ -81,6 +85,15 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
                 shipUI.SetPosition(hangar.GetWorldPosition());
                 shipUI.SetRotation(hangar.GetWorldRotation());
             }
+        }
+    }
+
+    private void RefreshStationButton() {
+        if (displayedObject.unit.IsShip() && displayedObject is ShipUI shipUI && shipUI.ship.dockedStation != null) {
+            stationImage.sprite = shipUI.ship.dockedStation.stationScriptableObject.sprite;
+            stationImageObject.SetActive(true);
+        } else {
+            stationImageObject.SetActive(false);
         }
     }
 
@@ -239,5 +252,9 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
         selectedSystem = null;
         rightPanel = hangarUI.gameObject;
         systemUI.gameObject.SetActive(false);
+    }
+
+    public void SelectStation() {
+        localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.objects[((Ship)displayedObject.unit).dockedStation]);
     }
 }
