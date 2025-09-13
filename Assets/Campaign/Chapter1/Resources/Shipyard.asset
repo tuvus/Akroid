@@ -59,4 +59,4 @@ MonoBehaviour:
   stationType: 4
   repairAmount: 500
   repairSpeed: 5
-  rotationSpeed: 0.049484253
+  rotationSpeed: 1

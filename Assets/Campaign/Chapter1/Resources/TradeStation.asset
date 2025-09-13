@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef5fca24924178043bf24e9e2230ca53, type: 3}
   m_Name: TradeStation
   m_EditorClassIdentifier: 
-  cost: 99866
+  cost: 99971
   resourceTypes: 0100000002000000
-  resourceCosts: 7a450000000000003601000000000000
+  resourceCosts: 9d450000000000003601000000000000
   prefabPath: Prefabs/StationPrefabs/Shipyard
   prefab: {fileID: 8198535041992587762, guid: e2a0da9254ff982408527889046e1441, type: 3}
   unitName: TradeStation
@@ -55,7 +55,8 @@ MonoBehaviour:
   destroyEffect: {fileID: 11400000, guid: 699ff92c3f436158fbf2e3eff3365d7b, type: 2}
   baseScale: {x: 1, y: 1}
   <spriteBounds>k__BackingField: {x: 135.4, y: 129.3}
+  <spriteSize>k__BackingField: 67.7
   stationType: 5
   repairAmount: 500
   repairSpeed: 5
-  rotationSpeed: -0.054106947
+  rotationSpeed: 1

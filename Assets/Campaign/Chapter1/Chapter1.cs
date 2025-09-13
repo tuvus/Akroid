@@ -56,7 +56,7 @@ public class Chapter1 : CampaingController {
         colorPicker = new ColorPicker();
         playerFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlayerFactionAI), "Free Space Miners", "FSM", colorPicker.PickColor(),
-                Random.Range(1, 2) * 5400, 0, 0, 0), new PositionGiver(Vector2.zero, 100, 4000, 500, 1000, 10), 100);
+                Random.Range(1, 2) * 5400, 0, 0, 0), new PositionGiver(Vector2.zero, 100, 4000, 500, 2000, 10), 100);
         playerFactionAI = (PlayerFactionAI)playerFaction.GetFactionAI();
 
         otherMiningFaction = battleManager.CreateNewFaction(
