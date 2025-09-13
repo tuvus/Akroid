@@ -19,7 +19,6 @@ public class StationUI : UnitUI {
         if (!built && station.IsBuilt()) {
             transform.localScale = new Vector3(station.scale.x, station.scale.y, 1);
             spriteRenderer.color = Color.white;
-
         }
     }
 

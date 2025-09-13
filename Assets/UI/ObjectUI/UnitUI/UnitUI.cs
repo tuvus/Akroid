@@ -142,4 +142,18 @@ public abstract class UnitUI : BattleObjectUI {
         destroyEffectUI.OnBattleObjectRemoved();
         componentUIs.ForEach(c => c.OnUnitRemoved());
     }
+
+    public override void SetDisplayedObject() {
+        base.SetDisplayedObject();
+        foreach (ComponentUI componentUI in componentUIs) {
+            componentUI.SetDisplayedObject();
+        }
+    }
+
+    public override void UnsetDisplayedObject() {
+        base.UnsetDisplayedObject();
+        foreach (ComponentUI componentUI in componentUIs) {
+            componentUI.UnsetDisplayedObject();
+        }
+    }
 }

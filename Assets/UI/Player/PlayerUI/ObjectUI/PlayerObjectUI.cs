@@ -43,7 +43,7 @@ public class PlayerObjectUI : MonoBehaviour {
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private List<IPlayerUIMenu> uIMenuInput;
 
-    private ObjectUI displayedObject;
+    public ObjectUI displayedObject { get; private set; }
 
     protected LocalPlayer localPlayer;
     protected PlayerUI playerUI;
@@ -62,17 +62,25 @@ public class PlayerObjectUI : MonoBehaviour {
     }
 
     public void SetDisplayedObject(ObjectUI objectToDisplay) {
-        Type currentType = objectToDisplay.GetType();
-        while (currentType != null) {
-            if (uIMenus.ContainsKey(currentType)) {
-                CloseAllMenus();
-                displayedObject = objectToDisplay;
-                uIMenus[currentType].gameObject.SetActive(true);
-                uIMenus[currentType].SetDisplayedObject(objectToDisplay);
-                return;
-            }
+        if (displayedObject != null && displayedObject is BattleObjectUI oldBattleObjectUI)
+            oldBattleObjectUI.UnsetDisplayedObject();
 
-            currentType = currentType.BaseType;
+        if (objectToDisplay != null) {
+            Type currentType = objectToDisplay.GetType();
+            while (currentType != null) {
+                if (uIMenus.ContainsKey(currentType)) {
+                    CloseAllMenus();
+                    displayedObject = objectToDisplay;
+                    uIMenus[currentType].gameObject.SetActive(true);
+                    uIMenus[currentType].SetDisplayedObject(objectToDisplay);
+                    if (displayedObject is BattleObjectUI battleObjectUI) {
+                        battleObjectUI.SetDisplayedObject();
+                    }
+                    return;
+                }
+
+                currentType = currentType.BaseType;
+            }
         }
         CloseAllMenus();
         displayedObject = null;
@@ -85,11 +93,11 @@ public class PlayerObjectUI : MonoBehaviour {
     }
 
     public void RefreshMenu() {
-        RefreshStatusPanel();
         foreach (KeyValuePair<Type, IPlayerUIMenu> playerUIMenu in uIMenus) {
             if (playerUIMenu.Value.gameObject.activeSelf)
                 playerUIMenu.Value.RefreshMenu();
         }
+        RefreshStatusPanel();
     }
 
     protected void RefreshStatusPanel() {

@@ -65,7 +65,6 @@ public class PlayerUI : MonoBehaviour {
         Instance = this;
         this.localPlayerInput = localPlayerInput;
         uiBattleManager = uIManager.uiBattleManager;
-        CloseAllMenus();
         commandClick.SetupCommandClick(localPlayerInput.GetCamera());
         showUnitZoomIndicators = true;
         updateUnitZoomIndicators = true;
@@ -88,6 +87,7 @@ public class PlayerUI : MonoBehaviour {
         playerEventUIVisualizer.SetupEventUI(uIManager, uIManager.uIEventManager, localPlayer, this);
 
         battleManager.OnBattleEnd += OnBattleEnd;
+        CloseAllMenus();
     }
 
     public void UpdatePlayerUI() {
@@ -237,7 +237,10 @@ public class PlayerUI : MonoBehaviour {
         controlsListUI.SetActive(false);
         victoryUI.SetActive(false);
         if (factionOverviewUI.activeSelf) factionOverviewUI.SetActive(false);
-        if (objectUI.activeSelf) objectUI.SetActive(false);
+        if (objectUI.activeSelf) {
+            playerObjectUI.SetDisplayedObject(null);
+            objectUI.SetActive(false);
+        }
     }
 
     public void ToggleUnitZoomIndicators() {

@@ -4,12 +4,15 @@ public abstract class ComponentUI : BattleObjectUI {
     public ModuleComponent moduleComponent { get; private set; }
     protected UnitUI unitUI { get; private set; }
     public int componentIndex { get; private set; }
+    private bool displayed;
+    private int sortingOrder;
 
     public virtual void Setup(BattleObject battleObject, UIManager uIManager, UnitUI unitUI, int componentIndex) {
         base.Setup(battleObject, uIManager);
         this.unitUI = unitUI;
         moduleComponent = (ModuleComponent)battleObject;
         this.componentIndex = componentIndex;
+        sortingOrder = spriteRenderer.sortingOrder;
     }
 
     public abstract void RemoveComponent();
@@ -30,7 +33,7 @@ public abstract class ComponentUI : BattleObjectUI {
     }
 
     public override bool IsVisible() {
-        return base.IsVisible() && unitUI.IsVisible();
+        return base.IsVisible() && unitUI.IsVisible() || displayed;
     }
 
     public override void SelectObject(

@@ -75,6 +75,13 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     public override void RefreshMenu() {
         base.RefreshMenu();
         UpdateModules(displayedObject.unit);
+        if (displayedObject is ShipUI shipUI && shipUI.ship.dockedStation != null) {
+            Hangar hangar = shipUI.ship.dockedStation.moduleSystem.Get<Hangar>().FirstOrDefault();
+            if (hangar != null) {
+                shipUI.SetPosition(hangar.GetWorldPosition());
+                shipUI.SetRotation(hangar.GetWorldRotation());
+            }
+        }
     }
 
     private void UpdateModules(Unit unit) {
