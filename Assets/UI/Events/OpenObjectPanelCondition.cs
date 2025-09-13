@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class OpenObjectPanelCondition : UIEventCondition {
+public class OpenObjectPanelCondition : UICondition {
     private readonly BattleObject objectToSelect;
 
     public OpenObjectPanelCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager,

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class FollowUnitCondition : UIEventCondition {
+public class FollowUnitCondition : UICondition {
     private readonly Unit unitToFollow;
 
     public FollowUnitCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Unit unitToFollow,

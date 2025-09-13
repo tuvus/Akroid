@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class ZoomCondtion : UIEventCondition {
+public class ZoomCondtion : UICondition {
     private readonly float startingZoom;
     private readonly float zoomTo;
 

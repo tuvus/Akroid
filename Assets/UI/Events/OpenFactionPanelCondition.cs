@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class OpenFactionPanelCondition : UIEventCondition {
+public class OpenFactionPanelCondition : UICondition {
     private readonly Faction factionToSelect;
 
     public OpenFactionPanelCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Faction factionToSelect,

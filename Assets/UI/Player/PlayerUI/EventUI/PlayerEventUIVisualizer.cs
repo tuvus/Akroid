@@ -17,7 +17,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     private List<ObjectUI> objectsToVisualize;
     private PlayerUI playerUI;
     private UIEventManager uIEventManager;
-    private UIEventCondition visualizedEvent;
+    private UICondition _visualized;
     private Transform worldSpaceTransform;
 
 
@@ -42,17 +42,17 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
         if (!uIEventManager.ActiveEvents.Contains(eventConditionTuple)) {
             RemoveVisuals();
             eventConditionTuple = null;
-            visualizedEvent = null;
+            _visualized = null;
         }
 
-        if (visualizedEvent == null || !visualizedEvent.visualize) {
+        if (_visualized == null || !_visualized.visualize) {
             eventConditionTuple =
-                uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UIEventCondition);
-            if (eventConditionTuple != null) visualizedEvent = (UIEventCondition)eventConditionTuple.Item1;
+                uIEventManager.ActiveEvents.FirstOrDefault(e => e.Item1.visualize && e.Item1 is UICondition);
+            if (eventConditionTuple != null) _visualized = (UICondition)eventConditionTuple.Item1;
             newEvent = true;
         }
 
-        if (visualizedEvent != null) {
+        if (_visualized != null) {
             VisualizeEvent(newEvent);
         }
     }
@@ -60,7 +60,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     private void VisualizeEvent(bool newEvent) {
         objectsToVisualize.Clear();
         buttonsToVisualize.Clear();
-        visualizedEvent.GetVisualizedObjects(objectsToVisualize, buttonsToVisualize);
+        _visualized.GetVisualizedObjects(objectsToVisualize, buttonsToVisualize);
         VisualizeObjects(objectsToVisualize);
         VisualizeButtons(buttonsToVisualize);
     }

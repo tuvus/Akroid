@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public class UnSelectUnitsCondition : UIEventCondition {
+public class UnSelectUnitsCondition : UICondition {
     private readonly List<Unit> unitsToUnselect;
 
     public UnSelectUnitsCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, List<Unit> units,

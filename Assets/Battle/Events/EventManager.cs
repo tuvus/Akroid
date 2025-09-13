@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class EventManager {
     protected BattleManager battleManager;
@@ -147,6 +148,16 @@ public class EventManager {
 
     public virtual EventCondition CreateZoomCondition(float zoomTo) {
         return new PlaceholderCondition(new object[] { zoomTo });
+    }
+
+    public virtual EventCondition CreateMoveCameraCondition(Vector2 startPos, Vector2 endPos,
+        float startZoom, float endZoom, float duration) {
+        return new PlaceholderCondition(new object[] { startPos, endPos, startZoom, endZoom, duration });
+    }
+
+    public virtual EventCondition CreateMoveCameraToIObjectCondition(Vector2 startPos, IObject iObject,
+        float startZoom, float endZoom, float duration) {
+        return new PlaceholderCondition(new object[] { startPos, iObject, startZoom, endZoom, duration });
     }
 
     public virtual EventCondition CreatePredicateCondition(Predicate<EventManager> predicate) {

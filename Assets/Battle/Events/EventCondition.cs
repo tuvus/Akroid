@@ -23,12 +23,13 @@ public abstract class EventCondition {
         Predicate,
         LateCondition,
         Placeholder,
-        Victory
+        Victory,
+        MoveCamera,
     }
 
     public bool visualize;
 
-    /// <summary> No extenal instantiation allowed </summary>
+    /// <summary> No external instantiation allowed </summary>
     public EventCondition(ConditionType conditionType, bool visualize = false) {
         this.conditionType = conditionType;
         this.visualize = visualize;
@@ -39,6 +40,6 @@ public abstract class EventCondition {
     /// <summary>
     ///     Checks the condition during the simulation frame.
     /// </summary>
-    /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
+    /// <returns>True if the condition is fulfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckCondition(EventManager eventManager, float deltaTime);
 }

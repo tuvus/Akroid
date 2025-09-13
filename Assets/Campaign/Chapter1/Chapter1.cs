@@ -174,12 +174,12 @@ public class Chapter1 : CampaingController {
                 tradeStation.BuildShip(playerFaction, Ship.ShipClass.Transport).FillRequiredCrew(),
                 tradeStation.BuildShip(playerFaction, Ship.ShipType.Shuttle, "Shuttle").FillRequiredCrew()
             });
-        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(4 * battleManager.timeScale),
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(5 * battleManager.timeScale),
             Command.CommandAction.Replace);
         miningStationSetupFleet.fleetAI.AddFormationTowardsPositionCommand(playerMiningStation.GetPosition(),
             shipyard.GetSize() * 4,
             Command.CommandAction.AddToEnd);
-        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(3 * battleManager.timeScale));
+        miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateWaitCommand(2 * battleManager.timeScale));
         miningStationSetupFleet.fleetAI.AddFleetAICommand(Command.CreateMoveOffsetCommand(
             miningStationSetupFleet.GetPosition(),
             playerMiningStation.GetPosition(), playerMiningStation.GetSize() * 3));
@@ -238,7 +238,7 @@ public class Chapter1 : CampaingController {
         battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
         battleManager.GetLocalPlayer().SetFaction(playerFaction);
-        eventManager.SetPlayerZoom(400);
+        eventManager.SetPlayerZoom(500);
         eventManager.StartFollowingUnit(miningStationSetupFleet.ships.First(s => s.IsConstructionShip()));
 
         battleManager.shipBlueprints.Where(b => b.shipScriptableObject.shipType == Ship.ShipType.Fighter ||
@@ -309,6 +309,14 @@ public class Chapter1 : CampaingController {
                 })
             }, true);
         playerFaction.GetFactionCommManager().SendCommunication(skipTutorialEvent);
+        eventManager.AddEvent(
+            eventManager.CreateMoveCameraCondition(tradeStation.GetPosition(), tradeStation.GetPosition(), 500, 150,
+                4.5f * GetTimeScale()), () => { });
+        Fleet setupFleet = playerFaction.fleets.First();
+        eventManager.AddEvent(
+            eventManager.CreatePredicateCondition((_) => !setupFleet.IsDockedWithStation(tradeStation)),
+            () => eventManager.AddEvent(eventManager.CreateMoveCameraToIObjectCondition(tradeStation.GetPosition(),
+                setupFleet, 150, 60, 4f * GetTimeScale()), () => { }));
         planetFactionAI.faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(
             playerFaction.GetFactionCommManager(),
             "Undocking procedure successful! \n You are now on route to the designated mining location. " +

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShipCommandMoveToObjectsUICondition : UIWrapperEventCondition<ShipCommandMoveToObjectsCondition> {
+public class ShipCommandMoveToObjectsUICondition : UIWrapperCondition<ShipCommandMoveToObjectsCondition> {
     public ShipCommandMoveToObjectsUICondition(ShipCommandMoveToObjectsCondition conditionLogic,
         LocalPlayer localPlayer,
         UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager,

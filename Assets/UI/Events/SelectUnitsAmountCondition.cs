@@ -3,7 +3,7 @@ using System.Linq;
 using Unity.Mathematics;
 using UnityEngine.UI;
 
-public class SelectUnitsAmountCondition : UIEventCondition {
+public class SelectUnitsAmountCondition : UICondition {
     private readonly int amountToSelect;
     private readonly List<Unit> unitsToSelect;
 

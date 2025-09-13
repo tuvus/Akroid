@@ -1,7 +1,7 @@
-public abstract class UIWrapperEventCondition<T> : UIEventCondition where T : EventCondition {
+public abstract class UIWrapperCondition<T> : UICondition where T : EventCondition {
     protected T conditionLogic;
 
-    public UIWrapperEventCondition(T conditionLogic, LocalPlayer localPlayer, UIBattleManager uiBattleManager,
+    public UIWrapperCondition(T conditionLogic, LocalPlayer localPlayer, UIBattleManager uiBattleManager,
         bool visualize = false) :
         base(localPlayer, uiBattleManager, conditionLogic.conditionType, visualize) {
         this.conditionLogic = conditionLogic;

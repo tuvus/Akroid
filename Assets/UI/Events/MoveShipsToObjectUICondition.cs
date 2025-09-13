@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MoveShipsToObjectUICondition : UIWrapperEventCondition<MoveShipsToObject> {
+public class MoveShipsToObjectUICondition : UIWrapperCondition<MoveShipsToObject> {
     public MoveShipsToObjectUICondition(MoveShipsToObject conditionLogic, LocalPlayer localPlayer,
         UIBattleManager uiBattleManager,
         bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager, visualize) { }
