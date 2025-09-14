@@ -267,14 +267,24 @@ public class Chapter1 : CampaingController {
     /// </summary>
     private void StartTutorial() {
         bool skipTutorial = false;
+        var firstCamMove =
+            eventManager.CreateMoveCameraCondition(tradeStation.GetPosition(), tradeStation.GetPosition(), 500, 150,
+                4.5f * GetTimeScale());
+        Fleet setupFleet = playerFaction.fleets.First();
+        var secondCamMove = eventManager.CreateMoveCameraToIObjectCondition(tradeStation.GetPosition(),
+            setupFleet, 150, 60, 4f * GetTimeScale());
+        var secondCamCondition =
+            eventManager.CreatePredicateCondition((_) => !setupFleet.IsDockedWithStation(tradeStation));
         CommunicationEvent skipTutorialEvent = new CommunicationEvent(
             playerFaction.GetFactionCommManager(), "Chapter 1:", new[] {
                 new CommunicationEventOption("Skip Tutorial", e => e.isActive, e => {
                     if (!e.isActive) return false;
                     e.DeactivateEvent();
+                    eventManager.RemoveEvent(firstCamMove);
+                    eventManager.RemoveEvent(secondCamMove);
+                    eventManager.RemoveEvent(secondCamCondition);
                     skipTutorial = true;
                     playerFaction.GetFactionCommManager().SendCommunication(playerFaction, "Skipping Tutorial", _ => {
-                        Fleet setupFleet = playerFaction.fleets.First();
                         // Increase time speed
                         if (setupFleet.fleetAI.commands.First().commandType != Command.CommandType.Move) {
                             GetBattleManager().SetSimulationTimeScale(10);
@@ -309,14 +319,8 @@ public class Chapter1 : CampaingController {
                 })
             }, true);
         playerFaction.GetFactionCommManager().SendCommunication(skipTutorialEvent);
-        eventManager.AddEvent(
-            eventManager.CreateMoveCameraCondition(tradeStation.GetPosition(), tradeStation.GetPosition(), 500, 150,
-                4.5f * GetTimeScale()), () => { });
-        Fleet setupFleet = playerFaction.fleets.First();
-        eventManager.AddEvent(
-            eventManager.CreatePredicateCondition((_) => !setupFleet.IsDockedWithStation(tradeStation)),
-            () => eventManager.AddEvent(eventManager.CreateMoveCameraToIObjectCondition(tradeStation.GetPosition(),
-                setupFleet, 150, 60, 4f * GetTimeScale()), () => { }));
+        eventManager.AddEvent(firstCamMove, () => { });
+        eventManager.AddEvent(secondCamCondition, () => eventManager.AddEvent(secondCamMove, () => { }));
         planetFactionAI.faction.GetFactionCommManager().SendCommunication(new CommunicationEvent(
             playerFaction.GetFactionCommManager(),
             "Undocking procedure successful! \n You are now on route to the designated mining location. " +

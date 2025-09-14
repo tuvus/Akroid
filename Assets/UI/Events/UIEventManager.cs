@@ -26,16 +26,16 @@ public class UIEventManager : EventManager {
     public void UpdateUIEvents() {
         uIEventList.ForEach(a => a.Invoke());
         uIEventList.Clear();
-        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
-            if (activeEvent.Item1 is UICondition uIActiveCondition) {
+        foreach (var activeEvent in ActiveEvents.ToList()) {
+            if (activeEvent.Key is UICondition uIActiveCondition) {
                 if (uIActiveCondition.CheckUICondition(this)) {
-                    ActiveEvents.Remove(activeEvent);
-                    activeEvent.Item2();
+                    ActiveEvents.Remove(activeEvent.Key);
+                    activeEvent.Value();
                 }
-            } else if (activeEvent.Item1 is UIEvent uIActiveEvent) {
+            } else if (activeEvent.Key is UIEvent uIActiveEvent) {
                 if (uIActiveEvent.CheckUICondition(this)) {
-                    ActiveEvents.Remove(activeEvent);
-                    activeEvent.Item2();
+                    ActiveEvents.Remove(activeEvent.Key);
+                    activeEvent.Value();
                 } else {
                     uIActiveEvent.UpdateUI(this);
                 }

@@ -8,24 +8,28 @@ public class EventManager {
 
     public EventManager(BattleManager battleManager) {
         this.battleManager = battleManager;
-        ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
+        ActiveEvents = new Dictionary<EventCondition, Action>();
     }
-    public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; }
+    public Dictionary<EventCondition, Action> ActiveEvents { get; }
 
     /// <summary>
     ///     Checks the conditions of every event during the regular game update.
     /// </summary>
     public virtual void UpdateEvents(float deltaTime) {
-        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
-            if (activeEvent.Item1.CheckCondition(this, deltaTime)) {
-                ActiveEvents.Remove(activeEvent);
-                activeEvent.Item2();
+        foreach (var activeEvent in ActiveEvents.ToList()) {
+            if (activeEvent.Key.CheckCondition(this, deltaTime)) {
+                ActiveEvents.Remove(activeEvent.Key);
+                activeEvent.Value();
             }
         }
     }
 
     public void AddEvent(EventCondition condition, Action action) {
-        ActiveEvents.Add(new Tuple<EventCondition, Action>(condition, action));
+        ActiveEvents.Add(condition, action);
+    }
+
+    public void RemoveEvent(EventCondition condition) {
+        ActiveEvents.Remove(condition);
     }
 
     public virtual EventCondition CreateWaitCondition(float timeToWait) {
