@@ -1629,7 +1629,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1939976486909118287}
   m_HandleRect: {fileID: 6364087356304033362}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8753,7 +8753,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4109213334028760973}
   m_HandleRect: {fileID: 2985224167127844932}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -28942,6 +28942,10 @@ MonoBehaviour:
   improvementList: {fileID: 781628451769925123}
   leaderName: {fileID: 2249920627365482422}
   characterPortraitFrame: {fileID: 7356642054075966904}
+  <discoveryButtons>k__BackingField:
+  - {fileID: 4455559672454376680}
+  - {fileID: 3651319908248003601}
+  - {fileID: 4504916045761570383}
   factionUI: {fileID: 0}
 --- !u!1 &5719664905887216748
 GameObject:
@@ -36047,7 +36051,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1946627096938898430}
   m_HandleRect: {fileID: 3572173540734659056}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -50323,7 +50327,7 @@ PrefabInstance:
     - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3920508318628320845, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
@@ -50669,7 +50673,7 @@ PrefabInstance:
     - target: {fileID: 3306014353615138537, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3306358722342591778, guid: 3dc752b769e9fe640a4978eeec997a6f,
         type: 3}

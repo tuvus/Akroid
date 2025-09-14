@@ -203,6 +203,10 @@ public class UIEventManager : EventManager {
         return new MoveCameraToIObject(localPlayer, uiBattleManager, startPos, iObject, startZoom, endZoom, duration);
     }
 
+    public override EventCondition CreateMakeDiscoveryCondition(Faction factionToResearch, bool visualize = false) {
+        return new MakeDiscoveryCondition(localPlayer, uiBattleManager, factionToResearch, visualize);
+    }
+
     public override void SetPlayerZoom(float zoom) {
         uIEventList.Add(() => playerGameInput.SetZoom(zoom));
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ public class PlayerFactionOverviewUI : MonoBehaviour {
     [SerializeField] private Transform improvementList;
     [SerializeField] private TMP_Text leaderName;
     [SerializeField] private Transform characterPortraitFrame;
+    [field:SerializeField] public List<Button> discoveryButtons { get; private set; }
+
     public FactionUI factionUI;
     private GameObject characterPortrait;
     private LocalPlayer localPlayer;

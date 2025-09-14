@@ -164,6 +164,10 @@ public class EventManager {
         return new PlaceholderCondition(new object[] { startPos, iObject, startZoom, endZoom, duration });
     }
 
+    public virtual EventCondition CreateMakeDiscoveryCondition(Faction factionToResearch, bool visualize = false) {
+        return new PlaceholderCondition(new object[] { factionToResearch, visualize });
+    }
+
     public virtual EventCondition CreatePredicateCondition(Predicate<EventManager> predicate) {
         return new PredicateCondition(predicate);
     }
