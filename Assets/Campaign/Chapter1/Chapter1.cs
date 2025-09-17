@@ -74,7 +74,7 @@ public class Chapter1 : CampaingController {
         planetFaction = battleManager.CreateNewFaction(
             new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.PickColor(), 100000, 0, 0,
                 0),
-            new PositionGiver(Vector2.zero, 5000, 7000, 500, 400, 20), 100);
+            new PositionGiver(playerFaction.GetPosition(), 5000, 7000, 500, 400, 20), 100);
         planet = battleManager.CreateNewPlanet(new Planet.PlanetData(
                 new BattleObject.BattleObjectData("Home", planetFaction.GetPosition(), Random.Range(0, 360),
                     new Vector2(14, 14),
