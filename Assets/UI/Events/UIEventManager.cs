@@ -185,7 +185,7 @@ public class UIEventManager : EventManager {
     }
 
     public override EventCondition CreateZoomCondition(float zoomTo) {
-        return new ZoomCondtion(localPlayer, uiBattleManager, zoomTo);
+        return new ZoomCondition(localPlayer, uiBattleManager, zoomTo);
     }
 
     public override EventCondition CreateLateCondition(Func<EventCondition> eventConditionFunction) {

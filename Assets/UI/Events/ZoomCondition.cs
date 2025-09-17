@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class ZoomCondtion : UICondition {
+public class ZoomCondition : UICondition {
     private readonly float startingZoom;
     private readonly float zoomTo;
 
-    public ZoomCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float zoomTo) : base(localPlayer,
-        uiBattleManager,
-        ConditionType.Zoom) {
+    public ZoomCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float zoomTo) : base(localPlayer,
+        uiBattleManager, ConditionType.Zoom) {
         this.zoomTo = zoomTo;
         startingZoom = localPlayer.GetLocalPlayerInput().GetCamera().orthographicSize;
     }
