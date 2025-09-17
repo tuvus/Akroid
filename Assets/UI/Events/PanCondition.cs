@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PanCondtion : UIEventCondition {
+public class PanCondition : UICondition {
     private float distanceToPan;
 
-    public PanCondtion(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float distanceToPan) : base(
+    public PanCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, float distanceToPan) : base(
         localPlayer,
         uiBattleManager, ConditionType.Pan) {
         this.distanceToPan = distanceToPan;

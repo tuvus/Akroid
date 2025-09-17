@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public class ShipsCommandUICondition : UIWrapperEventCondition<ShipsCommandCondition> {
+public class ShipsCommandUICondition : UIWrapperCondition<ShipsCommandCondition> {
     public ShipsCommandUICondition(ShipsCommandCondition conditionLogic, LocalPlayer localPlayer,
         UIBattleManager uiBattleManager, bool visualize = false) : base(conditionLogic, localPlayer, uiBattleManager,
         visualize) { }

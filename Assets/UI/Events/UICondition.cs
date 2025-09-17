@@ -2,29 +2,29 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public abstract class UIEventCondition : EventCondition {
+public abstract class UICondition : EventCondition {
     protected LocalPlayer localPlayer;
     protected UIBattleManager uiBattleManager;
 
-    public UIEventCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType,
+    public UICondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, ConditionType conditionType,
         bool visualize = false) : base(conditionType, visualize) {
         this.localPlayer = localPlayer;
         this.uiBattleManager = uiBattleManager;
     }
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
-        // Most UIEventConditions will check their condition during the UI update and not the battle update
+        // Most UIConditions will check their condition during the UI update and not the battle update
         return false;
     }
 
     /// <summary>
     ///     Checks the UICondition during the UI frame.
     /// </summary>
-    /// <returns>True if the condition is fullfilled and the event should be removed, false otherwise.</returns>
+    /// <returns>True if the condition is fulfilled and the event should be removed, false otherwise.</returns>
     public abstract bool CheckUICondition(EventManager eventManager);
 
     /// <summary>
-    ///     Decideds wich objects should be visualised by this event.
+    ///     Decides which objects should be visualised by this event.
     ///     Returns the objects in the list given to avoid garbage collection
     /// </summary>
     public abstract void GetVisualizedObjects(List<ObjectUI> objectsToVisualise, List<Button> buttonsToVisualize);
@@ -32,18 +32,17 @@ public abstract class UIEventCondition : EventCondition {
     /// <summary>
     ///     Helper function to help managing selecting ships
     /// </summary>
+    /// <param name="overrideSelected"> Highlights the ship even if it is selected. </param>
     protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize,
-        List<Button> buttonsToVisualize,
-        bool includeFleet = true) {
+        List<Button> buttonsToVisualize, bool includeFleet = true, bool overrideSelected = false) {
         HashSet<UnitUI> selectedUnits =
             localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null)
             selectedUnits = new HashSet<UnitUI>();
-        UnitMenu unitMenu =
-            (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
+        UnitMenu unitMenu = (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
 
         foreach (ShipUI shipUI in shipsToSelect) {
-            if (selectedUnits.Contains(shipUI)) continue;
+            if (selectedUnits.Contains(shipUI) && !overrideSelected) continue;
             Ship ship = shipUI.ship;
 
             if (ship.dockedStation != null) {
@@ -51,8 +50,8 @@ public abstract class UIEventCondition : EventCondition {
                 if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
 
                 // If the station panel has been opened highlight the ship button
-                if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf && unitMenu.selectedSystem == null &&
-                    unitMenu.hangarUI.unit == ship.dockedStation)
+                if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf && unitMenu.gameObject.activeSelf
+                    && unitMenu.selectedSystem == null && unitMenu.hangarUI.unit == ship.dockedStation)
                     buttonsToVisualize.Add(unitMenu.hangarUI.GetButtonOfShip(ship));
             } else {
                 objectsToVisualize.Add(shipUI);

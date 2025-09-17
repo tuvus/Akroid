@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class UIEventManager : EventManager {
     private readonly LocalPlayer localPlayer;
@@ -25,11 +26,18 @@ public class UIEventManager : EventManager {
     public void UpdateUIEvents() {
         uIEventList.ForEach(a => a.Invoke());
         uIEventList.Clear();
-        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
-            if (activeEvent.Item1 is UIEventCondition uIActiveEvent) {
+        foreach (var activeEvent in ActiveEvents.ToList()) {
+            if (activeEvent.Key is UICondition uIActiveCondition) {
+                if (uIActiveCondition.CheckUICondition(this)) {
+                    ActiveEvents.Remove(activeEvent.Key);
+                    activeEvent.Value();
+                }
+            } else if (activeEvent.Key is UIEvent uIActiveEvent) {
                 if (uIActiveEvent.CheckUICondition(this)) {
-                    ActiveEvents.Remove(activeEvent);
-                    activeEvent.Item2();
+                    ActiveEvents.Remove(activeEvent.Key);
+                    activeEvent.Value();
+                } else {
+                    uIActiveEvent.UpdateUI(this);
                 }
             }
         }
@@ -173,16 +181,30 @@ public class UIEventManager : EventManager {
     }
 
     public override EventCondition CreatePanCondition(float distanceToPan) {
-        return new PanCondtion(localPlayer, uiBattleManager, distanceToPan);
+        return new PanCondition(localPlayer, uiBattleManager, distanceToPan);
     }
 
     public override EventCondition CreateZoomCondition(float zoomTo) {
-        return new ZoomCondtion(localPlayer, uiBattleManager, zoomTo);
+        return new ZoomCondition(localPlayer, uiBattleManager, zoomTo);
     }
 
     public override EventCondition CreateLateCondition(Func<EventCondition> eventConditionFunction) {
         return new LateUICondition((LateCondition)base.CreateLateCondition(eventConditionFunction), localPlayer,
             uiBattleManager);
+    }
+
+    public override EventCondition CreateMoveCameraCondition(Vector2 startPos, Vector2 endPos, float startZoom,
+        float endZoom, float duration) {
+        return new MoveCamera(localPlayer, uiBattleManager, startPos, endPos, startZoom, endZoom, duration);
+    }
+
+    public override EventCondition CreateMoveCameraToIObjectCondition(Vector2 startPos, IObject iObject,
+        float startZoom, float endZoom, float duration) {
+        return new MoveCameraToIObject(localPlayer, uiBattleManager, startPos, iObject, startZoom, endZoom, duration);
+    }
+
+    public override EventCondition CreateMakeDiscoveryCondition(Faction factionToResearch, bool visualize = false) {
+        return new MakeDiscoveryCondition(localPlayer, uiBattleManager, factionToResearch, visualize);
     }
 
     public override void SetPlayerZoom(float zoom) {

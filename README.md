@@ -1,5 +1,6 @@
 # Akroid
 
+[Play the web demo here!](https://tuvus.github.io/)
 
 ![](/Gimp/SpaceBattle1.png)
 

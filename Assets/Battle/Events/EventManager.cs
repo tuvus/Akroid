@@ -1,30 +1,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class EventManager {
     protected BattleManager battleManager;
 
     public EventManager(BattleManager battleManager) {
         this.battleManager = battleManager;
-        ActiveEvents = new HashSet<Tuple<EventCondition, Action>>();
+        ActiveEvents = new Dictionary<EventCondition, Action>();
     }
-    public HashSet<Tuple<EventCondition, Action>> ActiveEvents { get; }
+    public Dictionary<EventCondition, Action> ActiveEvents { get; }
 
     /// <summary>
     ///     Checks the conditions of every event during the regular game update.
     /// </summary>
     public virtual void UpdateEvents(float deltaTime) {
-        foreach (Tuple<EventCondition, Action> activeEvent in ActiveEvents.ToList()) {
-            if (activeEvent.Item1.CheckCondition(this, deltaTime)) {
-                ActiveEvents.Remove(activeEvent);
-                activeEvent.Item2();
+        foreach (var activeEvent in ActiveEvents.ToList()) {
+            if (activeEvent.Key.CheckCondition(this, deltaTime)) {
+                ActiveEvents.Remove(activeEvent.Key);
+                activeEvent.Value();
             }
         }
     }
 
     public void AddEvent(EventCondition condition, Action action) {
-        ActiveEvents.Add(new Tuple<EventCondition, Action>(condition, action));
+        ActiveEvents.Add(condition, action);
+    }
+
+    public void RemoveEvent(EventCondition condition) {
+        ActiveEvents.Remove(condition);
     }
 
     public virtual EventCondition CreateWaitCondition(float timeToWait) {
@@ -147,6 +152,20 @@ public class EventManager {
 
     public virtual EventCondition CreateZoomCondition(float zoomTo) {
         return new PlaceholderCondition(new object[] { zoomTo });
+    }
+
+    public virtual EventCondition CreateMoveCameraCondition(Vector2 startPos, Vector2 endPos,
+        float startZoom, float endZoom, float duration) {
+        return new PlaceholderCondition(new object[] { startPos, endPos, startZoom, endZoom, duration });
+    }
+
+    public virtual EventCondition CreateMoveCameraToIObjectCondition(Vector2 startPos, IObject iObject,
+        float startZoom, float endZoom, float duration) {
+        return new PlaceholderCondition(new object[] { startPos, iObject, startZoom, endZoom, duration });
+    }
+
+    public virtual EventCondition CreateMakeDiscoveryCondition(Faction factionToResearch, bool visualize = false) {
+        return new PlaceholderCondition(new object[] { factionToResearch, visualize });
     }
 
     public virtual EventCondition CreatePredicateCondition(Predicate<EventManager> predicate) {

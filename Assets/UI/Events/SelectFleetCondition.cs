@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UI;
 
-public class SelectFleetsCondition : UIEventCondition {
+public class SelectFleetsCondition : UICondition {
     private readonly Fleet fleetToSelect;
 
     public SelectFleetsCondition(LocalPlayer localPlayer, UIBattleManager uiBattleManager, Fleet fleet,
