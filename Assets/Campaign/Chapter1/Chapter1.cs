@@ -272,7 +272,7 @@ public class Chapter1 : CampaingController {
                 4.5f * GetTimeScale());
         Fleet setupFleet = playerFaction.fleets.First();
         var secondCamMove = eventManager.CreateMoveCameraToIObjectCondition(tradeStation.GetPosition(),
-            setupFleet, 150, 60, 4f * GetTimeScale());
+            setupFleet, 150, 60, 12f * GetTimeScale());
         var secondCamCondition =
             eventManager.CreatePredicateCondition((_) => !setupFleet.IsDockedWithStation(tradeStation));
         CommunicationEvent skipTutorialEvent = new CommunicationEvent(
