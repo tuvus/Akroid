@@ -51,8 +51,8 @@ public abstract class UICondition : EventCondition {
                 if (!objectsToVisualize.Contains(dockedStationUI)) objectsToVisualize.Add(dockedStationUI);
 
                 // If the station panel has been opened highlight the ship button
-                if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf && unitMenu.selectedSystem == null &&
-                    unitMenu.hangarUI.unit == ship.dockedStation)
+                if (localPlayer.playerUI.playerObjectUI.gameObject.activeSelf && unitMenu.gameObject.activeSelf
+                    && unitMenu.selectedSystem == null && unitMenu.hangarUI.unit == ship.dockedStation)
                     buttonsToVisualize.Add(unitMenu.hangarUI.GetButtonOfShip(ship));
             } else {
                 objectsToVisualize.Add(shipUI);
