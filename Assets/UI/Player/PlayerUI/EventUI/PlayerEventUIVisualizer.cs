@@ -75,6 +75,7 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
     private void VisualizeObjects(List<ObjectUI> objectsToVisualize) {
         int arrowCount = 0;
         Camera camera = localPlayer.GetLocalPlayerInput().mainCamera;
+
         for (int i = 0; i < objectsToVisualize.Count; i++) {
             ObjectUI obj = objectsToVisualize[i];
             if (highlightTransform.childCount <= i) Instantiate(unitHighlight, highlightTransform);
@@ -84,8 +85,10 @@ public class PlayerEventUIVisualizer : MonoBehaviour {
             float objectSizeDivisor = 3;
             if (obj.iObject.IsGroup())
                 objectSizeDivisor = 4;
-            float objectSize = Math.Max(obj.iObject.GetSize() / objectSizeDivisor, camera.orthographicSize / 100);
-            visualEffect.localScale = new Vector2(objectSize, objectSize);
+            float objectSize = obj.iObject.GetSize();
+            if (obj is UnitUI unitUI) objectSize *= math.max(1, unitUI.unitIconUI.GetSize());
+            float highlightSize = Math.Max(objectSize / objectSizeDivisor, camera.orthographicSize / 100);
+            visualEffect.localScale = new Vector2(highlightSize, highlightSize);
 
             if (!localPlayer.GetLocalPlayerInput().IsObjectInViewingField(obj)) {
                 if (arrowTransform.childCount <= arrowCount) Instantiate(unitArrow, arrowTransform);
