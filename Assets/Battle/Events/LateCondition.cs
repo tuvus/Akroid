@@ -21,9 +21,13 @@ public class LateCondition : EventCondition {
 
     public override bool CheckCondition(EventManager eventManager, float deltaTime) {
         if (eventCondition == null) {
-            eventCondition = eventConditionFunction();
-            visualize = eventCondition.visualize;
+            ActivateLateCondition();
         }
         return eventCondition.CheckCondition(eventManager, deltaTime);
+    }
+
+    public void ActivateLateCondition() {
+        eventCondition = eventConditionFunction();
+        visualize = eventCondition.visualize;
     }
 }

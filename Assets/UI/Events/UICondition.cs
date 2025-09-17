@@ -32,18 +32,17 @@ public abstract class UICondition : EventCondition {
     /// <summary>
     ///     Helper function to help managing selecting ships
     /// </summary>
+    /// <param name="overrideSelected"> Highlights the ship even if it is selected. </param>
     protected void AddShipsToSelect(List<ShipUI> shipsToSelect, List<ObjectUI> objectsToVisualize,
-        List<Button> buttonsToVisualize,
-        bool includeFleet = true) {
+        List<Button> buttonsToVisualize, bool includeFleet = true, bool overrideSelected = false) {
         HashSet<UnitUI> selectedUnits =
             localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().GetAllUnits().ToHashSet();
         if (!includeFleet && localPlayer.GetLocalPlayerGameInput().GetSelectedUnits().fleet != null)
             selectedUnits = new HashSet<UnitUI>();
-        UnitMenu unitMenu =
-            (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
+        UnitMenu unitMenu = (UnitMenu)localPlayer.playerUI.playerObjectUI.uIMenus[typeof(UnitUI)];
 
         foreach (ShipUI shipUI in shipsToSelect) {
-            if (selectedUnits.Contains(shipUI)) continue;
+            if (selectedUnits.Contains(shipUI) && !overrideSelected) continue;
             Ship ship = shipUI.ship;
 
             if (ship.dockedStation != null) {

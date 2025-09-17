@@ -361,21 +361,21 @@ public class Chapter1 : CampaingController {
             "Neutral units will appear grey and hostile units will appear red.");
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Now zoom back in to our ships so we can see them better.", 15 * GetTimeScale());
-        eventChain.AddCondition(eventManager.CreateZoomCondition(300));
+        eventChain.AddCondition(eventManager.CreateLateCondition(() => eventManager.CreateZoomCondition(300)));
 
         // Selection Tutorial
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Well done! Now lets try selecting the ships.", 2 * GetTimeScale());
+            "Well done! Now lets try selecting the ships.", 1 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Our ships are in a fleet, which means when you click a ship you will select the fleet by default.",
-            5 * GetTimeScale());
+            4 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Try clicking on of the ships to select our fleet.", 8 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateSelectFleetCondition(playerFaction.fleets.First(), true));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Hold alt while clicking a ship to select it.", 3 * GetTimeScale());
+            "Hold alt while clicking a ship in a fleet selects the ship instead of the fleet, try it!", 3 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -385,7 +385,7 @@ public class Chapter1 : CampaingController {
             "If you want to select more units you can hold shift while clicking it to add it to our current selection.",
             7 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Try adding another ship to our current selection.", 9 * GetTimeScale());
+            "Try adding another ship to our current selection by holding shift and clicking on another ship.", 9 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -393,7 +393,7 @@ public class Chapter1 : CampaingController {
         eventChain.AddCondition(eventManager.CreateUnselectUnitsCondition(battleManager.units.ToList()));
         eventChain.AddCommEvent(playerComm, playerFaction,
             "There is one more way that you can select ships. " +
-            "Try holding alt then click and dragging your mouse to do a box selection until it contains a few of the ships.",
+            "Try holding alt then click and drag your mouse across a few ships to do a box selection until it contains a few of the ships.",
             1 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
@@ -403,9 +403,9 @@ public class Chapter1 : CampaingController {
             eventManager.CreateOpenObjectPanelCondition(setupFleet.ships.First(ship => ship.IsConstructionShip()),
                 true));
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Here you can see its owner, state, cargo and weapons of the unit. ", 1 * GetTimeScale());
+            "Here you can see its owner, state, cargo and components of the unit. ", 1 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Right click again or press the close button to close the panel.", 4 * GetTimeScale());
+            "Right click again or press the object name to close the panel.", 4 * GetTimeScale());
         eventChain.AddCondition(eventManager.CreateOpenObjectPanelCondition(null));
 
         // Following Tutorial
