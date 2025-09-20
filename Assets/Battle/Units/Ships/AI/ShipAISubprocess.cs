@@ -55,6 +55,7 @@ public class CrewSubprocess : ShipAISubprocess {
                     s.moduleSystem.Get<HabitationArea>().Any(h => h.IsTransferHabitat())).Aggregate((a, b) =>
                     math.distancesq(ship.position, a.position) <= math.distancesq(ship.position, b.position) ? a : b);
                 if (newTargetStation != null) ship.SetDockTarget(newTargetStation);
+                return;
             }
 
             ship.dockedStation.personnelRequests.Where(pr => pr.Key.unit == ship).ToList()
