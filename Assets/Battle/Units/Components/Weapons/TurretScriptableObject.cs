@@ -16,7 +16,7 @@ public abstract class TurretScriptableObject : ComponentScriptableObject {
     public float turretFirePitch;
     private float findNewTargetUpdateSpeed;
     public Vector2 spriteBounds { get; private set; }
-    public float turretOffset { get; private set; }
+    [field: SerializeField] public float turretOffset { get; private set; }
 
     public virtual void Awake() {
         if (turretFire == null) turretFire = Resources.Load<AudioResource>("Prefabs/Audio/TurretFire");

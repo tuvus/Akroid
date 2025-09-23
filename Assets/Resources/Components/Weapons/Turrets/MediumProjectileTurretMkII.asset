@@ -27,6 +27,7 @@ MonoBehaviour:
   baseScale: {x: 1, y: 1}
   turretFire: {fileID: 8300000, guid: 09c0f722f967fb5b19ae801c04dbb5a3, type: 3}
   turretFirePitch: 0.8
+  <turretOffset>k__BackingField: 1.42
   fireVelocity: 84
   fireAccuracy: 1.2
   minDamage: 12
