@@ -263,4 +263,6 @@ public static class Calculator {
     public static Vector2 GetSpriteBounds(Sprite sprite) {
         return sprite.rect.size / sprite.pixelsPerUnit;
     }
+
+
 }

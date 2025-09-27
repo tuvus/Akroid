@@ -7573,8 +7573,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1578682860879578619}
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
-  m_Value: 0.99999934
-  m_Size: 0.68027216
+  m_Value: 0.9999997
+  m_Size: 0.68027204
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -25529,7 +25529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 3a796882a6757a7b5b6b94892dd04359, type: 2}
+  m_Texture: {fileID: 2800000, guid: 72604d6619f76a762b3397ee3edc4040, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -33091,6 +33091,7 @@ MonoBehaviour:
   statusPanel: {fileID: 6280600303303637400}
   leftPanel: {fileID: 2277324417425397242}
   rightPanel: {fileID: 0}
+  displayedImageTransform: {fileID: 7067606213689492677}
   planetType: {fileID: 8395212743188030640}
   planetFactionName: {fileID: 7944068264014197428}
   planetPopulation: {fileID: 3672910138702471703}
@@ -33100,6 +33101,8 @@ MonoBehaviour:
   planetAreas: {fileID: 2352653785253417225}
   planetFactionsList: {fileID: 3826648759139198735}
   planetFactionButton: {fileID: 6917939575041792617, guid: 81644518d3a380746b8738422d22db7a,
+    type: 3}
+  districtPrefab: {fileID: 861201660554388760, guid: a08dd025db8ac037c8e60a58e2aa06b2,
     type: 3}
 --- !u!1 &6582940273826949810
 GameObject:
@@ -41861,6 +41864,7 @@ MonoBehaviour:
   statusPanel: {fileID: 0}
   leftPanel: {fileID: 2570621816068070312}
   rightPanel: {fileID: 0}
+  displayedImageTransform: {fileID: 0}
   planetType: {fileID: 6751726966067386571}
   planetFactionName: {fileID: 8350775794514007052}
   planetPopulation: {fileID: 2603684689835252061}
@@ -41871,6 +41875,7 @@ MonoBehaviour:
   planetFactionsList: {fileID: 4691418480400859468}
   planetFactionButton: {fileID: 6917939575041792617, guid: 81644518d3a380746b8738422d22db7a,
     type: 3}
+  districtPrefab: {fileID: 0}
 --- !u!1 &8169989773778588981
 GameObject:
   m_ObjectHideFlags: 0

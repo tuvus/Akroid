@@ -106,7 +106,7 @@ public class PlayerObjectUI : MonoBehaviour {
             displayedObject.transform.position.y, -10);
         objectViewCameraTransform.eulerAngles = new Vector3(0, 0, displayedObject.transform.eulerAngles.z);
         objectViewCamera.orthographicSize = displayedObject.iObject.GetSize() * 1.2f;
-        if (displayedObject.iObject is Unit unit) { } else {
+        if (displayedObject.iObject is Unit unit || displayedObject.iObject is Planet planet) { } else {
             for (int i = 0; i < displayedImageTransform.childCount; i++) {
                 displayedImageTransform.GetChild(i).gameObject.SetActive(false);
             }

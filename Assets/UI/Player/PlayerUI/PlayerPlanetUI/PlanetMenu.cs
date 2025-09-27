@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlanetMenu : PlayerUIMenu<PlanetUI> {
+    [SerializeField] private Transform displayedImageTransform;
     [SerializeField] private TMP_Text planetType;
     [SerializeField] private TMP_Text planetFactionName;
     [SerializeField] private TMP_Text planetPopulation;
@@ -16,12 +17,49 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private Transform planetFactionsList;
     [SerializeField] private GameObject planetFactionButton;
 
+    [SerializeField] private GameObject districtPrefab;
+
+    private List<GameObject> districtUIs;
+
+
+    public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
+        base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
+        districtUIs = new List<GameObject>();
+    }
+
     protected override bool ShouldShowStatusPanel() {
         return displayedObject != null;
     }
 
     protected override bool ShouldShowLeftPanel() {
         return displayedObject != null && displayedObject.planet.areas.GetTotalAreas() != 0;
+    }
+
+    public override void RefreshMenu() {
+        base.RefreshMenu();
+        RefreshDistricts();
+    }
+
+    protected void RefreshDistricts() {
+        for (int i = 0; i < 10; i++) {
+            if (districtUIs.Count <= i) {
+                var newDistrictUI = Instantiate(districtPrefab, displayedImageTransform);
+                districtUIs.Add(newDistrictUI);
+                int districtIndex = i;
+                newDistrictUI.GetComponent<Button>().onClick.AddListener(() => OnDistrictPress(districtIndex));
+            }
+
+            GameObject district = districtUIs[i];
+            district.SetActive(true);
+            district.transform.localPosition = Vector3.one * i;
+        }
+        for (int i = 10; i < districtUIs.Count; i++) {
+            districtUIs[i].SetActive(false);
+        }
+    }
+
+    public void OnDistrictPress(int district) {
+        print("district " + district + " pressed");
     }
 
     protected override void RefreshStatusPanel() {

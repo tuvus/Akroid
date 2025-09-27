@@ -20,6 +20,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     [field: SerializeField] public long totalArea { get; protected set; }
     [field: SerializeField] public PlanetTerritory areas { get; protected set; }
 
+
     public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) :
         base(planetData.battleObjectData, battleManager) {
         this.planetScriptableObject = planetScriptableObject;
