@@ -41,7 +41,8 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     }
 
     protected void RefreshDistricts() {
-        for (int i = 0; i < 10; i++) {
+        var planetMap = displayedObject.planet.planetMap;
+        for (int i = 0; i < planetMap.districts.Count; i++) {
             if (districtUIs.Count <= i) {
                 var newDistrictUI = Instantiate(districtPrefab, displayedImageTransform);
                 districtUIs.Add(newDistrictUI);
@@ -49,11 +50,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 newDistrictUI.GetComponent<Button>().onClick.AddListener(() => OnDistrictPress(districtIndex));
             }
 
-            GameObject district = districtUIs[i];
-            district.SetActive(true);
-            district.transform.localPosition = Vector3.one * i;
+            var district = planetMap.districts[i];
+            GameObject districtUI = districtUIs[i];
+            districtUI.SetActive(true);
+            districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * 50;
         }
-        for (int i = 10; i < districtUIs.Count; i++) {
+        for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
             districtUIs[i].SetActive(false);
         }
     }

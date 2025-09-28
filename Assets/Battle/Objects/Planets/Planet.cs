@@ -19,6 +19,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     public PlanetScriptableObject planetScriptableObject { get; }
     [field: SerializeField] public long totalArea { get; protected set; }
     [field: SerializeField] public PlanetTerritory areas { get; protected set; }
+    public PlanetMap planetMap;
 
 
     public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) :
@@ -42,6 +43,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         unclaimedTerritory = new PlanetFaction(this, null,
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), new Population(),
             "This territory is open to claim.");
+        planetMap = new PlanetMap(8);
     }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {
