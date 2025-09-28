@@ -43,7 +43,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         unclaimedTerritory = new PlanetFaction(this, null,
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), new Population(),
             "This territory is open to claim.");
-        planetMap = new PlanetMap(8);
+        planetMap = new PlanetMap(9);
     }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {

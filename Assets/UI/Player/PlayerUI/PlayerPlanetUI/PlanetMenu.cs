@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +43,11 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     protected void RefreshDistricts() {
         var planetMap = displayedObject.planet.planetMap;
+        float planetRadius = displayedObject.planet.size *
+            displayedImageTransform.GetComponent<RectTransform>().rect.size.y /
+            playerUI.playerObjectUI.objectViewCamera.orthographicSize / 2;
+        float districtScale = planetRadius / (planetMap.radius - .5f) / math.sqrt(3);
+
         for (int i = 0; i < planetMap.districts.Count; i++) {
             if (districtUIs.Count <= i) {
                 var newDistrictUI = Instantiate(districtPrefab, displayedImageTransform);
@@ -53,7 +59,9 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             var district = planetMap.districts[i];
             GameObject districtUI = districtUIs[i];
             districtUI.SetActive(true);
-            districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * 50;
+            districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * districtScale;
+            districtUI.GetComponent<RectTransform>().sizeDelta =
+                new Vector3(districtScale * math.sqrt(3), districtScale * 2);
         }
         for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
             districtUIs[i].SetActive(false);

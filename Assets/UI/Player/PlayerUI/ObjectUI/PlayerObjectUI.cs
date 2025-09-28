@@ -38,7 +38,7 @@ public abstract class PlayerObjectUIMenu : MonoBehaviour {
 
 public class PlayerObjectUI : MonoBehaviour {
     [SerializeField] private Transform displayedImageTransform;
-    [SerializeField] private Camera objectViewCamera;
+    [field:SerializeField] public Camera objectViewCamera { get; private set; }
     [SerializeField] private Transform objectViewCameraTransform;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private List<IPlayerUIMenu> uIMenuInput;
