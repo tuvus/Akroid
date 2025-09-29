@@ -18,9 +18,15 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private Transform planetFactionsList;
     [SerializeField] private GameObject planetFactionButton;
 
+    [SerializeField] private TMP_Text districtName;
+    [SerializeField] private TMP_Text districtType;
+    [SerializeField] private TMP_Text terrainType;
+    [SerializeField] private TMP_Text area;
+
     [SerializeField] private GameObject districtPrefab;
 
     private List<GameObject> districtUIs;
+    public District selectedDistrict { get; private set; }
 
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
@@ -35,6 +41,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 districtUI.SetActive(false);
             }
         }
+        selectedDistrict = null;
     }
 
     protected override bool ShouldShowStatusPanel() {
@@ -43,6 +50,10 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     protected override bool ShouldShowLeftPanel() {
         return displayedObject != null && displayedObject.planet.areas.GetTotalAreas() != 0;
+    }
+
+    protected override bool ShouldShowRightPanel() {
+        return selectedDistrict != null;
     }
 
     public override void RefreshMenu() {
@@ -71,6 +82,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * districtScale;
             districtUI.GetComponent<RectTransform>().sizeDelta =
                 new Vector3(districtScale * math.sqrt(3), districtScale * 2);
+
+            if (selectedDistrict == district) {
+                districtUI.GetComponent<Image>().color = Color.white;
+            } else {
+                districtUI.GetComponent<Image>().color = Color.grey;
+            }
         }
         for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
             districtUIs[i].SetActive(false);
@@ -78,7 +95,11 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     }
 
     public void OnDistrictPress(int district) {
-        print("district " + district + " pressed");
+        if (selectedDistrict == displayedObject.planet.planetMap.districts[district]) {
+            selectedDistrict = null;
+        } else {
+            selectedDistrict = displayedObject.planet.planetMap.districts[district];
+        }
     }
 
     protected override void RefreshStatusPanel() {
@@ -142,6 +163,10 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
         for (; i < planetFactionsList.childCount; i++) {
             planetFactionsList.GetChild(i).gameObject.SetActive(false);
         }
+    }
+
+    protected override void RefreshRightPanel() {
+
     }
 
     public void OpenFactionMenu() {
