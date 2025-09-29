@@ -33527,7 +33527,7 @@ GameObject:
   - component: {fileID: 2695869536357177359}
   - component: {fileID: 9214052698975491320}
   m_Layer: 5
-  m_Name: ComponentName
+  m_Name: DistrictType
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33580,7 +33580,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Componenet Name
+  m_text: District Type
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -34126,7 +34126,10 @@ MonoBehaviour:
   planetFactionsList: {fileID: 3826648759139198735}
   planetFactionButton: {fileID: 6917939575041792617, guid: 81644518d3a380746b8738422d22db7a,
     type: 3}
-  planetDistrictPanel: {fileID: 2808724651962096448}
+  districtName: {fileID: 2128624587276079332}
+  districtType: {fileID: 9214052698975491320}
+  terrainType: {fileID: 6800743834063965569}
+  area: {fileID: 8807262426510289711}
   districtPrefab: {fileID: 861201660554388760, guid: a08dd025db8ac037c8e60a58e2aa06b2,
     type: 3}
 --- !u!1 &6582940273826949810
@@ -42975,7 +42978,10 @@ MonoBehaviour:
   planetFactionsList: {fileID: 4691418480400859468}
   planetFactionButton: {fileID: 6917939575041792617, guid: 81644518d3a380746b8738422d22db7a,
     type: 3}
-  planetDistrictPanel: {fileID: 0}
+  districtName: {fileID: 0}
+  districtType: {fileID: 0}
+  terrainType: {fileID: 0}
+  area: {fileID: 0}
   districtPrefab: {fileID: 0}
 --- !u!1 &8169989773778588981
 GameObject:

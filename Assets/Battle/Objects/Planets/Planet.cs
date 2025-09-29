@@ -8,6 +8,12 @@ public class Planet : BattleObject, IPositionConfirmer {
     /// <summary> Determines the base amount of population that one territory value can hold. </summary>
     public static readonly long populationPerTerritoryValue = 15000;
 
+    public enum PlanetType {
+        Terran,
+        Moon,
+        GasGiant,
+    }
+
     public Dictionary<Faction, PlanetFaction> planetFactions;
 
     public float rotationSpeed;
@@ -43,7 +49,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         unclaimedTerritory = new PlanetFaction(this, null,
             new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), new Population(),
             "This territory is open to claim.");
-        planetMap = new PlanetMap(4);
+        planetMap = new PlanetMap(this, random, planetScriptableObject.radius);
     }
 
     bool IPositionConfirmer.ConfirmPosition(Vector2 position, float minDistanceFromObject) {

@@ -166,7 +166,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     }
 
     protected override void RefreshRightPanel() {
-
+        terrainType.text = "Terrain: " + selectedDistrict.terrainType.ToString();
     }
 
     public void OpenFactionMenu() {

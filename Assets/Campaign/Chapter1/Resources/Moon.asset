@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Moon
   m_EditorClassIdentifier: 
   sprite: {fileID: -1971278699, guid: 6c284eb7109938f469e1e176e8472c13, type: 3}
+  planetType: 1
+  radius: 2
   hasAtmosphere: 0
   rotationSpeed: 0.4
   <spriteBounds>k__BackingField: {x: 18, y: 18}

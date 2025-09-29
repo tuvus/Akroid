@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: GasPlanet
   m_EditorClassIdentifier: 
   sprite: {fileID: 6546520991920318022, guid: 86d1885080937bcc19be0cb90ee44297, type: 3}
+  planetType: 2
+  radius: 5
   hasAtmosphere: 0
   rotationSpeed: 0.5
-  <spriteBounds>k__BackingField: {x: 38.208, y: 38.208}
+  <spriteBounds>k__BackingField: {x: 39.14, y: 39.14}
   prefab: {fileID: 6480528276499720429, guid: 67b5d68487ba27a49bde8f9afcc90435, type: 3}
