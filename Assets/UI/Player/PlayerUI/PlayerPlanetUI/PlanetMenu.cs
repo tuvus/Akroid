@@ -28,6 +28,15 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
         districtUIs = new List<GameObject>();
     }
 
+    public override void SetDisplayedObject(ObjectUI objectUI) {
+        base.SetDisplayedObject(objectUI);
+        if (objectUI == null) {
+            foreach (GameObject districtUI in districtUIs) {
+                districtUI.SetActive(false);
+            }
+        }
+    }
+
     protected override bool ShouldShowStatusPanel() {
         return displayedObject != null;
     }

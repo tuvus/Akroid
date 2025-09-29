@@ -19,7 +19,7 @@ public class ObjectSystemUI : PlayerObjectUIMenu {
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
         base.SetDisplayedObject(objectUI);
-        if (objectUI.iObject is Unit newUnit) unit = newUnit;
+        if (objectUI != null && objectUI.iObject is Unit newUnit) unit = newUnit;
     }
 
     public void SelectSystem(ModuleSystem.System displayedSystem) {

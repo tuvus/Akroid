@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private GameObject moduleUIPrefab;
     [SerializeField] private Transform displayedImageTransform;
-    [field:SerializeField] public ObjectConstructionUI constructionUI { get; private set; }
-    [field:SerializeField] public ObjectHangarUI hangarUI { get; private set; }
+    [field: SerializeField] public ObjectConstructionUI constructionUI { get; private set; }
+    [field: SerializeField] public ObjectHangarUI hangarUI { get; private set; }
     [SerializeField] private ObjectSystemUI systemUI;
 
     [SerializeField] private TMP_Text factionText;
@@ -53,9 +53,14 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
         constructionUI.SetDisplayedObject(displayedObject);
         hangarUI.SetDisplayedObject(displayedObject);
         systemUI.SetDisplayedObject(displayedObject);
-        shipPanel.SetActive(displayedObject.unit.IsShip());
+        shipPanel.SetActive(displayedObject != null && displayedObject.unit.IsShip());
         RefreshStationButton();
         DeselectSystem();
+        if (displayedObject == null) {
+            foreach (GameObject moduleUI in moduleUIs) {
+                moduleUI.SetActive(false);
+            }
+        }
     }
 
     protected override bool ShouldShowLeftPanel() {
@@ -89,7 +94,8 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     }
 
     private void RefreshStationButton() {
-        if (displayedObject.unit.IsShip() && displayedObject is ShipUI shipUI && shipUI.ship.dockedStation != null) {
+        if (displayedObject != null && displayedObject.unit.IsShip() && displayedObject is ShipUI shipUI &&
+            shipUI.ship.dockedStation != null) {
             stationImage.sprite = shipUI.ship.dockedStation.stationScriptableObject.sprite;
             stationImageObject.SetActive(true);
         } else {
@@ -255,6 +261,7 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     }
 
     public void SelectStation() {
-        localPlayer.GetPlayerUI().SetDisplayedObject(uiBattleManager.objects[((Ship)displayedObject.unit).dockedStation]);
+        localPlayer.GetPlayerUI()
+            .SetDisplayedObject(uiBattleManager.objects[((Ship)displayedObject.unit).dockedStation]);
     }
 }
