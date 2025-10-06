@@ -21627,6 +21627,8 @@ LineRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -21648,6 +21650,7 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -20
@@ -28257,6 +28260,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -28278,6 +28283,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
@@ -34132,6 +34138,46 @@ MonoBehaviour:
   area: {fileID: 8807262426510289711}
   districtPrefab: {fileID: 861201660554388760, guid: a08dd025db8ac037c8e60a58e2aa06b2,
     type: 3}
+  terrainImageInput:
+  - terrain: 0
+    sprite: {fileID: -8210071984612457726, guid: 1a8d9692ffe0fc2918c9683ef05ee960,
+      type: 3}
+  - terrain: 11
+    sprite: {fileID: -9044230781385185774, guid: 038f26b09c2c22c72a1234beef9f81f2,
+      type: 3}
+  - terrain: 2
+    sprite: {fileID: -9102900633203978818, guid: 46e39e944babe7cdaa501e87b8efb0ac,
+      type: 3}
+  - terrain: 3
+    sprite: {fileID: 9085546173938197295, guid: cecdd277db6282aff904833b6e8aab03,
+      type: 3}
+  - terrain: 4
+    sprite: {fileID: -3209669967551346782, guid: b2a3deb4889ae9836800e3bf1d9376d3,
+      type: 3}
+  - terrain: 5
+    sprite: {fileID: 9085546173938197295, guid: cecdd277db6282aff904833b6e8aab03,
+      type: 3}
+  - terrain: 6
+    sprite: {fileID: 3669226616687905682, guid: 8ac9d3f84b5ccc726936495591ba273c,
+      type: 3}
+  - terrain: 9
+    sprite: {fileID: 9085546173938197295, guid: cecdd277db6282aff904833b6e8aab03,
+      type: 3}
+  - terrain: 10
+    sprite: {fileID: 9085546173938197295, guid: cecdd277db6282aff904833b6e8aab03,
+      type: 3}
+  - terrain: 1
+    sprite: {fileID: -6925264703297527986, guid: 55727a3326f99f95e8fe14ba1d42e734,
+      type: 3}
+  - terrain: 12
+    sprite: {fileID: 2763023158643484559, guid: 18ee0590994c319e5b2b56abeea28c58,
+      type: 3}
+  - terrain: 8
+    sprite: {fileID: -3209669967551346782, guid: b2a3deb4889ae9836800e3bf1d9376d3,
+      type: 3}
+  - terrain: 7
+    sprite: {fileID: -5107429475333170888, guid: 430697f1ab85662d08e4159dacd4cfdd,
+      type: 3}
 --- !u!1 &6582940273826949810
 GameObject:
   m_ObjectHideFlags: 0
@@ -42983,6 +43029,7 @@ MonoBehaviour:
   terrainType: {fileID: 0}
   area: {fileID: 0}
   districtPrefab: {fileID: 0}
+  terrainImageInput: []
 --- !u!1 &8169989773778588981
 GameObject:
   m_ObjectHideFlags: 0
@@ -46841,6 +46888,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -46862,6 +46911,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -100

@@ -49,10 +49,10 @@ public class PlanetMap {
         switch (planet.planetScriptableObject.planetType) {
             case Planet.PlanetType.Terran:
                 foreach (District district in districts) {
-                    bool water = random.NextInt(0, 10) < 5;
+                    bool water = random.NextInt(0, 10) < 3;
                     if (water) {
                         int value = random.NextInt(0, 10);
-                        if (value < 5) {
+                        if (value < 8) {
                             district.terrainType = District.TerrainType.Ocean;
                         } else {
                             district.terrainType = District.TerrainType.Islands;

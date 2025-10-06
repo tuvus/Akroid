@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -25,6 +26,15 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     [SerializeField] private GameObject districtPrefab;
 
+    [Serializable]
+    struct TerrainImageInput {
+        public District.TerrainType terrain;
+        public Sprite sprite;
+    }
+
+    [SerializeField] private List<TerrainImageInput> terrainImageInput;
+    private Dictionary<District.TerrainType, Sprite> terrainImages;
+
     private List<GameObject> districtUIs;
     public District selectedDistrict { get; private set; }
 
@@ -32,6 +42,10 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
         districtUIs = new List<GameObject>();
+        terrainImages = new Dictionary<District.TerrainType, Sprite>();
+        foreach (TerrainImageInput imageInput in terrainImageInput) {
+            terrainImages.Add(imageInput.terrain, imageInput.sprite);
+        }
     }
 
     public override void SetDisplayedObject(ObjectUI objectUI) {
@@ -82,6 +96,8 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * districtScale;
             districtUI.GetComponent<RectTransform>().sizeDelta =
                 new Vector3(districtScale * math.sqrt(3), districtScale * 2);
+            districtUI.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
+                terrainImages[district.terrainType];
 
             if (selectedDistrict == district) {
                 districtUI.GetComponent<Image>().color = Color.white;
