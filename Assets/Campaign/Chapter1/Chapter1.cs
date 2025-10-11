@@ -212,28 +212,23 @@ public class Chapter1 : CampaingController {
             new FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0),
             new PositionGiver(planet.position), 100);
 
-        planet.AddFaction(planetFaction, Random.Range(0.05f, 0.1f), Random.Range(12, 35) * 1000000L,
-            Random.Range(0.01f, 0.02f), "Increases space production");
+        planet.AddFaction(planetFaction, Random.Range(12, 35) * 1000000L, "Increases space production");
         planetEmpire = battleManager.CreateNewFaction(
             new FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetEmpire, Random.Range(0.20f, 0.35f), Random.Range(18, 24) * 100000000L,
-            Random.Range(0.002f, 0.004f), "Increases unit production");
+        planet.AddFaction(planetEmpire, Random.Range(18, 24) * 100000000L, "Increases unit production");
         planetDemocracy = battleManager.CreateNewFaction(
             new FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetDemocracy, Random.Range(0.30f, 0.40f), Random.Range(22, 36) * 100000000L,
-            Random.Range(0.0014f, 0.003f), "Increases research rate");
+        planet.AddFaction(planetDemocracy, Random.Range(22, 36) * 100000000L, "Increases research rate");
         planetOligarchy = battleManager.CreateNewFaction(
             new FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetOligarchy, Random.Range(0.65f, 0.75f), Random.Range(12, 20) * 100000000L,
-            Random.Range(0.0025f, 0.0035f), "Increases mining speed");
+        planet.AddFaction(planetOligarchy, Random.Range(12, 20) * 100000000L, "Increases mining speed");
         minorFactions = battleManager.CreateNewFaction(
             new FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(minorFactions, Random.Range(0.90f, 0.99f), Random.Range(8, 14) * 100000000L,
-            Random.Range(0.001f, 0.003f), "All base stats improved");
+        planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved");
 
         battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);
@@ -375,7 +370,8 @@ public class Chapter1 : CampaingController {
         eventChain.AddCommEvent(playerComm, playerFaction,
             "Now try selecting just one ship in the fleet.", 1 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Hold alt while clicking a ship in a fleet selects the ship instead of the fleet, try it!", 3 * GetTimeScale());
+            "Hold alt while clicking a ship in a fleet selects the ship instead of the fleet, try it!",
+            3 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 1, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -385,7 +381,8 @@ public class Chapter1 : CampaingController {
             "If you want to select more units you can hold shift while clicking it to add it to our current selection.",
             7 * GetTimeScale());
         eventChain.AddCommEvent(playerComm, playerFaction,
-            "Try adding another ship to our current selection by holding shift and clicking on another ship.", 9 * GetTimeScale());
+            "Try adding another ship to our current selection by holding shift and clicking on another ship.",
+            9 * GetTimeScale());
         eventChain.AddCondition(
             eventManager.CreateSelectUnitsAmountCondition(setupFleet.ships.Cast<Unit>().ToList(), 2, true));
         eventChain.AddCommEvent(playerComm, playerFaction,
@@ -1217,21 +1214,12 @@ public class Chapter1 : CampaingController {
                 robotFaction.DiscoverResearchArea((ResearchAreas)Random.Range(0, 3), true);
             }
 
-            planet.AddFaction(robotFaction, 0, 0, 0, 70000000L, 20000, "Robot Uprising");
-            Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;
-            planet.planetFactions[robotFaction].territory.AddFrom(new Planet.PlanetTerritory(
-                oligarchyTerritory.highQualityArea / 5,
-                oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5));
-            oligarchyTerritory.SubtractFrom(planet.planetFactions[robotFaction].territory);
+            planet.AddFaction(robotFaction, new Population(0, 0, 0, 70000000L), "Robot Uprising");
         });
         for (int i = 0; i < 20; i++) {
             planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
             planetEscalationChain.AddAction(() => {
                 planet.planetFactions[planetOligarchy].AddForce(70000);
-                Planet.PlanetTerritory oligarchyTerritory = planet.planetFactions[planetOligarchy].territory;
-                Planet.PlanetTerritory territoryInfiltrated = new Planet.PlanetTerritory(
-                    oligarchyTerritory.highQualityArea / 5,
-                    oligarchyTerritory.mediumQualityArea / 5, oligarchyTerritory.lowQualityArea / 5);
             });
         }
 
@@ -1262,13 +1250,7 @@ public class Chapter1 : CampaingController {
                 eventManager.CreatePredicateCondition(_ =>
                     planet.planetFactions[planetOligarchy].population.marines < 1000000),
                 () => {
-                    planet.planetFactions[planetFaction].territory
-                        .AddFrom(planet.planetFactions[planetOligarchy].territory);
-                    planet.planetFactions[planetOligarchy].population
-                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
-                    planet.planetFactions[planetOligarchy].territory
-                        .SubtractFrom(planet.planetFactions[planetOligarchy].territory);
-                    planet.RemoveFaction(planetOligarchy);
+                    planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
         });
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(180));
@@ -1278,15 +1260,8 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[planetDemocracy].population.marines < 1000000),
-                () => {
-                    planet.planetFactions[planetFaction].territory
-                        .AddFrom(planet.planetFactions[planetDemocracy].territory);
-                    planet.planetFactions[planetDemocracy].population
-                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
-                    planet.planetFactions[planetDemocracy].territory
-                        .SubtractFrom(planet.planetFactions[planetDemocracy].territory);
-                    planet.RemoveFaction(planetDemocracy);
+                    planet.planetFactions[planetDemocracy].population.marines < 1000000), () => {
+                    planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
         });
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(180));
@@ -1297,13 +1272,7 @@ public class Chapter1 : CampaingController {
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
                     planet.planetFactions[planetEmpire].population.marines < 1000000), () => {
-                    planet.planetFactions[planetFaction].territory
-                        .AddFrom(planet.planetFactions[planetEmpire].territory);
-                    planet.planetFactions[planetEmpire].population
-                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
-                    planet.planetFactions[planetEmpire].territory
-                        .SubtractFrom(planet.planetFactions[planetEmpire].territory);
-                    planet.RemoveFaction(planetEmpire);
+                    planet.MergePlanetFactions(planetFaction, planetEmpire);
                 });
         });
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));
@@ -1313,15 +1282,8 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[minorFactions].population.marines < 1000000),
-                () => {
-                    planet.planetFactions[planetFaction].territory
-                        .AddFrom(planet.planetFactions[minorFactions].territory);
-                    planet.planetFactions[minorFactions].population
-                        .MovePopulationTo(planet.planetFactions[planetFaction].population);
-                    planet.planetFactions[minorFactions].territory
-                        .SubtractFrom(planet.planetFactions[minorFactions].territory);
-                    planet.RemoveFaction(minorFactions);
+                    planet.planetFactions[minorFactions].population.marines < 1000000), () => {
+                    planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
         });
         planetEscalationChain.AddAction(() => battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f);
@@ -1376,11 +1338,6 @@ public class Chapter1 : CampaingController {
                     planet.objectName + " is already colonized. That was a waste of a colonizer.");
                 planet.planetFactions[playerFaction].AddPopulation(10000000000);
                 planet.planetFactions[playerFaction].AddForce(1000000000);
-                Planet.PlanetTerritory worldSpaceUnionTerritory = planet.planetFactions[planetFaction].territory;
-                planet.planetFactions[playerFaction].territory.AddFrom(new Planet.PlanetTerritory(
-                    worldSpaceUnionTerritory.highQualityArea / 2,
-                    worldSpaceUnionTerritory.mediumQualityArea / 2, worldSpaceUnionTerritory.lowQualityArea / 2));
-                worldSpaceUnionTerritory.SubtractFrom(planet.planetFactions[playerFaction].territory);
                 eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => robotFaction != null),
                     () => {
                         robotFaction.StartWar(playerFaction);

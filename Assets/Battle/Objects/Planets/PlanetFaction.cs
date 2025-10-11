@@ -10,18 +10,15 @@ public class PlanetFaction {
     private double populationGainFraction;
     private double territoryExpansionProgress;
 
-    public PlanetFaction(Planet planet, Faction faction, PlanetTerritory territory, Population population,
-        string special) {
+    public PlanetFaction(Planet planet, Faction faction, Population population, string special) {
         this.planet = planet;
         this.faction = faction;
-        this.territory = territory;
         this.population = population;
         this.special = special;
     }
 
     // If faction is null then this PlanetFaction represents unclaimed territory
     public Faction faction { get; }
-    public PlanetTerritory territory { get; }
     public Population population { get; private set; }
     public string special { get; private set; }
 
@@ -49,43 +46,43 @@ public class PlanetFaction {
     }
 
     private void UpdatePopulation(float deltaTime) {
-        long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
-        double populationCapacityRatio = 0;
-        double populationGrowthPercent = 0;
-        if (populationCapacity >= population.TotalPopulation()) {
-            populationCapacityRatio = populationCapacity * 50f / (population.TotalPopulation() + 1);
-            populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 200);
-        } else {
-            populationCapacityRatio = -population.TotalPopulation() * 50f / (populationCapacity + 1);
-            populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
-        }
-
-        double populationGained = populationGrowthPercent * population.TotalPopulation() * deltaTime / 200000 + populationGainFraction;
-        population.civilians = math.max(0, population.civilians + (long)populationGained);
-        populationGainFraction = populationGained - (long)populationGained;
+        // long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
+        // double populationCapacityRatio = 0;
+        // double populationGrowthPercent = 0;
+        // if (populationCapacity >= population.TotalPopulation()) {
+        //     populationCapacityRatio = populationCapacity * 50f / (population.TotalPopulation() + 1);
+        //     populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 200);
+        // } else {
+        //     populationCapacityRatio = -population.TotalPopulation() * 50f / (populationCapacity + 1);
+        //     populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
+        // }
+        //
+        // double populationGained = populationGrowthPercent * population.TotalPopulation() * deltaTime / 200000 + populationGainFraction;
+        // population.civilians = math.max(0, population.civilians + (long)populationGained);
+        // populationGainFraction = populationGained - (long)populationGained;
     }
 
 
     private void UpdateExpansion(float deltaTime) {
-        if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
-            territoryExpansionProgress += population.marines * deltaTime / 500;
-            if (territoryExpansionProgress >= 4) {
-                float randomValue = Random.Range(0, 100);
-                if (randomValue <= 50 && planet.GetUnclaimedFaction().territory.highQualityArea > 0) {
-                    planet.GetUnclaimedFaction().territory.highQualityArea -= 1;
-                    territory.highQualityArea += 1;
-                    territoryExpansionProgress -= 4;
-                } else if (randomValue <= 90 && planet.GetUnclaimedFaction().territory.mediumQualityArea > 0) {
-                    planet.GetUnclaimedFaction().territory.mediumQualityArea -= 1;
-                    territory.mediumQualityArea += 1;
-                    territoryExpansionProgress -= 2;
-                } else {
-                    planet.GetUnclaimedFaction().territory.lowQualityArea -= 1;
-                    territory.lowQualityArea += 1;
-                    territoryExpansionProgress -= 1;
-                }
-            }
-        }
+        // if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
+        //     territoryExpansionProgress += population.marines * deltaTime / 500;
+        //     if (territoryExpansionProgress >= 4) {
+        //         float randomValue = Random.Range(0, 100);
+        //         if (randomValue <= 50 && planet.GetUnclaimedFaction().territory.highQualityArea > 0) {
+        //             planet.GetUnclaimedFaction().territory.highQualityArea -= 1;
+        //             territory.highQualityArea += 1;
+        //             territoryExpansionProgress -= 4;
+        //         } else if (randomValue <= 90 && planet.GetUnclaimedFaction().territory.mediumQualityArea > 0) {
+        //             planet.GetUnclaimedFaction().territory.mediumQualityArea -= 1;
+        //             territory.mediumQualityArea += 1;
+        //             territoryExpansionProgress -= 2;
+        //         } else {
+        //             planet.GetUnclaimedFaction().territory.lowQualityArea -= 1;
+        //             territory.lowQualityArea += 1;
+        //             territoryExpansionProgress -= 1;
+        //         }
+        //     }
+        // }
     }
 
     /// <summary>
@@ -110,58 +107,58 @@ public class PlanetFaction {
     /// </param>
     public void FightFactionForTerritory(PlanetFaction defender, float forceToAttackWith, float deltaTime) {
         // Don't include garisons in the attack forces
-        long forcesDedicatedToAttack = math.max(population.marines / 6, population.marines - territory.GetTerritoryValue() * 10);
-        long attackingForce = (long)(forcesDedicatedToAttack * forceToAttackWith);
-        PlanetTerritory warZone = CreateWarZone(defender, attackingForce);
-        // Defense force is based on the forces stationed in the territory being attacked which includes some forces dedecated to attack as well.
-        long defenseForce = math.max(0,
-            defender.population.marines * warZone.GetTerritoryValue() / defender.territory.GetTerritoryValue());
-
-        // Random factor of the fight, a higher value means the attackers are doing better
-        float bias = Random.Range(-.3f, .3f);
-        float attackerModifiers = -5 + faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
-            faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
-            + faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
-            faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
-            + faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
-            faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
-        float defenderModifiers = -5 +
-            defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
-            defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
-            + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
-            defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
-            + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
-            defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
-        // Attackers get to attack with more force but defenders will lose less per force
-        long attackersKilled = math.min(attackingForce,
-            (long)(defenseForce * defenderModifiers * (1 + math.min(-bias, 0)) / 20));
-        long defendersKilled = math.min(defenseForce,
-            (long)(attackingForce * attackerModifiers * (1 + math.min(bias, 0)) / 50));
-        population.marines -= attackersKilled;
-        defender.population.marines -= defendersKilled;
-
-        PlanetTerritory territoryTaken;
-        if (defenseForce - defendersKilled <= 0) {
-            territoryTaken = warZone;
-        } else {
-            double attackerDefenderRatio =
-                (attackingForce - attackersKilled) / (double)(defenseForce - defendersKilled);
-            territoryTaken =
-                CalculateTerritoryTaken(defender, warZone, defenseForce, defenseForce - defendersKilled,
-                    attackerDefenderRatio);
-        }
-
-        defender.territory.SubtractFrom(territoryTaken);
-        territory.AddFrom(territoryTaken);
-        if (defender.territory.highQualityArea < 0 || defender.territory.mediumQualityArea < 0 ||
-            defender.territory.lowQualityArea < 0) {
-            Debug.LogError(
-                $"{faction.name} is attacking but the defender {defender.faction.name} doesn't have any territory {defender.territory.highQualityArea}, {defender.territory.mediumQualityArea}, {defender.territory.lowQualityArea}.");
-        }
-
-        // War is bad for everyone
-        population.civilians -= (long)(attackersKilled * 10 * (1 + math.abs(bias) * 2));
-        defender.population.civilians -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
+        // long forcesDedicatedToAttack = math.max(population.marines / 6, population.marines - territory.GetTerritoryValue() * 10);
+        // long attackingForce = (long)(forcesDedicatedToAttack * forceToAttackWith);
+        // PlanetTerritory warZone = CreateWarZone(defender, attackingForce);
+        // // Defense force is based on the forces stationed in the territory being attacked which includes some forces dedecated to attack as well.
+        // long defenseForce = math.max(0,
+        //     defender.population.marines * warZone.GetTerritoryValue() / defender.territory.GetTerritoryValue());
+        //
+        // // Random factor of the fight, a higher value means the attackers are doing better
+        // float bias = Random.Range(-.3f, .3f);
+        // float attackerModifiers = -5 + faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
+        //     faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
+        //     + faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
+        //     faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
+        //     + faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
+        //     faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
+        // float defenderModifiers = -5 +
+        //     defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
+        //     defender.faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload)
+        //     + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
+        //     defender.faction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload)
+        //     + defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
+        //     defender.faction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
+        // // Attackers get to attack with more force but defenders will lose less per force
+        // long attackersKilled = math.min(attackingForce,
+        //     (long)(defenseForce * defenderModifiers * (1 + math.min(-bias, 0)) / 20));
+        // long defendersKilled = math.min(defenseForce,
+        //     (long)(attackingForce * attackerModifiers * (1 + math.min(bias, 0)) / 50));
+        // population.marines -= attackersKilled;
+        // defender.population.marines -= defendersKilled;
+        //
+        // PlanetTerritory territoryTaken;
+        // if (defenseForce - defendersKilled <= 0) {
+        //     territoryTaken = warZone;
+        // } else {
+        //     double attackerDefenderRatio =
+        //         (attackingForce - attackersKilled) / (double)(defenseForce - defendersKilled);
+        //     territoryTaken =
+        //         CalculateTerritoryTaken(defender, warZone, defenseForce, defenseForce - defendersKilled,
+        //             attackerDefenderRatio);
+        // }
+        //
+        // defender.territory.SubtractFrom(territoryTaken);
+        // territory.AddFrom(territoryTaken);
+        // if (defender.territory.highQualityArea < 0 || defender.territory.mediumQualityArea < 0 ||
+        //     defender.territory.lowQualityArea < 0) {
+        //     Debug.LogError(
+        //         $"{faction.name} is attacking but the defender {defender.faction.name} doesn't have any territory {defender.territory.highQualityArea}, {defender.territory.mediumQualityArea}, {defender.territory.lowQualityArea}.");
+        // }
+        //
+        // // War is bad for everyone
+        // population.civilians -= (long)(attackersKilled * 10 * (1 + math.abs(bias) * 2));
+        // defender.population.civilians -= (long)(defendersKilled * 10 * (1 + math.abs(bias) * 2));
     }
 
     /// <summary>
@@ -169,16 +166,17 @@ public class PlanetFaction {
     ///     High quality territory is prefered over lower quality territory.
     /// </summary>
     private PlanetTerritory CreateWarZone(PlanetFaction defender, long attackingForce) {
-        long territoryValueToAttack = math.max(1, attackingForce / 800);
-        // The attacker can choose to attack areas that are higher quality
-        long highQualityTerritory = math.min((long)((double)Random.Range(0.3f, 0.5f) * territoryValueToAttack / 4),
-            defender.territory.highQualityArea);
-        territoryValueToAttack -= highQualityTerritory * 2;
-        long mediumQualityTerritory = math.min((long)((double)Random.Range(0.4f, 0.8f) * territoryValueToAttack / 2),
-            defender.territory.mediumQualityArea);
-        territoryValueToAttack -= mediumQualityTerritory;
-        long lowQualityTerritory = math.min(territoryValueToAttack, defender.territory.lowQualityArea);
-        return new PlanetTerritory(highQualityTerritory, mediumQualityTerritory, lowQualityTerritory);
+        // long territoryValueToAttack = math.max(1, attackingForce / 800);
+        // // The attacker can choose to attack areas that are higher quality
+        // long highQualityTerritory = math.min((long)((double)Random.Range(0.3f, 0.5f) * territoryValueToAttack / 4),
+        //     defender.territory.highQualityArea);
+        // territoryValueToAttack -= highQualityTerritory * 2;
+        // long mediumQualityTerritory = math.min((long)((double)Random.Range(0.4f, 0.8f) * territoryValueToAttack / 2),
+        //     defender.territory.mediumQualityArea);
+        // territoryValueToAttack -= mediumQualityTerritory;
+        // long lowQualityTerritory = math.min(territoryValueToAttack, defender.territory.lowQualityArea);
+        // return new PlanetTerritory(highQualityTerritory, mediumQualityTerritory, lowQualityTerritory);
+        return new PlanetTerritory();
     }
 
     private PlanetTerritory CalculateTerritoryTaken(PlanetFaction defender, PlanetTerritory warZone,

@@ -26,13 +26,13 @@ public class PlayerMenueUI : MonoBehaviour {
     private LocalPlayer localPlayer;
     private PlayerUI playerUI;
 
-    public void SetupMenueUI(BattleManager battleManager, LocalPlayer localPlayer, PlayerUI playerUI) {
+    public void SetupMenuUI(BattleManager battleManager, LocalPlayer localPlayer, PlayerUI playerUI) {
         this.localPlayer = localPlayer;
         this.playerUI = playerUI;
         this.battleManager = battleManager;
     }
 
-    public void ShowMenueUI() {
+    public void ShowMenuUI() {
         menueUIFactionSelect.ClearOptions();
         factions = battleManager.factions.ToList();
         var factionNames = new List<string>(factions.Count);
@@ -50,7 +50,7 @@ public class PlayerMenueUI : MonoBehaviour {
         musicVolumeScale.SetValueWithoutNotify(playerUI.musicVolume);
         soundEffectVolumeText.text = "Sound Effects: " + (int)(playerUI.soundEffectsVolume * 100) + "%";
         soundEffectVolumeScale.SetValueWithoutNotify(playerUI.soundEffectsVolume);
-        scrollSpeedText.text = "Sound Effects: " + ((int)(playerUI.scrollSpeed * 10) / 10f);
+        scrollSpeedText.text = "Scroll Speed: " + ((int)(playerUI.scrollSpeed * 10) / 10f);
         scrollSpeedScale.SetValueWithoutNotify(playerUI.scrollSpeed);
         menueUIMultiThreading.SetIsOnWithoutNotify(PlayerPrefs.GetInt(PlayerUI.threadingPrefs) == 1);
         menueUIZoomIndicators.SetIsOnWithoutNotify(playerUI.showUnitZoomIndicators);

@@ -80,7 +80,7 @@ public class PlayerUI : MonoBehaviour {
         soundEffectsVolume = PlayerPrefs.GetFloat(soundEffectsPrefs);
         if (!PlayerPrefs.HasKey(scrollSpeedPrefs)) PlayerPrefs.SetFloat(scrollSpeedPrefs, 1f);
         scrollSpeed = PlayerPrefs.GetFloat(scrollSpeedPrefs);
-        playerMenueUI.SetupMenueUI(battleManager, localPlayer, this);
+        playerMenueUI.SetupMenuUI(battleManager, localPlayer, this);
         playerFactionOverviewUI.SetupPlayerUIMenu(this, localPlayer, uIManager);
         playerObjectUI.SetupPlayerUIMenu(this, localPlayer, uIManager);
 
@@ -193,7 +193,7 @@ public class PlayerUI : MonoBehaviour {
     public void ToggleMenuUI() {
         ShowMenuUI(!menuUI.activeSelf);
         if (menuUI.activeSelf) {
-            playerMenueUI.ShowMenueUI();
+            playerMenueUI.ShowMenuUI();
         }
     }
 

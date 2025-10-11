@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -46,9 +47,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
             (long)(totalArea * planetData.mediumQualityLandFactor),
             (long)(totalArea * planetData.lowQualityLandFactor));
-        unclaimedTerritory = new PlanetFaction(this, null,
-            new PlanetTerritory(areas.highQualityArea, areas.mediumQualityArea, areas.lowQualityArea), new Population(),
-            "This territory is open to claim.");
+        unclaimedTerritory = new PlanetFaction(this, null, new Population(),"This territory is open to claim.");
         planetMap = new PlanetMap(this, random, planetScriptableObject.radius);
     }
 
@@ -84,57 +83,111 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
-    public void AddFaction(Faction faction, PlanetTerritory territory, Population population, string special) {
-        territory.highQualityArea =
-            math.min(territory.highQualityArea, GetUnclaimedFaction().territory.highQualityArea);
-        territory.mediumQualityArea =
-            math.min(territory.mediumQualityArea, GetUnclaimedFaction().territory.mediumQualityArea);
-        territory.lowQualityArea = math.min(territory.lowQualityArea, GetUnclaimedFaction().territory.lowQualityArea);
-        GetUnclaimedFaction().territory.SubtractFrom(territory);
-        planetFactions.Add(faction, new PlanetFaction(this, faction, territory, population, special));
+    public PlanetFaction AddFaction(Faction faction, Population population, string special) {
+        // territory.highQualityArea =
+        // math.min(territory.highQualityArea, GetUnclaimedFaction().territory.highQualityArea);
+        // territory.mediumQualityArea =
+        // math.min(territory.mediumQualityArea, GetUnclaimedFaction().territory.mediumQualityArea);
+        // territory.lowQualityArea = math.min(territory.lowQualityArea, GetUnclaimedFaction().territory.lowQualityArea);
+        // GetUnclaimedFaction().territory.SubtractFrom(territory);
+        var planetFaction =new PlanetFaction(this, faction, population, special);
+        planetFactions.Add(faction, planetFaction);
         faction.AddPlanet(this);
+        return planetFaction;
     }
 
-    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor,
-        double lowQualityAreaFactor, Population population, string special) {
-        PlanetTerritory territory = new PlanetTerritory(
-            (long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
-            (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
-            (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
-        AddFaction(faction, territory, population, special);
+    public PlanetFaction AddFaction(Faction faction, long population, string special) {
+        return AddFaction(faction, new Population().SetPlanetPopulation(population), special);
     }
 
-    public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor,
-        double lowQualityAreaFactor, long population, double forceFraction, string special) {
-        PlanetTerritory territory = new PlanetTerritory(
-            (long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
-            (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
-            (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
-        long force = (long)(population * forceFraction);
-        population -= force;
-        AddFaction(faction, territory,
-            new Population((long)(population * (PopulationCenter.civilianRatio + PopulationCenter.marineRatio)),
-                (long)(population * PopulationCenter.pilotRatio), (long)(population * PopulationCenter.engineerRatio),
-                force), special);
+    public void GenerateFactionTerritories(List<Tuple<PlanetFaction, float>> factionTerritories, float randomFactor,
+        bool takeoverTerritories) {
+        // Apply randomness on the territories based on randomFactor
+        factionTerritories = factionTerritories.Select(ft =>
+            new Tuple<PlanetFaction, float>(ft.Item1, random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
+        // Now we need to normalise the percentage of territories of each planet faction
+        float newMaxPercent = factionTerritories.Sum(ft => ft.Item2);
+        factionTerritories = factionTerritories.Select(ft =>
+            new Tuple<PlanetFaction, float>(ft.Item1, ft.Item2 * 100 / newMaxPercent)).ToList();
+
+        List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
+            .OrderByDescending(d => d.GetDistrictValue()).ToList();
+        int totalDistrictValue = toTake.Sum(d => d.GetDistrictValue());
+        foreach (District district in toTake) {
+            factionTerritories = factionTerritories.OrderByDescending(ft => ft.Item2).ToList();
+            float newControl =
+                factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
+            if (newControl < 0) continue;
+            district.owner = factionTerritories.First().Item1;
+            factionTerritories.Add(new Tuple<PlanetFaction, float>(factionTerritories.First().Item1, newControl));
+            factionTerritories.RemoveAt(0);
+            totalDistrictValue -= district.GetDistrictValue();
+        }
     }
 
-    public void AddFaction(Faction faction, double territoryFactor, long population, double forceFraction,
-        string special) {
-        AddFaction(faction, territoryFactor, territoryFactor, territoryFactor, population, forceFraction, special);
-    }
+
+    //
+    // public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor,
+    //     double lowQualityAreaFactor, Population population, string special) {
+    //     PlanetTerritory territory = new PlanetTerritory(
+    //         (long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
+    //         (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
+    //         (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
+    //     AddFaction(faction, territory, population, special);
+    // }
+    //
+    // public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor,
+    //     double lowQualityAreaFactor, long population, double forceFraction, string special) {
+    //     PlanetTerritory territory = new PlanetTerritory(
+    //         (long)(GetUnclaimedFaction().territory.highQualityArea * highQualityAreaFactor),
+    //         (long)(GetUnclaimedFaction().territory.mediumQualityArea * mediumQualityAreaFactor),
+    //         (long)(GetUnclaimedFaction().territory.lowQualityArea * lowQualityAreaFactor));
+    //     long force = (long)(population * forceFraction);
+    //     population -= force;
+    //     AddFaction(faction, territory,
+    //         new Population((long)(population * (PopulationCenter.civilianRatio + PopulationCenter.marineRatio)),
+    //             (long)(population * PopulationCenter.pilotRatio), (long)(population * PopulationCenter.engineerRatio),
+    //             force), special);
+    // }
+
+    // public void AddFaction(Faction faction, double territoryFactor, long population, double forceFraction,
+    //     string special) {
+    //     AddFaction(faction, territoryFactor, territoryFactor, territoryFactor, population, forceFraction, special);
+    // }
 
     public void AddColony(Faction faction, Population population, string special) {
-        long territoryValue = population.TotalPopulation() / populationPerTerritoryValue;
-        long highQualityTerritories = math.min(GetUnclaimedFaction().territory.highQualityArea, territoryValue / 4);
-        territoryValue -= highQualityTerritories * 2;
-        long mediumQualityTerritories = math.min(GetUnclaimedFaction().territory.mediumQualityArea, territoryValue / 2);
-        territoryValue -= mediumQualityTerritories * 2;
-        AddFaction(faction, new PlanetTerritory(highQualityTerritories, mediumQualityTerritories, territoryValue),
-            population, special);
+        var district = planetMap.districts.Where(d => d.owner == null).Aggregate((mostValuable, next) => {
+            return next.GetDistrictValue() > mostValuable.GetDistrictValue() ? next : mostValuable;
+        });
+        var newPlanetFaction = AddFaction(faction, population, special);
+        district.owner = newPlanetFaction;
+        district.districtFactions.Add(newPlanetFaction, new District.DistrictFaction(newPlanetFaction, population, .03f));
     }
 
+    /// <param name="planetFaction">The resulting bigger planet faction</param>
+    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
+    public void MergePlanetFactions(PlanetFaction planetFaction, PlanetFaction toMerge) {
+        foreach (District district in planetMap.districts) {
+            if (!district.districtFactions.ContainsKey(toMerge)) continue;
+            if (!district.districtFactions.ContainsKey(planetFaction)) {
+                district.districtFactions.Add(planetFaction, district.districtFactions[toMerge]);
+                district.districtFactions[planetFaction].planetFaction = planetFaction;
+            } else {
+                district.districtFactions[planetFaction].pop.AddPopulation(district.districtFactions[toMerge].pop);
+                district.districtFactions[planetFaction].control += district.districtFactions[toMerge].control;
+            }
+            district.districtFactions.Remove(toMerge);
+            if (district.owner == toMerge) district.owner = planetFaction;
+        }
+        planetFactions.Remove(toMerge.faction);
+    }
+
+    /// <param name="planetFaction">The resulting bigger planet faction</param>
+    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
+    public void MergePlanetFactions(Faction planetFaction, Faction toMerge) {
+        MergePlanetFactions(planetFactions[planetFaction], planetFactions[toMerge]);
+    }
     public void RemoveFaction(Faction faction) {
-        GetUnclaimedFaction().territory.AddFrom(planetFactions[faction].territory);
         planetFactions.Remove(faction);
         faction.RemovePlanet(this);
     }

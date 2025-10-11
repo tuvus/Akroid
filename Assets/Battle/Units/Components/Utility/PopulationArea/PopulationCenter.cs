@@ -6,6 +6,10 @@ public class PopulationCenter : HabitationArea {
     public static readonly float engineerRatio = .2f;
     public static readonly float pilotRatio = .05f;
     public static readonly float marineRatio = .1f;
+    public static readonly float civilianPlanetRatio = .7f;
+    public static readonly float engineerPlanetRatio = .18f;
+    public static readonly float pilotPlanetRatio = .001f;
+    public static readonly float marinePlanetRatio = .0019f;
     private float engineerFloat;
     private float marineFloat;
     private float pilotFloat;

@@ -27,10 +27,10 @@ public class FactionAI {
             foreach (Faction enemy in faction.enemyFactions) {
                 foreach (Planet planet in faction.planets) {
                     PlanetFaction planetFaction = planet.planetFactions[faction];
-                    if (planetFaction.population.marines > 0 && planet.planetFactions.ContainsKey(enemy) &&
-                        planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
-                        planet.planetFactions[faction].FightFactionForTerritory(enemy, attackStrength, deltaTime);
-                    }
+                    // if (planetFaction.population.marines > 0 && planet.planetFactions.ContainsKey(enemy) &&
+                        // planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
+                        // planet.planetFactions[faction].FightFactionForTerritory(enemy, attackStrength, deltaTime);
+                    // }
                 }
             }
 

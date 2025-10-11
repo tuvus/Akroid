@@ -32,6 +32,14 @@ public class Population {
         return this;
     }
 
+    public Population SetPlanetPopulation(long amount) {
+        pilots = (long)(amount * PopulationCenter.pilotPlanetRatio);
+        engineers = (long)(amount * PopulationCenter.engineerPlanetRatio);
+        marines = (long)(amount * PopulationCenter.marinePlanetRatio);
+        civilians = amount - pilots - engineers - marines;
+        return this;
+    }
+
     public Population(Population population) {
         civilians = population.civilians;
         pilots = population.pilots;
