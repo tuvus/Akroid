@@ -47,7 +47,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
             (long)(totalArea * planetData.mediumQualityLandFactor),
             (long)(totalArea * planetData.lowQualityLandFactor));
-        unclaimedTerritory = new PlanetFaction(this, null, new Population(),"This territory is open to claim.");
+        unclaimedTerritory = new PlanetFaction(this, null, new Population(), "This territory is open to claim.");
         planetMap = new PlanetMap(this, random, planetScriptableObject.radius);
     }
 
@@ -90,7 +90,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         // math.min(territory.mediumQualityArea, GetUnclaimedFaction().territory.mediumQualityArea);
         // territory.lowQualityArea = math.min(territory.lowQualityArea, GetUnclaimedFaction().territory.lowQualityArea);
         // GetUnclaimedFaction().territory.SubtractFrom(territory);
-        var planetFaction =new PlanetFaction(this, faction, population, special);
+        var planetFaction = new PlanetFaction(this, faction, population, special);
         planetFactions.Add(faction, planetFaction);
         faction.AddPlanet(this);
         return planetFaction;
@@ -100,15 +100,15 @@ public class Planet : BattleObject, IPositionConfirmer {
         return AddFaction(faction, new Population().SetPlanetPopulation(population), special);
     }
 
-    public void GenerateFactionTerritories(List<Tuple<PlanetFaction, float>> factionTerritories, float randomFactor,
+    public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float randomFactor,
         bool takeoverTerritories) {
         // Apply randomness on the territories based on randomFactor
         factionTerritories = factionTerritories.Select(ft =>
-            new Tuple<PlanetFaction, float>(ft.Item1, random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
+            (ft.Item1, random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
         // Now we need to normalise the percentage of territories of each planet faction
         float newMaxPercent = factionTerritories.Sum(ft => ft.Item2);
         factionTerritories = factionTerritories.Select(ft =>
-            new Tuple<PlanetFaction, float>(ft.Item1, ft.Item2 * 100 / newMaxPercent)).ToList();
+            (ft.Item1, ft.Item2 / newMaxPercent)).ToList();
 
         List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
             .OrderByDescending(d => d.GetDistrictValue()).ToList();
@@ -119,7 +119,7 @@ public class Planet : BattleObject, IPositionConfirmer {
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             if (newControl < 0) continue;
             district.owner = factionTerritories.First().Item1;
-            factionTerritories.Add(new Tuple<PlanetFaction, float>(factionTerritories.First().Item1, newControl));
+            factionTerritories.Add((factionTerritories.First().Item1, newControl));
             factionTerritories.RemoveAt(0);
             totalDistrictValue -= district.GetDistrictValue();
         }
@@ -161,7 +161,8 @@ public class Planet : BattleObject, IPositionConfirmer {
         });
         var newPlanetFaction = AddFaction(faction, population, special);
         district.owner = newPlanetFaction;
-        district.districtFactions.Add(newPlanetFaction, new District.DistrictFaction(newPlanetFaction, population, .03f));
+        district.districtFactions.Add(newPlanetFaction,
+            new District.DistrictFaction(newPlanetFaction, population, .03f));
     }
 
     /// <param name="planetFaction">The resulting bigger planet faction</param>

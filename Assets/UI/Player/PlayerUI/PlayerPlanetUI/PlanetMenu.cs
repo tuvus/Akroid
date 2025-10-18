@@ -23,6 +23,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private TMP_Text districtType;
     [SerializeField] private TMP_Text terrainType;
     [SerializeField] private TMP_Text area;
+    [SerializeField] private TMP_Text districtOwner;
 
     [SerializeField] private GameObject districtPrefab;
 
@@ -99,10 +100,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             districtUI.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
                 terrainImages[district.terrainType];
 
+            Color baseColor = Color.white;
+            if (district.owner != null) baseColor = district.owner.faction.color;
             if (selectedDistrict == district) {
-                districtUI.GetComponent<Image>().color = Color.white;
+                districtUI.GetComponent<Image>().color = baseColor;
             } else {
-                districtUI.GetComponent<Image>().color = Color.grey;
+                districtUI.GetComponent<Image>().color = new Color(baseColor.r * .7f, baseColor.g * .7f, baseColor.b * .7f);
             }
         }
         for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
@@ -146,31 +149,31 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 Instantiate(planetFactionButton, planetFactionsList);
             }
 
-            Transform factionButtonTransorm = planetFactionsList.GetChild(i);
-            factionButtonTransorm.gameObject.SetActive(true);
-            Button factionButton = factionButtonTransorm.GetChild(0).GetComponent<Button>();
+            Transform factionButtonTransform = planetFactionsList.GetChild(i);
+            factionButtonTransform.gameObject.SetActive(true);
+            Button factionButton = factionButtonTransform.GetChild(0).GetComponent<Button>();
             factionButton.onClick.RemoveAllListeners();
 
             if (planetFaction.faction != null) {
                 factionButton.onClick.AddListener(() =>
                     playerUI.ShowFactionUI(uiBattleManager.factionUIs[planetFaction.faction]));
-                factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text =
+                factionButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text =
                     planetFaction.faction.name;
-                factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
+                factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
                     planetFaction.faction.abbreviatedName;
             } else {
-                factionButtonTransorm.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Unclaimed Territory";
-                factionButtonTransorm.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
+                factionButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Unclaimed Territory";
+                factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
             }
 
-            factionButtonTransorm.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text =
+            factionButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text =
                 "Population: " + NumFormatter.ConvertNumber(planetFaction.population.TotalPopulation());
-            factionButtonTransorm.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
+            factionButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
                 "Force: " + NumFormatter.ConvertNumber(planetFaction.population.marines);
-            // factionButtonTransorm.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
+            // factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
                 // planetFaction.territory.GetTotalAreas() * 100 / displayedObject.planet.areas.GetTotalAreas() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
-            factionButtonTransorm.GetChild(0).GetComponent<Image>().color =
+            factionButtonTransform.GetChild(0).GetComponent<Image>().color =
                 LocalPlayer.Instance.GetColorOfRelationType(
                     LocalPlayer.Instance.GetRelationToFaction(planetFaction.faction));
             i++;
@@ -183,6 +186,9 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     protected override void RefreshRightPanel() {
         terrainType.text = "Terrain: " + selectedDistrict.terrainType.ToString();
+        if (selectedDistrict.owner == null)
+            districtOwner.text = "Owner: Unclaimed";
+        else districtOwner.text = "Owner: " + selectedDistrict.owner.faction.name;
     }
 
     public void OpenFactionMenu() {
