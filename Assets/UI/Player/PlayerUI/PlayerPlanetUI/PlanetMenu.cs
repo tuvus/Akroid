@@ -96,16 +96,17 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             districtUI.SetActive(true);
             districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * districtScale;
             districtUI.GetComponent<RectTransform>().sizeDelta =
-                new Vector3(districtScale * math.sqrt(3), districtScale * 2);
-            districtUI.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
+                new Vector3(districtScale * math.sqrt(3) * 1.01f, districtScale * 2);
+            districtUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>().sprite =
                 terrainImages[district.terrainType];
 
             Color baseColor = Color.white;
             if (district.owner != null) baseColor = district.owner.faction.color;
             if (selectedDistrict == district) {
-                districtUI.GetComponent<Image>().color = baseColor;
+                districtUI.transform.GetChild(0).GetComponent<Image>().color = baseColor;
             } else {
-                districtUI.GetComponent<Image>().color = new Color(baseColor.r * .7f, baseColor.g * .7f, baseColor.b * .7f);
+                districtUI.transform.GetChild(0).GetComponent<Image>().color =
+                    new Color(baseColor.r * .7f, baseColor.g * .7f, baseColor.b * .7f);
             }
         }
         for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
@@ -171,7 +172,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             factionButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
                 "Force: " + NumFormatter.ConvertNumber(planetFaction.population.marines);
             // factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
-                // planetFaction.territory.GetTotalAreas() * 100 / displayedObject.planet.areas.GetTotalAreas() + "%";
+            // planetFaction.territory.GetTotalAreas() * 100 / displayedObject.planet.areas.GetTotalAreas() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
             factionButtonTransform.GetChild(0).GetComponent<Image>().color =
                 LocalPlayer.Instance.GetColorOfRelationType(

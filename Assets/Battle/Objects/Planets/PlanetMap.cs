@@ -100,4 +100,15 @@ public class PlanetMap {
         return new Vector2(math.sqrt(3) * district.location.x + (math.sqrt(3) / 2) * district.location.y,
             (3f / 2) * -district.location.y);
     }
+
+    public List<District> GetNeighboringDistricts(District district) {
+        Vector2Int loc = district.location;
+        List<District> neighbors = new List<District>();
+        foreach (Vector2Int translation in cubeDir) {
+            loc += translation;
+            if (!locToDistrict.ContainsKey(loc)) continue;
+            neighbors.Add(locToDistrict[loc]);
+        }
+        return neighbors;
+    }
 }

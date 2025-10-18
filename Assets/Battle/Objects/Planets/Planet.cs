@@ -113,15 +113,30 @@ public class Planet : BattleObject, IPositionConfirmer {
         List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
             .OrderByDescending(d => d.GetDistrictValue()).ToList();
         int totalDistrictValue = toTake.Sum(d => d.GetDistrictValue());
-        foreach (District district in toTake) {
+
+        float GetValueOfDistrict(District district, PlanetFaction planetFaction) {
+            return district.GetDistrictValue() +
+                planetMap.GetNeighboringDistricts(district).Count(d => d.owner == planetFaction) * .6f;
+        }
+
+        while (toTake.Count > 0 && factionTerritories.Count > 0) {
             factionTerritories = factionTerritories.OrderByDescending(ft => ft.Item2).ToList();
+            PlanetFaction planetFaction = factionTerritories.First().Item1;
+            List<District> possibleDistricts = toTake.Where(d =>
+                factionTerritories.First().Item2 - d.GetDistrictValue() / (float)totalDistrictValue > 0).ToList();
+            if (possibleDistricts.Count == 0) {
+                factionTerritories.RemoveAt(0);
+                continue;
+            }
+            District district = possibleDistricts.Aggregate((max, current) =>
+                GetValueOfDistrict(current, planetFaction) > GetValueOfDistrict(max, planetFaction) ? current : max
+            );
+            district.owner = planetFaction;
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
-            if (newControl < 0) continue;
-            district.owner = factionTerritories.First().Item1;
-            factionTerritories.Add((factionTerritories.First().Item1, newControl));
+            factionTerritories.Add((planetFaction, newControl));
             factionTerritories.RemoveAt(0);
-            totalDistrictValue -= district.GetDistrictValue();
+            toTake.Remove(district);
         }
     }
 
