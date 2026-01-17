@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlanetMenu : PlayerUIMenu<PlanetUI> {
@@ -20,9 +21,10 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private GameObject planetFactionButton;
 
     [SerializeField] private TMP_Text districtName;
-    [SerializeField] private TMP_Text districtType;
     [SerializeField] private TMP_Text terrainType;
-    [SerializeField] private TMP_Text area;
+    [SerializeField] private TMP_Text districtType;
+    [SerializeField] private TMP_Text districtPopulation;
+    [SerializeField] private TMP_Text districtArea;
     [SerializeField] private TMP_Text districtOwner;
 
     [SerializeField] private GameObject districtPrefab;
@@ -187,9 +189,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     protected override void RefreshRightPanel() {
         terrainType.text = "Terrain: " + selectedDistrict.terrainType.ToString();
+        districtType.text = "Type: " + selectedDistrict.districtType.ToString();
+        districtArea.text = "Area: " + NumFormatter.ConvertNumber(selectedDistrict.area);
         if (selectedDistrict.owner == null)
             districtOwner.text = "Owner: Unclaimed";
         else districtOwner.text = "Owner: " + selectedDistrict.owner.faction.name;
+        districtPopulation.text = "Pop: " + NumFormatter.ConvertNumber(selectedDistrict.GetTotalPopulation());
     }
 
     public void OpenFactionMenu() {

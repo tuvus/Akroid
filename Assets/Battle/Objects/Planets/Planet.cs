@@ -25,6 +25,7 @@ public class Planet : BattleObject, IPositionConfirmer {
 
     public PlanetScriptableObject planetScriptableObject { get; }
     [field: SerializeField] public long totalArea { get; protected set; }
+    public long districtArea { get; protected set; }
     [field: SerializeField] public PlanetTerritory areas { get; protected set; }
     public PlanetMap planetMap;
 
@@ -44,6 +45,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         SetSize(SetupSize());
 
         totalArea = (long)(math.pow(GetSize(), 2) * math.PI);
+        districtArea = totalArea / PlanetMap.GetDistrictCountInRadius(planetScriptableObject.radius);
         areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
             (long)(totalArea * planetData.mediumQualityLandFactor),
             (long)(totalArea * planetData.lowQualityLandFactor));
@@ -105,7 +107,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         // Apply randomness on the territories based on randomFactor
         factionTerritories = factionTerritories.Select(ft =>
             (ft.Item1, random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
-        // Now we need to normalise the percentage of territories of each planet faction
+        // Now we need to normalize the percentage of territories of each planet faction
         float newMaxPercent = factionTerritories.Sum(ft => ft.Item2);
         factionTerritories = factionTerritories.Select(ft =>
             (ft.Item1, ft.Item2 / newMaxPercent)).ToList();
@@ -132,6 +134,14 @@ public class Planet : BattleObject, IPositionConfirmer {
                 GetValueOfDistrict(current, planetFaction) > GetValueOfDistrict(max, planetFaction) ? current : max
             );
             district.owner = planetFaction;
+            district.SetRandomDistrictType(false);
+            if (district.districtType != District.DistrictType.Empty ||
+                district.districtType != District.DistrictType.Wildlife) {
+                district.urbanPercent = .2f;
+                district.agriculturePercent = .5f;
+                district.industryPercent = .15f;
+            }
+            district.AddFaction(planetFaction, .7f, 1);
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             factionTerritories.Add((planetFaction, newControl));

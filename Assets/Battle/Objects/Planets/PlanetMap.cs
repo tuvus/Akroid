@@ -31,13 +31,13 @@ public class PlanetMap {
 
     void CreateGridOfSize(int radius) {
         Vector2Int loc = Vector2Int.zero;
-        districts.Add(new District(loc));
+        districts.Add(new District(loc, planet.districtArea));
         locToDistrict.Add(loc, districts.Last());
         for (int r = 1; r < radius; r++) {
             loc = cubeDir[4] * r;
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < r; j++) {
-                    districts.Add(new District(loc));
+                    districts.Add(new District(loc, planet.districtArea));
                     locToDistrict.Add(loc, districts.Last());
                     loc += cubeDir[i];
                 }
@@ -53,26 +53,26 @@ public class PlanetMap {
                     if (water) {
                         int value = random.NextInt(0, 10);
                         if (value < 8) {
-                            district.terrainType = District.TerrainType.Ocean;
+                            district.SetTerrainType(District.TerrainType.Ocean);
                         } else {
-                            district.terrainType = District.TerrainType.Islands;
+                            district.SetTerrainType(District.TerrainType.Islands);
                         }
                     } else {
                         int value = random.NextInt(0, 11);
                         if (value < 3) {
-                            district.terrainType = District.TerrainType.Plains;
+                            district.SetTerrainType(District.TerrainType.Plains);
                         } else if (value < 5) {
-                            district.terrainType = District.TerrainType.Forest;
+                            district.SetTerrainType(District.TerrainType.Forest);
                         } else if (value < 7) {
-                            district.terrainType = District.TerrainType.Hills;
+                            district.SetTerrainType(District.TerrainType.Hills);
                         } else if (value < 8) {
-                            district.terrainType = District.TerrainType.Mountains;
+                            district.SetTerrainType(District.TerrainType.Mountains);
                         } else if (value < 9) {
-                            district.terrainType = District.TerrainType.Tundra;
+                            district.SetTerrainType(District.TerrainType.Tundra);
                         } else if (value < 10) {
-                            district.terrainType = District.TerrainType.Lakes;
+                            district.SetTerrainType(District.TerrainType.Lakes);
                         } else {
-                            district.terrainType = District.TerrainType.Desert;
+                            district.SetTerrainType(District.TerrainType.Desert);
                         }
                     }
                 }
@@ -80,15 +80,15 @@ public class PlanetMap {
             case Planet.PlanetType.Moon:
                 foreach (District district in districts) {
                     if (random.NextInt(0, 5) < 4) {
-                        district.terrainType = District.TerrainType.Barren;
+                        district.SetTerrainType(District.TerrainType.Barren);
                     } else {
-                        district.terrainType = District.TerrainType.Crater;
+                        district.SetTerrainType(District.TerrainType.Crater);
                     }
                 }
                 break;
             case Planet.PlanetType.GasGiant:
                 foreach (District district in districts) {
-                    district.terrainType = District.TerrainType.Gas;
+                    district.SetTerrainType(District.TerrainType.Gas);
                 }
                 break;
             default:
@@ -99,6 +99,10 @@ public class PlanetMap {
     public static Vector2 GetPositionOfDistrict(District district) {
         return new Vector2(math.sqrt(3) * district.location.x + (math.sqrt(3) / 2) * district.location.y,
             (3f / 2) * -district.location.y);
+    }
+
+    public static int GetDistrictCountInRadius(int radius) {
+        return 3 * radius * (radius + 1) + 1;
     }
 
     public List<District> GetNeighboringDistricts(District district) {
