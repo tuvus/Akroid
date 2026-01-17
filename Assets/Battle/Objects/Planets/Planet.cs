@@ -102,15 +102,21 @@ public class Planet : BattleObject, IPositionConfirmer {
         return AddFaction(faction, new Population().SetPlanetPopulation(population), special);
     }
 
+    /// <summary>
+    /// Divides the panet's remaining territories to the factions based on the input.
+    /// Applies some randomness to the input based on the randomFactor.
+    /// Any extra territory will be left as unclaimed.
+    /// </summary>
     public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float randomFactor,
         bool takeoverTerritories) {
+        float initialSum = factionTerritories.Select(ft => ft.Item2).Sum();
         // Apply randomness on the territories based on randomFactor
         factionTerritories = factionTerritories.Select(ft =>
-            (ft.Item1, random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
+            (ft.Item1, ft.Item2 * random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
         // Now we need to normalize the percentage of territories of each planet faction
-        float newMaxPercent = factionTerritories.Sum(ft => ft.Item2);
+        float newSum = factionTerritories.Sum(ft => ft.Item2);
         factionTerritories = factionTerritories.Select(ft =>
-            (ft.Item1, ft.Item2 / newMaxPercent)).ToList();
+            (ft.Item1, ft.Item2 / (1 + initialSum - newSum))).ToList();
 
         List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
             .OrderByDescending(d => d.GetDistrictValue()).ToList();
@@ -118,7 +124,8 @@ public class Planet : BattleObject, IPositionConfirmer {
 
         float GetValueOfDistrict(District district, PlanetFaction planetFaction) {
             return district.GetDistrictValue() +
-                planetMap.GetNeighboringDistricts(district).Count(d => d.owner == planetFaction) * .6f;
+                planetMap.GetNeighboringDistricts(district).Count(d => d.owner == planetFaction) * 1.2f +
+                -planetMap.GetNeighboringDistricts(district).Count(d => d.owner != planetFaction) * .3f;
         }
 
         while (toTake.Count > 0 && factionTerritories.Count > 0) {

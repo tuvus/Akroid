@@ -229,12 +229,17 @@ public class Chapter1 : CampaingController {
             new FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved");
-        planet.planetMap.districts.First(d => d.GetDistrictValue() >= 3).owner = planet.planetFactions[planetFaction];
+        var planetFactionDistrict = planet.planetMap.districts.First(d => d.GetDistrictValue() >= 3);
+        planetFactionDistrict.owner = planet.planetFactions[planetFaction];
+        planetFactionDistrict.districtType = District.DistrictType.Urban;
+        planetFactionDistrict.urbanPercent = .4f;
+        planetFactionDistrict.agriculturePercent = .2f;
+        planetFactionDistrict.industryPercent = .4f;
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
-            (planet.planetFactions[planetEmpire], .3f),
-            (planet.planetFactions[planetDemocracy], .24f),
-            (planet.planetFactions[planetOligarchy], .22f),
-            (planet.planetFactions[minorFactions], .24f)
+            (planet.planetFactions[planetEmpire], .35f),
+            (planet.planetFactions[planetDemocracy], .29f),
+            (planet.planetFactions[planetOligarchy], .27f),
+            // (planet.planetFactions[minorFactions], .09f)
         }, .1f, false);
 
 
