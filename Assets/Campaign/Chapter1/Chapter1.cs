@@ -239,9 +239,19 @@ public class Chapter1 : CampaingController {
             (planet.planetFactions[planetEmpire], .35f),
             (planet.planetFactions[planetDemocracy], .29f),
             (planet.planetFactions[planetOligarchy], .27f),
-            // (planet.planetFactions[minorFactions], .09f)
         }, .1f, false);
 
+        planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
+            d.owner = planet.planetFactions[minorFactions];
+            d.SetRandomDistrictType(false);
+            if (d.districtType != District.DistrictType.Empty &&
+                d.districtType != District.DistrictType.Wildlife) {
+                d.urbanPercent = .1f;
+                d.agriculturePercent = .6f;
+                d.industryPercent = .1f;
+            }
+            d.AddFaction(planet.planetFactions[minorFactions], .7f, 1);
+        });
 
         battleManager.GetLocalPlayer().SetLockedUnits(true);
         battleManager.GetLocalPlayer().ownedUnits.Add(playerMiningStation);

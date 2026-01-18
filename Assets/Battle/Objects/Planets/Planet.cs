@@ -142,7 +142,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             );
             district.owner = planetFaction;
             district.SetRandomDistrictType(false);
-            if (district.districtType != District.DistrictType.Empty ||
+            if (district.districtType != District.DistrictType.Empty &&
                 district.districtType != District.DistrictType.Wildlife) {
                 district.urbanPercent = .2f;
                 district.agriculturePercent = .5f;

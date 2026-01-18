@@ -52,7 +52,7 @@ public class District {
         {
             Ocean, new List<DistrictType> { Empty, Wildlife }
         }, {
-            Lakes, new List<DistrictType> { Empty, Wildlife }
+            Lakes, new List<DistrictType> { Empty, Wildlife, Agricultural, Research, Colony, LightIndustry }
         }, {
             Plains, new List<DistrictType> {
                 Empty, Agricultural, LightIndustry, Urban, Research, Wildlife, HeavyIndustry, Colony
