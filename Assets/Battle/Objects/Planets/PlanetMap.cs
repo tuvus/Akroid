@@ -5,13 +5,28 @@ using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
+/// <summary>
+/// Helpful webpage https://www.redblobgames.com/grids/hexagons/
+/// </summary>
 public class PlanetMap {
     private Planet planet;
     private Random random;
 
     public List<District> districts;
-    public Dictionary<Vector2Int, District> locToDistrict;
+    // Stores a map of the Axial coordinates to districts
+    // The map is displayed so
+    //   (0,-1)(1,-1)
+    // (-1,0)(0,0)(1,0)
+    //   (-1,1)(0,1)
+    // When traversing any neighbors we start by going to the left
+    // and then proceed in a clockwise manner.
+    private Dictionary<Vector2Int, District> locToDistrict;
+    // Radius of 0 means 1 tile, radius of 1 means 7 tiles.
     public int radius;
+    // Holds a list of the center locations of all adjacent wrap around grids
+    // This is used for translating locations off of the center map back to the center map
+    // The first one is to the bottom left of the center
+    private List<Vector2Int> wrapMapCenters;
 
     private static List<Vector2Int> cubeDir = new List<Vector2Int>() {
         new Vector2Int(0, -1), new Vector2Int(-1, 0), new Vector2Int(-1, 1),
@@ -24,6 +39,7 @@ public class PlanetMap {
         this.radius = radius;
         districts = new List<District>();
         locToDistrict = new Dictionary<Vector2Int, District>();
+        wrapMapCenters = GetAllHexRotations(new Vector2Int(-radius, -radius + 1));
         CreateGridOfSize(radius);
         GenerateTerrain();
     }
@@ -105,13 +121,42 @@ public class PlanetMap {
         return 3 * radius * (radius + 1) + 1;
     }
 
+    public District GetDistrict(Vector2Int loc) {
+        while (GetDistanceBetweenHexes(loc, Vector2Int.zero) >= radius) {
+            var closestCenter = wrapMapCenters.Select(c => (c, GetDistanceBetweenHexes(loc, c)))
+                .Aggregate((a, b) => b.Item2 < a.Item2 ? b : a);
+            loc -= closestCenter.c;
+        }
+        return locToDistrict[loc];
+    }
+
+    public static int GetDistanceBetweenHexes(Vector2Int loc1, Vector2Int loc2) {
+        var diff = loc1 - loc2;
+        return math.max(math.max(math.abs(diff.x), math.abs(diff.y)), math.abs(-diff.x - diff.y));
+    }
+
+    public static List<Vector2Int> GetAllHexRotations(Vector2Int loc) {
+        List<Vector2Int> locs = new List<Vector2Int>() { loc };
+        for (int i = 0; i < 5; i++) {
+            loc = GetClockwiseHexRotation(loc);
+            locs.Add(loc);
+        }
+        return locs;
+    }
+
+    public static Vector2Int GetClockwiseHexRotation(Vector2Int loc) {
+        return new Vector2Int(-loc.y, loc.y + loc.x);
+    }
+
+    public static Vector2Int GetCounterClockwiseHexRotation(Vector2Int loc) {
+        return new Vector2Int(loc.y + loc.x, -loc.x);
+    }
+
     public List<District> GetNeighboringDistricts(District district) {
-        Vector2Int loc = district.location;
         List<District> neighbors = new List<District>();
         foreach (Vector2Int translation in cubeDir) {
-            loc += translation;
-            if (!locToDistrict.ContainsKey(loc)) continue;
-            neighbors.Add(locToDistrict[loc]);
+            Vector2Int loc = district.location + translation;
+            neighbors.Add(GetDistrict(loc));
         }
         return neighbors;
     }
