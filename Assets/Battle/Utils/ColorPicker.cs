@@ -25,6 +25,13 @@ public class ColorPicker {
         }
     }
 
+    public Color TakeColor(Color color) {
+        var index = preferedColors.IndexOf(color);
+        if (index > 0)
+            preferedColors.RemoveAt(index);
+        return color;
+    }
+
     public Color PickColor() {
         if (preferedColors.Count > 0) {
             int index = Random.Range(0, preferedColors.Count);

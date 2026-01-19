@@ -65,7 +65,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     }
 
     protected override bool ShouldShowLeftPanel() {
-        return displayedObject != null && displayedObject.planet.areas.GetTotalAreas() != 0;
+        return displayedObject != null && displayedObject.planet.planetFactions.Count != 0;
     }
 
     protected override bool ShouldShowRightPanel() {
@@ -131,13 +131,6 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
         }
 
         planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedObject.planet.GetPopulation());
-        highQualityPercentLand.text = "High Quality Land: " +
-            displayedObject.planet.areas.highQualityArea * 100 / displayedObject.planet.totalArea + "%";
-        mediumQualityPercentLand.text = "Medium Quality Land: " +
-            displayedObject.planet.areas.mediumQualityArea * 100 / displayedObject.planet.totalArea + "%";
-        lowQualityPercentLand.text =
-            "Low Quality Land: " +
-            displayedObject.planet.areas.lowQualityArea * 100 / displayedObject.planet.totalArea + "%";
         planetAreas.text = "Districts: " + NumFormatter.ConvertNumber(displayedObject.planet.totalArea);
     }
 
@@ -150,7 +143,6 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     private void RefreshLeftPanelForPlanet() {
         List<PlanetFaction> planetFactions =
             displayedObject.planet.planetFactions.Select(entry => entry.Value).ToList();
-        planetFactions.Add(displayedObject.planet.GetUnclaimedFaction());
         int i = 0;
         foreach (PlanetFaction planetFaction in planetFactions) {
             if (planetFactionsList.childCount <= i) {
@@ -162,17 +154,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             Button factionButton = factionButtonTransform.GetChild(0).GetComponent<Button>();
             factionButton.onClick.RemoveAllListeners();
 
-            if (planetFaction.faction != null) {
-                factionButton.onClick.AddListener(() =>
-                    playerUI.ShowFactionUI(uiBattleManager.factionUIs[planetFaction.faction]));
-                factionButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text =
-                    planetFaction.faction.name;
-                factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
-                    planetFaction.faction.abbreviatedName;
-            } else {
-                factionButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "Unclaimed Territory";
-                factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "";
-            }
+            factionButton.onClick.AddListener(() =>
+                playerUI.ShowFactionUI(uiBattleManager.factionUIs[planetFaction.faction]));
+            factionButtonTransform.GetChild(0).GetChild(0).GetComponent<TMP_Text>().text =
+                planetFaction.faction.name;
+            factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
+                planetFaction.faction.abbreviatedName;
 
             factionButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text =
                 "Population: " + NumFormatter.ConvertNumber(planetFaction.population.TotalPopulation());

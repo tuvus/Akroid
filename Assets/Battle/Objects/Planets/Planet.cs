@@ -18,15 +18,11 @@ public class Planet : BattleObject, IPositionConfirmer {
     public Dictionary<Faction, PlanetFaction> planetFactions;
 
     public float rotationSpeed;
-    [SerializeField] private long startingPop;
-
     [SerializeField] private float timeSinceStart;
-    private readonly PlanetFaction unclaimedTerritory;
 
     public PlanetScriptableObject planetScriptableObject { get; }
     [field: SerializeField] public long totalArea { get; protected set; }
     public long districtArea { get; protected set; }
-    [field: SerializeField] public PlanetTerritory areas { get; protected set; }
     public PlanetMap planetMap;
 
 
@@ -46,10 +42,6 @@ public class Planet : BattleObject, IPositionConfirmer {
 
         totalArea = (long)(math.pow(GetSize(), 2) * math.PI);
         districtArea = totalArea / PlanetMap.GetDistrictCountInRadius(planetScriptableObject.radius);
-        areas = new PlanetTerritory((long)(totalArea * planetData.highQualityLandFactor),
-            (long)(totalArea * planetData.mediumQualityLandFactor),
-            (long)(totalArea * planetData.lowQualityLandFactor));
-        unclaimedTerritory = new PlanetFaction(this, null, new Population(), "This territory is open to claim.");
         planetMap = new PlanetMap(this, random, planetScriptableObject.radius);
     }
 
@@ -223,10 +215,6 @@ public class Planet : BattleObject, IPositionConfirmer {
     public void RemoveFaction(Faction faction) {
         planetFactions.Remove(faction);
         faction.RemovePlanet(this);
-    }
-
-    public PlanetFaction GetUnclaimedFaction() {
-        return unclaimedTerritory;
     }
 
     public void UpdatePlanet(float deltaTime) {
