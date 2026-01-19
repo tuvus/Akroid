@@ -189,7 +189,14 @@ public class District {
     }
 
     public long GetPopulationCapacity() {
-        return 100000 * (long)(area * landPercent * urbanPercent * 50 + area * landPercent * agriculturePercent * .01f);
+        return (long)(30000 * area * landPercent * urbanPercent * 50 + area * landPercent * agriculturePercent * .01f);
+    }
+
+    public long GetPopulationCapacity(PlanetFaction planetFaction) {
+        float control = 0;
+        if (districtFactions.ContainsKey(planetFaction))
+            control = districtFactions[planetFaction].control;
+        return (long)(GetPopulationCapacity() * control);
     }
 
     public long GetTotalPopulation() {

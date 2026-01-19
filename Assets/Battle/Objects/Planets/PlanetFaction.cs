@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
@@ -10,16 +12,14 @@ public class PlanetFaction {
     private double populationGainFraction;
     private double territoryExpansionProgress;
 
-    public PlanetFaction(Planet planet, Faction faction, Population population, string special) {
+    public PlanetFaction(Planet planet, Faction faction, string special) {
         this.planet = planet;
         this.faction = faction;
-        this.population = population;
         this.special = special;
     }
 
     // If faction is null then this PlanetFaction represents unclaimed territory
     public Faction faction { get; }
-    public Population population { get; private set; }
     public string special { get; private set; }
 
 
@@ -33,16 +33,16 @@ public class PlanetFaction {
 
 
     private void UpdateForce(float deltaTime) {
-        long desiredForce = population.civilians / 200;
-        if (desiredForce > population.marines) {
-            long forceDifference = desiredForce - population.marines;
-            int factionsAtWarWith = 1 + planet.planetFactions.ToList().Count(f => faction.IsAtWarWithFaction(f.Key));
-            double forceRecruited = math.min(forceDifference,
-                population.civilians * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
-            population.marines += (long)forceRecruited;
-            population.civilians -= (long)forceRecruited;
-            forceGainFraction = forceRecruited - (long)forceRecruited;
-        }
+        // long desiredForce = population.civilians / 200;
+        // if (desiredForce > population.marines) {
+        // long forceDifference = desiredForce - population.marines;
+        // int factionsAtWarWith = 1 + planet.planetFactions.ToList().Count(f => faction.IsAtWarWithFaction(f.Key));
+        // double forceRecruited = math.min(forceDifference,
+        // population.civilians * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
+        // population.marines += (long)forceRecruited;
+        // population.civilians -= (long)forceRecruited;
+        // forceGainFraction = forceRecruited - (long)forceRecruited;
+        // }
     }
 
     private void UpdatePopulation(float deltaTime) {
@@ -202,16 +202,66 @@ public class PlanetFaction {
     }
 
     public void AddForce(long force) {
-        population.marines += force;
+        long totalForce = force;
+        var totalNonMarinePop = GetTotalPopulation().TotalPopulationWithoutMarines();
+
+        GetDistrictsPresent().ForEach(d => {
+            long forceToAdd = totalForce * d.Item2.pop.TotalPopulationWithoutMarines() / totalNonMarinePop;
+            d.Item2.pop.marines += forceToAdd;
+            force -= forceToAdd;
+        });
+        var lastDistrict = GetDistrictsPresent().FirstOrDefault();
+        if (force > 0 && lastDistrict.Item2 != null) {
+            lastDistrict.Item2.pop.marines += force;
+        }
     }
 
     public long RemoveForce(long force) {
-        force = math.min(population.marines, force);
-        population.marines -= force;
+        long totalForce = force;
+        var totalMarinePop = GetTotalPopulation().marines;
+
+        Tuple<District, District.DistrictFaction> lastDistrict = null;
+        GetDistrictsPresent().ForEach(d => {
+            lastDistrict = d.ToTuple();
+            long forceToRemove = totalForce * d.Item2.pop.marines / totalMarinePop;
+            d.Item2.pop.marines -= forceToRemove;
+            force -= forceToRemove;
+        });
+        if (force > 0 && lastDistrict.Item2 != null) {
+            var finalForce = math.max(0, force - lastDistrict.Item2.pop.marines);
+            lastDistrict.Item2.pop.marines -= finalForce;
+            return finalForce;
+        }
         return force;
     }
 
-    public void AddPopulation(long population) {
-        this.population.civilians += population;
+    public void AddPopulation(Population population) {
+        var initialPopulation = new Population(population);
+        var districts = GetDistrictsPresent();
+        long totalCapacity = districts.Select(d =>
+                d.Item1.GetPopulationCapacity(this) - d.Item2.pop.TotalPopulation())
+            .Aggregate((a, b) => a + b);
+        Tuple<District, District.DistrictFaction> lastDistrict = null;
+        districts.ForEach(d => {
+            lastDistrict = d.ToTuple();
+            var popToAdd = new Population(initialPopulation).Divide(
+                (d.Item1.GetPopulationCapacity(this) - d.Item2.pop.TotalPopulation()) / (float)totalCapacity);
+            d.Item2.pop.AddPopulation(popToAdd);
+            population.SubtractPopulation(popToAdd);
+        });
+        if (population.TotalPopulation() > 0 && lastDistrict != null) {
+            lastDistrict.Item2.pop.AddPopulation(population);
+        }
+    }
+
+    public Population GetTotalPopulation() {
+        var pop = new Population();
+        GetDistrictsPresent().ForEach(d => pop.AddPopulation(d.Item2.pop));
+        return pop;
+    }
+
+    public List<(District, District.DistrictFaction)> GetDistrictsPresent() {
+        return planet.planetMap.districts.Where(d => d.districtFactions.ContainsKey(this))
+            .Select(d => (d, d.districtFactions[this])).ToList();
     }
 }

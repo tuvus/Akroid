@@ -161,10 +161,11 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             factionButtonTransform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text =
                 planetFaction.faction.abbreviatedName;
 
+            var pop = planetFaction.GetTotalPopulation();
             factionButtonTransform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text =
-                "Population: " + NumFormatter.ConvertNumber(planetFaction.population.TotalPopulation());
+                "Population: " + NumFormatter.ConvertNumber(pop.TotalPopulation());
             factionButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
-                "Force: " + NumFormatter.ConvertNumber(planetFaction.population.marines);
+                "Force: " + NumFormatter.ConvertNumber(pop.marines);
             var controls = displayedObject.planet.planetMap.districts
                 .Where(d => d.districtFactions.ContainsKey(planetFaction))
                 .Select(d => d.districtFactions[planetFaction].control).ToList();

@@ -114,7 +114,11 @@ public class Population {
         return civilians + pilots + engineers + marines;
     }
 
-    public void Add(Occupation occupation, long amount) {
+    public long TotalPopulationWithoutMarines() {
+        return civilians + pilots + engineers;
+    }
+
+    public Population Add(Occupation occupation, long amount) {
         switch (occupation) {
             case Occupation.Civilian:
                 civilians += amount;
@@ -129,6 +133,15 @@ public class Population {
                 marines += amount;
                 break;
         }
+        return this;
+    }
+
+    public Population Divide(float amount) {
+        civilians = (long)(civilians / amount);
+        pilots = (long)(pilots / amount);
+        engineers = (long)(engineers / amount);
+        marines = (long)(marines / amount);
+        return this;
     }
 
     public long Get(Occupation occupation) {
@@ -204,7 +217,7 @@ public class HabitationArea : ModuleComponent {
 
     public void ColonizePlanet(Planet planet) {
         if (planet.planetFactions.ContainsKey(faction)) {
-            population.MovePopulationTo(planet.planetFactions[faction].population);
+            // population.MovePopulationTo(planet.planetFactions[faction].population);
         } else {
             planet.AddColony(faction, population, "Colony");
         }

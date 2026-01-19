@@ -84,7 +84,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         // math.min(territory.mediumQualityArea, GetUnclaimedFaction().territory.mediumQualityArea);
         // territory.lowQualityArea = math.min(territory.lowQualityArea, GetUnclaimedFaction().territory.lowQualityArea);
         // GetUnclaimedFaction().territory.SubtractFrom(territory);
-        var planetFaction = new PlanetFaction(this, faction, population, special);
+        var planetFaction = new PlanetFaction(this, faction, special);
         planetFactions.Add(faction, planetFaction);
         faction.AddPlanet(this);
         return planetFaction;
@@ -235,7 +235,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     public long GetPopulation() {
-        return planetFactions.Sum(f => f.Value.population.TotalPopulation());
+        return planetFactions.Sum(f => f.Value.GetTotalPopulation().TotalPopulation());
     }
 
     public override float GetSpriteSize() {

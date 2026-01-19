@@ -1272,7 +1272,7 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackStrength = .05f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[planetOligarchy].population.marines < 1000000),
+                    planet.planetFactions[planetOligarchy].GetTotalPopulation().marines < 1000000),
                 () => {
                     planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
@@ -1284,7 +1284,7 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[planetDemocracy].population.marines < 1000000), () => {
+                    planet.planetFactions[planetDemocracy].GetTotalPopulation().marines < 1000000), () => {
                     planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
         });
@@ -1295,7 +1295,7 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackStrength = .09f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[planetEmpire].population.marines < 1000000), () => {
+                    planet.planetFactions[planetEmpire].GetTotalPopulation().marines < 1000000), () => {
                     planet.MergePlanetFactions(planetFaction, planetEmpire);
                 });
         });
@@ -1306,7 +1306,7 @@ public class Chapter1 : CampaingController {
             robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[minorFactions].population.marines < 1000000), () => {
+                    planet.planetFactions[minorFactions].GetTotalPopulation().marines < 1000000), () => {
                     planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
         });
@@ -1322,13 +1322,13 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCondition(eventManager.CreatePredicateCondition(_ => {
             long alliedForce = 0;
             if (planet.planetFactions.ContainsKey(planetDemocracy))
-                alliedForce += planet.planetFactions[planetDemocracy].population.marines;
+                alliedForce += planet.planetFactions[planetDemocracy].GetTotalPopulation().marines;
             if (planet.planetFactions.ContainsKey(planetOligarchy))
-                alliedForce += planet.planetFactions[planetOligarchy].population.marines;
+                alliedForce += planet.planetFactions[planetOligarchy].GetTotalPopulation().marines;
             if (planet.planetFactions.ContainsKey(planetEmpire))
-                alliedForce += planet.planetFactions[planetEmpire].population.marines;
+                alliedForce += planet.planetFactions[planetEmpire].GetTotalPopulation().marines;
             if (planet.planetFactions.ContainsKey(minorFactions))
-                alliedForce += planet.planetFactions[minorFactions].population.marines;
+                alliedForce += planet.planetFactions[minorFactions].GetTotalPopulation().marines;
             return alliedForce < 6000000000L;
         }));
         planetEscalationChain.AddAction(() => {
@@ -1352,7 +1352,7 @@ public class Chapter1 : CampaingController {
                 planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
                     "Uhhh, you weren't supposed to be the one to colonize the moon. We already did that!");
                 playerFaction.AddScience(1000);
-                moon.planetFactions[playerFaction].AddPopulation(300);
+                moon.planetFactions[playerFaction].AddPopulation(new Population().SetBasicPopulation(300));
                 moon.planetFactions[playerFaction].AddForce(100);
             });
         eventManager.AddEvent(
@@ -1360,7 +1360,7 @@ public class Chapter1 : CampaingController {
             () => {
                 planetFaction.GetFactionCommManager().SendCommunication(playerFaction,
                     planet.objectName + " is already colonized. That was a waste of a colonizer.");
-                planet.planetFactions[playerFaction].AddPopulation(10000000000);
+                planet.planetFactions[playerFaction].AddPopulation(new Population().SetBasicPopulation(10000000000));
                 planet.planetFactions[playerFaction].AddForce(1000000000);
                 eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => robotFaction != null),
                     () => {
