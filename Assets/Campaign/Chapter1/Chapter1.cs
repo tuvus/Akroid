@@ -214,19 +214,19 @@ public class Chapter1 : CampaingController {
 
         planet.AddFaction(planetFaction, Random.Range(12, 35) * 1000000L, "Increases space production");
         planetEmpire = battleManager.CreateNewFaction(
-            new FactionData("Empire", "EMP", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new FactionData("Empire", "EMP", Color.darkRed,1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetEmpire, Random.Range(18, 24) * 100000000L, "Increases unit production");
         planetDemocracy = battleManager.CreateNewFaction(
-            new FactionData("Democracy", "DEM", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new FactionData("Democracy", "DEM", Color.darkBlue, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetDemocracy, Random.Range(22, 36) * 100000000L, "Increases research rate");
         planetOligarchy = battleManager.CreateNewFaction(
-            new FactionData("Oligarchy", "OLG", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new FactionData("Oligarchy", "OLG", Color.orange, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(planetOligarchy, Random.Range(12, 20) * 100000000L, "Increases mining speed");
         minorFactions = battleManager.CreateNewFaction(
-            new FactionData("Minor Factions", "MIN", colorPicker.PickColor(), 1000000, 1000, 0, 0),
+            new FactionData("Minor Factions", "MIN", Color.grey, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
         planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved");
         var planetFactionDistrict = planet.planetMap.districts.First(d => d.GetDistrictValue() >= 3);
@@ -235,8 +235,9 @@ public class Chapter1 : CampaingController {
         planetFactionDistrict.urbanPercent = .4f;
         planetFactionDistrict.agriculturePercent = .2f;
         planetFactionDistrict.industryPercent = .4f;
+        planetFactionDistrict.AddFaction(planet.planetFactions[planetFaction], 1, 1);
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
-            (planet.planetFactions[planetEmpire], .35f),
+            (planet.planetFactions[planetEmpire], .32f),
             (planet.planetFactions[planetDemocracy], .29f),
             (planet.planetFactions[planetOligarchy], .27f),
         }, .1f, false);
@@ -250,7 +251,7 @@ public class Chapter1 : CampaingController {
                 d.agriculturePercent = .6f;
                 d.industryPercent = .1f;
             }
-            d.AddFaction(planet.planetFactions[minorFactions], .7f, 1);
+            d.AddFaction(planet.planetFactions[minorFactions], .6f, 1);
         });
 
         battleManager.GetLocalPlayer().SetLockedUnits(true);

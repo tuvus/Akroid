@@ -189,7 +189,7 @@ public class District {
     }
 
     public long GetPopulationCapacity() {
-        return (long)(area * landPercent * urbanPercent * 50 + area * landPercent * agriculturePercent * .01f);
+        return 100000 * (long)(area * landPercent * urbanPercent * 50 + area * landPercent * agriculturePercent * .01f);
     }
 
     public long GetTotalPopulation() {
