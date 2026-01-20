@@ -240,7 +240,7 @@ public class Chapter1 : CampaingController {
             (planet.planetFactions[planetEmpire], .32f),
             (planet.planetFactions[planetDemocracy], .29f),
             (planet.planetFactions[planetOligarchy], .27f),
-        }, .1f, false);
+        }, .9f, .1f, false);
 
         planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
             d.owner = planet.planetFactions[minorFactions];

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -99,8 +98,8 @@ public class Planet : BattleObject, IPositionConfirmer {
     /// Applies some randomness to the input based on the randomFactor.
     /// Any extra territory will be left as unclaimed.
     /// </summary>
-    public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float randomFactor,
-        bool takeoverTerritories) {
+    public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float populationPercent,
+        float randomFactor, bool takeoverTerritories) {
         float initialSum = factionTerritories.Select(ft => ft.Item2).Sum();
         // Apply randomness on the territories based on randomFactor
         factionTerritories = factionTerritories.Select(ft =>
@@ -140,7 +139,8 @@ public class Planet : BattleObject, IPositionConfirmer {
                 district.agriculturePercent = .5f;
                 district.industryPercent = .15f;
             }
-            district.AddFaction(planetFaction, .7f, 1);
+            district.AddFaction(planetFaction, populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
+                1);
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             factionTerritories.Add((planetFaction, newControl));
@@ -148,7 +148,6 @@ public class Planet : BattleObject, IPositionConfirmer {
             toTake.Remove(district);
         }
     }
-
 
     //
     // public void AddFaction(Faction faction, double highQualityAreaFactor, double mediumQualityAreaFactor,
@@ -186,7 +185,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         var newPlanetFaction = AddFaction(faction, population, special);
         district.owner = newPlanetFaction;
         district.districtFactions.Add(newPlanetFaction,
-            new District.DistrictFaction(newPlanetFaction, population, .03f));
+            new District.DistrictFaction(district, newPlanetFaction, population, .03f));
     }
 
     /// <param name="planetFaction">The resulting bigger planet faction</param>
@@ -222,6 +221,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         SetRotation(rotation + rotationSpeed * deltaTime);
         foreach (KeyValuePair<Faction, PlanetFaction> faction in planetFactions) {
             faction.Value.UpdateFaction(deltaTime);
+            planetMap.districts.ForEach(d => d.UpdateDistrict(deltaTime));
         }
     }
 

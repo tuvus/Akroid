@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using static District.DistrictType;
 using static District.TerrainType;
@@ -9,14 +10,67 @@ using Random = UnityEngine.Random;
 
 public class District {
     public class DistrictFaction {
+        public District district;
         public PlanetFaction planetFaction;
         public Population pop;
         public float control;
+        private double populationGainFraction;
+        private double forceGainFraction;
 
-        public DistrictFaction(PlanetFaction planetFaction, Population pop, float control) {
+        public DistrictFaction(District district, PlanetFaction planetFaction, Population pop, float control) {
+            this.district = district;
             this.planetFaction = planetFaction;
             this.pop = pop;
             this.control = control;
+        }
+
+        public void Update(float deltaTime) {
+            // Increase Population
+            long populationCapacity = district.GetPopulationCapacity(planetFaction) - pop.TotalPopulation();
+            double popCapRatio = (double)pop.TotalPopulation() / populationCapacity;
+            double populationGained =
+                pop.TotalPopulationWithoutMarines() * terrainModifiers[district.terrainType].popGrowth *
+                (1 - math.sqrt(popCapRatio)) * deltaTime * .0001 + populationGainFraction;
+            pop.civilians = math.max(0, pop.civilians + (long)populationGained);
+            populationGainFraction = populationGained - (long)populationGained;
+
+            // Recruit forces
+            long desiredForce = (long)(pop.civilians * planetFaction.desiredForceFraction);
+            if (desiredForce > pop.marines) {
+                long forceDifference = desiredForce - pop.marines;
+                double forceRecruited = math.min(forceDifference, pop.civilians * deltaTime * .0001);
+                pop.marines += (long)forceRecruited;
+                pop.civilians -= (long)forceRecruited;
+                forceGainFraction = forceRecruited - (long)forceRecruited;
+            }
+
+            // Expand control
+            var uncontrolledArea = 1 - district.districtFactions.Select(d => d.Value.control).Sum();
+            if (uncontrolledArea > 0) {
+                var areaToControl = math.min(uncontrolledArea, pop.civilians * deltaTime / district.area);
+                control += areaToControl;
+            }
+        }
+    }
+
+    public class DistrictModifier {
+        public float population;
+        public float popGrowth;
+        public float lightIndustry;
+        public float heavyIndustry;
+        public float research;
+        public float agriculture;
+        public float excavation;
+
+        public DistrictModifier(float population = 1, float popGrowth = 1, float lightIndustry = 1,
+            float heavyIndustry = 1, float research = 1, float agriculture = 1, float excavation = 1) {
+            this.population = population;
+            this.popGrowth = popGrowth;
+            this.lightIndustry = lightIndustry;
+            this.heavyIndustry = heavyIndustry;
+            this.research = research;
+            this.agriculture = agriculture;
+            this.excavation = excavation;
         }
     }
 
@@ -100,6 +154,25 @@ public class District {
         }
     };
 
+    /// <summary>
+    /// Modifications to the districts capacity and growth.
+    /// </summary>
+    public static readonly Dictionary<TerrainType, DistrictModifier> terrainModifiers = new() {
+        { Ocean, new DistrictModifier() },
+        { Lakes, new DistrictModifier(1f, 1.2f, 1.2f, .8f, 1.1f, 1f, .7f) },
+        { Plains, new DistrictModifier(.8f, .8f, 1f, .9f, .8f, 1.2f, .9f) },
+        { Forest, new DistrictModifier(1f, 1.1f, 1.1f, .1f, 1f, .8f, 1f) },
+        { Desert, new DistrictModifier(0.7f, 0.6f, 1f, 1.1f, .8f, .5f, 1.2f) },
+        { Mountains, new DistrictModifier(0.05f, .8f, .2f, 0.4f, 1.3f, .2f, 1.5f) },
+        { Hills, new DistrictModifier(.8f, 1.1f, 1.3f, 1f, 1f, 1f, 1.2f) },
+        { Crater, new DistrictModifier(0.03f, .6f, 1f, 1f, 1.2f, .7f, 1.2f) },
+        { Barren, new DistrictModifier(0.002f, .1f, 1f, 1f, .6f, .2f, .4f) },
+        { Tundra, new DistrictModifier(0.03f, .5f, 1f, .8f, 1, .1f, .3f) },
+        { Arctic, new DistrictModifier(0.0001f, .01f, 1f, .7f, 2f, 0.0001f, .05f) },
+        { Islands, new DistrictModifier(1.2f, 1.5f, 1.3f, .4f, 1.3f, 1.4f) },
+        { Gas, new DistrictModifier(0, 0, 0, 0, 10, 0, 2) },
+    };
+
     // The location of the district in axial hex coordinates
     public Vector2Int location;
     public long area;
@@ -159,10 +232,9 @@ public class District {
     }
 
     public void AddFaction(PlanetFaction planetFaction, float populationPercent, float control) {
-        districtFactions.Add(planetFaction,
-            new DistrictFaction(planetFaction,
-                new Population().SetPlanetPopulation((long)((GetPopulationCapacity() - GetTotalPopulation()) *
-                    populationPercent)), (1 - districtFactions.Values.Select(f => f.control).Sum()) * control));
+        districtFactions.Add(planetFaction, new DistrictFaction(this, planetFaction,
+            new Population().SetPlanetPopulation((long)((GetPopulationCapacity() - GetTotalPopulation()) *
+                populationPercent)), (1 - districtFactions.Values.Select(f => f.control).Sum()) * control));
     }
 
     public int GetDistrictValue() {
@@ -189,7 +261,8 @@ public class District {
     }
 
     public long GetPopulationCapacity() {
-        return (long)(30000 * area * landPercent * urbanPercent * 50 + area * landPercent * agriculturePercent * .01f);
+        return (long)(area * landPercent * terrainModifiers[terrainType].population *
+            (40000 * urbanPercent * 50 + agriculturePercent * .01f));
     }
 
     public long GetPopulationCapacity(PlanetFaction planetFaction) {
@@ -201,5 +274,9 @@ public class District {
 
     public long GetTotalPopulation() {
         return districtFactions.Values.Select(f => f.pop.TotalPopulation()).Sum();
+    }
+
+    public void UpdateDistrict(float deltaTime) {
+        districtFactions.Values.ToList().ForEach(d => d.Update(deltaTime));
     }
 }

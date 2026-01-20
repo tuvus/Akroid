@@ -2,20 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
-using UnityEngine;
 using static Planet;
-using Random = UnityEngine.Random;
 
 public class PlanetFaction {
-    private double forceGainFraction;
     private readonly Planet planet;
-    private double populationGainFraction;
-    private double territoryExpansionProgress;
+    public float desiredForceFraction;
 
     public PlanetFaction(Planet planet, Faction faction, string special) {
         this.planet = planet;
         this.faction = faction;
         this.special = special;
+        desiredForceFraction = PopulationCenter.marinePlanetRatio;
     }
 
     // If faction is null then this PlanetFaction represents unclaimed territory
@@ -26,40 +23,16 @@ public class PlanetFaction {
     public void UpdateFaction(float deltaTime) {
         if (faction == null) return;
 
-        UpdateForce(deltaTime);
-        UpdatePopulation(deltaTime);
-        UpdateExpansion(deltaTime);
+        // UpdateForce(deltaTime);
+        // UpdatePopulation(deltaTime);
+        // UpdateExpansion(deltaTime);
     }
 
 
     private void UpdateForce(float deltaTime) {
-        // long desiredForce = population.civilians / 200;
-        // if (desiredForce > population.marines) {
-        // long forceDifference = desiredForce - population.marines;
-        // int factionsAtWarWith = 1 + planet.planetFactions.ToList().Count(f => faction.IsAtWarWithFaction(f.Key));
-        // double forceRecruited = math.min(forceDifference,
-        // population.civilians * deltaTime / (10 * factionsAtWarWith) + forceGainFraction);
-        // population.marines += (long)forceRecruited;
-        // population.civilians -= (long)forceRecruited;
-        // forceGainFraction = forceRecruited - (long)forceRecruited;
-        // }
     }
 
     private void UpdatePopulation(float deltaTime) {
-        // long populationCapacity = territory.GetTerritoryValue() * populationPerTerritoryValue + 1;
-        // double populationCapacityRatio = 0;
-        // double populationGrowthPercent = 0;
-        // if (populationCapacity >= population.TotalPopulation()) {
-        //     populationCapacityRatio = populationCapacity * 50f / (population.TotalPopulation() + 1);
-        //     populationGrowthPercent = math.min(100, math.pow(populationCapacityRatio, 2) / 200);
-        // } else {
-        //     populationCapacityRatio = -population.TotalPopulation() * 50f / (populationCapacity + 1);
-        //     populationGrowthPercent = math.max(-50, -math.pow(-populationCapacityRatio, 2.2) / 200);
-        // }
-        //
-        // double populationGained = populationGrowthPercent * population.TotalPopulation() * deltaTime / 200000 + populationGainFraction;
-        // population.civilians = math.max(0, population.civilians + (long)populationGained);
-        // populationGainFraction = populationGained - (long)populationGained;
     }
 
 
