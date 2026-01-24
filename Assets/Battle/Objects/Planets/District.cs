@@ -26,8 +26,7 @@ public class District {
 
         public void Update(float deltaTime) {
             // Increase Population
-            long populationCapacity = district.GetPopulationCapacity(planetFaction) - pop.TotalPopulation();
-            double popCapRatio = (double)pop.TotalPopulation() / populationCapacity;
+            double popCapRatio = (double)pop.TotalPopulation() / district.GetPopulationCapacity(planetFaction);
             double populationGained =
                 pop.TotalPopulationWithoutMarines() * terrainModifiers[district.terrainType].popGrowth *
                 (1 - math.sqrt(popCapRatio)) * deltaTime * .0001 + populationGainFraction;
@@ -232,9 +231,10 @@ public class District {
     }
 
     public void AddFaction(PlanetFaction planetFaction, float populationPercent, float control) {
+        control = (1 - districtFactions.Values.Select(f => f.control).Sum()) * control;
         districtFactions.Add(planetFaction, new DistrictFaction(this, planetFaction,
-            new Population().SetPlanetPopulation((long)((GetPopulationCapacity() - GetTotalPopulation()) *
-                populationPercent)), (1 - districtFactions.Values.Select(f => f.control).Sum()) * control));
+            new Population().SetPlanetPopulation((long)(GetPopulationCapacity() * control * populationPercent)),
+            control));
     }
 
     public int GetDistrictValue() {
