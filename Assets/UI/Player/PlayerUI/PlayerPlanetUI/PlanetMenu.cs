@@ -37,6 +37,9 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private List<TerrainImageInput> terrainImageInput;
     private Dictionary<District.TerrainType, Sprite> terrainImages;
 
+    // The offset of the planet map, the district with the location of the offset will be at the center
+    // The other districts will be wrapped around.
+    private Vector2Int offset;
     private List<GameObject> districtUIs;
     public District selectedDistrict { get; private set; }
 
@@ -57,6 +60,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 districtUI.SetActive(false);
             }
         }
+        offset = Vector2Int.zero;
         selectedDistrict = null;
     }
 
@@ -95,7 +99,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             var district = planetMap.districts[i];
             GameObject districtUI = districtUIs[i];
             districtUI.SetActive(true);
-            districtUI.transform.localPosition = PlanetMap.GetPositionOfDistrict(district) * districtScale;
+            districtUI.transform.localPosition = PlanetMap.GetPositionFromLocation(planetMap.WrapLocation(district.location - offset)) * districtScale;
             districtUI.GetComponent<RectTransform>().sizeDelta =
                 new Vector3(districtScale * math.sqrt(3) * 1.01f, districtScale * 2);
             districtUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>().sprite =
@@ -120,6 +124,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             selectedDistrict = null;
         } else {
             selectedDistrict = displayedObject.planet.planetMap.districts[district];
+            offset = selectedDistrict.location;
         }
     }
 

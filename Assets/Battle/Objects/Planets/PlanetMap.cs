@@ -44,21 +44,27 @@ public class PlanetMap {
         GenerateTerrain();
     }
 
-
-    void CreateGridOfSize(int radius) {
+    public static List<Vector2Int> GetGridCoordinatesOfSize(int radius) {
         Vector2Int loc = Vector2Int.zero;
-        districts.Add(new District(loc, planet.districtArea));
-        locToDistrict.Add(loc, districts.Last());
+        List<Vector2Int> coordinates = new List<Vector2Int>();
+        coordinates.Add(loc);
         for (int r = 1; r < radius; r++) {
             loc = cubeDir[4] * r;
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < r; j++) {
-                    districts.Add(new District(loc, planet.districtArea));
-                    locToDistrict.Add(loc, districts.Last());
+                    coordinates.Add(loc);
                     loc += cubeDir[i];
                 }
             }
         }
+        return coordinates;
+    }
+
+    void CreateGridOfSize(int radius) {
+        GetGridCoordinatesOfSize(radius).ForEach(loc => {
+            districts.Add(new District(loc, planet.districtArea));
+            locToDistrict.Add(loc, districts.Last());
+        });
     }
 
     public void GenerateTerrain() {
@@ -112,22 +118,26 @@ public class PlanetMap {
         }
     }
 
-    public static Vector2 GetPositionOfDistrict(District district) {
-        return new Vector2(math.sqrt(3) * district.location.x + (math.sqrt(3) / 2) * district.location.y,
-            (3f / 2) * -district.location.y);
+    public static Vector2 GetPositionFromLocation(Vector2Int location) {
+        return new Vector2(math.sqrt(3) * location.x + (math.sqrt(3) / 2) * location.y,
+            (3f / 2) * -location.y);
     }
 
     public static int GetDistrictCountInRadius(int radius) {
         return 3 * radius * (radius + 1) + 1;
     }
 
-    public District GetDistrict(Vector2Int loc) {
+    public Vector2Int WrapLocation(Vector2Int loc) {
         while (GetDistanceBetweenHexes(loc, Vector2Int.zero) >= radius) {
             var closestCenter = wrapMapCenters.Select(c => (c, GetDistanceBetweenHexes(loc, c)))
                 .Aggregate((a, b) => b.Item2 < a.Item2 ? b : a);
             loc -= closestCenter.c;
         }
-        return locToDistrict[loc];
+        return loc;
+    }
+
+    public District GetDistrict(Vector2Int loc) {
+        return locToDistrict[WrapLocation(loc)];
     }
 
     public static int GetDistanceBetweenHexes(Vector2Int loc1, Vector2Int loc2) {
