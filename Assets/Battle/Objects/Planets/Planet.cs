@@ -76,25 +76,21 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
-    public PlanetFaction AddFaction(Faction faction, Population population, string special) {
-        // territory.highQualityArea =
-        // math.min(territory.highQualityArea, GetUnclaimedFaction().territory.highQualityArea);
-        // territory.mediumQualityArea =
-        // math.min(territory.mediumQualityArea, GetUnclaimedFaction().territory.mediumQualityArea);
-        // territory.lowQualityArea = math.min(territory.lowQualityArea, GetUnclaimedFaction().territory.lowQualityArea);
-        // GetUnclaimedFaction().territory.SubtractFrom(territory);
-        var planetFaction = new PlanetFaction(this, faction, special);
+    public PlanetFaction AddFaction(Faction faction, Population population, string special,
+        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
+        var planetFaction = new PlanetFaction(this, faction, special, combatStrategy);
         planetFactions.Add(faction, planetFaction);
         faction.AddPlanet(this);
         return planetFaction;
     }
 
-    public PlanetFaction AddFaction(Faction faction, long population, string special) {
-        return AddFaction(faction, new Population().SetPlanetPopulation(population), special);
+    public PlanetFaction AddFaction(Faction faction, long population, string special,
+        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
+        return AddFaction(faction, new Population().SetPlanetPopulation(population), special, combatStrategy);
     }
 
     /// <summary>
-    /// Divides the panet's remaining territories to the factions based on the input.
+    /// Divides the planet's remaining territories to the factions based on the input.
     /// Applies some randomness to the input based on the randomFactor.
     /// Any extra territory will be left as unclaimed.
     /// </summary>
@@ -113,12 +109,6 @@ public class Planet : BattleObject, IPositionConfirmer {
             .OrderByDescending(d => d.GetDistrictValue()).ToList();
         int totalDistrictValue = toTake.Sum(d => d.GetDistrictValue());
 
-        float GetValueOfDistrict(District district, PlanetFaction planetFaction) {
-            return district.GetDistrictValue() +
-                planetMap.GetNeighboringDistricts(district).Count(d => d.owner == planetFaction) * 1.2f +
-                -planetMap.GetNeighboringDistricts(district).Count(d => d.owner != planetFaction) * .3f;
-        }
-
         while (toTake.Count > 0 && factionTerritories.Count > 0) {
             factionTerritories = factionTerritories.OrderByDescending(ft => ft.Item2).ToList();
             PlanetFaction planetFaction = factionTerritories.First().Item1;
@@ -129,7 +119,7 @@ public class Planet : BattleObject, IPositionConfirmer {
                 continue;
             }
             District district = possibleDistricts.Aggregate((max, current) =>
-                GetValueOfDistrict(current, planetFaction) > GetValueOfDistrict(max, planetFaction) ? current : max
+                planetFaction.GetValueOfDistrict(current) > planetFaction.GetValueOfDistrict(max) ? current : max
             );
             district.owner = planetFaction;
             district.SetRandomDistrictType(false);
@@ -140,7 +130,7 @@ public class Planet : BattleObject, IPositionConfirmer {
                 district.industryPercent = .15f;
             }
             district.AddFaction(planetFaction, populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
-                1);
+                .5f);
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             factionTerritories.Add((planetFaction, newControl));
@@ -246,64 +236,11 @@ public class Planet : BattleObject, IPositionConfirmer {
         return planetScriptableObject.prefab;
     }
 
-    public class PlanetTerritory {
-        public long highQualityArea;
-        public long lowQualityArea;
-        public long mediumQualityArea;
-
-        public PlanetTerritory() {
-            highQualityArea = 0;
-            mediumQualityArea = 0;
-            lowQualityArea = 0;
-        }
-
-        public PlanetTerritory(long highQualityArea = 0, long mediumQualityArea = 0, long lowQualityArea = 0) {
-            this.highQualityArea = highQualityArea;
-            this.mediumQualityArea = mediumQualityArea;
-            this.lowQualityArea = lowQualityArea;
-        }
-
-        public long GetTotalAreas() {
-            return highQualityArea + mediumQualityArea + lowQualityArea;
-        }
-
-        public long GetTerritoryValue() {
-            return highQualityArea * 4 + mediumQualityArea * 2 + lowQualityArea;
-        }
-
-        public void AddFrom(PlanetTerritory territory) {
-            highQualityArea += territory.highQualityArea;
-            mediumQualityArea += territory.mediumQualityArea;
-            lowQualityArea += territory.lowQualityArea;
-        }
-
-        public void SubtractFrom(PlanetTerritory territory) {
-            highQualityArea -= territory.highQualityArea;
-            mediumQualityArea -= territory.mediumQualityArea;
-            lowQualityArea -= territory.lowQualityArea;
-        }
-
-        public void AddRandomTerritory(long value, ref Random random) {
-            highQualityArea = (long)(random.NextFloat(.2f, .5f) * value / 4.0);
-            value -= highQualityArea * 4;
-            mediumQualityArea = (long)(random.NextFloat(.4f, .7f) * value / 2.0);
-            value -= mediumQualityArea * 2;
-            lowQualityArea = value;
-        }
-    }
-
     public struct PlanetData {
         public BattleObjectData battleObjectData;
-        public float highQualityLandFactor;
-        public float mediumQualityLandFactor;
-        public float lowQualityLandFactor;
 
-        public PlanetData(BattleObjectData battleObjectData, float highQualityLandFactor, float mediumQualityLandFactor,
-            float lowQualityLandFactor) {
+        public PlanetData(BattleObjectData battleObjectData) {
             this.battleObjectData = battleObjectData;
-            this.highQualityLandFactor = highQualityLandFactor;
-            this.mediumQualityLandFactor = mediumQualityLandFactor;
-            this.lowQualityLandFactor = lowQualityLandFactor;
         }
     }
 }

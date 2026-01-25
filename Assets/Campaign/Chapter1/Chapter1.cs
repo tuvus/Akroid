@@ -72,23 +72,20 @@ public class Chapter1 : CampaingController {
         }
 
         planetFaction = battleManager.CreateNewFaction(
-            new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.TakeColor(Color.cyan), 100000, 0, 0,
-                0),
+            new FactionData(typeof(PlanetFactionAI), "World Space Union", "WSU", colorPicker.TakeColor(Color.cyan),
+                100000, 0, 0, 0),
             new PositionGiver(playerFaction.GetPosition(), 5000, 7000, 500, 400, 20), 100);
         planet = battleManager.CreateNewPlanet(new Planet.PlanetData(
                 new BattleObject.BattleObjectData("Home", planetFaction.GetPosition(), Random.Range(0, 360),
-                    new Vector2(14, 14),
-                    planetFaction), Random.Range(0.12f, 0.25f), Random.Range(0.18f, 0.25f), Random.Range(0.1f, 0.2f)),
+                    new Vector2(14, 14), planetFaction)),
             Resources.Load<PlanetScriptableObject>("EarthPlanet"));
-        moon = battleManager.CreateNewMoon(new Planet.PlanetData(
-                new BattleObject.BattleObjectData("Moon",
-                    new PositionGiver(planetFaction.GetPosition(), 500, 500000, 100, 1000, 5),
-                    Random.Range(0, 360), new Vector2(8, 8), planetFaction), 0, 0.02f, 0.98f),
+        moon = battleManager.CreateNewMoon(new Planet.PlanetData(new BattleObject.BattleObjectData("Moon",
+                new PositionGiver(planetFaction.GetPosition(), 500, 500000, 100, 1000, 5),
+                Random.Range(0, 360), new Vector2(8, 8), planetFaction)),
             Resources.Load<PlanetScriptableObject>("Moon"));
-        gasPlanet = battleManager.CreateNewPlanet(new Planet.PlanetData(
-                new BattleObject.BattleObjectData("Jupiter",
-                    new PositionGiver(Vector2.zero, 20000, 100000, 100, 1000, 4),
-                    Random.Range(0, 360), new Vector2(18, 18), planetFaction), 0, 0, 0),
+        gasPlanet = battleManager.CreateNewPlanet(new Planet.PlanetData(new BattleObject.BattleObjectData("Jupiter",
+                new PositionGiver(Vector2.zero, 20000, 100000, 100, 1000, 4),
+                Random.Range(0, 360), new Vector2(18, 18), planetFaction)),
             Resources.Load<PlanetScriptableObject>("GasPlanet"));
 
         MiningStationScriptableObject miningStationScriptableObject =
@@ -212,11 +209,13 @@ public class Chapter1 : CampaingController {
             new FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0),
             new PositionGiver(planet.position), 100);
 
-        planet.AddFaction(planetFaction, Random.Range(12, 35) * 1000000L, "Increases space production");
+        planet.AddFaction(planetFaction, Random.Range(12, 35) * 1000000L, "Increases space production",
+            PlanetFaction.CombatStrategy.Cautious);
         planetEmpire = battleManager.CreateNewFaction(
-            new FactionData("Empire", "EMP", Color.darkRed,1000000, 1000, 0, 0),
+            new FactionData("Empire", "EMP", Color.darkRed, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetEmpire, Random.Range(18, 24) * 100000000L, "Increases unit production");
+        planet.AddFaction(planetEmpire, Random.Range(18, 24) * 100000000L, "Increases unit production",
+            PlanetFaction.CombatStrategy.Risky);
         planetDemocracy = battleManager.CreateNewFaction(
             new FactionData("Democracy", "DEM", Color.darkBlue, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
@@ -228,7 +227,8 @@ public class Chapter1 : CampaingController {
         minorFactions = battleManager.CreateNewFaction(
             new FactionData("Minor Factions", "MIN", Color.grey, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved");
+        planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved",
+            PlanetFaction.CombatStrategy.Cautious);
         var planetFactionDistrict = planet.planetMap.districts.First(d => d.GetDistrictValue() >= 3);
         planetFactionDistrict.owner = planet.planetFactions[planetFaction];
         planetFactionDistrict.districtType = District.DistrictType.Urban;
@@ -238,20 +238,29 @@ public class Chapter1 : CampaingController {
         planetFactionDistrict.AddFaction(planet.planetFactions[planetFaction], 1, 1);
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
             (planet.planetFactions[planetEmpire], .32f),
-            (planet.planetFactions[planetDemocracy], .29f),
-            (planet.planetFactions[planetOligarchy], .27f),
+            // (planet.planetFactions[planetDemocracy], .29f),
+            // (planet.planetFactions[planetOligarchy], .27f),
         }, .9f, .1f, false);
 
-        planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
-            d.owner = planet.planetFactions[minorFactions];
-            d.SetRandomDistrictType(false);
-            if (d.districtType != District.DistrictType.Empty &&
-                d.districtType != District.DistrictType.Wildlife) {
-                d.urbanPercent = .1f;
-                d.agriculturePercent = .6f;
-                d.industryPercent = .1f;
+        // planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
+        //     d.owner = planet.planetFactions[minorFactions];
+        //     d.SetRandomDistrictType(false);
+        //     if (d.districtType != District.DistrictType.Empty &&
+        //         d.districtType != District.DistrictType.Wildlife) {
+        //         d.urbanPercent = .1f;
+        //         d.agriculturePercent = .6f;
+        //         d.industryPercent = .1f;
+        //     }
+        //     d.AddFaction(planet.planetFactions[minorFactions], .6f, 1);
+        // });
+        planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(district => {
+            district.SetRandomDistrictType(false);
+            if (district.districtType != District.DistrictType.Empty &&
+                district.districtType != District.DistrictType.Wildlife) {
+                district.urbanPercent = .2f;
+                district.agriculturePercent = .5f;
+                district.industryPercent = .15f;
             }
-            d.AddFaction(planet.planetFactions[minorFactions], .6f, 1);
         });
 
         battleManager.GetLocalPlayer().SetLockedUnits(true);
@@ -1229,6 +1238,8 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetOligarchy.name} has developed a new war robot technology, it will probably tip the war in their favor.");
         planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(100000));
+        planetEscalationChain.AddAction(() =>
+            planet.planetFactions[planetOligarchy].combatStrategy = PlanetFaction.CombatStrategy.Risky);
         planetEscalationChain.AddAction(() => {
             robotFaction = battleManager.CreateNewFaction(
                 new FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(),

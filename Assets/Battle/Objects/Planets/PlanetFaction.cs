@@ -8,35 +8,50 @@ public class PlanetFaction {
     private readonly Planet planet;
     public float desiredForceFraction;
 
-    public PlanetFaction(Planet planet, Faction faction, string special) {
+    public PlanetFaction(Planet planet, Faction faction, string special, CombatStrategy combatStrategy) {
         this.planet = planet;
         this.faction = faction;
         this.special = special;
+        this.combatStrategy = combatStrategy;
         desiredForceFraction = PopulationCenter.marinePlanetRatio;
     }
 
     // If faction is null then this PlanetFaction represents unclaimed territory
     public Faction faction { get; }
     public string special { get; private set; }
+    public CombatStrategy combatStrategy;
 
+    public enum CombatStrategy {
+        AllOut,
+        Risky,
+        Balanced,
+        Cautious,
+    }
 
     public void UpdateFaction(float deltaTime) {
         if (faction == null) return;
-
-        // UpdateForce(deltaTime);
-        // UpdatePopulation(deltaTime);
-        // UpdateExpansion(deltaTime);
+        UpdateExpansion(deltaTime);
     }
-
-
-    private void UpdateForce(float deltaTime) {
-    }
-
-    private void UpdatePopulation(float deltaTime) {
-    }
-
 
     private void UpdateExpansion(float deltaTime) {
+        var controlledDistrict = planet.planetMap.districts.Where(d => d.owner == this);
+        var borderDistricts = controlledDistrict
+            .Where(cd => planet.planetMap.GetNeighboringDistricts(cd).Any(nd => nd.owner != this))
+            .ToHashSet();
+        if (faction.enemyFactions.Any(f => planet.planetFactions.ContainsKey(f))) {
+            // We are at war with another faction on the planet
+        }
+
+        foreach (District borderDistrict in borderDistricts) {
+            var districtFaction = borderDistrict.districtFactions[this];
+            if (districtFaction.districtAction != District.DistrictFaction.DistrictAction.None) continue;
+            var expandToList = planet.planetMap.GetNeighboringDistricts(borderDistrict)
+                .Where(nd => nd.owner != this && nd.GetTotalControl() < 1)
+                .Select(nd => (nd, GetValueOfDistrict(nd))).ToList()
+                .OrderByDescending(d => d.Item2);
+            if (!expandToList.Any()) continue;
+            districtFaction.SetExpandTarget(expandToList.First().nd, 0.1f);
+        }
         // if (planet.GetUnclaimedFaction().territory.GetTerritoryValue() > 0) {
         //     territoryExpansionProgress += population.marines * deltaTime / 500;
         //     if (territoryExpansionProgress >= 4) {
@@ -138,42 +153,41 @@ public class PlanetFaction {
     ///     Calculates how much territory this amount of force can reasonably attack.
     ///     High quality territory is prefered over lower quality territory.
     /// </summary>
-    private PlanetTerritory CreateWarZone(PlanetFaction defender, long attackingForce) {
-        // long territoryValueToAttack = math.max(1, attackingForce / 800);
-        // // The attacker can choose to attack areas that are higher quality
-        // long highQualityTerritory = math.min((long)((double)Random.Range(0.3f, 0.5f) * territoryValueToAttack / 4),
-        //     defender.territory.highQualityArea);
-        // territoryValueToAttack -= highQualityTerritory * 2;
-        // long mediumQualityTerritory = math.min((long)((double)Random.Range(0.4f, 0.8f) * territoryValueToAttack / 2),
-        //     defender.territory.mediumQualityArea);
-        // territoryValueToAttack -= mediumQualityTerritory;
-        // long lowQualityTerritory = math.min(territoryValueToAttack, defender.territory.lowQualityArea);
-        // return new PlanetTerritory(highQualityTerritory, mediumQualityTerritory, lowQualityTerritory);
-        return new PlanetTerritory();
-    }
+    // private PlanetTerritory CreateWarZone(PlanetFaction defender, long attackingForce) {
+    // long territoryValueToAttack = math.max(1, attackingForce / 800);
+    // // The attacker can choose to attack areas that are higher quality
+    // long highQualityTerritory = math.min((long)((double)Random.Range(0.3f, 0.5f) * territoryValueToAttack / 4),
+    //     defender.territory.highQualityArea);
+    // territoryValueToAttack -= highQualityTerritory * 2;
+    // long mediumQualityTerritory = math.min((long)((double)Random.Range(0.4f, 0.8f) * territoryValueToAttack / 2),
+    //     defender.territory.mediumQualityArea);
+    // territoryValueToAttack -= mediumQualityTerritory;
+    // long lowQualityTerritory = math.min(territoryValueToAttack, defender.territory.lowQualityArea);
+    // return new PlanetTerritory(highQualityTerritory, mediumQualityTerritory, lowQualityTerritory);
+    // return new PlanetTerritory();
+    // }
 
-    private PlanetTerritory CalculateTerritoryTaken(PlanetFaction defender, PlanetTerritory warZone,
-        long initialDefendingForce,
-        long leftoverForce, double attackerDefenderRatio) {
-        if (attackerDefenderRatio <= 1.5f)
-            return new PlanetTerritory();
+    // private PlanetTerritory CalculateTerritoryTaken(PlanetFaction defender, PlanetTerritory warZone,
+    // long initialDefendingForce,
+    // long leftoverForce, double attackerDefenderRatio) {
+    // if (attackerDefenderRatio <= 1.5f)
+    // return new PlanetTerritory();
 
-        // Calculate the value of territory that the defenders are guaranteed to keep
-        long territoryValueDefended = warZone.GetTerritoryValue() * leftoverForce / initialDefendingForce;
+    // Calculate the value of territory that the defenders are guaranteed to keep
+    // long territoryValueDefended = warZone.GetTerritoryValue() * leftoverForce / initialDefendingForce;
 
-        // The attacker will try to take the remaining contested territory based on the force ratio
-        long territoryValueContested = warZone.GetTerritoryValue() - territoryValueDefended;
-        long territoryGainedValue = (long)(territoryValueContested * math.min(1, attackerDefenderRatio - 1.5));
+    // The attacker will try to take the remaining contested territory based on the force ratio
+    // long territoryValueContested = warZone.GetTerritoryValue() - territoryValueDefended;
+    // long territoryGainedValue = (long)(territoryValueContested * math.min(1, attackerDefenderRatio - 1.5));
 
-        long highQualityTerritoryGained = math.min(warZone.highQualityArea, territoryGainedValue / 6);
-        territoryGainedValue -= highQualityTerritoryGained * 2;
-        long mediumQualityTerritoryGained = math.min(warZone.mediumQualityArea, territoryGainedValue / 2);
-        territoryGainedValue -= mediumQualityTerritoryGained;
-        long lowQualityTerritoryGained = math.min(warZone.lowQualityArea, territoryGainedValue * 2);
+    // long highQualityTerritoryGained = math.min(warZone.highQualityArea, territoryGainedValue / 6);
+    // territoryGainedValue -= highQualityTerritoryGained * 2;
+    // long mediumQualityTerritoryGained = math.min(warZone.mediumQualityArea, territoryGainedValue / 2);
+    // territoryGainedValue -= mediumQualityTerritoryGained;
+    // long lowQualityTerritoryGained = math.min(warZone.lowQualityArea, territoryGainedValue * 2);
 
-        return new PlanetTerritory(highQualityTerritoryGained, mediumQualityTerritoryGained, lowQualityTerritoryGained);
-    }
-
+    // return new PlanetTerritory(highQualityTerritoryGained, mediumQualityTerritoryGained, lowQualityTerritoryGained);
+    // }
     public void AddForce(long force) {
         long totalForce = force;
         var totalNonMarinePop = GetTotalPopulation().TotalPopulationWithoutMarines();
@@ -236,5 +250,11 @@ public class PlanetFaction {
     public List<(District, District.DistrictFaction)> GetDistrictsPresent() {
         return planet.planetMap.districts.Where(d => d.districtFactions.ContainsKey(this))
             .Select(d => (d, d.districtFactions[this])).ToList();
+    }
+
+    public float GetValueOfDistrict(District district) {
+        return district.GetDistrictValue() +
+            planet.planetMap.GetNeighboringDistricts(district).Count(d => d.owner == this) * 1.2f +
+            -planet.planetMap.GetNeighboringDistricts(district).Count(d => d.owner != this) * .3f;
     }
 }

@@ -17,19 +17,42 @@ public class District {
         private double populationGainFraction;
         private double forceGainFraction;
 
+        public DistrictAction districtAction;
+        public District targetDistrict;
+        public float targetAmount;
+
+        public enum DistrictAction {
+            None,
+            Expand,
+            Attack,
+            Reinforce,
+            Retreat
+        }
+
         public DistrictFaction(District district, PlanetFaction planetFaction, Population pop, float control) {
             this.district = district;
             this.planetFaction = planetFaction;
             this.pop = pop;
             this.control = control;
+            districtAction = DistrictAction.None;
+            targetDistrict = null;
+            targetAmount = 0;
         }
 
         public void Update(float deltaTime) {
+            // Expand control
+            var uncontrolledArea = 1 - district.GetTotalControl();
+            if (uncontrolledArea > 0) {
+                //TODO: Improve this function to slow the expansion of medium population districts
+                var areaToControl = math.min(uncontrolledArea, pop.civilians * .0001f * deltaTime / district.area);
+                control += areaToControl;
+            }
+
             // Increase Population
             double popCapRatio = (double)pop.TotalPopulation() / district.GetPopulationCapacity(planetFaction);
             double populationGained =
                 pop.TotalPopulationWithoutMarines() * terrainModifiers[district.terrainType].popGrowth *
-                (1 - math.sqrt(popCapRatio)) * deltaTime * .0001 + populationGainFraction;
+                (1 - popCapRatio) * deltaTime * .0001 + populationGainFraction;
             pop.civilians = math.max(0, pop.civilians + (long)populationGained);
             populationGainFraction = populationGained - (long)populationGained;
 
@@ -43,12 +66,43 @@ public class District {
                 forceGainFraction = forceRecruited - (long)forceRecruited;
             }
 
-            // Expand control
-            var uncontrolledArea = 1 - district.districtFactions.Select(d => d.Value.control).Sum();
-            if (uncontrolledArea > 0) {
-                var areaToControl = math.min(uncontrolledArea, pop.civilians * deltaTime / district.area);
-                control += areaToControl;
+            if (districtAction == DistrictAction.Expand) {
+                if (targetDistrict.GetTotalControl() >= 1 &&
+                    !targetDistrict.districtFactions.ContainsKey(planetFaction)) {
+                    districtAction = DistrictAction.None;
+                } else {
+                    if (!targetDistrict.districtFactions.ContainsKey(planetFaction)) {
+                        targetDistrict.AddFaction(planetFaction, 0, 0);
+                    }
+                    if (targetDistrict.districtFactions[planetFaction].pop.civilians <
+                        targetDistrict.GetPopulationCapacity() * (1 - targetDistrict.GetTotalControl() +
+                            targetDistrict.districtFactions[planetFaction].control) * targetAmount) {
+                        var targetDistrictFaction = targetDistrict.districtFactions[planetFaction];
+                        var popToMove = (long)(pop.civilians * deltaTime * targetAmount * .001f);
+                        targetDistrictFaction.pop.civilians += popToMove;
+                        pop.civilians -= popToMove;
+                        var militaryToMove = (long)(pop.marines * deltaTime * targetAmount * .0001f);
+                        targetDistrictFaction.pop.marines += militaryToMove;
+                        pop.marines -= militaryToMove;
+                    } else if (targetDistrict.GetTotalControl() >= 1) {
+                        districtAction = DistrictAction.None;
+                    }
+
+                    if (targetDistrict.GetTotalControl() < 1) {
+                        targetDistrict.districtFactions[planetFaction].AddControl(0.0001f * deltaTime);
+                    }
+                }
             }
+        }
+
+        public void AddControl(float controlToAdd) {
+            control += math.min(controlToAdd, 1 - district.GetTotalControl());
+        }
+
+        public void SetExpandTarget(District targetDistrict, float popToMigrate) {
+            districtAction = DistrictAction.Expand;
+            this.targetDistrict = targetDistrict;
+            targetAmount = popToMigrate;
         }
     }
 
@@ -231,7 +285,7 @@ public class District {
     }
 
     public void AddFaction(PlanetFaction planetFaction, float populationPercent, float control) {
-        control = (1 - districtFactions.Values.Select(f => f.control).Sum()) * control;
+        control = (1 - GetTotalControl()) * control;
         districtFactions.Add(planetFaction, new DistrictFaction(this, planetFaction,
             new Population().SetPlanetPopulation((long)(GetPopulationCapacity() * control * populationPercent)),
             control));
@@ -278,5 +332,16 @@ public class District {
 
     public void UpdateDistrict(float deltaTime) {
         districtFactions.Values.ToList().ForEach(d => d.Update(deltaTime));
+        if (owner == null || districtFactions[owner].control < .34f) {
+            // If the current owner has dropped below the threshold or there isn't an owner
+            // then check if the control should be given to the biggest contender
+            var newOwner = districtFactions.FirstOrDefault(df => df.Value.control >= .5f);
+            if (newOwner.Key != null)
+                owner = newOwner.Key;
+        }
+    }
+
+    public float GetTotalControl() {
+        return districtFactions.Select(df => df.Value.control).Sum();
     }
 }
