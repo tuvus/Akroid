@@ -81,100 +81,13 @@ public class Planet : BattleObject, IPositionConfirmer {
         return true;
     }
 
-    /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
-    public PlanetFaction AddFaction(Faction faction, Population population, string special,
-        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
-        var planetFaction = new PlanetFaction(this, faction, special, combatStrategy);
-        planetFactions.Add(faction, planetFaction);
-        faction.AddPlanet(this);
-        return planetFaction;
-    }
-
-    public PlanetFaction AddFaction(Faction faction, long population, string special,
-        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
-        return AddFaction(faction, new Population().SetPlanetPopulation(population), special, combatStrategy);
-    }
-
-    /// <summary>
-    /// Divides the planet's remaining territories to the factions based on the input.
-    /// Applies some randomness to the input based on the randomFactor.
-    /// Any extra territory will be left as unclaimed.
-    /// </summary>
-    public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float populationPercent,
-        float randomFactor, bool takeoverTerritories) {
-        float initialSum = factionTerritories.Select(ft => ft.Item2).Sum();
-        // Apply randomness on the territories based on randomFactor
-        factionTerritories = factionTerritories.Select(ft =>
-            (ft.Item1, ft.Item2 * random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
-        // Now we need to normalize the percentage of territories of each planet faction
-        float newSum = factionTerritories.Sum(ft => ft.Item2);
-        factionTerritories = factionTerritories.Select(ft =>
-            (ft.Item1, ft.Item2 / (1 + initialSum - newSum))).ToList();
-
-        List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
-            .OrderByDescending(d => d.GetDistrictValue()).ToList();
-        int totalDistrictValue = toTake.Sum(d => d.GetDistrictValue());
-
-        while (toTake.Count > 0 && factionTerritories.Count > 0) {
-            factionTerritories = factionTerritories.OrderByDescending(ft => ft.Item2).ToList();
-            PlanetFaction planetFaction = factionTerritories.First().Item1;
-            List<District> possibleDistricts = toTake.Where(d =>
-                factionTerritories.First().Item2 - d.GetDistrictValue() / (float)totalDistrictValue > 0).ToList();
-            if (possibleDistricts.Count == 0) {
-                factionTerritories.RemoveAt(0);
-                continue;
-            }
-            District district = possibleDistricts.Aggregate((max, current) =>
-                planetFaction.GetValueOfDistrict(current) > planetFaction.GetValueOfDistrict(max) ? current : max
-            );
-            district.owner = planetFaction;
-            district.SetRandomDistrictType(false);
-            district.AddFaction(planetFaction, populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
-                .5f);
-            float newControl =
-                factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
-            factionTerritories.Add((planetFaction, newControl));
-            factionTerritories.RemoveAt(0);
-            toTake.Remove(district);
-        }
-    }
-
-    public void AddColony(Faction faction, Population population, string special) {
-        var district = planetMap.districts.Where(d => d.owner == null).Aggregate((mostValuable, next) => {
-            return next.GetDistrictValue() > mostValuable.GetDistrictValue() ? next : mostValuable;
-        });
-        var newPlanetFaction = AddFaction(faction, population, special);
-        district.owner = newPlanetFaction;
-        district.districtFactions.Add(newPlanetFaction,
-            new DistrictFaction(district, newPlanetFaction, population, .03f));
-    }
-
-    /// <param name="planetFaction">The resulting bigger planet faction</param>
-    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
-    public void MergePlanetFactions(PlanetFaction planetFaction, PlanetFaction toMerge) {
-        foreach (District district in planetMap.districts) {
-            if (!district.districtFactions.ContainsKey(toMerge)) continue;
-            if (!district.districtFactions.ContainsKey(planetFaction)) {
-                district.districtFactions.Add(planetFaction, district.districtFactions[toMerge]);
-                district.districtFactions[planetFaction].planetFaction = planetFaction;
-            } else {
-                district.districtFactions[planetFaction].pop.AddPopulation(district.districtFactions[toMerge].pop);
-                district.districtFactions[planetFaction].control += district.districtFactions[toMerge].control;
-            }
-            district.districtFactions.Remove(toMerge);
-            if (district.owner == toMerge) district.owner = planetFaction;
-        }
-        planetFactions.Remove(toMerge.faction);
-    }
-
-    /// <param name="planetFaction">The resulting bigger planet faction</param>
-    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
-    public void MergePlanetFactions(Faction planetFaction, Faction toMerge) {
-        MergePlanetFactions(planetFactions[planetFaction], planetFactions[toMerge]);
-    }
-    public void RemoveFaction(Faction faction) {
-        planetFactions.Remove(faction);
-        faction.RemovePlanet(this);
+    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
+        if (positionGiver.isExactPosition)
+            return positionGiver.position;
+        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
+        if (targetPosition.HasValue)
+            return targetPosition.Value;
+        return positionGiver.position;
     }
 
     public void UpdatePlanet(float deltaTime) {
@@ -308,13 +221,100 @@ public class Planet : BattleObject, IPositionConfirmer {
                 df.pop.civilians -= attackerCiviliansKilled * df.pop.civilians / totalAttackerCivilians);
     }
 
-    protected override Vector2 GetSetupPosition(BattleManager.PositionGiver positionGiver) {
-        if (positionGiver.isExactPosition)
-            return positionGiver.position;
-        Vector2? targetPosition = battleManager.FindFreeLocationIncrement(positionGiver, this);
-        if (targetPosition.HasValue)
-            return targetPosition.Value;
-        return positionGiver.position;
+    /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
+    public PlanetFaction AddFaction(Faction faction, Population population, string special,
+        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
+        var planetFaction = new PlanetFaction(this, faction, special, combatStrategy);
+        planetFactions.Add(faction, planetFaction);
+        faction.AddPlanet(this);
+        return planetFaction;
+    }
+
+    public PlanetFaction AddFaction(Faction faction, long population, string special,
+        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
+        return AddFaction(faction, new Population().SetPlanetPopulation(population), special, combatStrategy);
+    }
+
+    /// <summary>
+    /// Divides the planet's remaining territories to the factions based on the input.
+    /// Applies some randomness to the input based on the randomFactor.
+    /// Any extra territory will be left as unclaimed.
+    /// </summary>
+    public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float populationPercent,
+        float randomFactor, bool takeoverTerritories) {
+        float initialSum = factionTerritories.Select(ft => ft.Item2).Sum();
+        // Apply randomness on the territories based on randomFactor
+        factionTerritories = factionTerritories.Select(ft =>
+            (ft.Item1, ft.Item2 * random.NextFloat(1 - randomFactor, 1 + randomFactor))).ToList();
+        // Now we need to normalize the percentage of territories of each planet faction
+        float newSum = factionTerritories.Sum(ft => ft.Item2);
+        factionTerritories = factionTerritories.Select(ft =>
+            (ft.Item1, ft.Item2 / (1 + initialSum - newSum))).ToList();
+
+        List<District> toTake = planetMap.districts.Where(d => d.owner == null || takeoverTerritories)
+            .OrderByDescending(d => d.GetDistrictValue()).ToList();
+        int totalDistrictValue = toTake.Sum(d => d.GetDistrictValue());
+
+        while (toTake.Count > 0 && factionTerritories.Count > 0) {
+            factionTerritories = factionTerritories.OrderByDescending(ft => ft.Item2).ToList();
+            PlanetFaction planetFaction = factionTerritories.First().Item1;
+            List<District> possibleDistricts = toTake.Where(d =>
+                factionTerritories.First().Item2 - d.GetDistrictValue() / (float)totalDistrictValue > 0).ToList();
+            if (possibleDistricts.Count == 0) {
+                factionTerritories.RemoveAt(0);
+                continue;
+            }
+            District district = possibleDistricts.Aggregate((max, current) =>
+                planetFaction.GetValueOfDistrict(current) > planetFaction.GetValueOfDistrict(max) ? current : max
+            );
+            district.owner = planetFaction;
+            district.SetRandomDistrictType(false);
+            district.AddFaction(planetFaction, populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
+                .5f);
+            float newControl =
+                factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
+            factionTerritories.Add((planetFaction, newControl));
+            factionTerritories.RemoveAt(0);
+            toTake.Remove(district);
+        }
+    }
+
+    public void AddColony(Faction faction, Population population, string special) {
+        var district = planetMap.districts.Where(d => d.owner == null).Aggregate((mostValuable, next) => {
+            return next.GetDistrictValue() > mostValuable.GetDistrictValue() ? next : mostValuable;
+        });
+        var newPlanetFaction = AddFaction(faction, population, special);
+        district.owner = newPlanetFaction;
+        district.districtFactions.Add(newPlanetFaction,
+            new DistrictFaction(district, newPlanetFaction, population, .03f));
+    }
+
+    /// <param name="planetFaction">The resulting bigger planet faction</param>
+    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
+    public void MergePlanetFactions(PlanetFaction planetFaction, PlanetFaction toMerge) {
+        foreach (District district in planetMap.districts) {
+            if (!district.districtFactions.ContainsKey(toMerge)) continue;
+            if (!district.districtFactions.ContainsKey(planetFaction)) {
+                district.districtFactions.Add(planetFaction, district.districtFactions[toMerge]);
+                district.districtFactions[planetFaction].planetFaction = planetFaction;
+            } else {
+                district.districtFactions[planetFaction].pop.AddPopulation(district.districtFactions[toMerge].pop);
+                district.districtFactions[planetFaction].control += district.districtFactions[toMerge].control;
+            }
+            district.districtFactions.Remove(toMerge);
+            if (district.owner == toMerge) district.owner = planetFaction;
+        }
+        planetFactions.Remove(toMerge.faction);
+    }
+
+    /// <param name="planetFaction">The resulting bigger planet faction</param>
+    /// <param name="toMerge">The planet faction to merge into the other planet faction</param>
+    public void MergePlanetFactions(Faction planetFaction, Faction toMerge) {
+        MergePlanetFactions(planetFactions[planetFaction], planetFactions[toMerge]);
+    }
+    public void RemoveFaction(Faction faction) {
+        planetFactions.Remove(faction);
+        faction.RemovePlanet(this);
     }
 
     public long GetPopulation() {
