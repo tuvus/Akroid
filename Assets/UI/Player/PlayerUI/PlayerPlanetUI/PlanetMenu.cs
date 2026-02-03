@@ -135,7 +135,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             planetFactionName.text = "Faction" + "Unowned";
         }
 
-        planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedObject.planet.GetPopulation());
+        planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedObject.planet.GetPopulationWithoutMarines());
         planetAreas.text = "Districts: " + NumFormatter.ConvertNumber(displayedObject.planet.totalArea);
     }
 
@@ -195,7 +195,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     private void RefreshLeftPanelForDistrict() {
         int i = 0;
-        foreach ((PlanetFaction planetFaction, District.DistrictFaction districtFaction) in selectedDistrict
+        foreach ((PlanetFaction planetFaction, DistrictFaction districtFaction) in selectedDistrict
             .districtFactions) {
             if (planetFactionsList.childCount <= i) {
                 Instantiate(planetFactionButton, planetFactionsList);

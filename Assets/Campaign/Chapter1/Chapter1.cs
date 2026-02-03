@@ -237,10 +237,11 @@ public class Chapter1 : CampaingController {
         planetFactionDistrict.industryPercent = .4f;
         planetFactionDistrict.AddFaction(planet.planetFactions[planetFaction], 1, 1);
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
-            (planet.planetFactions[planetEmpire], .32f),
-            // (planet.planetFactions[planetDemocracy], .29f),
+            (planet.planetFactions[planetEmpire], .5f),//.32f),
+            (planet.planetFactions[planetDemocracy], .5f),//.29f),
             // (planet.planetFactions[planetOligarchy], .27f),
         }, .9f, .1f, false);
+        planetEmpire.StartWar(planetEmpire);
 
         // planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
         //     d.owner = planet.planetFactions[minorFactions];
@@ -255,12 +256,6 @@ public class Chapter1 : CampaingController {
         // });
         planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(district => {
             district.SetRandomDistrictType(false);
-            if (district.districtType != District.DistrictType.Empty &&
-                district.districtType != District.DistrictType.Wildlife) {
-                district.urbanPercent = .2f;
-                district.agriculturePercent = .5f;
-                district.industryPercent = .15f;
-            }
         });
 
         battleManager.GetLocalPlayer().SetLockedUnits(true);

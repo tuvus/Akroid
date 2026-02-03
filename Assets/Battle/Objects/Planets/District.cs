@@ -9,103 +9,6 @@ using Random = UnityEngine.Random;
 
 
 public class District {
-    public class DistrictFaction {
-        public District district;
-        public PlanetFaction planetFaction;
-        public Population pop;
-        public float control;
-        private double populationGainFraction;
-        private double forceGainFraction;
-
-        public DistrictAction districtAction;
-        public District targetDistrict;
-        public float targetAmount;
-
-        public enum DistrictAction {
-            None,
-            Expand,
-            Attack,
-            Reinforce,
-            Retreat
-        }
-
-        public DistrictFaction(District district, PlanetFaction planetFaction, Population pop, float control) {
-            this.district = district;
-            this.planetFaction = planetFaction;
-            this.pop = pop;
-            this.control = control;
-            districtAction = DistrictAction.None;
-            targetDistrict = null;
-            targetAmount = 0;
-        }
-
-        public void Update(float deltaTime) {
-            // Expand control
-            var uncontrolledArea = 1 - district.GetTotalControl();
-            if (uncontrolledArea > 0) {
-                //TODO: Improve this function to slow the expansion of medium population districts
-                var areaToControl = math.min(uncontrolledArea, pop.civilians * .0001f * deltaTime / district.area);
-                control += areaToControl;
-            }
-
-            // Increase Population
-            double popCapRatio = (double)pop.TotalPopulation() / district.GetPopulationCapacity(planetFaction);
-            double populationGained =
-                pop.TotalPopulationWithoutMarines() * terrainModifiers[district.terrainType].popGrowth *
-                (1 - popCapRatio) * deltaTime * .0001 + populationGainFraction;
-            pop.civilians = math.max(0, pop.civilians + (long)populationGained);
-            populationGainFraction = populationGained - (long)populationGained;
-
-            // Recruit forces
-            long desiredForce = (long)(pop.civilians * planetFaction.desiredForceFraction);
-            if (desiredForce > pop.marines) {
-                long forceDifference = desiredForce - pop.marines;
-                double forceRecruited = math.min(forceDifference, pop.civilians * deltaTime * .0001);
-                pop.marines += (long)forceRecruited;
-                pop.civilians -= (long)forceRecruited;
-                forceGainFraction = forceRecruited - (long)forceRecruited;
-            }
-
-            if (districtAction == DistrictAction.Expand) {
-                if (targetDistrict.GetTotalControl() >= 1 &&
-                    !targetDistrict.districtFactions.ContainsKey(planetFaction)) {
-                    districtAction = DistrictAction.None;
-                } else {
-                    if (!targetDistrict.districtFactions.ContainsKey(planetFaction)) {
-                        targetDistrict.AddFaction(planetFaction, 0, 0);
-                    }
-                    if (targetDistrict.districtFactions[planetFaction].pop.civilians <
-                        targetDistrict.GetPopulationCapacity() * (1 - targetDistrict.GetTotalControl() +
-                            targetDistrict.districtFactions[planetFaction].control) * targetAmount) {
-                        var targetDistrictFaction = targetDistrict.districtFactions[planetFaction];
-                        var popToMove = (long)(pop.civilians * deltaTime * targetAmount * .001f);
-                        targetDistrictFaction.pop.civilians += popToMove;
-                        pop.civilians -= popToMove;
-                        var militaryToMove = (long)(pop.marines * deltaTime * targetAmount * .0001f);
-                        targetDistrictFaction.pop.marines += militaryToMove;
-                        pop.marines -= militaryToMove;
-                    } else if (targetDistrict.GetTotalControl() >= 1) {
-                        districtAction = DistrictAction.None;
-                    }
-
-                    if (targetDistrict.GetTotalControl() < 1) {
-                        targetDistrict.districtFactions[planetFaction].AddControl(0.0001f * deltaTime);
-                    }
-                }
-            }
-        }
-
-        public void AddControl(float controlToAdd) {
-            control += math.min(controlToAdd, 1 - district.GetTotalControl());
-        }
-
-        public void SetExpandTarget(District targetDistrict, float popToMigrate) {
-            districtAction = DistrictAction.Expand;
-            this.targetDistrict = targetDistrict;
-            targetAmount = popToMigrate;
-        }
-    }
-
     public class DistrictModifier {
         public float population;
         public float popGrowth;
@@ -216,7 +119,7 @@ public class District {
         { Plains, new DistrictModifier(.8f, .8f, 1f, .9f, .8f, 1.2f, .9f) },
         { Forest, new DistrictModifier(1f, 1.1f, 1.1f, .1f, 1f, .8f, 1f) },
         { Desert, new DistrictModifier(0.7f, 0.6f, 1f, 1.1f, .8f, .5f, 1.2f) },
-        { Mountains, new DistrictModifier(0.05f, .8f, .2f, 0.4f, 1.3f, .2f, 1.5f) },
+        { Mountains, new DistrictModifier(0.1f, .8f, .2f, 0.4f, 1.3f, .2f, 1.5f) },
         { Hills, new DistrictModifier(.8f, 1.1f, 1.3f, 1f, 1f, 1f, 1.2f) },
         { Crater, new DistrictModifier(0.03f, .6f, 1f, 1f, 1.2f, .7f, 1.2f) },
         { Barren, new DistrictModifier(0.002f, .1f, 1f, 1f, .6f, .2f, .4f) },
@@ -239,11 +142,14 @@ public class District {
     public float landPercent;
 
     public District(Vector2Int loc, long area) {
-        this.location = loc;
+        location = loc;
         this.area = area;
         districtFactions = new Dictionary<PlanetFaction, DistrictFaction>();
         districtType = Empty;
         landPercent = 1;
+        urbanPercent = .2f;
+        agriculturePercent = .5f;
+        industryPercent = .15f;
     }
 
     public void SetTerrainType(TerrainType terrainType) {
@@ -289,6 +195,11 @@ public class District {
         districtFactions.Add(planetFaction, new DistrictFaction(this, planetFaction,
             new Population().SetPlanetPopulation((long)(GetPopulationCapacity() * control * populationPercent)),
             control));
+    }
+
+    public void RemoveFaction(PlanetFaction planetFaction) {
+        if (planetFaction == owner) owner = null;
+        districtFactions.Remove(planetFaction);
     }
 
     public int GetDistrictValue() {
