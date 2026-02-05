@@ -83,7 +83,9 @@ public class PlanetFaction {
             var districtFaction = borderDistrict.districtFactions[this];
             if (districtFaction.districtAction != DistrictFaction.DistrictAction.None) continue;
             var expandToList = planet.planetMap.GetNeighboringDistricts(borderDistrict)
-                .Where(nd => nd.owner != this && nd.GetTotalControl() < 1)
+                .Where(nd =>
+                    nd.owner != this && nd.GetTotalControl() < 1 &&
+                    nd.districtFactions.All(df => !faction.IsAtWarWithFaction(df.Key.faction)))
                 .Select(nd => (nd, GetValueOfDistrict(nd))).ToList()
                 .OrderByDescending(d => d.Item2);
             if (!expandToList.Any()) continue;

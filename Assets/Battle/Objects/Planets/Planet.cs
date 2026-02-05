@@ -169,6 +169,8 @@ public class Planet : BattleObject, IPositionConfirmer {
                 !defender.district.districtFactions.TryGetValue(planetFaction, out conqueredDistrict)) {
                 defender.district.AddFaction(planetFaction, 0, controlGained);
                 conqueredDistrict = defender.district.districtFactions[planetFaction];
+            } else {
+                conqueredDistrict.control += controlGained;
             }
 
             // Move troops to the territory conquered
