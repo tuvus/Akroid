@@ -7985,7 +7985,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5443816648566263715}
   m_Direction: 2
   m_Value: 0.9999997
-  m_Size: 0.68027204
+  m_Size: 0.68027216
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -34142,6 +34142,8 @@ MonoBehaviour:
   districtOwner: {fileID: 5801951131231443291}
   districtPrefab: {fileID: 861201660554388760, guid: a08dd025db8ac037c8e60a58e2aa06b2,
     type: 3}
+  districtInteractionPrefab: {fileID: 4043571535743638992, guid: bbad8c75ef40060b29db4f76be24a1cd,
+    type: 3}
   terrainImageInput:
   - terrain: 0
     sprite: {fileID: -8210071984612457726, guid: 1a8d9692ffe0fc2918c9683ef05ee960,
@@ -43171,6 +43173,7 @@ MonoBehaviour:
   districtArea: {fileID: 0}
   districtOwner: {fileID: 0}
   districtPrefab: {fileID: 0}
+  districtInteractionPrefab: {fileID: 0}
   terrainImageInput: []
 --- !u!1 &8169989773778588981
 GameObject:

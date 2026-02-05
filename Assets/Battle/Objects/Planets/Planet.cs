@@ -208,11 +208,14 @@ public class Planet : BattleObject, IPositionConfirmer {
             df.pop.marines -= (long)(attackersKilled * df.pop.marines * df.planetFaction.GetAttackRatioOfStrategy() /
                 numAttackers);
         });
-        defender.pop.marines -= defendersKilled;
+
+        if (defender.district != null) {
+            defender.pop.marines -= defendersKilled;
+            defender.pop.civilians -=
+                math.min(defender.pop.civilians, (long)(defendersKilled * 8 * (1 + bias * 2 * controlDelta)));
+        }
 
         // War is bad for everyone
-        defender.pop.civilians -=
-            math.min(defender.pop.civilians, (long)(defendersKilled * 8 * (1 + bias * 2 * controlDelta)));
         long totalAttackerCivilians = attackers.Select(df => df.pop.civilians).Sum();
         long attackerCiviliansKilled = math.min(totalAttackerCivilians,
             (long)(attackersKilled * 8 * (1 - bias * 2 * controlDelta)));

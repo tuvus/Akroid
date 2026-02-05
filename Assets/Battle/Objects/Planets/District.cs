@@ -130,6 +130,7 @@ public class District {
     };
 
     // The location of the district in axial hex coordinates
+    public int index;
     public Vector2Int location;
     public long area;
     public TerrainType terrainType;
@@ -141,7 +142,8 @@ public class District {
     public float agriculturePercent;
     public float landPercent;
 
-    public District(Vector2Int loc, long area) {
+    public District(int index, Vector2Int loc, long area) {
+        this.index = index;
         location = loc;
         this.area = area;
         districtFactions = new Dictionary<PlanetFaction, DistrictFaction>();
@@ -254,5 +256,9 @@ public class District {
 
     public float GetTotalControl() {
         return districtFactions.Select(df => df.Value.control).Sum();
+    }
+
+    public DistrictFaction GetDistrictOwner() {
+        return districtFactions[owner];
     }
 }

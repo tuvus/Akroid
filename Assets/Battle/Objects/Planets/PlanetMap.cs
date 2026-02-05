@@ -62,7 +62,7 @@ public class PlanetMap {
 
     void CreateGridOfSize(int radius) {
         GetGridCoordinatesOfSize(radius).ForEach(loc => {
-            districts.Add(new District(loc, planet.districtArea));
+            districts.Add(new District(districts.Count, loc, planet.districtArea));
             locToDistrict.Add(loc, districts.Last());
         });
     }

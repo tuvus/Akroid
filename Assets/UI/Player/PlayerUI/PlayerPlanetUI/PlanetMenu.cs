@@ -27,6 +27,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     [SerializeField] private TMP_Text districtOwner;
 
     [SerializeField] private GameObject districtPrefab;
+    [SerializeField] private GameObject districtInteractionPrefab;
 
     [Serializable]
     struct TerrainImageInput {
@@ -41,12 +42,14 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     // The other districts will be wrapped around.
     private Vector2Int offset;
     private List<GameObject> districtUIs;
+    private List<GameObject> interactionUIs;
     public District selectedDistrict { get; private set; }
 
 
     public override void SetupPlayerUIMenu(PlayerUI playerUI, LocalPlayer localPlayer, UIManager uiManager) {
         base.SetupPlayerUIMenu(playerUI, localPlayer, uiManager);
         districtUIs = new List<GameObject>();
+        interactionUIs = new List<GameObject>();
         terrainImages = new Dictionary<District.TerrainType, Sprite>();
         foreach (TerrainImageInput imageInput in terrainImageInput) {
             terrainImages.Add(imageInput.terrain, imageInput.sprite);
@@ -88,6 +91,16 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             playerUI.playerObjectUI.objectViewCamera.orthographicSize / 2;
         float districtScale = planetRadius / (planetMap.radius - .5f) / math.sqrt(3);
 
+        int interactionArrowIndex = 0;
+
+        RectTransform GetDistrictInteractionArrow(int index) {
+            if (interactionUIs.Count <= index) {
+                interactionUIs.Add(Instantiate(districtInteractionPrefab, displayedImageTransform));
+            }
+            return interactionUIs[index].GetComponent<RectTransform>();
+        }
+
+        // Visulaize Districts
         for (int i = 0; i < planetMap.districts.Count; i++) {
             if (districtUIs.Count <= i) {
                 var newDistrictUI = Instantiate(districtPrefab, displayedImageTransform);
@@ -99,7 +112,8 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             var district = planetMap.districts[i];
             GameObject districtUI = districtUIs[i];
             districtUI.SetActive(true);
-            districtUI.transform.localPosition = PlanetMap.GetPositionFromLocation(planetMap.WrapLocation(district.location - offset)) * districtScale;
+            districtUI.transform.localPosition =
+                PlanetMap.GetPositionFromLocation(planetMap.WrapLocation(district.location - offset)) * districtScale;
             districtUI.GetComponent<RectTransform>().sizeDelta =
                 new Vector3(districtScale * math.sqrt(3) * 1.01f, districtScale * 2);
             districtUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>().sprite =
@@ -113,9 +127,39 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 districtUI.transform.GetChild(0).GetComponent<Image>().color =
                     new Color(baseColor.r * .7f, baseColor.g * .7f, baseColor.b * .7f);
             }
+
+
         }
+
+        // Visualize district interactions
+        // needs to be done after district positions are set
+        for (int i = 0; i < planetMap.districts.Count; i++) {
+            var district = planetMap.districts[i];
+            if (district.owner != null &&
+                (district.GetDistrictOwner().districtAction == DistrictFaction.DistrictAction.Attack
+                    || district.GetDistrictOwner().districtAction == DistrictFaction.DistrictAction.Expand)) {
+                var targetDistrict = district.GetDistrictOwner().targetDistrict;
+                var interactionTransform = GetDistrictInteractionArrow(interactionArrowIndex);
+                var locationDelta = PlanetMap.GetPositionFromLocation(
+                    planetMap.WrapLocation(targetDistrict.location - district.location)) * districtScale / 2;
+                var middlePosition = districtUIs[i].GetComponent<RectTransform>().anchoredPosition + locationDelta;
+                interactionTransform.anchoredPosition = middlePosition;
+                interactionTransform.localEulerAngles =
+                    new Vector3(0, 0, Calculator.GetAngleOutOfPosition(locationDelta) + 90);
+                interactionTransform.GetComponent<Image>().color = Color.softYellow;
+                if (district.GetDistrictOwner().districtAction == DistrictFaction.DistrictAction.Attack)
+                    interactionTransform.GetComponent<Image>().color = Color.softRed;
+                interactionTransform.gameObject.SetActive(true);
+                interactionArrowIndex++;
+            }
+        }
+
         for (int i = planetMap.districts.Count; i < districtUIs.Count; i++) {
             districtUIs[i].SetActive(false);
+        }
+
+        for (int j = interactionArrowIndex; j < interactionUIs.Count; j++) {
+            GetDistrictInteractionArrow(j).gameObject.SetActive(false);
         }
     }
 
@@ -135,7 +179,8 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             planetFactionName.text = "Faction" + "Unowned";
         }
 
-        planetPopulation.text = "Population: " + NumFormatter.ConvertNumber(displayedObject.planet.GetPopulationWithoutMarines());
+        planetPopulation.text = "Population: " +
+            NumFormatter.ConvertNumber(displayedObject.planet.GetPopulationWithoutMarines());
         planetAreas.text = "Districts: " + NumFormatter.ConvertNumber(displayedObject.planet.totalArea);
     }
 
