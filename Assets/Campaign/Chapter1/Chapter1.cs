@@ -209,25 +209,25 @@ public class Chapter1 : CampaingController {
             new FactionData(typeof(FactionAI), "Space Pirates", "SPR", colorPicker.PickColor(), 1000, 0, 0, 0),
             new PositionGiver(planet.position), 100);
 
-        planet.AddFaction(planetFaction, Random.Range(12, 35) * 1000000L, "Increases space production",
+        planet.AddFaction(planetFaction, "Increases space production",
             PlanetFaction.CombatStrategy.Cautious);
         planetEmpire = battleManager.CreateNewFaction(
             new FactionData("Empire", "EMP", Color.darkRed, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetEmpire, Random.Range(18, 24) * 100000000L, "Increases unit production",
+        planet.AddFaction(planetEmpire, "Increases unit production",
             PlanetFaction.CombatStrategy.Risky);
         planetDemocracy = battleManager.CreateNewFaction(
             new FactionData("Democracy", "DEM", Color.darkBlue, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetDemocracy, Random.Range(22, 36) * 100000000L, "Increases research rate");
+        planet.AddFaction(planetDemocracy, "Increases research rate");
         planetOligarchy = battleManager.CreateNewFaction(
             new FactionData("Oligarchy", "OLG", Color.orange, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(planetOligarchy, Random.Range(12, 20) * 100000000L, "Increases mining speed");
+        planet.AddFaction(planetOligarchy, "Increases mining speed");
         minorFactions = battleManager.CreateNewFaction(
             new FactionData("Minor Factions", "MIN", Color.grey, 1000000, 1000, 0, 0),
             new PositionGiver(new Vector2(0, 0), 0, 0, 0, 0, 0), 100);
-        planet.AddFaction(minorFactions, Random.Range(8, 14) * 100000000L, "All base stats improved",
+        planet.AddFaction(minorFactions, "All base stats improved",
             PlanetFaction.CombatStrategy.Cautious);
         var planetFactionDistrict = planet.planetMap.districts.First(d => d.GetDistrictValue() >= 3);
         planetFactionDistrict.owner = planet.planetFactions[planetFaction];
@@ -237,8 +237,8 @@ public class Chapter1 : CampaingController {
         planetFactionDistrict.industryPercent = .4f;
         planetFactionDistrict.AddFaction(planet.planetFactions[planetFaction], 1, 1);
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
-            (planet.planetFactions[planetEmpire], .5f),//.32f),
-            (planet.planetFactions[planetDemocracy], .5f),//.29f),
+            (planet.planetFactions[planetEmpire], .5f), //.32f),
+            (planet.planetFactions[planetDemocracy], .5f), //.29f),
             // (planet.planetFactions[planetOligarchy], .27f),
         }, .9f, .1f, false);
         planetEmpire.StartWar(planetDemocracy);
@@ -1244,7 +1244,7 @@ public class Chapter1 : CampaingController {
                 robotFaction.DiscoverResearchArea((ResearchAreas)Random.Range(0, 3), true);
             }
 
-            planet.AddFaction(robotFaction, new Population(0, 0, 0, 70000000L), "Robot Uprising");
+            planet.AddFaction(robotFaction, "Robot Uprising");
         });
         for (int i = 0; i < 20; i++) {
             planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(40));

@@ -13,9 +13,14 @@ public class PlanetScriptableObject : ScriptableObject {
     public void Awake() {
         if (prefab == null) prefab = Resources.Load<GameObject>("Prefabs/Planet");
     }
+
     public void OnValidate() {
         if (sprite != null) {
             spriteBounds = Calculator.GetSpriteBounds(sprite);
         }
+    }
+
+    public void SetTestSpriteBounds(Vector2 newSpriteBounds) {
+        spriteBounds = newSpriteBounds;
     }
 }

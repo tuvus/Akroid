@@ -116,7 +116,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         timeSinceStart += deltaTime;
         SetRotation(rotation + rotationSpeed * deltaTime);
 
-        updateTime -= Time.fixedDeltaTime;
+        updateTime -= deltaTime;
         if (updateTime > 0)
             return;
         updateTime += updateSpeed;
@@ -124,7 +124,6 @@ public class Planet : BattleObject, IPositionConfirmer {
 
         foreach (KeyValuePair<Faction, PlanetFaction> faction in planetFactions) {
             faction.Value.UpdateFaction(deltaTime);
-            planetMap.districts.ForEach(d => d.UpdateDistrict(deltaTime));
         }
 
         foreach (var districtCombat in districtsInCombat.Values.ToList()) {
@@ -144,6 +143,8 @@ public class Planet : BattleObject, IPositionConfirmer {
                 DoCombat(attackingFaction, attackers, defenders, districtCombat.district, deltaTime);
             }
         }
+
+        planetMap.districts.ForEach(d => d.UpdateDistrict(deltaTime));
     }
 
     public void DoCombat(PlanetFaction planetFaction, List<DistrictFaction> attackers,
@@ -272,17 +273,12 @@ public class Planet : BattleObject, IPositionConfirmer {
     }
 
     /// <summary> Adds a planet faction to the planet with the faction, territory, force given </summary>
-    public PlanetFaction AddFaction(Faction faction, Population population, string special,
+    public PlanetFaction AddFaction(Faction faction, string special,
         PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
         var planetFaction = new PlanetFaction(this, faction, special, combatStrategy);
         planetFactions.Add(faction, planetFaction);
         faction.AddPlanet(this);
         return planetFaction;
-    }
-
-    public PlanetFaction AddFaction(Faction faction, long population, string special,
-        PlanetFaction.CombatStrategy combatStrategy = PlanetFaction.CombatStrategy.Balanced) {
-        return AddFaction(faction, new Population().SetPlanetPopulation(population), special, combatStrategy);
     }
 
     /// <summary>
@@ -334,7 +330,7 @@ public class Planet : BattleObject, IPositionConfirmer {
         var district = planetMap.districts.Where(d => d.owner == null).Aggregate((mostValuable, next) => {
             return next.GetDistrictValue() > mostValuable.GetDistrictValue() ? next : mostValuable;
         });
-        var newPlanetFaction = AddFaction(faction, population, special);
+        var newPlanetFaction = AddFaction(faction, special);
         district.owner = newPlanetFaction;
         district.districtFactions.Add(newPlanetFaction,
             new DistrictFaction(district, newPlanetFaction, population, .03f));

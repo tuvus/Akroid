@@ -194,11 +194,12 @@ public class District {
         districtType = types[Random.Range(0, types.Count)];
     }
 
-    public void AddFaction(PlanetFaction planetFaction, float populationPercent, float control) {
+    public DistrictFaction AddFaction(PlanetFaction planetFaction, float populationPercent, float control) {
         control = (1 - GetTotalControl()) * control;
         districtFactions.Add(planetFaction, new DistrictFaction(this, planetFaction,
             new Population().SetPlanetPopulation((long)(GetPopulationCapacity() * control * populationPercent)),
             control));
+        return districtFactions[planetFaction];
     }
 
     public void RemoveFaction(PlanetFaction planetFaction) {

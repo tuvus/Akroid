@@ -32,7 +32,7 @@ public class TestBattleManager : BattleManager {
     }
 
     public Faction CreateTestFaction() {
-        var factionData = new Faction.FactionData("TestFaction" + factions.Count, "TSF", Color.black,
+        var factionData = new Faction.FactionData("TestFaction" + factions.Count, "TF" + factions.Count, Color.black,
             new Character("TestCharacter", Resources.Load<GameObject>("Prefabs/Characters/Firon")),
             0, 0, 0, 0);
         Faction faction = new Faction(this, factionData, new PositionGiver(Vector2.zero));

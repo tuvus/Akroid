@@ -221,6 +221,13 @@ public class PlanetFaction {
         return pop;
     }
 
+    public float GetTotalControl() {
+        var districts = GetDistrictsPresent();
+        if (!districts.Any()) return 0;
+        return districts.Select(d => d.Item2.control)
+            .Aggregate((sum, a) => sum + a) * 100f / planet.planetMap.districts.Count;
+    }
+
     public List<(District, DistrictFaction)> GetDistrictsPresent() {
         return planet.planetMap.districts.Where(d => d.districtFactions.ContainsKey(this))
             .Select(d => (d, d.districtFactions[this])).ToList();

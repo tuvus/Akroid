@@ -216,16 +216,8 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                 "Population: " + NumFormatter.ConvertNumber(pop.TotalPopulation());
             factionButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
                 "Force: " + NumFormatter.ConvertNumber(pop.marines);
-            var controls = displayedObject.planet.planetMap.districts
-                .Where(d => d.districtFactions.ContainsKey(planetFaction))
-                .Select(d => d.districtFactions[planetFaction].control).ToList();
-            if (controls.Count > 0) {
-                factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
-                    (int)(controls.Aggregate((sum, a) => sum + a) * 100 /
-                        displayedObject.planet.planetMap.districts.Count) + "%";
-            } else {
-                factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = "0%";
-            }
+            factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
+                planetFaction.GetTotalControl() + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
             factionButtonTransform.GetChild(0).GetComponent<Image>().color =
                 LocalPlayer.Instance.GetColorOfRelationType(

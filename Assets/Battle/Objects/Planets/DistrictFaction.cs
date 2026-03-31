@@ -39,7 +39,7 @@ public class DistrictFaction {
         if (uncontrolledArea > 0) {
             //TODO: Improve this function to slow the expansion of medium population districts
             var areaToControl = math.min(uncontrolledArea,
-                (pop.civilians * .0001f + pop.marines * 0.01f) * deltaTime / district.area);
+                (pop.civilians * .000000001f + pop.marines * 0.0000001f) * deltaTime / district.area);
             control += areaToControl;
         }
 
