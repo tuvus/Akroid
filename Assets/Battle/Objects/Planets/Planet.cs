@@ -26,7 +26,29 @@ public class Planet : BattleObject, IPositionConfirmer {
     [field: SerializeField] public long totalArea { get; protected set; }
     public long districtArea { get; protected set; }
     public PlanetMap planetMap;
-    public Dictionary<District, Dictionary<PlanetFaction, List<DistrictFaction>>> districtsInCombat;
+    public Dictionary<District, DistrictCombat> districtsInCombat;
+
+    public class DistrictCombat {
+        public District district;
+        public List<DistrictFaction> attackers;
+        public List<DistrictFaction> defenders;
+
+        public DistrictCombat(District district) {
+            this.district = district;
+            attackers = new List<DistrictFaction>();
+            defenders = new List<DistrictFaction>();
+        }
+
+        public void RemoveAttacker(DistrictFaction attacker) {
+            attackers.Remove(attacker);
+            if (attackers.Count == 0)
+                defenders.Where(d =>
+                        d.districtAction == DistrictFaction.DistrictAction.Reinforce && d.targetDistrict == district)
+                    .ToList()
+                    .ForEach(d => d.StopDistrictAction());
+            district.planetMap.planet.districtsInCombat.Remove(district);
+        }
+    }
 
 
     public Planet(PlanetData planetData, BattleManager battleManager, PlanetScriptableObject planetScriptableObject) :
@@ -38,7 +60,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             rotationSpeed *= -1;
         }
 
-        districtsInCombat = new Dictionary<District, Dictionary<PlanetFaction, List<DistrictFaction>>>();
+        districtsInCombat = new Dictionary<District, DistrictCombat>();
         planetFactions = new Dictionary<Faction, PlanetFaction>();
         visible = true;
         Spawn();
@@ -105,105 +127,115 @@ public class Planet : BattleObject, IPositionConfirmer {
             planetMap.districts.ForEach(d => d.UpdateDistrict(deltaTime));
         }
 
-        foreach (var districtCombat in districtsInCombat.ToList()) {
-            var district = districtCombat.Key;
-            districtCombat.Value.ToList().ForEach(d => {
-                var attackableFactions =
-                    district.districtFactions.Where(def => d.Key.faction.IsAtWarWithFaction(def.Key.faction))
-                        .Select(df => df.Value).ToList();
-                if (!attackableFactions.Any()) {
+        foreach (var districtCombat in districtsInCombat.Values.ToList()) {
+            var attackingFactions = districtCombat.attackers.Select(df => df.planetFaction).Distinct().ToList();
+            var allDefenders = districtCombat.defenders.Union(districtCombat.district.districtFactions.Values).ToList();
+            foreach (PlanetFaction attackingFaction in attackingFactions) {
+                var attackers = districtCombat.attackers.Where(df => df.planetFaction == attackingFaction)
+                    .ToList();
+                var defenders =
+                    allDefenders.Where(d => attackingFaction.faction.IsAtWarWithFaction(d.planetFaction.faction))
+                        .ToList();
+                if (!defenders.Any()) {
                     // There is nothing to attack
-                    d.Value.ToList().ForEach(df => df.StopDistrictAction());
-                    return;
+                    attackers.ForEach(df => { df.StopDistrictAction(); });
+                    continue;
                 }
-                var targetFaction = attackableFactions.Aggregate((a, b) => b.control > a.control ? b : a);
-                DoCombat(d.Key, d.Value, targetFaction, deltaTime);
-            });
+                DoCombat(attackingFaction, attackers, defenders, districtCombat.district, deltaTime);
+            }
         }
     }
 
-    public void DoCombat(PlanetFaction planetFaction, List<DistrictFaction> attackers, DistrictFaction defender,
-        float deltaTime) {
+    public void DoCombat(PlanetFaction planetFaction, List<DistrictFaction> attackers,
+        List<DistrictFaction> defenders, District district, float deltaTime) {
         Faction attackingFaction = planetFaction.faction;
-        Faction defendingFaction = defender.planetFaction.faction;
+        // Random factor of the fight, a higher value means the attackers are doing better
+        float bias = random.NextFloat(-.5f, .3f);
+
         long numAttackers =
             (long)(attackers.Select(df => df.pop.marines).Sum() * planetFaction.GetAttackRatioOfStrategy());
         if (numAttackers == 0) return;
-        long numDefenders = (long)(defender.pop.marines *
-            (defender.districtAction == DistrictFaction.DistrictAction.Attack ?
-                1 - defender.planetFaction.GetAttackRatioOfStrategy() : 1));
+        List<(DistrictFaction, long, float)> defenderForces = defenders.Select(defender => (defender,
+                (long)(defender.pop.marines * (defender.districtAction == DistrictFaction.DistrictAction.Attack ?
+                    1 - defender.planetFaction.GetAttackRatioOfStrategy() : 1))))
+            .Select(d => (d.defender, d.Item2,
+                d.Item2 * d.defender.planetFaction.faction.GetAllAttackDamageModifiers())).ToList();
 
-        // Random factor of the fight, a higher value means the attackers are doing better
-        float bias = random.NextFloat(-.5f, .3f);
-        float attackerModifiers = -5 + faction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
-            attackingFaction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload) +
-            attackingFaction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
-            attackingFaction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload) +
-            attackingFaction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
-            attackingFaction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
-        float defenderModifiers = -5 +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileDamage) +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.ProjectileReload) +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.LaserDamage) +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.LaserReload) +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.MissileDamage) +
-            defendingFaction.GetImprovementModifier(Faction.ImprovementAreas.MissileReload);
-        float attackingForce = numAttackers * attackerModifiers;
-        float defendingForce = numDefenders * defenderModifiers;
+        long numDefenders = defenderForces.Select(d => d.Item2).Sum();
+        float attackingForce = numAttackers * attackingFaction.GetAllAttackDamageModifiers();
+        float defendingForce = defenderForces.Select(d => d.Item3).Sum();
 
         // Calculate military that was killed in the combat
         long attackersKilled = math.min(numAttackers, (long)(defendingForce * (1 - bias) * deltaTime * .04f));
-        long defendersKilled = math.min(numDefenders,
-            (long)(attackingForce * attackerModifiers * (1 - bias) * deltaTime * .04f));
+        long defendersKilled = math.min(numDefenders, (long)(attackingForce * (1 - bias) * deltaTime * .04f));
+
+        var defenderDistrictsByForce = defenders.Where(d => d.district == district).Select(d =>
+                (d, defenderForces.Where(df => d.planetFaction == df.Item1.planetFaction).Select(df => df.Item3).Sum()))
+            .ToList();
 
         float controlDelta = 1;
         if (attackingForce > defendingForce) {
             // Attackers have gained some ground
-            float controlGained = (1 - math.pow((defendingForce / attackingForce), .2f)) * deltaTime;
+            float controlGained = math.min(math.min(1, .1f * deltaTime),
+                (1 - math.pow((defendingForce / attackingForce), .2f)) * deltaTime);
             controlDelta += controlGained;
-            controlGained = math.min(defender.control, controlGained);
-            defender.control -= controlGained;
+            var totalDefenderControl = defenderDistrictsByForce.Select(d => d.d.control).Sum();
+            controlGained = math.min(totalDefenderControl, controlGained);
 
-            DistrictFaction conqueredDistrict = attackers.Find(df => df.district == defender.district);
+            float ungainedControl = 0;
+            defenderDistrictsByForce.ForEach(d => {
+                var controlToSubtract = controlGained * math.max(1, defendingForce) / math.max(1,d.Item2);
+                d.d.control -= controlToSubtract;
+                ungainedControl = math.min(0, d.d.control);
+                // Check if the defender doesn't have enough control to hold the district
+                if (d.d.control <= 0.0001) {
+                    district.RemoveFaction(d.d.planetFaction);
+                }
+                if (float.IsNaN(d.d.control)) {
+                    Debug.Log("test2");
+                }
+            });
+            controlGained -= ungainedControl;
+
+            DistrictFaction conqueredDistrict = attackers.Find(df => df.district == district);
             if (conqueredDistrict == null &&
-                !defender.district.districtFactions.TryGetValue(planetFaction, out conqueredDistrict)) {
-                defender.district.AddFaction(planetFaction, 0, controlGained);
-                conqueredDistrict = defender.district.districtFactions[planetFaction];
+                !district.districtFactions.TryGetValue(planetFaction, out conqueredDistrict)) {
+                district.AddFaction(planetFaction, 0, controlGained);
+                conqueredDistrict = district.districtFactions[planetFaction];
             } else {
                 conqueredDistrict.control += controlGained;
             }
 
             // Move troops to the territory conquered
-            long troopsTransferred = (long)((numAttackers - attackersKilled) * deltaTime * controlGained);
+            long troopsTransferred =
+                (long)((numAttackers - attackersKilled) * math.min(1, deltaTime) * controlGained / 2);
             conqueredDistrict.pop.marines += troopsTransferred;
             attackers.ForEach(df => {
+                long previousMarines = df.pop.marines;
                 df.pop.marines -= (long)(troopsTransferred * df.pop.marines *
                     df.planetFaction.GetAttackRatioOfStrategy() / numAttackers);
+                if (df.pop.marines < 0) {
+                    Debug.Log("test");
+                }
             });
-
-            // Check if the defender doesn't have enough control to hold the district
-            if (defender.control <= 0.001) {
-                defender.district.RemoveFaction(defender.planetFaction);
-            }
         } else {
             // Defenders have gained some ground
             DistrictFaction attackerDistrict =
-                defender.district.districtFactions.Select(df => df.Value)
+                district.districtFactions.Select(df => df.Value)
                     .FirstOrDefault(df => df.planetFaction == planetFaction);
             float controlGained = 1 - math.pow((attackingForce / defendingForce), .2f) * deltaTime;
             controlDelta -= controlGained;
             controlGained = math.min(attackerDistrict?.control ?? 0, controlGained);
             if (attackerDistrict != null) {
                 attackerDistrict.control -= controlGained;
-                defender.control += controlGained;
+                defenderDistrictsByForce.ForEach(d => d.d.AddControl(controlGained * d.Item2 / attackingForce));
                 if (attackerDistrict.control <= .00001f)
-                    defender.district.RemoveFaction(attackerDistrict.planetFaction);
+                    district.RemoveFaction(attackerDistrict.planetFaction);
             }
 
             // If the defenders could not gain the full value of the territory they pushed for
             // then they will lose fewer troops as compensation
             defendersKilled = (long)(defendersKilled * (controlDelta + controlGained));
-
         }
 
         attackers.ForEach(df => {
@@ -211,11 +243,17 @@ public class Planet : BattleObject, IPositionConfirmer {
                 numAttackers);
         });
 
-        if (defender.district != null) {
-            defender.pop.marines -= defendersKilled;
-            defender.pop.civilians -=
-                math.min(defender.pop.civilians, (long)(defendersKilled * 8 * (1 + bias * 2 * controlDelta)));
-        }
+        var defendingCiviliansKilled = (long)(defendersKilled * 8 * (1 + bias * 2 * controlDelta));
+        defenderDistrictsByForce.ForEach(d => {
+            if (d.Item2 <= float.Epsilon) {
+                d.d.pop.marines = 0;
+                d.d.pop.civilians = 0;
+                return;
+            }
+            d.d.pop.marines -= defendersKilled;
+            d.d.pop.civilians -=
+                math.min(d.d.pop.civilians, (long)(defendingCiviliansKilled * defendingForce / d.Item2));
+        });
 
         // War is bad for everyone
         long totalAttackerCivilians = attackers.Select(df => df.pop.civilians).Sum();
@@ -274,7 +312,8 @@ public class Planet : BattleObject, IPositionConfirmer {
             );
             district.owner = planetFaction;
             district.SetRandomDistrictType(false);
-            district.AddFaction(planetFaction, populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
+            district.AddFaction(planetFaction,
+                populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
                 .5f);
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
@@ -317,6 +356,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     public void MergePlanetFactions(Faction planetFaction, Faction toMerge) {
         MergePlanetFactions(planetFactions[planetFaction], planetFactions[toMerge]);
     }
+
     public void RemoveFaction(Faction faction) {
         planetFactions.Remove(faction);
         faction.RemovePlanet(this);

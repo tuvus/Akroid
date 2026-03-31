@@ -9,7 +9,7 @@ using Random = Unity.Mathematics.Random;
 /// Helpful webpage https://www.redblobgames.com/grids/hexagons/
 /// </summary>
 public class PlanetMap {
-    private Planet planet;
+    public Planet planet;
     private Random random;
 
     public List<District> districts;
@@ -62,7 +62,7 @@ public class PlanetMap {
 
     void CreateGridOfSize(int radius) {
         GetGridCoordinatesOfSize(radius).ForEach(loc => {
-            districts.Add(new District(districts.Count, loc, planet.districtArea));
+            districts.Add(new District(this, districts.Count, loc, planet.districtArea));
             locToDistrict.Add(loc, districts.Last());
         });
     }

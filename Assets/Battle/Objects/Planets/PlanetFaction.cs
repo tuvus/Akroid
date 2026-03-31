@@ -48,6 +48,8 @@ public class PlanetFaction {
                     .Select(nd => (nd, GetValueOfDistrict(nd))).ToList()
                     .OrderByDescending(d => d.Item2);
                 foreach (var districtToAttack in attackList.Select(d => d.nd)) {
+                    var districtFactionsToAttack = districtToAttack.districtFactions
+                        .Where(nd => enemyPlanetFactions.Contains(nd.Key)).Select(f => f.Key).ToHashSet();
                     var districtsToAttackFrom = planet.planetMap.GetNeighboringDistricts(districtToAttack)
                         .Where(d => d.owner == this && (d.districtFactions[this].districtAction !=
                             DistrictFaction.DistrictAction.Attack ||
@@ -58,6 +60,10 @@ public class PlanetFaction {
                         // Add the marines already in the district if there are any
                         (districtToAttack.districtFactions.ContainsKey(this) ?
                             districtToAttack.districtFactions[this].pop.marines : 0);
+
+                    var districtsToDefendFrom = planet.planetMap.GetNeighboringDistricts(districtToAttack)
+                        .Where(d => districtFactionsToAttack.Contains(d.owner)).Select(d => d.GetDistrictOwner())
+                        .Where(df => !df.IsDefending() && !df.IsReinforcing(districtToAttack)).ToList();
                     // Calculate their combined forces
                     long theirForce = districtToAttack.districtFactions
                         .Where(df => enemyPlanetFactions.Contains(df.Key))
@@ -66,6 +72,8 @@ public class PlanetFaction {
                             (df.Value.districtAction == DistrictFaction.DistrictAction.Attack &&
                                 districtsToAttackFrom.All(d => df.Value.targetDistrict != d) ?
                                     df.Key.GetAttackRatioOfStrategy() : 1))).Sum();
+                    theirForce += districtsToDefendFrom.Select(df =>
+                        (long)(df.pop.marines * df.planetFaction.GetReinforceRatioOfStrategy() * .1f)).Sum();
 
                     if ((float)ourForce / theirForce > GetAttackBravenessOfStrategy()) {
                         districtsToAttackFrom.ForEach(d =>
@@ -245,6 +253,15 @@ public class PlanetFaction {
             CombatStrategy.Risky => 1f,
             CombatStrategy.Balanced => 1.2f,
             CombatStrategy.Cautious => 1.5f,
+        };
+    }
+
+    public float GetReinforceRatioOfStrategy() {
+        return combatStrategy switch {
+            CombatStrategy.AllOut => .9f,
+            CombatStrategy.Risky => .8f,
+            CombatStrategy.Balanced => .7f,
+            CombatStrategy.Cautious => .6f,
         };
     }
 

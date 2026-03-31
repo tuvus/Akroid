@@ -752,6 +752,15 @@ public class Faction : ObjectGroup<Unit>, IPositionConfirmer {
         return improvementModifiers[(int)improvementArea];
     }
 
+    public float GetAllAttackDamageModifiers() {
+        return -5 + GetImprovementModifier(ImprovementAreas.ProjectileDamage) +
+            GetImprovementModifier(ImprovementAreas.ProjectileReload) +
+            GetImprovementModifier(ImprovementAreas.LaserDamage) +
+            GetImprovementModifier(ImprovementAreas.LaserReload) +
+            GetImprovementModifier(ImprovementAreas.MissileDamage) +
+            GetImprovementModifier(ImprovementAreas.MissileReload);
+    }
+
     public bool HasEnemy() {
         return enemyFactions.ToList().Any(e => e.units.Count > 0);
     }

@@ -123,33 +123,31 @@ public class DistrictFaction {
         districtAction = DistrictAction.Attack;
         targetDistrict = districtToAttack;
         targetAmount = engagedMarinesFactor;
-        if (planetFaction.planet.districtsInCombat.ContainsKey(targetDistrict)) {
-            if (planetFaction.planet.districtsInCombat[targetDistrict].ContainsKey(planetFaction))
-                planetFaction.planet.districtsInCombat[targetDistrict][planetFaction].Add(this);
-            else
-                planetFaction.planet.districtsInCombat[targetDistrict]
-                    .Add(planetFaction, new List<DistrictFaction> { this });
-        } else {
+        if (!planetFaction.planet.districtsInCombat.ContainsKey(targetDistrict))
             planetFaction.planet.districtsInCombat.Add(targetDistrict,
-                new Dictionary<PlanetFaction, List<DistrictFaction>>
-                    { { planetFaction, new List<DistrictFaction> { this } } });
-        }
+                new Planet.DistrictCombat(targetDistrict));
+        planetFaction.planet.districtsInCombat[targetDistrict].attackers.Add(this);
     }
+
+    public void SetReinforceTarget(District districtToReinforce, float reinforceFactor) { }
 
     public void StopDistrictAction() {
         if (districtAction == DistrictAction.Attack) {
             if (planetFaction.planet.districtsInCombat.TryGetValue(district,
-                out Dictionary<PlanetFaction, List<DistrictFaction>> attackers)) {
-                if (attackers.TryGetValue(planetFaction, out List<DistrictFaction> attacker)) {
-                    attacker.Remove(this);
-                    if (!attacker.Any()) {
-                        attackers.Remove(planetFaction);
-                        if (!planetFaction.planet.districtsInCombat.Any())
-                            planetFaction.planet.districtsInCombat.Remove(targetDistrict);
-                    }
-                }
+                out Planet.DistrictCombat combat)) {
+                combat.RemoveAttacker(this);
             }
         }
         districtAction = DistrictAction.None;
+    }
+
+    public bool IsDefending() {
+        return planetFaction.planet.districtsInCombat.ContainsKey(district) &&
+            planetFaction.planet.districtsInCombat[district].attackers
+                .Any(a => planetFaction.faction.IsAtWarWithFaction(a.planetFaction.faction));
+    }
+
+    public bool IsReinforcing(District districtNotReinforcing = null) {
+        return districtAction == DistrictAction.Reinforce && targetDistrict != districtNotReinforcing;
     }
 }

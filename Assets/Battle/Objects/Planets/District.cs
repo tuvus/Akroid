@@ -129,6 +129,7 @@ public class District {
         { Gas, new DistrictModifier(0, 0, 0, 0, 10, 0, 2) },
     };
 
+    public PlanetMap planetMap;
     // The location of the district in axial hex coordinates
     public int index;
     public Vector2Int location;
@@ -142,7 +143,8 @@ public class District {
     public float agriculturePercent;
     public float landPercent;
 
-    public District(int index, Vector2Int loc, long area) {
+    public District(PlanetMap planetMap, int index, Vector2Int loc, long area) {
+        this.planetMap = planetMap;
         this.index = index;
         location = loc;
         this.area = area;
