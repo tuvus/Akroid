@@ -183,13 +183,18 @@ public class Planet : BattleObject, IPositionConfirmer {
             controlGained = math.min(totalDefenderControl, controlGained);
 
             float ungainedControl = 0;
+            Population gainedPopulation = new Population();
             defenderDistrictsByForce.ForEach(d => {
-                var controlToSubtract = controlGained * math.max(1, defendingForce) / math.max(1,d.Item2);
+                var controlToSubtract = controlGained * math.max(1, defendingForce) / math.max(1, d.Item2);
                 d.d.control -= controlToSubtract;
                 ungainedControl = math.min(0, d.d.control);
                 // Check if the defender doesn't have enough control to hold the district
                 if (d.d.control <= 0.0001) {
                     district.RemoveFaction(d.d.planetFaction);
+                    gainedPopulation = d.d.pop;
+                } else {
+                    d.d.pop.MovePopulationTo(gainedPopulation,
+                        d.d.pop.GetOnlyCivilians().Multiply(controlToSubtract));
                 }
             });
             controlGained -= ungainedControl;
@@ -202,6 +207,8 @@ public class Planet : BattleObject, IPositionConfirmer {
             } else {
                 conqueredDistrict.control += controlGained;
             }
+
+            conqueredDistrict.pop.AddPopulation(gainedPopulation);
 
             // Move troops to the territory conquered
             long troopsTransferred =
@@ -221,9 +228,16 @@ public class Planet : BattleObject, IPositionConfirmer {
             controlGained = math.min(attackerDistrict?.control ?? 0, controlGained);
             if (attackerDistrict != null) {
                 attackerDistrict.control -= controlGained;
-                defenderDistrictsByForce.ForEach(d => d.d.AddControl(controlGained * d.Item2 / attackingForce));
-                if (attackerDistrict.control <= .00001f)
+                defenderDistrictsByForce.ForEach(d => d.d.AddControl(controlGained * d.Item2 / defendingForce));
+                if (attackerDistrict.control <= .00001f) {
+                    defenderDistrictsByForce.ForEach(d => d.d.pop.AddPopulation(attackerDistrict.pop.GetOnlyCivilians().Multiply(d.Item2 / defendingForce)));
                     district.RemoveFaction(attackerDistrict.planetFaction);
+                } else {
+                    Population popToMove = attackerDistrict.pop.GetOnlyCivilians()
+                        .Multiply(controlGained / (attackerDistrict.control + controlGained));
+                    defenderDistrictsByForce.ForEach(d =>
+                        attackerDistrict.pop.MovePopulationTo(d.d.pop, popToMove.Multiply(d.Item2 / defendingForce)));
+                }
             }
 
             // If the defenders could not gain the full value of the territory they pushed for

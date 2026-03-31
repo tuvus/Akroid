@@ -144,6 +144,14 @@ public class Population {
         return this;
     }
 
+    public Population Multiply(float amount) {
+        civilians = (long)(civilians * amount);
+        pilots = (long)(pilots * amount);
+        engineers = (long)(engineers * amount);
+        marines = (long)(marines * amount);
+        return this;
+    }
+
     public long Get(Occupation occupation) {
         switch (occupation) {
             case Occupation.Civilian:
@@ -156,6 +164,13 @@ public class Population {
                 return marines;
         }
         return -1;
+    }
+
+    /// <summary>
+    /// Removes a new pop with only civilians (marines) and returns this population
+    /// </summary>
+    public Population GetOnlyCivilians() {
+        return new Population(civilians, pilots, engineers);
     }
 
     public override bool Equals(object obj) {
