@@ -90,12 +90,15 @@ public class PlanetFaction {
         foreach (District borderDistrict in borderDistricts) {
             var districtFaction = borderDistrict.districtFactions[this];
             if (districtFaction.districtAction != DistrictFaction.DistrictAction.None) continue;
+            if (districtFaction.control < .3f) continue;
+            if (districtFaction.pop.TotalPopulation() < borderDistrict.GetPopulationCapacity(this) * .3f) continue;
+
             var expandToList = planet.planetMap.GetNeighboringDistricts(borderDistrict)
                 .Where(nd =>
-                    nd.owner != this && nd.GetTotalControl() < 1 &&
+                    nd.owner != this && nd.GetTotalControl() < .9f &&
                     nd.districtFactions.All(df => !faction.IsAtWarWithFaction(df.Key.faction)))
                 .Select(nd => (nd, GetValueOfDistrict(nd))).ToList()
-                .OrderByDescending(d => d.Item2);
+                .OrderByDescending(d => d.Item2).ToList();
             if (!expandToList.Any()) continue;
             districtFaction.SetExpandTarget(expandToList.First().nd, 0.1f);
         }

@@ -191,8 +191,8 @@ public class Planet : BattleObject, IPositionConfirmer {
                 ungainedControl = math.min(0, d.d.control);
                 // Check if the defender doesn't have enough control to hold the district
                 if (d.d.control <= 0.0001) {
+                    d.d.pop.MovePopulationTo(gainedPopulation);
                     district.RemoveFaction(d.d.planetFaction);
-                    gainedPopulation = d.d.pop;
                 } else {
                     d.d.pop.MovePopulationTo(gainedPopulation,
                         d.d.pop.GetOnlyCivilians().Multiply(controlToSubtract));
