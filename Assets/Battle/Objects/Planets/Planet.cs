@@ -166,8 +166,8 @@ public class Planet : BattleObject, IPositionConfirmer {
         float defendingForce = defenderForces.Select(d => d.Item3).Sum();
 
         // Calculate military that was killed in the combat
-        long attackersKilled = math.min(numAttackers, (long)(defendingForce * (1 - bias) * deltaTime * .04f));
-        long defendersKilled = math.min(numDefenders, (long)(attackingForce * (1 - bias) * deltaTime * .04f));
+        long attackersKilled = math.min(numAttackers, (long)(defendingForce * (1 - bias) * deltaTime * .08f));
+        long defendersKilled = math.min(numDefenders, (long)(attackingForce * (1 - bias) * deltaTime * .08f));
 
         var defenderDistrictsByForce = defenders.Where(d => d.district == district).Select(d =>
                 (d, defenderForces.Where(df => d.planetFaction == df.Item1.planetFaction).Select(df => df.Item3).Sum()))
@@ -191,9 +191,6 @@ public class Planet : BattleObject, IPositionConfirmer {
                 if (d.d.control <= 0.0001) {
                     district.RemoveFaction(d.d.planetFaction);
                 }
-                if (float.IsNaN(d.d.control)) {
-                    Debug.Log("test2");
-                }
             });
             controlGained -= ungainedControl;
 
@@ -211,12 +208,8 @@ public class Planet : BattleObject, IPositionConfirmer {
                 (long)((numAttackers - attackersKilled) * math.min(1, deltaTime) * controlGained / 2);
             conqueredDistrict.pop.marines += troopsTransferred;
             attackers.ForEach(df => {
-                long previousMarines = df.pop.marines;
                 df.pop.marines -= (long)(troopsTransferred * df.pop.marines *
                     df.planetFaction.GetAttackRatioOfStrategy() / numAttackers);
-                if (df.pop.marines < 0) {
-                    Debug.Log("test");
-                }
             });
         } else {
             // Defenders have gained some ground
