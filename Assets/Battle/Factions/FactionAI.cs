@@ -3,9 +3,6 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class FactionAI {
-    public float attackSpeed = 3f;
-    public float attackStrength = 0.1f;
-    public float attackTime;
     public bool autoResearch;
 
     public FactionAI(BattleManager battleManager, Faction faction) {
@@ -22,20 +19,6 @@ public class FactionAI {
     public virtual void UpdateFactionAI(float deltaTime) {
         if (autoResearch)
             faction.UpdateFactionResearch();
-        attackTime = math.max(0, attackTime - deltaTime);
-        if (attackTime <= 0) {
-            foreach (Faction enemy in faction.enemyFactions) {
-                foreach (Planet planet in faction.planets) {
-                    PlanetFaction planetFaction = planet.planetFactions[faction];
-                    // if (planetFaction.population.marines > 0 && planet.planetFactions.ContainsKey(enemy) &&
-                        // planet.planetFactions[enemy].territory.GetTotalAreas() > 0) {
-                        // planet.planetFactions[faction].FightFactionForTerritory(enemy, attackStrength, deltaTime);
-                    // }
-                }
-            }
-
-            attackTime = attackSpeed;
-        }
     }
 
     public virtual void OnStationBuilt(Station station) { }

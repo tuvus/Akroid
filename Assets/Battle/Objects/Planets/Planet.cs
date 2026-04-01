@@ -224,7 +224,8 @@ public class Planet : BattleObject, IPositionConfirmer {
             DistrictFaction attackerDistrict =
                 district.districtFactions.Select(df => df.Value)
                     .FirstOrDefault(df => df.planetFaction == planetFaction);
-            float controlGained = 1 - math.pow((attackingForce / defendingForce), .2f) * deltaTime;
+            float controlGained = math.min(math.min(1f, .1f * deltaTime),
+                (1 - math.pow((attackingForce / defendingForce), .2f)) * deltaTime);
             controlDelta -= controlGained;
             controlGained = math.min(attackerDistrict?.control ?? 0, controlGained);
             if (attackerDistrict != null) {
@@ -319,7 +320,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             district.SetRandomDistrictType(false);
             district.AddFaction(planetFaction,
                 populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
-                math.clamp(controlPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor), 0, 1) );
+                math.clamp(controlPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor), 0, 1));
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             factionTerritories.Add((planetFaction, newControl));

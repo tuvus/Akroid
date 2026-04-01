@@ -83,10 +83,10 @@ public class DistrictFaction {
             targetDistrict.GetPopulationCapacity() * (1 - targetDistrict.GetTotalControl() +
                 targetDistrict.districtFactions[planetFaction].control) * targetAmount) {
             var targetDistrictFaction = targetDistrict.districtFactions[planetFaction];
-            var popToMove = (long)(pop.civilians * deltaTime * targetAmount * .001f);
+            var popToMove = (long)(math.max(pop.civilians / 2f, pop.civilians * deltaTime * targetAmount * .001f));
             targetDistrictFaction.pop.civilians += popToMove;
             pop.civilians -= popToMove;
-            var militaryToMove = (long)(pop.marines * deltaTime * targetAmount * .0001f);
+            var militaryToMove = (long)(math.max(pop.marines / 2f, pop.marines * deltaTime * targetAmount * .0001f));
             targetDistrictFaction.pop.marines += militaryToMove;
             pop.marines -= militaryToMove;
         } else if (targetDistrict.GetTotalControl() >= 1) {

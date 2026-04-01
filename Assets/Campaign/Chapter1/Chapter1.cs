@@ -1192,14 +1192,15 @@ public class Chapter1 : CampaingController {
         FactionCommManager playerComm = playerFaction.GetFactionCommManager();
         FactionCommManager researchCommManager = researchFaction.GetFactionCommManager();
         FactionCommManager shipyardCommManager = shipyardFaction.GetFactionCommManager();
+        var oligarchy = planet.planetFactions[planetOligarchy];
+        var democracy = planet.planetFactions[planetDemocracy];
+        var empire = planet.planetFactions[planetEmpire];
 
         EventChainBuilder planetEscalationChain = new EventChainBuilder();
         planetEscalationChain.AddCondition(eventManager.CreateWaitCondition(2400));
         planetEscalationChain.AddAction(() => {
-            planetOligarchy.GetFactionAI().attackSpeed = 6f;
-            planetOligarchy.GetFactionAI().attackStrength = .04f;
-            planetDemocracy.GetFactionAI().attackSpeed = 9f;
-            planetDemocracy.GetFactionAI().attackStrength = .03f;
+            oligarchy.combatStrategy = PlanetFaction.CombatStrategy.Risky;
+            democracy.combatStrategy = PlanetFaction.CombatStrategy.Balanced;
         });
         planetEscalationChain.AddAction(() => planetOligarchy.StartWar(planetDemocracy));
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
@@ -1212,12 +1213,9 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planetEmpire.StartWar(planetDemocracy);
             planetEmpire.StartWar(planetOligarchy);
-            planetEmpire.GetFactionAI().attackSpeed = 5f;
-            planetEmpire.GetFactionAI().attackStrength = .04f;
-            planetOligarchy.GetFactionAI().attackSpeed = 6f;
-            planetOligarchy.GetFactionAI().attackStrength = .05f;
-            planetDemocracy.GetFactionAI().attackSpeed = 7f;
-            planetDemocracy.GetFactionAI().attackStrength = .04f;
+            empire.combatStrategy = PlanetFaction.CombatStrategy.Risky;
+            oligarchy.combatStrategy = PlanetFaction.CombatStrategy.Balanced;
+            democracy.combatStrategy = PlanetFaction.CombatStrategy.Cautious;
             battleManager.baseResourcePrice[CargoBay.CargoType.Metal] *= 1.1f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, shipyardFaction,
@@ -1232,8 +1230,6 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetOligarchy.name} has developed a new war robot technology, it will probably tip the war in their favor.");
         planetEscalationChain.AddAction(() => planet.planetFactions[planetOligarchy].AddForce(100000));
-        planetEscalationChain.AddAction(() =>
-            planet.planetFactions[planetOligarchy].combatStrategy = PlanetFaction.CombatStrategy.Risky);
         planetEscalationChain.AddAction(() => {
             robotFaction = battleManager.CreateNewFaction(
                 new FactionData(typeof(RobotFactionAI), "Robot", "RBT", colorPicker.PickColor(),
@@ -1273,11 +1269,12 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(30000000L);
             robotFaction.StartWar(planetOligarchy);
-            robotFaction.GetFactionAI().attackSpeed = 4f;
-            robotFaction.GetFactionAI().attackStrength = .05f;
+            planet.planetFactions[robotFaction].combatStrategy = PlanetFaction.CombatStrategy.Balanced;
+            oligarchy.combatStrategy = PlanetFaction.CombatStrategy.Cautious;
+            oligarchy.combatStrategy = PlanetFaction.CombatStrategy.Balanced;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
-                    planet.planetFactions[planetOligarchy].GetTotalPopulation().marines < 1000000),
+                    oligarchy.GetTotalPopulation().marines < 1000000),
                 () => {
                     planet.MergePlanetFactions(planetFaction, planetOligarchy);
                 });
@@ -1286,7 +1283,6 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);
             robotFaction.StartWar(planetDemocracy);
-            robotFaction.GetFactionAI().attackStrength = .07f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
                     planet.planetFactions[planetDemocracy].GetTotalPopulation().marines < 1000000), () => {
@@ -1297,7 +1293,7 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(30000000L);
             robotFaction.StartWar(planetEmpire);
-            robotFaction.GetFactionAI().attackStrength = .09f;
+            planet.planetFactions[robotFaction].combatStrategy = PlanetFaction.CombatStrategy.Risky;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
                     planet.planetFactions[planetEmpire].GetTotalPopulation().marines < 1000000), () => {
@@ -1308,7 +1304,6 @@ public class Chapter1 : CampaingController {
         planetEscalationChain.AddAction(() => {
             planet.planetFactions[robotFaction].AddForce(40000000L);
             robotFaction.StartWar(minorFactions);
-            robotFaction.GetFactionAI().attackSpeed = 3f;
             eventManager.AddEvent(
                 eventManager.CreatePredicateCondition(_ =>
                     planet.planetFactions[minorFactions].GetTotalPopulation().marines < 1000000), () => {
@@ -1342,8 +1337,6 @@ public class Chapter1 : CampaingController {
             planetEmpire.EndWar(planetDemocracy);
             planetEmpire.EndWar(planetOligarchy);
             planetDemocracy.EndWar(planetOligarchy);
-            robotFaction.GetFactionAI().attackSpeed = 4f;
-            robotFaction.GetFactionAI().attackStrength = .1f;
         });
         planetEscalationChain.AddCommEvent(planetCommManager, playerFaction,
             $"The {planetFaction.name}, {planetDemocracy.name} and {planetOligarchy.name} have reached a peace agreement due to the robot threat.");
@@ -1370,8 +1363,7 @@ public class Chapter1 : CampaingController {
                 eventManager.AddEvent(eventManager.CreatePredicateCondition(_ => robotFaction != null),
                     () => {
                         robotFaction.StartWar(playerFaction);
-                        playerFaction.GetFactionAI().attackSpeed = 4;
-                        playerFaction.GetFactionAI().attackStrength = .05f;
+                        planet.planetFactions[playerFaction].combatStrategy = PlanetFaction.CombatStrategy.Balanced;
                         playerFaction.GetFactionCommManager().SendCommunication(playerFaction,
                             "The " + robotFaction.name + "s have started fighting us!");
                     });
