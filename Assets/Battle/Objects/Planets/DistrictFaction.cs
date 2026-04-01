@@ -39,15 +39,16 @@ public class DistrictFaction {
         if (uncontrolledArea > 0) {
             //TODO: Improve this function to slow the expansion of medium population districts
             var areaToControl = math.min(uncontrolledArea,
-                (pop.civilians * .000000001f + pop.marines * 0.0000001f) * deltaTime / district.area);
+                (pop.civilians * .0000003f + pop.marines * 0.00003f) * deltaTime / math.max(1, (district.area * district.landPercent)));
             control += areaToControl;
         }
 
         // Increase Population
-        double popCapRatio = (double)pop.TotalPopulation() / district.GetPopulationCapacity(planetFaction);
+        double popCapRatio = math.min(2, (double)pop.TotalPopulation() / district.GetPopulationCapacity(planetFaction));
+        if (double.IsNaN(popCapRatio)) popCapRatio = 0;
         double populationGained =
             pop.TotalPopulationWithoutMarines() * District.terrainModifiers[district.terrainType].popGrowth *
-            (1 - popCapRatio) * deltaTime * .0001 + populationGainFraction;
+            (1 - popCapRatio) * deltaTime * .003 + populationGainFraction;
         pop.civilians = math.max(0, pop.civilians + (long)populationGained);
         populationGainFraction = populationGained - (long)populationGained;
 

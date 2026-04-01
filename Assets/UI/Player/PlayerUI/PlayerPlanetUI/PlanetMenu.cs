@@ -217,7 +217,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             factionButtonTransform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text =
                 "Force: " + NumFormatter.ConvertNumber(pop.marines);
             factionButtonTransform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text =
-                planetFaction.GetTotalControl() + "%";
+                (int)(planetFaction.GetTotalControl() * 100) / 100 + "%";
             //constructionBayButtonTransform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = planetFaction.special;
             factionButtonTransform.GetChild(0).GetComponent<Image>().color =
                 LocalPlayer.Instance.GetColorOfRelationType(

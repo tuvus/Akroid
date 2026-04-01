@@ -237,23 +237,22 @@ public class Chapter1 : CampaingController {
         planetFactionDistrict.industryPercent = .4f;
         planetFactionDistrict.AddFaction(planet.planetFactions[planetFaction], 1, 1);
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
-            (planet.planetFactions[planetEmpire], .5f), //.32f),
-            (planet.planetFactions[planetDemocracy], .5f), //.29f),
-            // (planet.planetFactions[planetOligarchy], .27f),
-        }, .9f, .1f, false);
-        planetEmpire.StartWar(planetDemocracy);
+            (planet.planetFactions[planetEmpire],.32f),
+            (planet.planetFactions[planetDemocracy], .29f),
+            (planet.planetFactions[planetOligarchy], .27f),
+        }, 1.3f, 1f, .1f, false);
 
-        // planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
-        //     d.owner = planet.planetFactions[minorFactions];
-        //     d.SetRandomDistrictType(false);
-        //     if (d.districtType != District.DistrictType.Empty &&
-        //         d.districtType != District.DistrictType.Wildlife) {
-        //         d.urbanPercent = .1f;
-        //         d.agriculturePercent = .6f;
-        //         d.industryPercent = .1f;
-        //     }
-        //     d.AddFaction(planet.planetFactions[minorFactions], .6f, 1);
-        // });
+        planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(d => {
+            d.owner = planet.planetFactions[minorFactions];
+            d.SetRandomDistrictType(false);
+            if (d.districtType != District.DistrictType.Empty &&
+                d.districtType != District.DistrictType.Wildlife) {
+                d.urbanPercent = .1f;
+                d.agriculturePercent = .6f;
+                d.industryPercent = .1f;
+            }
+            d.AddFaction(planet.planetFactions[minorFactions], .6f, 1);
+        });
         planet.planetMap.districts.Where(d => d.owner == null).ToList().ForEach(district => {
             district.SetRandomDistrictType(false);
         });

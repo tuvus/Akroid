@@ -34,7 +34,7 @@ public class PlanetTests {
         planet.GenerateFactionTerritories(new List<(PlanetFaction, float)> {
             (testPlanetFac1, .3f),
             (testPlanetFac2, .4f),
-        }, .9f, .1f, false);
+        }, .9f, 1f, .1f, false);
         Assert.AreEqual(7, planet.planetMap.districts.Count);
         Assert.Greater(planet.totalArea, 0);
         Assert.Greater(planet.planetMap.GetDistrict(Vector2Int.zero).area, 0);

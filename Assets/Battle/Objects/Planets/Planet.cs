@@ -231,7 +231,9 @@ public class Planet : BattleObject, IPositionConfirmer {
                 attackerDistrict.control -= controlGained;
                 defenderDistrictsByForce.ForEach(d => d.d.AddControl(controlGained * d.Item2 / defendingForce));
                 if (attackerDistrict.control <= .00001f) {
-                    defenderDistrictsByForce.ForEach(d => d.d.pop.AddPopulation(attackerDistrict.pop.GetOnlyCivilians().Multiply(d.Item2 / defendingForce)));
+                    defenderDistrictsByForce.ForEach(d =>
+                        d.d.pop.AddPopulation(
+                            attackerDistrict.pop.GetOnlyCivilians().Multiply(d.Item2 / defendingForce)));
                     district.RemoveFaction(attackerDistrict.planetFaction);
                 } else {
                     Population popToMove = attackerDistrict.pop.GetOnlyCivilians()
@@ -287,7 +289,7 @@ public class Planet : BattleObject, IPositionConfirmer {
     /// Any extra territory will be left as unclaimed.
     /// </summary>
     public void GenerateFactionTerritories(List<(PlanetFaction, float)> factionTerritories, float populationPercent,
-        float randomFactor, bool takeoverTerritories) {
+        float controlPercent, float randomFactor, bool takeoverTerritories) {
         float initialSum = factionTerritories.Select(ft => ft.Item2).Sum();
         // Apply randomness on the territories based on randomFactor
         factionTerritories = factionTerritories.Select(ft =>
@@ -317,7 +319,7 @@ public class Planet : BattleObject, IPositionConfirmer {
             district.SetRandomDistrictType(false);
             district.AddFaction(planetFaction,
                 populationPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor),
-                .5f);
+                math.clamp(controlPercent * random.NextFloat(1 - randomFactor, 1 + randomFactor), 0, 1) );
             float newControl =
                 factionTerritories.First().Item2 - district.GetDistrictValue() / (float)totalDistrictValue;
             factionTerritories.Add((planetFaction, newControl));

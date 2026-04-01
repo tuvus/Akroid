@@ -114,7 +114,7 @@ public class District {
     /// Modifications to the districts capacity and growth.
     /// </summary>
     public static readonly Dictionary<TerrainType, DistrictModifier> terrainModifiers = new() {
-        { Ocean, new DistrictModifier() },
+        { Ocean, new DistrictModifier(.2f, .3f, .8f, .2f, 1.1f, 1f, .6f) },
         { Lakes, new DistrictModifier(1f, 1.2f, 1.2f, .8f, 1.1f, 1f, .7f) },
         { Plains, new DistrictModifier(.8f, .8f, 1f, .9f, .8f, 1.2f, .9f) },
         { Forest, new DistrictModifier(1f, 1.1f, 1.1f, .1f, 1f, .8f, 1f) },
@@ -160,6 +160,8 @@ public class District {
         this.terrainType = terrainType;
         switch (terrainType) {
             case Ocean:
+                landPercent = .001f;
+                break;
             case Gas:
                 landPercent = 0;
                 break;
