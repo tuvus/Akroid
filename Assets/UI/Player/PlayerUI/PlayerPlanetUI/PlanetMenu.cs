@@ -28,6 +28,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
 
     [SerializeField] private GameObject districtPrefab;
     [SerializeField] private GameObject districtInteractionPrefab;
+    [SerializeField] private GameObject planetImageButton;
 
     [Serializable]
     struct TerrainImageInput {
@@ -43,6 +44,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     private Vector2Int offset;
     private List<GameObject> districtUIs;
     private List<GameObject> interactionUIs;
+    public bool showCoordinates;
     public District selectedDistrict { get; private set; }
 
 
@@ -82,6 +84,7 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
     public override void RefreshMenu() {
         base.RefreshMenu();
         RefreshDistricts();
+        planetImageButton.SetActive(selectedDistrict != null);
     }
 
     protected void RefreshDistricts() {
@@ -128,7 +131,12 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
                     new Color(baseColor.r * .7f, baseColor.g * .7f, baseColor.b * .7f);
             }
 
-
+            if (showCoordinates) {
+                districtUI.transform.GetChild(1).gameObject.SetActive(true);
+                districtUI.transform.GetChild(1).GetComponent<TMP_Text>().text = district.location.ToString();
+            } else {
+                districtUI.transform.GetChild(1).gameObject.SetActive(false);
+            }
         }
 
         // Visualize district interactions
@@ -281,6 +289,10 @@ public class PlanetMenu : PlayerUIMenu<PlanetUI> {
             districtOwner.text = "Owner: Unclaimed";
         else districtOwner.text = "Owner: " + selectedDistrict.owner.faction.name;
         districtPopulation.text = "Pop: " + NumFormatter.ConvertNumber(selectedDistrict.GetTotalPopulation());
+    }
+
+    public void DeselectDistrict() {
+        selectedDistrict = null;
     }
 
     public void OpenFactionMenu() {

@@ -33,7 +33,7 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
     [SerializeField] private Transform populationList;
     [SerializeField] private GameObject populationButtonPrefab;
 
-    [SerializeField] private GameObject stationImageObject;
+    [SerializeField] private GameObject stationImageButton;
     [SerializeField] private Image stationImage;
 
     private List<GameObject> moduleUIs;
@@ -97,9 +97,9 @@ public class UnitMenu : PlayerUIMenu<UnitUI> {
         if (displayedObject != null && displayedObject.unit.IsShip() && displayedObject is ShipUI shipUI &&
             shipUI.ship.dockedStation != null) {
             stationImage.sprite = shipUI.ship.dockedStation.stationScriptableObject.sprite;
-            stationImageObject.SetActive(true);
+            stationImageButton.SetActive(true);
         } else {
-            stationImageObject.SetActive(false);
+            stationImageButton.SetActive(false);
         }
     }
 
